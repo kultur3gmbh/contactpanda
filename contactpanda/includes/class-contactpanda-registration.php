@@ -34,6 +34,9 @@ final class ContactPanda_Registration {
 		add_action( 'admin_post_contactpanda_export_salutations', array( __CLASS__, 'export_salutations' ) );
 		add_action( 'admin_post_contactpanda_import_woocommerce', array( __CLASS__, 'handle_import_woocommerce' ) );
 		add_action( 'admin_post_contactpanda_migrate_newsletter_plugin', array( __CLASS__, 'handle_migrate_newsletter_plugin' ) );
+		add_action( 'admin_post_contactpanda_toggle_automatic_updates', array( __CLASS__, 'handle_automatic_updates' ) );
+		add_action( 'wp_ajax_contactpanda_migration_progress', array( __CLASS__, 'migration_progress_ajax' ) );
+		add_action( 'contactpanda_groundhogg_migration_progress', array( __CLASS__, 'store_migration_progress' ) );
 		add_action( 'wp_ajax_nopriv_contactpanda_registration_validate_vat', array( __CLASS__, 'validate_vat_ajax' ) );
 		add_action( 'wp_ajax_contactpanda_registration_validate_vat', array( __CLASS__, 'validate_vat_ajax' ) );
 		add_action( 'init', array( __CLASS__, 'handle_verification' ) );
@@ -468,6 +471,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 			echo '<div class="notice notice-' . ( 'success' === $notice['type'] ? 'success' : 'error' ) . ' is-dismissible"><p>' . esc_html( $notice['message'] ) . '</p></div>';
 		}
 		self::render_theme_settings( $settings );
+		self::render_automatic_updates();
 		echo '<form method="post" action="options.php">';
 		settings_fields( 'contactpanda_general' );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Data source', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Only one system may be the leading source for contacts, companies, tags, and consent data.', 'contactpanda' ) . '</p><div class="contactpanda-source-options">';
@@ -518,10 +522,10 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		$preview = get_transient( 'contactpanda_woocommerce_import_' . get_current_user_id() );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Import WooCommerce customers', 'contactpanda' ) . '</h2><p>' . esc_html__( 'ContactPanda can merge customer profiles from WooCommerce into the ContactPanda database using the email address as the unique key. Orders, invoices, prices, and WooCommerce data remain unchanged.', 'contactpanda' ) . '</p>';
 		if ( $preview ) {
-			echo '<div class="contactpanda-migration-report"><h3>' . esc_html__( 'Import preview', 'contactpanda' ) . '</h3><p>' . esc_html( sprintf( __( '%1$d unique customers found: %2$d new and %3$d already present. No data has been changed yet.', 'contactpanda' ), absint( $preview['found'] ?? 0 ), absint( $preview['new'] ?? 0 ), absint( $preview['updated'] ?? 0 ) ) ) . '</p></div>';
+			echo '<div class="contactpanda-migration-report"><h3>' . esc_html__( 'Pre-import information', 'contactpanda' ) . '</h3><p>' . esc_html( sprintf( __( '%1$d unique customers found: %2$d new and %3$d already present. This information has not changed any data.', 'contactpanda' ), absint( $preview['found'] ?? 0 ), absint( $preview['new'] ?? 0 ), absint( $preview['updated'] ?? 0 ) ) ) . '</p></div>';
 		}
 		echo '<div class="contactpanda-database-actions">';
-		self::woocommerce_import_form( 'preview', __( 'Preview import', 'contactpanda' ), 'button-secondary' );
+		self::woocommerce_import_form( 'preview', __( 'Show pre-import information', 'contactpanda' ), 'button-secondary' );
 		if ( $preview ) self::woocommerce_import_form( 'run', __( 'Import and merge now', 'contactpanda' ), 'button-primary' );
 		echo '</div></section>';
 	}
@@ -669,7 +673,11 @@ The link is valid for 24 hours.', 'contactpanda' ),
 			self::render_plus_promotion( 'woocommerce' ); echo '</section>';
 		}
 		if ( self::newsletter_plugin_installed() ) self::render_newsletter_plugin_readonly();
-		if ( self::groundhogg_active() ) echo '<section class="contactpanda-card contactpanda-settings-card"><h2>Groundhogg</h2><p>' . esc_html__( 'Groundhogg is active and can remain the leading contact data source.', 'contactpanda' ) . '</p></section>';
+		if ( self::groundhogg_active() ) {
+			$settings = self::general_settings();
+			$leading = 'groundhogg' === $settings['data_source'];
+			echo '<section class="contactpanda-card contactpanda-settings-card"><h2>Groundhogg</h2><p>' . esc_html( $leading ? __( 'Groundhogg is active and is currently the leading contact data source.', 'contactpanda' ) : __( 'Groundhogg is active but is currently not the leading contact data source.', 'contactpanda' ) ) . '</p><p>' . esc_html__( 'You can change the leading data source at any time. ContactPanda never writes standalone changes back to Groundhogg automatically.', 'contactpanda' ) . '</p><p><a class="button" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general' ) ) . '">' . esc_html__( 'Change data source', 'contactpanda' ) . '</a></p></section>';
+		}
 		do_action( 'contactpanda_render_integrations_settings' );
 	}
 
@@ -760,7 +768,10 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		} else {
 			echo '<div class="contactpanda-database-counts"><span><strong>' . esc_html( $counts['contacts'] ) . '</strong>' . esc_html__( 'Contacts', 'contactpanda' ) . '</span><span><strong>' . esc_html( $counts['companies'] ) . '</strong>' . esc_html__( 'Companies', 'contactpanda' ) . '</span><span><strong>' . esc_html( $counts['tags'] ) . '</strong>' . esc_html__( 'Tags', 'contactpanda' ) . '</span><span><strong>' . esc_html( $counts['activities'] ) . '</strong>' . esc_html__( 'Activities', 'contactpanda' ) . '</span></div>';
 			echo '<div class="contactpanda-database-actions">';
-			if ( self::groundhogg_active() ) self::admin_action_form( 'contactpanda_migrate_groundhogg', __( 'Migrate data from Groundhogg', 'contactpanda' ), 'button-primary', __( 'Groundhogg remains read only. Contacts, companies, tags, and—with ContactPanda Plus—mail templates and completed broadcasts are imported without duplicates.', 'contactpanda' ) );
+			if ( self::groundhogg_active() ) {
+				self::admin_action_form( 'contactpanda_migrate_groundhogg', __( 'Migrate data from Groundhogg', 'contactpanda' ), 'button-primary', __( 'Groundhogg remains read only. Contacts, companies, tags, and—with ContactPanda Plus—mail templates and completed broadcasts are imported without duplicates.', 'contactpanda' ) );
+				echo '<div class="contactpanda-migration-progress" hidden aria-live="polite"><strong>' . esc_html__( 'Preparing migration…', 'contactpanda' ) . '</strong><progress value="0" max="100"></progress><span>0%</span><small></small></div>';
+			}
 			self::admin_action_form( 'contactpanda_reset_standalone', __( 'Reset ContactPanda data', 'contactpanda' ), 'button-secondary contactpanda-reset-test-data', __( 'Deletes ContactPanda CRM records and imported Groundhogg newsletter archives. ContactPanda-created newsletter drafts, Groundhogg, WordPress, WooCommerce, invoices, and events remain untouched.', 'contactpanda' ), true );
 			echo '</div>';
 			if ( $report ) {
@@ -798,7 +809,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	private static function admin_action_form( $action, $label, $class = '', $description = '', $danger = false ) {
-		echo '<form class="contactpanda-inline-action-form' . ( $danger ? ' contactpanda-reset-form' : '' ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="' . esc_attr( $action ) . '">';
+		echo '<form class="contactpanda-inline-action-form' . ( $danger ? ' contactpanda-reset-form' : '' ) . ( 'contactpanda_migrate_groundhogg' === $action ? ' contactpanda-groundhogg-migration-form' : '' ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="' . esc_attr( $action ) . '">';
 		wp_nonce_field( $action );
 		if ( $danger ) echo '<input type="hidden" name="confirm_reset" value="1">';
 		echo '<button type="' . ( $danger ? 'button' : 'submit' ) . '" class="button ' . esc_attr( $class ) . '"' . ( $danger ? ' data-contactpanda-reset-open' : '' ) . '>' . esc_html( $label ) . '</button>';
@@ -819,9 +830,59 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	public static function handle_migrate_groundhogg() {
 		self::guard_database_action( 'contactpanda_migrate_groundhogg' );
+		delete_transient( 'contactpanda_groundhogg_migration_' . get_current_user_id() );
 		$result = ContactPanda_Store::migrate_groundhogg();
 		if ( is_wp_error( $result ) ) self::database_redirect( 'error', $result->get_error_message() );
-		self::database_redirect( 'success', __( 'The Groundhogg migration was completed. Review the migration report before switching modes.', 'contactpanda' ) );
+		$settings = self::general_settings();
+		$settings['data_source'] = 'standalone';
+		update_option( self::GENERAL_OPTION, $settings, false );
+		self::database_redirect( 'success', __( 'The Groundhogg migration was completed and ContactPanda is now the leading data source. Groundhogg remains active and unchanged. You may switch the data source back later, but ContactPanda changes are not migrated back to Groundhogg.', 'contactpanda' ) );
+	}
+
+	public static function store_migration_progress( $progress ) {
+		if ( ! is_array( $progress ) || ! get_current_user_id() ) return;
+		set_transient(
+			'contactpanda_groundhogg_migration_' . get_current_user_id(),
+			array(
+				'stage'     => sanitize_text_field( $progress['stage'] ?? '' ),
+				'processed' => absint( $progress['processed'] ?? 0 ),
+				'total'     => absint( $progress['total'] ?? 0 ),
+				'percent'   => min( 100, absint( $progress['percent'] ?? 0 ) ),
+			),
+			HOUR_IN_SECONDS
+		);
+	}
+
+	public static function migration_progress_ajax() {
+		check_ajax_referer( 'contactpanda_update_company', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( array( 'message' => __( 'You do not have permission.', 'contactpanda' ) ), 403 );
+		$progress = get_transient( 'contactpanda_groundhogg_migration_' . get_current_user_id() );
+		wp_send_json_success( is_array( $progress ) ? $progress : array( 'stage' => __( 'Preparing migration…', 'contactpanda' ), 'processed' => 0, 'total' => 0, 'percent' => 0 ) );
+	}
+
+	private static function render_automatic_updates() {
+		$plugin = plugin_basename( CONTACTPANDA_FILE );
+		$enabled = in_array( $plugin, (array) get_site_option( 'auto_update_plugins', array() ), true );
+		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Automatic Basic updates', 'contactpanda' ) . '</h2><p>' . esc_html__( 'ContactPanda Basic checks the public GitHub release channel and validates version metadata, compatibility, and the ZIP checksum before WordPress installs an update.', 'contactpanda' ) . '</p>';
+		if ( ! current_user_can( 'update_plugins' ) ) {
+			echo '<p>' . esc_html__( 'Only an administrator who may update plugins can change this setting.', 'contactpanda' ) . '</p></section>';
+			return;
+		}
+		echo '<p><span class="contactpanda-status-badge ' . ( $enabled ? 'is-positive' : 'is-negative' ) . '">' . esc_html( $enabled ? __( 'Automatic updates enabled', 'contactpanda' ) : __( 'Automatic updates disabled', 'contactpanda' ) ) . '</span></p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_toggle_automatic_updates"><input type="hidden" name="enabled" value="' . ( $enabled ? '0' : '1' ) . '">';
+		wp_nonce_field( 'contactpanda_toggle_automatic_updates' );
+		echo '<button class="button ' . ( $enabled ? '' : 'button-primary' ) . '">' . esc_html( $enabled ? __( 'Disable automatic updates', 'contactpanda' ) : __( 'Enable automatic updates', 'contactpanda' ) ) . '</button></form></section>';
+	}
+
+	public static function handle_automatic_updates() {
+		if ( ! current_user_can( 'update_plugins' ) ) wp_die( esc_html__( 'You do not have permission to change plugin updates.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		check_admin_referer( 'contactpanda_toggle_automatic_updates' );
+		$plugin = plugin_basename( CONTACTPANDA_FILE );
+		$plugins = array_values( array_filter( (array) get_site_option( 'auto_update_plugins', array() ), 'is_string' ) );
+		$plugins = array_values( array_diff( $plugins, array( $plugin ) ) );
+		if ( ! empty( $_POST['enabled'] ) ) $plugins[] = $plugin;
+		update_site_option( 'auto_update_plugins', array_values( array_unique( $plugins ) ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-settings&tab=general' ) );
+		exit;
 	}
 
 	public static function handle_reset_standalone() {

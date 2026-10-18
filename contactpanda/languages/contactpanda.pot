@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.3.2\n"
+"Project-Id-Version: ContactPanda 0.3.3\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-18 18:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -4349,4 +4349,73 @@ msgid "No activities yet"
 msgstr ""
 
 msgid "No company notes yet"
+msgstr ""
+
+msgid "Pre-import information"
+msgstr ""
+
+msgid "%1$d unique customers found: %2$d new and %3$d already present. This information has not changed any data."
+msgstr ""
+
+msgid "Show pre-import information"
+msgstr ""
+
+msgid "Groundhogg is active and is currently the leading contact data source."
+msgstr ""
+
+msgid "Groundhogg is active but is currently not the leading contact data source."
+msgstr ""
+
+msgid "You can change the leading data source at any time. ContactPanda never writes standalone changes back to Groundhogg automatically."
+msgstr ""
+
+msgid "Change data source"
+msgstr ""
+
+msgid "The Groundhogg migration was completed and ContactPanda is now the leading data source. Groundhogg remains active and unchanged. You may switch the data source back later, but ContactPanda changes are not migrated back to Groundhogg."
+msgstr ""
+
+msgid "Automatic Basic updates"
+msgstr ""
+
+msgid "ContactPanda Basic checks the public GitHub release channel and validates version metadata, compatibility, and the ZIP checksum before WordPress installs an update."
+msgstr ""
+
+msgid "Only an administrator who may update plugins can change this setting."
+msgstr ""
+
+msgid "Automatic updates enabled"
+msgstr ""
+
+msgid "Automatic updates disabled"
+msgstr ""
+
+msgid "Disable automatic updates"
+msgstr ""
+
+msgid "Enable automatic updates"
+msgstr ""
+
+msgid "You do not have permission to change plugin updates."
+msgstr ""
+
+msgid "By enabling the central library you accept that name-based salutations can be incomplete or incorrect and remain responsible for reviewing them."
+msgstr ""
+
+msgid "Enable central library"
+msgstr ""
+
+msgid "Preparing migration…"
+msgstr ""
+
+msgid "Importing tags…"
+msgstr ""
+
+msgid "Importing contacts…"
+msgstr ""
+
+msgid "Importing companies…"
+msgstr ""
+
+msgid "Migration completed."
 msgstr ""

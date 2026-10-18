@@ -651,12 +651,22 @@ final class ContactPanda_Store {
 			foreach ( $orders as $order ) {
 				if ( ! is_object( $order ) || ! method_exists( $order, 'get_billing_email' ) ) continue;
 				$email = strtolower( sanitize_email( $order->get_billing_email() ) );
-				if ( ! $email || isset( $customers[ $email ] ) ) continue;
-				$customers[ $email ] = array(
+				if ( ! $email ) continue;
+				$order_data = array(
 					'email' => $email, 'user_id' => absint( $order->get_customer_id() ), 'first_name' => $order->get_billing_first_name(), 'last_name' => $order->get_billing_last_name(),
 					'phone' => $order->get_billing_phone(), 'company' => $order->get_billing_company(), 'address_1' => $order->get_billing_address_1(), 'address_2' => $order->get_billing_address_2(),
 					'postcode' => $order->get_billing_postcode(), 'city' => $order->get_billing_city(), 'state' => $order->get_billing_state(), 'country' => $order->get_billing_country(),
 				);
+				if ( ! isset( $customers[ $email ] ) ) {
+					$customers[ $email ] = $order_data;
+				} else {
+					// The newest order remains authoritative, but older orders fill empty
+					// fragments. This is important for guest orders whose latest checkout
+					// may contain only an email address.
+					foreach ( $order_data as $field => $value ) {
+						if ( '' === trim( (string) ( $customers[ $email ][ $field ] ?? '' ) ) && '' !== trim( (string) $value ) ) $customers[ $email ][ $field ] = $value;
+					}
+				}
 			}
 			$max_pages = is_object( $result ) && isset( $result->max_num_pages ) ? max( 1, absint( $result->max_num_pages ) ) : 1;
 			$page++;
@@ -690,11 +700,21 @@ final class ContactPanda_Store {
 
 		$report = array( 'found' => count( $customers ), 'new' => 0, 'updated' => 0, 'companies' => 0, 'skipped' => 0, 'dry_run' => $dry_run ? 1 : 0, 'completed_at' => current_time( 'mysql' ) );
 		foreach ( $customers as $data ) {
+			if ( '' === trim( (string) ( $data['first_name'] ?? '' ) ) && '' === trim( (string) ( $data['last_name'] ?? '' ) ) ) {
+				$local = strstr( $data['email'], '@', true );
+				if ( is_string( $local ) && preg_match( '/^([\p{L}][\p{L}\'\x{2019}]{1,40})[._-]([\p{L}][\p{L}\'\x{2019}-]{1,60})$/u', $local, $parts ) ) {
+					$case = static function ( $value ) { return function_exists( 'mb_convert_case' ) ? mb_convert_case( $value, MB_CASE_TITLE, 'UTF-8' ) : ucfirst( strtolower( $value ) ); };
+					$data['first_name'] = $case( $parts[1] );
+					$data['last_name'] = $case( $parts[2] );
+					$data['name_inferred_from_email'] = 1;
+				}
+			}
 			$existing = self::contact_by_email( $data['email'], true );
 			if ( $existing && ! empty( $existing['deleted_at'] ) ) { $report['skipped']++; continue; }
 			$existing ? $report['updated']++ : $report['new']++;
 			if ( $dry_run ) continue;
 			$payload = array( 'email' => $data['email'] );
+			if ( ! empty( $data['name_inferred_from_email'] ) ) $payload['meta'] = array( 'name_inferred_from_email' => 1 );
 			if ( ! $existing ) $payload['source'] = 'woocommerce';
 			foreach ( array( 'first_name', 'last_name' ) as $field ) {
 				if ( ! $existing || '' !== trim( (string) ( $data[ $field ] ?? '' ) ) ) $payload[ $field ] = $data[ $field ] ?? '';
@@ -813,9 +833,16 @@ final class ContactPanda_Store {
 		$source_map = array();
 		$source_tag_map = array();
 		$source_tags = self::groundhogg_tags();
-		$report['source_tags'] = count( $source_tags );
+		$source_tag_total = count( $source_tags );
+		$report['source_tags'] = $source_tag_total;
+		do_action( 'contactpanda_groundhogg_migration_progress', array( 'stage' => __( 'Importing tags…', 'contactpanda' ), 'processed' => 0, 'total' => $source_tag_total, 'percent' => 5 ) );
 		$system_tag_ids = self::groundhogg_system_tag_ids();
+		$tag_processed = 0;
 		foreach ( $source_tags as $source_tag ) {
+			$tag_processed++;
+			if ( 0 === $tag_processed % 25 || $tag_processed === $source_tag_total ) {
+				do_action( 'contactpanda_groundhogg_migration_progress', array( 'stage' => __( 'Importing tags…', 'contactpanda' ), 'processed' => $tag_processed, 'total' => $source_tag_total, 'percent' => 5 + ( $source_tag_total ? (int) floor( 15 * $tag_processed / $source_tag_total ) : 15 ) ) );
+			}
 			$name = self::value( $source_tag, array( 'name', 'tag_name' ) );
 			$source_tag_id = absint( self::value( $source_tag, array( 'id', 'tag_id', 'ID' ) ) );
 			if ( $source_tag_id && in_array( $source_tag_id, $system_tag_ids, true ) ) {
@@ -834,8 +861,15 @@ final class ContactPanda_Store {
 			}
 		}
 		$rows = self::groundhogg_contacts_for_migration();
-		$report['source_contacts'] = count( $rows );
+		$contact_total = count( $rows );
+		$report['source_contacts'] = $contact_total;
+		do_action( 'contactpanda_groundhogg_migration_progress', array( 'stage' => __( 'Importing contacts…', 'contactpanda' ), 'processed' => 0, 'total' => $contact_total, 'percent' => 20 ) );
+		$contact_processed = 0;
 		foreach ( $rows as $row ) {
+			$contact_processed++;
+			if ( 0 === $contact_processed % 25 || $contact_processed === $contact_total ) {
+				do_action( 'contactpanda_groundhogg_migration_progress', array( 'stage' => __( 'Importing contacts…', 'contactpanda' ), 'processed' => $contact_processed, 'total' => $contact_total, 'percent' => 20 + ( $contact_total ? (int) floor( 60 * $contact_processed / $contact_total ) : 60 ) ) );
+			}
 				$source_id = absint( self::value( $row, array( 'id', 'ID' ) ) );
 				if ( ! $source_id ) { $report['errors']++; continue; }
 				$email = sanitize_email( self::value( $row, array( 'email' ) ) );
@@ -891,6 +925,7 @@ final class ContactPanda_Store {
 		$report['missing_tags'] = array_values( array_unique( $report['missing_tags'] ) );
 		$report['skipped_tags'] = array_values( array_unique( $report['skipped_tags'] ) );
 		$company_offset = 0;
+		do_action( 'contactpanda_groundhogg_migration_progress', array( 'stage' => __( 'Importing companies…', 'contactpanda' ), 'processed' => 0, 'total' => 0, 'percent' => 82 ) );
 		$seen_company_pages = array();
 		do {
 			$companies = self::ability( 'groundhogg-companies/list-companies', array( 'limit' => 100, 'offset' => $company_offset, 'expand' => array( 'meta', 'contacts' ) ) );
@@ -925,10 +960,12 @@ final class ContactPanda_Store {
 				$report['companies']++;
 			}
 			$company_offset += count( $company_rows );
+			do_action( 'contactpanda_groundhogg_migration_progress', array( 'stage' => __( 'Importing companies…', 'contactpanda' ), 'processed' => $company_offset, 'total' => 0, 'percent' => min( 96, 82 + (int) floor( $company_offset / 100 ) ) ) );
 		} while ( $company_rows && $company_offset < 1000000 );
 		$report['completed_at'] = current_time( 'mysql' );
 		$report = (array) apply_filters( 'contactpanda_groundhogg_migration_report', $report );
 		update_option( 'contactpanda_last_migration_report', $report, false );
+		do_action( 'contactpanda_groundhogg_migration_progress', array( 'stage' => __( 'Migration completed.', 'contactpanda' ), 'processed' => $report['contacts'] + $report['companies'] + $report['tags'], 'total' => $report['contacts'] + $report['companies'] + $report['tags'], 'percent' => 100 ) );
 		return $report;
 	}
 

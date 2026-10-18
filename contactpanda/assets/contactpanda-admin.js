@@ -224,7 +224,7 @@
 		var list = group.querySelector('.contactpanda-channel-list');
 		if (!template || !list) return;
 		var row = template.content.firstElementChild.cloneNode(true);
-		list.appendChild(row);
+		list.insertBefore(row, list.firstChild);
 		var empty = list.querySelector('.contactpanda-channel-empty');
 		if (empty) empty.hidden = true;
 		openContactChannel(row);
@@ -257,7 +257,7 @@
 			value.dataset.value = result.data.value;
 			value.textContent = result.data.display;
 			row.querySelector('.contactpanda-channel-label').textContent = result.data.label_text;
-			if (type === 'email') row.querySelector('.contactpanda-channel-marketing').textContent = format(tr('marketingStatus', 'Marketing: %s'), result.data.marketing_label);
+			if (type === 'email') row.querySelector('.contactpanda-channel-marketing').textContent = result.data.marketing_label;
 			if (result.data.is_primary) {
 				group.querySelectorAll('.contactpanda-channel-row').forEach(function (other) {
 					var own = other === row;
@@ -1139,6 +1139,36 @@
 	});
 
 	document.addEventListener('submit', function (event) {
+		if (event.target.matches('.contactpanda-groundhogg-migration-form')) {
+			event.preventDefault();
+			var migrationForm = event.target;
+			if (migrationForm.dataset.running === '1') return;
+			migrationForm.dataset.running = '1';
+			var migrationButton = migrationForm.querySelector('button[type="submit"]');
+			var migrationProgress = document.querySelector('.contactpanda-migration-progress');
+			if (migrationButton) migrationButton.disabled = true;
+			if (migrationProgress) migrationProgress.hidden = false;
+			var pollMigration = function () {
+				var data = new URLSearchParams(); data.set('action', 'contactpanda_migration_progress'); data.set('nonce', CONTACTPANDA_CONFIG.nonce);
+				fetch(CONTACTPANDA_CONFIG.ajaxUrl, requestOptions(data)).then(parseResponse).then(function (result) {
+					if (!result.success || !migrationProgress) return;
+					var value = Math.max(0, Math.min(100, parseInt(result.data.percent || 0, 10)));
+					migrationProgress.querySelector('strong').textContent = result.data.stage || tr('migrationPreparing', 'Preparing migration…');
+					migrationProgress.querySelector('progress').value = value;
+					migrationProgress.querySelector('span').textContent = value + '%';
+					migrationProgress.querySelector('small').textContent = result.data.total ? String(result.data.processed) + ' / ' + String(result.data.total) : String(result.data.processed || '');
+				}).catch(function () {});
+			};
+			pollMigration();
+			var migrationTimer = window.setInterval(pollMigration, 1200);
+			fetch(migrationForm.action, {method: 'POST', body: new FormData(migrationForm), credentials: 'same-origin'}).then(function (response) {
+				window.clearInterval(migrationTimer);
+				window.location.href = response.url || window.location.href;
+			}).catch(function () {
+				window.clearInterval(migrationTimer); migrationForm.dataset.running = '0'; if (migrationButton) migrationButton.disabled = false;
+			});
+			return;
+		}
 		if (event.target.matches('.contactpanda-tag-bulk-form')) {
 			var selected = event.target.querySelectorAll('input[name="tag_ids[]"]:checked');
 			var action = event.target.querySelector('[name="bulk_action"]').value;

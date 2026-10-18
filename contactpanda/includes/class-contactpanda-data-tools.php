@@ -535,8 +535,7 @@ final class ContactPanda_Data_Tools {
 		$settings = wp_parse_args( (array) get_option( self::CENTRAL_OPTION, array() ), array( 'enabled' => 0, 'auto' => 0, 'source_url' => '', 'version' => '', 'updated_at' => '', 'last_success_at' => '', 'error' => '' ) );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Optional central salutation library', 'contactpanda' ) . '</h2><p>' . esc_html__( 'You can optionally supplement your local library with a centrally maintained name list. Local and manually confirmed assignments always take precedence. No contact or customer data is uploaded.', 'contactpanda' ) . '</p>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_central_salutations">'; wp_nonce_field( 'contactpanda_central_salutations' );
-		echo '<p><label><input type="checkbox" name="enabled" value="1"' . checked( ! empty( $settings['enabled'] ), true, false ) . '> ' . esc_html__( 'Enable the central library', 'contactpanda' ) . '</label></p><p><label><input type="checkbox" name="accepted" value="1"' . checked( ! empty( $settings['enabled'] ), true, false ) . '> ' . esc_html__( 'I understand that name-based salutations may be incomplete or incorrect and remain responsible for reviewing them.', 'contactpanda' ) . '</label></p><p><label><input type="checkbox" name="auto" value="1"' . checked( ! empty( $settings['auto'] ), true, false ) . '> ' . esc_html__( 'Check weekly for library updates', 'contactpanda' ) . '</label></p><p><button class="button button-primary">' . esc_html__( 'Save library settings', 'contactpanda' ) . '</button></p></form>';
-		if ( ! empty( $settings['enabled'] ) ) { echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_sync_central_salutations">'; wp_nonce_field( 'contactpanda_sync_central_salutations' ); echo '<button class="button">' . esc_html__( 'Update central library now', 'contactpanda' ) . '</button></form>'; }
+		echo '<input type="hidden" name="enabled" value="1"><p class="description">' . esc_html__( 'By enabling the central library you accept that name-based salutations can be incomplete or incorrect and remain responsible for reviewing them.', 'contactpanda' ) . '</p><p><label><input type="checkbox" name="auto" value="1"' . checked( ! empty( $settings['auto'] ), true, false ) . '> ' . esc_html__( 'Check weekly for library updates', 'contactpanda' ) . '</label></p><p><button class="button button-primary" name="sync" value="1">' . esc_html( empty( $settings['enabled'] ) ? __( 'Enable central library', 'contactpanda' ) : __( 'Update central library now', 'contactpanda' ) ) . '</button></p></form>';
 		if ( $settings['version'] || $settings['updated_at'] ) echo '<p class="description">' . esc_html( sprintf( __( 'Installed central version: %1$s. Last check: %2$s.', 'contactpanda' ), $settings['version'] ?: '—', $settings['updated_at'] ?: '—' ) ) . '</p>';
 		if ( $settings['error'] ) echo '<div class="notice notice-warning inline"><p>' . esc_html( $settings['error'] ) . '</p></div>';
 		echo '</section>';
@@ -544,10 +543,14 @@ final class ContactPanda_Data_Tools {
 
 	public static function handle_central_settings() {
 		self::require_admin( 'contactpanda_central_salutations' );
-		$enabled = ! empty( $_POST['enabled'] ); if ( $enabled && empty( $_POST['accepted'] ) ) wp_die( esc_html__( 'Accept the library disclaimer before enabling it.', 'contactpanda' ), '', array( 'response' => 400 ) );
+		$enabled = ! empty( $_POST['enabled'] );
 		$settings = (array) get_option( self::CENTRAL_OPTION, array() ); $settings['enabled'] = $enabled ? 1 : 0; $settings['auto'] = $enabled && ! empty( $_POST['auto'] ) ? 1 : 0; update_option( self::CENTRAL_OPTION, $settings, false );
 		if ( $settings['auto'] && ! wp_next_scheduled( 'contactpanda_central_salutation_sync' ) ) wp_schedule_event( time() + HOUR_IN_SECONDS, 'contactpanda_weekly', 'contactpanda_central_salutation_sync' );
 		if ( ! $settings['auto'] ) wp_clear_scheduled_hook( 'contactpanda_central_salutation_sync' );
+		if ( $enabled && ! empty( $_POST['sync'] ) ) {
+			$result = self::sync_central_library();
+			set_transient( 'contactpanda_database_notice_' . get_current_user_id(), array( 'type' => is_wp_error( $result ) ? 'error' : 'success', 'message' => is_wp_error( $result ) ? $result->get_error_message() : sprintf( __( 'Central library updated: %d new names added.', 'contactpanda' ), $result ) ), MINUTE_IN_SECONDS );
+		}
 		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=salutations' ) ); exit;
 	}
 

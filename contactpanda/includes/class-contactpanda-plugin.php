@@ -227,7 +227,8 @@ final class ContactPanda_Plugin {
 					'checkingVat'              => __( 'Checking EU VIES…', 'contactpanda' ),
 					'saving'                   => __( 'Saving…', 'contactpanda' ),
 					'saved'                    => __( 'Saved.', 'contactpanda' ),
-					'marketingStatus'          => __( 'Marketing: %s', 'contactpanda' ),
+					'marketingStatus'          => __( '%s', 'contactpanda' ),
+					'migrationPreparing'       => __( 'Preparing migration…', 'contactpanda' ),
 					'confirmDeleteChannel'     => __( 'Remove this contact detail?', 'contactpanda' ),
 					'salutationSuggestion'     => __( 'Suggestion: %s', 'contactpanda' ),
 					'savingConfirmed'          => __( 'Saving with confirmation…', 'contactpanda' ),
@@ -577,7 +578,7 @@ final class ContactPanda_Plugin {
 			'display'          => 'phone' === $type ? self::format_phone( $channel['value'] ) : $channel['value'],
 			'is_primary'       => empty( $channel['is_primary'] ) ? 0 : 1,
 			'marketing_status' => $status,
-			'marketing_label'  => 'email' === $type ? self::status_label( $status ?: 'unconfirmed' ) : '',
+			'marketing_label'  => 'email' === $type && 'confirmed' === $status ? __( 'Marketable', 'contactpanda' ) : ( 'email' === $type ? self::status_label( $status ?: 'unconfirmed' ) : '' ),
 		);
 	}
 
@@ -2031,7 +2032,7 @@ final class ContactPanda_Plugin {
 		else echo '<strong>' . esc_html( $response['display'] ?: '—' ) . '</strong>';
 		echo '<span class="contactpanda-channel-label">' . esc_html( $response['label_text'] ) . '</span>';
 		echo '<span class="contactpanda-primary-badge"' . ( $primary ? '' : ' hidden' ) . '>' . esc_html__( 'Primary', 'contactpanda' ) . '</span>';
-		if ( 'email' === $type ) echo '<span class="contactpanda-channel-marketing">' . esc_html( sprintf( __( 'Marketing: %s', 'contactpanda' ), $response['marketing_label'] ) ) . '</span>';
+		if ( 'email' === $type ) echo '<span class="contactpanda-channel-marketing">' . esc_html( $response['marketing_label'] ) . '</span>';
 		echo '</div>';
 		if ( $editable ) {
 			echo '<div class="contactpanda-channel-editor is-' . esc_attr( $type ) . '"' . ( $is_new ? '' : ' hidden' ) . '><label><span>' . esc_html__( 'Type', 'contactpanda' ) . '</span><select class="contactpanda-channel-label-select">';
@@ -2135,7 +2136,7 @@ final class ContactPanda_Plugin {
 		}
 
 		echo '<table class="widefat striped contactpanda-table contactpanda-companies-table"><thead><tr><th>' . esc_html__( 'Company', 'contactpanda' ) . '</th>';
-		echo '<th>' . esc_html__( 'Assigned people', 'contactpanda' ) . '</th><th>' . esc_html__( 'Website', 'contactpanda' ) . '</th><th>' . esc_html__( 'Phone', 'contactpanda' ) . '</th><th>' . esc_html__( 'Location', 'contactpanda' ) . '</th></tr></thead><tbody>';
+		echo '<th>' . esc_html__( 'Assigned people', 'contactpanda' ) . '</th><th>' . esc_html__( 'Website', 'contactpanda' ) . '</th><th>' . esc_html__( 'Phone', 'contactpanda' ) . '</th><th>' . esc_html__( 'Location', 'contactpanda' ) . '</th><th class="contactpanda-company-actions-column"><span class="screen-reader-text">' . esc_html__( 'Actions', 'contactpanda' ) . '</span></th></tr></thead><tbody>';
 		foreach ( $companies as $company ) {
 			$id = self::value( $company, array( 'get_id', 'ID', 'id' ) );
 			$edit_url = admin_url( 'admin.php?page=contactpanda-firmen&firma=' . absint( $id ) );
@@ -2157,13 +2158,13 @@ final class ContactPanda_Plugin {
 					? '<a href="' . esc_url( admin_url( 'admin.php?page=' . self::people_page_slug() . '&person=' . $contact_id ) ) . '">' . esc_html( $name ) . '</a>'
 					: esc_html( $name );
 			}
-			echo '<tr><td><div class="contactpanda-company-name-cell"><strong>' . esc_html( self::value( $company, array( 'get_name', 'name', 'company_name' ), __( 'Unnamed company', 'contactpanda' ) ) ) . '</strong><div class="contactpanda-person-actions contactpanda-company-actions"><a class="contactpanda-person-row-action" href="' . esc_url( $edit_url ) . '" aria-label="' . esc_attr__( 'Edit company', 'contactpanda' ) . '" title="' . esc_attr__( 'Edit company', 'contactpanda' ) . '"><span class="dashicons dashicons-edit" aria-hidden="true"></span></a><a class="contactpanda-person-row-action" href="' . esc_url( $view_url ) . '" aria-label="' . esc_attr__( 'View company', 'contactpanda' ) . '" title="' . esc_attr__( 'View company', 'contactpanda' ) . '"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></a>';
-			if ( ContactPanda_Trash::available() ) echo self::trash_button_html( 'companies', $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes all dynamic values.
-			echo '</div></div></td>';
+			echo '<tr><td><strong>' . esc_html( self::value( $company, array( 'get_name', 'name', 'company_name' ), __( 'Unnamed company', 'contactpanda' ) ) ) . '</strong></td>';
 			echo '<td class="contactpanda-company-people">' . ( $person_links ? wp_kses_post( implode( ', ', $person_links ) ) : '&mdash;' ) . '</td>';
 			echo '<td>' . esc_html( self::value( $company, array( 'domain', 'website', 'get_website' ), '—' ) ) . '</td>';
 			echo '<td>' . esc_html( self::format_phone( self::value( $company, array( 'phone', 'get_phone' ) ) ) ) . '</td>';
-			echo '<td>' . esc_html( self::value( $company, array( 'city', 'get_city' ), '—' ) ) . '</td>';
+			echo '<td>' . esc_html( self::value( $company, array( 'city', 'get_city' ), '—' ) ) . '</td><td class="contactpanda-company-actions-column"><div class="contactpanda-person-actions contactpanda-company-actions"><a class="contactpanda-person-row-action" href="' . esc_url( $edit_url ) . '" aria-label="' . esc_attr__( 'Edit company', 'contactpanda' ) . '" title="' . esc_attr__( 'Edit company', 'contactpanda' ) . '"><span class="dashicons dashicons-edit" aria-hidden="true"></span></a><a class="contactpanda-person-row-action" href="' . esc_url( $view_url ) . '" aria-label="' . esc_attr__( 'View company', 'contactpanda' ) . '" title="' . esc_attr__( 'View company', 'contactpanda' ) . '"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></a>';
+			if ( ContactPanda_Trash::available() ) echo self::trash_button_html( 'companies', $id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes all dynamic values.
+			echo '</div></td>';
 			echo '</tr>';
 		}
 		echo '</tbody></table></section>';

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.3.2\n"
+"Project-Id-Version: ContactPanda 0.3.3\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-18 18:00+0200\n"
@@ -4350,3 +4350,72 @@ msgstr "Noch keine Aktivitäten"
 
 msgid "No company notes yet"
 msgstr "Noch keine Firmennotizen"
+
+msgid "Pre-import information"
+msgstr "Vorabinformation zum Import"
+
+msgid "%1$d unique customers found: %2$d new and %3$d already present. This information has not changed any data."
+msgstr "%1$d eindeutige Kunden gefunden: %2$d neu und %3$d bereits vorhanden. Diese Vorabinformation hat keine Daten verändert."
+
+msgid "Show pre-import information"
+msgstr "Vorabinformation anzeigen"
+
+msgid "Groundhogg is active and is currently the leading contact data source."
+msgstr "Groundhogg ist aktiv und derzeit die führende Kontaktdatenquelle."
+
+msgid "Groundhogg is active but is currently not the leading contact data source."
+msgstr "Groundhogg ist aktiv, derzeit aber nicht die führende Kontaktdatenquelle."
+
+msgid "You can change the leading data source at any time. ContactPanda never writes standalone changes back to Groundhogg automatically."
+msgstr "Sie können die führende Datenquelle jederzeit ändern. ContactPanda schreibt eigenständige Änderungen niemals automatisch zu Groundhogg zurück."
+
+msgid "Change data source"
+msgstr "Datenquelle ändern"
+
+msgid "The Groundhogg migration was completed and ContactPanda is now the leading data source. Groundhogg remains active and unchanged. You may switch the data source back later, but ContactPanda changes are not migrated back to Groundhogg."
+msgstr "Die Groundhogg-Migration wurde abgeschlossen und ContactPanda ist nun die führende Datenquelle. Groundhogg bleibt aktiv und unverändert. Sie können die Datenquelle später zurückstellen; Änderungen aus ContactPanda werden jedoch nicht zu Groundhogg zurückmigriert."
+
+msgid "Automatic Basic updates"
+msgstr "Automatische Basic-Updates"
+
+msgid "ContactPanda Basic checks the public GitHub release channel and validates version metadata, compatibility, and the ZIP checksum before WordPress installs an update."
+msgstr "ContactPanda Basic prüft den öffentlichen GitHub-Release-Kanal sowie Versionsdaten, Kompatibilität und ZIP-Prüfsumme, bevor WordPress ein Update installiert."
+
+msgid "Only an administrator who may update plugins can change this setting."
+msgstr "Nur ein Administrator mit Berechtigung für Plugin-Updates kann diese Einstellung ändern."
+
+msgid "Automatic updates enabled"
+msgstr "Automatische Updates aktiviert"
+
+msgid "Automatic updates disabled"
+msgstr "Automatische Updates deaktiviert"
+
+msgid "Disable automatic updates"
+msgstr "Automatische Updates deaktivieren"
+
+msgid "Enable automatic updates"
+msgstr "Automatische Updates aktivieren"
+
+msgid "You do not have permission to change plugin updates."
+msgstr "Sie haben keine Berechtigung, Plugin-Updates zu ändern."
+
+msgid "By enabling the central library you accept that name-based salutations can be incomplete or incorrect and remain responsible for reviewing them."
+msgstr "Mit der Aktivierung der zentralen Bibliothek akzeptieren Sie, dass namensbasierte Anreden unvollständig oder falsch sein können, und bleiben für deren Prüfung verantwortlich."
+
+msgid "Enable central library"
+msgstr "Zentrale Bibliothek aktivieren"
+
+msgid "Preparing migration…"
+msgstr "Migration wird vorbereitet…"
+
+msgid "Importing tags…"
+msgstr "Tags werden importiert…"
+
+msgid "Importing contacts…"
+msgstr "Kontakte werden importiert…"
+
+msgid "Importing companies…"
+msgstr "Firmen werden importiert…"
+
+msgid "Migration completed."
+msgstr "Migration abgeschlossen."
