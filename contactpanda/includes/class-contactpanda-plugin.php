@@ -3154,16 +3154,20 @@ final class ContactPanda_Plugin {
 		}
 		echo '</section>';
 
-		self::render_activities( $id );
+		self::render_company_notes( $id );
+		self::render_company_activity_history( $id );
 		echo '</main></div>';
 	}
 
 	private static function render_person_tabs( $contact_id, $customer, $contact, $orders, $events, $events_enabled, $broadcasts, $editable ) {
 		$tabs_id = 'contactpanda-person-tabs-' . absint( $contact_id );
+		$notes = self::contact_notes( $contact_id );
+		$activities = ContactPanda_Store::standalone() ? ContactPanda_Store::activities( $contact_id, 0, 'activity' ) : array();
 		$broadcast_page_arg = isset( $_GET['broadcast_page'] ) && is_scalar( $_GET['broadcast_page'] ) ? wp_unslash( $_GET['broadcast_page'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination.
 		$show_broadcasts = absint( $broadcast_page_arg ) > 0;
 		echo __( '<section class="contactpanda-card contactpanda-tabs-card" data-tabs><div class="contactpanda-tabs" role="tablist" aria-label="Person data">', 'contactpanda' );
-		echo '<button type="button" class="contactpanda-tab' . ( $show_broadcasts ? '' : ' is-active' ) . '" id="' . esc_attr( $tabs_id . '-notes-tab' ) . '" role="tab" aria-selected="' . ( $show_broadcasts ? 'false' : 'true' ) . '" aria-controls="' . esc_attr( $tabs_id . '-notes' ) . '" tabindex="' . ( $show_broadcasts ? '-1' : '0' ) . '">' . esc_html__( 'Notes', 'contactpanda' ) . '</button>';
+		echo '<button type="button" class="contactpanda-tab' . ( $show_broadcasts ? '' : ' is-active' ) . '" id="' . esc_attr( $tabs_id . '-notes-tab' ) . '" role="tab" aria-selected="' . ( $show_broadcasts ? 'false' : 'true' ) . '" aria-controls="' . esc_attr( $tabs_id . '-notes' ) . '" tabindex="' . ( $show_broadcasts ? '-1' : '0' ) . '">' . esc_html__( 'Notes', 'contactpanda' ) . ' <span class="contactpanda-count">' . esc_html( count( $notes ) ) . '</span></button>';
+		echo '<button type="button" class="contactpanda-tab" id="' . esc_attr( $tabs_id . '-activities-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-activities' ) . '" tabindex="-1">' . esc_html__( 'Activities', 'contactpanda' ) . ' <span class="contactpanda-count">' . esc_html( count( $activities ) ) . '</span></button>';
 		echo '<button type="button" class="contactpanda-tab" id="' . esc_attr( $tabs_id . '-orders-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-orders' ) . '" tabindex="-1">' . esc_html__( 'Orders', 'contactpanda' ) . ' <span class="contactpanda-count">' . esc_html( count( $orders ) ) . '</span></button>';
 		echo '<button type="button" class="contactpanda-tab" id="' . esc_attr( $tabs_id . '-addresses-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-addresses' ) . '" tabindex="-1">' . esc_html__( 'Addresses', 'contactpanda' ) . '</button>';
 		if ( $events_enabled ) {
@@ -3172,7 +3176,9 @@ final class ContactPanda_Plugin {
 		echo '<button type="button" class="contactpanda-tab' . ( $show_broadcasts ? ' is-active' : '' ) . '" id="' . esc_attr( $tabs_id . '-broadcasts-tab' ) . '" role="tab" aria-selected="' . ( $show_broadcasts ? 'true' : 'false' ) . '" aria-controls="' . esc_attr( $tabs_id . '-broadcasts' ) . '" tabindex="' . ( $show_broadcasts ? '0' : '-1' ) . '">' . esc_html__( 'Mailings', 'contactpanda' ) . ' <span class="contactpanda-count">' . esc_html( count( $broadcasts ) ) . '</span></button>';
 		echo '</div>';
 		echo '<div class="contactpanda-tab-panel' . ( $show_broadcasts ? '' : ' is-active' ) . '" id="' . esc_attr( $tabs_id . '-notes' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-notes-tab' ) . '"' . ( $show_broadcasts ? ' hidden' : '' ) . '>';
-		self::render_contact_activities( $contact_id, false, $editable );
+		self::render_contact_notes( $contact_id, $notes, false, $editable );
+		echo '</div><div class="contactpanda-tab-panel" id="' . esc_attr( $tabs_id . '-activities' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-activities-tab' ) . '" hidden>';
+		self::render_activity_timeline( $activities, false );
 		echo '</div><div class="contactpanda-tab-panel" id="' . esc_attr( $tabs_id . '-orders' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-orders-tab' ) . '" hidden>';
 		self::render_person_orders( $orders, false );
 		echo '</div><div class="contactpanda-tab-panel" id="' . esc_attr( $tabs_id . '-addresses' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-addresses-tab' ) . '" hidden>';
@@ -3746,14 +3752,18 @@ final class ContactPanda_Plugin {
 		);
 	}
 
-	private static function render_contact_activities( $contact_id, $standalone = true, $editable = false ) {
+	private static function contact_notes( $contact_id ) {
 		if ( ContactPanda_Store::standalone() ) {
-			$notes = ContactPanda_Store::activities( $contact_id, 0 );
+			$notes = ContactPanda_Store::activities( $contact_id, 0, 'notes' );
 		} else {
 			$result = self::execute_ability( 'groundhogg/list-contact-notes', array( 'contact_id' => $contact_id, 'limit' => 20, 'offset' => 0 ) );
 			$notes = is_array( $result ) && isset( $result['notes'] ) && is_array( $result['notes'] ) ? $result['notes'] : array();
 		}
 		usort( $notes, static function ( $left, $right ) { return strcmp( (string) self::value( $right, array( 'date_created', 'created_at' ) ), (string) self::value( $left, array( 'date_created', 'created_at' ) ) ); } );
+		return $notes;
+	}
+
+	private static function render_contact_notes( $contact_id, $notes, $standalone = true, $editable = false ) {
 		if ( $standalone ) {
 			echo '<section class="contactpanda-card">';
 		}
@@ -3789,6 +3799,36 @@ final class ContactPanda_Plugin {
 		if ( $standalone ) {
 			echo '</section>';
 		}
+	}
+
+	private static function render_activity_timeline( $activities, $standalone = true ) {
+		if ( $standalone ) echo '<section class="contactpanda-card">';
+		echo '<div class="contactpanda-toolbar"><h2>' . esc_html__( 'Activities', 'contactpanda' ) . '</h2><span class="contactpanda-count">' . esc_html( count( $activities ) ) . '</span></div><div class="contactpanda-timeline">';
+		if ( ! $activities ) {
+			echo '<div><span></span><strong>' . esc_html__( 'No activities yet', 'contactpanda' ) . '</strong><p>' . esc_html__( 'Automatically recorded changes and events appear here.', 'contactpanda' ) . '</p></div>';
+		} else {
+			foreach ( $activities as $activity ) {
+				$type = sanitize_key( self::value( $activity, array( 'activity_type', 'type' ), 'activity' ) );
+				echo '<div><span></span><strong>' . esc_html( self::value( $activity, array( 'summary', 'title' ), __( 'Activity', 'contactpanda' ) ) ) . '</strong> <em class="contactpanda-note-type">' . esc_html( self::activity_type_label( $type ) ) . '</em>';
+				$content = self::value( $activity, array( 'content', 'note' ) );
+				if ( '' !== trim( (string) $content ) ) echo '<p>' . nl2br( esc_html( wp_strip_all_tags( $content ) ) ) . '</p>';
+				$date = self::value( $activity, array( 'date_created', 'created_at' ) );
+				if ( $date ) echo '<small>' . esc_html( $date ) . '</small>';
+				echo '</div>';
+			}
+		}
+		echo '</div>';
+		if ( $standalone ) echo '</section>';
+	}
+
+	private static function activity_type_label( $type ) {
+		$labels = array(
+			'consent'         => __( 'Consent', 'contactpanda' ),
+			'form_submission' => __( 'Form submission', 'contactpanda' ),
+			'merge'           => __( 'Merge', 'contactpanda' ),
+			'registration'    => __( 'Registration', 'contactpanda' ),
+		);
+		return $labels[ $type ] ?? ucwords( str_replace( '_', ' ', $type ) );
 	}
 
 	private static function contacts( $company ) {
@@ -4280,9 +4320,9 @@ final class ContactPanda_Plugin {
 		} while ( $page <= $max_pages );
 	}
 
-	private static function render_activities( $company_id ) {
+	private static function render_company_notes( $company_id ) {
 		if ( ContactPanda_Store::standalone() ) {
-			$notes = ContactPanda_Store::activities( 0, $company_id );
+			$notes = ContactPanda_Store::activities( 0, $company_id, 'notes' );
 		} else {
 			$result = self::execute_ability(
 			'groundhogg-companies/list-company-notes',
@@ -4290,9 +4330,9 @@ final class ContactPanda_Plugin {
 			);
 			$notes = is_array( $result ) && isset( $result['notes'] ) && is_array( $result['notes'] ) ? $result['notes'] : array();
 		}
-		echo __( '<section class="contactpanda-card"><h2>Activities <span class="contactpanda-count">', 'contactpanda' ) . esc_html( count( $notes ) ) . '</span></h2><div class="contactpanda-timeline">';
+		echo '<section class="contactpanda-card"><h2>' . esc_html__( 'Notes', 'contactpanda' ) . ' <span class="contactpanda-count">' . esc_html( count( $notes ) ) . '</span></h2><div class="contactpanda-timeline">';
 		if ( ! $notes ) {
-				echo __( '<div><span></span><strong>No company notes yet</strong><p>Groundhogg currently provides no notes for this company.</p></div>', 'contactpanda' );
+			echo '<div><span></span><strong>' . esc_html__( 'No company notes yet', 'contactpanda' ) . '</strong></div>';
 		} else {
 			foreach ( $notes as $note ) {
 				$title = self::value( $note, array( 'summary', 'title' ), __( 'Company note', 'contactpanda' ) );
@@ -4306,6 +4346,11 @@ final class ContactPanda_Plugin {
 			}
 		}
 		echo '</div></section>';
+	}
+
+	private static function render_company_activity_history( $company_id ) {
+		$activities = ContactPanda_Store::standalone() ? ContactPanda_Store::activities( 0, $company_id, 'activity' ) : array();
+		self::render_activity_timeline( $activities );
 	}
 
 	/** Save extension-owned metadata through the currently selected data source. */

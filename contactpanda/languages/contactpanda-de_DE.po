@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.3.1\n"
+"Project-Id-Version: ContactPanda 0.3.2\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-18 18:00+0200\n"
@@ -4329,3 +4329,24 @@ msgstr "URL"
 
 msgid "— Please select —"
 msgstr "— Bitte auswählen —"
+
+msgid "Activity"
+msgstr "Aktivität"
+
+msgid "Automatically recorded changes and events appear here."
+msgstr "Automatisch protokollierte Änderungen und Ereignisse werden hier angezeigt."
+
+msgid "Consent"
+msgstr "Einwilligung"
+
+msgid "Form submission"
+msgstr "Formularübermittlung"
+
+msgid "Merge"
+msgstr "Zusammenführung"
+
+msgid "No activities yet"
+msgstr "Noch keine Aktivitäten"
+
+msgid "No company notes yet"
+msgstr "Noch keine Firmennotizen"

@@ -763,13 +763,20 @@ final class ContactPanda_Store {
 		return false !== $wpdb->insert( $table, array( 'contact_id' => $contact_id ? absint( $contact_id ) : null, 'company_id' => $company_id ? absint( $company_id ) : null, 'activity_type' => sanitize_key( $type ), 'title' => sanitize_text_field( $title ), 'content' => wp_kses_post( $content ), 'source' => 'contactpanda', 'actor_user_id' => get_current_user_id(), 'occurred_at' => $occurred_at, 'created_at' => current_time( 'mysql' ) ) );
 	}
 
-	public static function activities( $contact_id = 0, $company_id = 0 ) {
+	public static function activities( $contact_id = 0, $company_id = 0, $category = 'all' ) {
 		global $wpdb;
 		$table = ContactPanda_Schema::table_names()['activities'];
-		if ( $contact_id ) {
-			return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE contact_id = %d ORDER BY occurred_at DESC LIMIT 50", absint( $contact_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$category = in_array( $category, array( 'notes', 'activity' ), true ) ? $category : 'all';
+		$type_clause = '';
+		if ( 'notes' === $category ) {
+			$type_clause = " AND (activity_type = 'note' OR activity_type LIKE 'note\\_%')";
+		} elseif ( 'activity' === $category ) {
+			$type_clause = " AND activity_type <> 'note' AND activity_type NOT LIKE 'note\\_%'";
 		}
-		return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE company_id = %d ORDER BY occurred_at DESC LIMIT 50", absint( $company_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		if ( $contact_id ) {
+			return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE contact_id = %d{$type_clause} ORDER BY occurred_at DESC LIMIT 50", absint( $contact_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name and fixed type clause.
+		}
+		return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE company_id = %d{$type_clause} ORDER BY occurred_at DESC LIMIT 50", absint( $company_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name and fixed type clause.
 	}
 
 	public static function link_user( $contact_id, $user_id ) {
