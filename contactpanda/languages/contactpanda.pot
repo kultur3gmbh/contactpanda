@@ -3121,6 +3121,9 @@ msgstr ""
 msgid "You do not have permission."
 msgstr ""
 
+msgid "You do not have permission to export companies."
+msgstr ""
+
 #: contactpanda/includes/class-contactpanda-my-account.php:360 contactpanda/includes/class-contactpanda-my-account.php:369
 msgid "Your addresses have been saved."
 msgstr ""
@@ -4205,4 +4208,124 @@ msgid "Use as primary phone number"
 msgstr ""
 
 msgid "%1$d created, %2$d updated, %3$d skipped, %4$d errors"
+msgstr ""
+
+msgid "Add custom field"
+msgstr ""
+
+msgid "Add at least one option for a selection field."
+msgstr ""
+
+msgid "Applies to"
+msgstr ""
+
+msgid "Checkbox"
+msgstr ""
+
+msgid "Confirm the deletion first."
+msgstr ""
+
+msgid "Create additional fields for people or companies. Values are stored in ContactPanda or Groundhogg metadata and remain available if a field definition is later removed."
+msgstr ""
+
+msgid "Custom fields"
+msgstr ""
+
+msgid "Delete custom field?"
+msgstr ""
+
+msgid "Delete field definition"
+msgstr ""
+
+msgid "Enter a valid URL for “%s”."
+msgstr ""
+
+msgid "Enter a valid date for “%s”."
+msgstr ""
+
+msgid "Enter a valid field name, internal key, and field type."
+msgstr ""
+
+msgid "Enter a valid number for “%s”."
+msgstr ""
+
+msgid "Field name"
+msgstr ""
+
+msgid "Field type"
+msgstr ""
+
+msgid "I understand that this field definition will be removed."
+msgstr ""
+
+msgid "Internal key"
+msgstr ""
+
+msgid "Lowercase letters, numbers and underscores. The key cannot be changed later."
+msgstr ""
+
+msgid "Multi-line text"
+msgstr ""
+
+msgid "No custom fields have been created yet."
+msgstr ""
+
+msgid "Number"
+msgstr ""
+
+msgid "One option per line"
+msgstr ""
+
+msgid "Required"
+msgstr ""
+
+msgid "Required field"
+msgstr ""
+
+msgid "Save custom fields"
+msgstr ""
+
+msgid "Select a valid option for “%s”."
+msgstr ""
+
+msgid "Selection"
+msgstr ""
+
+msgid "Selection options"
+msgstr ""
+
+msgid "Sort order"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "The custom field was created."
+msgstr ""
+
+msgid "The custom field was updated."
+msgstr ""
+
+msgid "The custom fields could not be saved."
+msgstr ""
+
+msgid "The custom fields were saved."
+msgstr ""
+
+msgid "The field definition was removed. Existing values were retained."
+msgstr ""
+
+msgid "The field “%s” is required."
+msgstr ""
+
+msgid "The field “%s” will no longer be displayed. Existing values are retained and can be restored by creating the same internal key again."
+msgstr ""
+
+msgid "This internal key is already used for that data type."
+msgstr ""
+
+msgid "URL"
+msgstr ""
+
+msgid "— Please select —"
 msgstr ""

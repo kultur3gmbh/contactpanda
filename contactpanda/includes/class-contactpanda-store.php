@@ -34,8 +34,8 @@ final class ContactPanda_Store {
 		$params = array();
 		if ( '' !== trim( $search ) ) {
 			$like = '%' . $wpdb->esc_like( trim( $search ) ) . '%';
-			$where .= ' AND (first_name LIKE %s OR last_name LIKE %s OR email LIKE %s)';
-			$params = array( $like, $like, $like );
+			$where .= " AND (first_name LIKE %s OR last_name LIKE %s OR email LIKE %s OR EXISTS (SELECT 1 FROM `{$tables['contactmeta']}` custom_meta WHERE custom_meta.contact_id = `{$tables['contacts']}`.id AND custom_meta.meta_key LIKE %s AND custom_meta.meta_value LIKE %s))";
+			$params = array( $like, $like, $like, ContactPanda_Custom_Fields::PREFIX . '%', $like );
 		}
 		$count_sql = "SELECT COUNT(*) FROM `{$tables['contacts']}` WHERE {$where}";
 		$total = $params ? (int) $wpdb->get_var( $wpdb->prepare( $count_sql, $params ) ) : (int) $wpdb->get_var( $count_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table and fixed clauses.
@@ -500,6 +500,7 @@ final class ContactPanda_Store {
 				if ( false === $wpdb->update( $table, $update, array( 'id' => $primary_id ) ) ) throw new Exception( 'update' );
 
 				$merge_meta = array( 'anrede', 'titel_vorangestellt', 'titel_nachgestellt', 'berufsbezeichnung', 'primary_phone', 'address_1', 'address_2', 'postcode', 'city', 'state', 'country' );
+				foreach ( ContactPanda_Custom_Fields::definitions( 'contacts' ) as $definition ) $merge_meta[] = ContactPanda_Custom_Fields::meta_key( $definition['key'] );
 				foreach ( $merge_meta as $meta_key ) {
 					$choice_key = 'meta__' . $meta_key;
 					$source = absint( $choices[ $choice_key ] ?? 0 );
@@ -598,6 +599,13 @@ final class ContactPanda_Store {
 				}
 				$update['updated_at'] = $now;
 				if ( false === $wpdb->update( $table, $update, array( 'id' => $primary_id ) ) ) throw new Exception( 'update' );
+				foreach ( ContactPanda_Custom_Fields::definitions( 'companies' ) as $definition ) {
+					$meta_key = ContactPanda_Custom_Fields::meta_key( $definition['key'] );
+					$choice_key = 'meta__' . $meta_key;
+					$source = absint( $choices[ $choice_key ] ?? 0 );
+					if ( $source && isset( $by_id[ $source ] ) ) { $source_meta = self::company_meta( $source ); if ( '' !== trim( (string) ( $source_meta[ $meta_key ] ?? '' ) ) ) self::set_company_meta( $primary_id, $meta_key, $source_meta[ $meta_key ] ); }
+					if ( array_key_exists( $choice_key, $resolved ) ) self::set_company_meta( $primary_id, $meta_key, sanitize_text_field( $resolved[ $choice_key ] ) );
+				}
 				foreach ( $donors as $donor ) {
 					foreach ( self::company_meta( $donor ) as $key => $value ) if ( '' === (string) ( self::company_meta( $primary_id )[ $key ] ?? '' ) ) self::set_company_meta( $primary_id, $key, $value );
 					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['company_contacts']}` (company_id,contact_id,relationship_type,position,is_primary,created_at,updated_at) SELECT %d,contact_id,relationship_type,position,is_primary,created_at,%s FROM `{$tables['company_contacts']}` WHERE company_id=%d", $primary_id, $now, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -1035,6 +1043,7 @@ final class ContactPanda_Store {
 		global $wpdb;
 		$tables = ContactPanda_Schema::table_names();
 		$meta = self::company_meta( $row['id'] );
+		$row['meta'] = $meta;
 		$row['domain'] = $row['website'];
 		$row['phone'] = $row['phone_number'];
 		$row['address'] = isset( $meta['address'] ) ? $meta['address'] : trim( $row['street'] . "\n" . $row['postcode'] . ' ' . $row['city'] );

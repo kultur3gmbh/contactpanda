@@ -207,12 +207,17 @@ final class ContactPanda_Data_Tools {
 	}
 
 	private static function csv_fields( $entity ) {
-		if ( 'companies' === $entity ) return array( 'name' => __( 'Company name', 'contactpanda' ), 'legal_name' => __( 'Legal name', 'contactpanda' ), 'email' => __( 'Email', 'contactpanda' ), 'phone' => __( 'Phone', 'contactpanda' ), 'website' => __( 'Website', 'contactpanda' ), 'industry' => __( 'Industry', 'contactpanda' ), 'vat_id' => __( 'VAT ID', 'contactpanda' ), 'address_1' => __( 'Street address', 'contactpanda' ), 'address_2' => __( 'Address line 2', 'contactpanda' ), 'postcode' => __( 'Postal code', 'contactpanda' ), 'city' => __( 'City', 'contactpanda' ), 'country' => __( 'Country', 'contactpanda' ) );
-		return array( 'email' => __( 'Email', 'contactpanda' ), 'first_name' => __( 'First name', 'contactpanda' ), 'last_name' => __( 'Last name', 'contactpanda' ), 'salutation' => __( 'Salutation', 'contactpanda' ), 'title_prefix' => __( 'Title before name', 'contactpanda' ), 'title_suffix' => __( 'Title after name', 'contactpanda' ), 'phone' => __( 'Phone', 'contactpanda' ), 'position' => __( 'Position', 'contactpanda' ), 'company' => __( 'Company', 'contactpanda' ), 'address_1' => __( 'Street address', 'contactpanda' ), 'address_2' => __( 'Address line 2', 'contactpanda' ), 'postcode' => __( 'Postal code', 'contactpanda' ), 'city' => __( 'City', 'contactpanda' ), 'state' => __( 'State', 'contactpanda' ), 'country' => __( 'Country', 'contactpanda' ), 'tags' => __( 'Tags (comma separated)', 'contactpanda' ), 'marketing' => __( 'Marketing consent', 'contactpanda' ) );
+		if ( 'companies' === $entity ) $fields = array( 'name' => __( 'Company name', 'contactpanda' ), 'legal_name' => __( 'Legal name', 'contactpanda' ), 'email' => __( 'Email', 'contactpanda' ), 'phone' => __( 'Phone', 'contactpanda' ), 'website' => __( 'Website', 'contactpanda' ), 'industry' => __( 'Industry', 'contactpanda' ), 'vat_id' => __( 'VAT ID', 'contactpanda' ), 'address_1' => __( 'Street address', 'contactpanda' ), 'address_2' => __( 'Address line 2', 'contactpanda' ), 'postcode' => __( 'Postal code', 'contactpanda' ), 'city' => __( 'City', 'contactpanda' ), 'country' => __( 'Country', 'contactpanda' ) );
+		else $fields = array( 'email' => __( 'Email', 'contactpanda' ), 'first_name' => __( 'First name', 'contactpanda' ), 'last_name' => __( 'Last name', 'contactpanda' ), 'salutation' => __( 'Salutation', 'contactpanda' ), 'title_prefix' => __( 'Title before name', 'contactpanda' ), 'title_suffix' => __( 'Title after name', 'contactpanda' ), 'phone' => __( 'Phone', 'contactpanda' ), 'position' => __( 'Position', 'contactpanda' ), 'company' => __( 'Company', 'contactpanda' ), 'address_1' => __( 'Street address', 'contactpanda' ), 'address_2' => __( 'Address line 2', 'contactpanda' ), 'postcode' => __( 'Postal code', 'contactpanda' ), 'city' => __( 'City', 'contactpanda' ), 'state' => __( 'State', 'contactpanda' ), 'country' => __( 'Country', 'contactpanda' ), 'tags' => __( 'Tags (comma separated)', 'contactpanda' ), 'marketing' => __( 'Marketing consent', 'contactpanda' ) );
+		return array_merge( $fields, ContactPanda_Custom_Fields::csv_fields( $entity ) );
 	}
 
 	private static function guess_header( $field, $headers ) {
 		$aliases = array( 'email' => array( 'email', 'e-mail', 'mail' ), 'first_name' => array( 'first name', 'firstname', 'vorname' ), 'last_name' => array( 'last name', 'lastname', 'nachname' ), 'name' => array( 'company', 'company name', 'firma', 'firmenname', 'name' ), 'company' => array( 'company', 'firma' ), 'phone' => array( 'phone', 'telephone', 'telefon' ), 'postcode' => array( 'postcode', 'postal code', 'zip', 'plz' ), 'city' => array( 'city', 'ort', 'stadt' ), 'country' => array( 'country', 'land' ), 'address_1' => array( 'street', 'address', 'adresse', 'strasse', 'straße' ), 'vat_id' => array( 'vat', 'vat id', 'uid', 'uid nummer' ), 'tags' => array( 'tags', 'tag' ), 'marketing' => array( 'marketing', 'newsletter', 'consent', 'zustimmung' ) );
+		if ( 0 === strpos( $field, 'custom__' ) ) {
+			$key = substr( $field, 8 );
+			foreach ( ContactPanda_Custom_Fields::definitions() as $definition ) if ( $key === $definition['key'] ) $aliases[ $field ] = array( strtolower( remove_accents( $definition['label'] ) ), str_replace( '_', ' ', $key ), $key );
+		}
 		$needles = $aliases[ $field ] ?? array( str_replace( '_', ' ', $field ) );
 		foreach ( $headers as $index => $header ) { $normalized = strtolower( trim( remove_accents( $header ) ) ); if ( in_array( $normalized, $needles, true ) ) return $index; }
 		return '';
@@ -252,12 +257,20 @@ final class ContactPanda_Data_Tools {
 		if ( 'companies' === $entity ) {
 			if ( ! ContactPanda_Store::standalone() ) return ContactPanda_Plugin::extension_import_company( $record, $mode, $source_id );
 			$name = sanitize_text_field( $record['name'] ?? '' ); if ( '' === $name ) return new WP_Error( 'contactpanda_csv_name', __( 'Company name is missing.', 'contactpanda' ) );
-			return ContactPanda_Store::import_company_row( $record, $mode, $source_id );
+			$existing_id = ContactPanda_Store::company_by_name( $name );
+			$existing = $existing_id ? ContactPanda_Store::company( $existing_id ) : false;
+			$result = ContactPanda_Store::import_company_row( $record, $mode, $source_id );
+			if ( ! is_wp_error( $result ) && 'skipped' !== $result ) {
+				$id = ContactPanda_Store::company_by_name( $name );
+				$meta = ContactPanda_Custom_Fields::custom_meta_from_record( $record, 'companies', $existing, $mode );
+				if ( $id && $meta ) ContactPanda_Plugin::extension_update_custom_meta( 'companies', $id, $meta );
+			}
+			return $result;
 		}
 		$email = strtolower( sanitize_email( $record['email'] ?? '' ) ); if ( ! is_email( $email ) ) return new WP_Error( 'contactpanda_csv_email', __( 'A valid email address is required.', 'contactpanda' ) );
 		if ( ! ContactPanda_Store::standalone() ) return ContactPanda_Plugin::extension_import_contact( $record, $mode, $source_id );
 		$current = ContactPanda_Store::contact_by_email( $email ); if ( $current && 'skip' === $mode ) return 'skipped';
-		$payload = array( 'email' => $email, 'source' => 'csv', 'meta' => array( 'csv_source_id' => $source_id ) );
+		$payload = array( 'email' => $email, 'source' => 'csv', 'meta' => array_merge( array( 'csv_source_id' => $source_id ), ContactPanda_Custom_Fields::custom_meta_from_record( $record, 'contacts', $current, $mode ) ) );
 		$map = array( 'first_name', 'last_name', 'position' ); foreach ( $map as $field ) if ( ! $current || ( ! empty( $record[ $field ] ) && ( 'update' === $mode || empty( $current[ $field ] ) ) ) ) $payload[ $field ] = $record[ $field ] ?? '';
 		foreach ( array( 'salutation' => 'anrede', 'title_prefix' => 'titel_vorangestellt', 'title_suffix' => 'titel_nachgestellt', 'phone' => 'primary_phone' ) as $input => $field ) if ( ! empty( $record[ $input ] ) && ( 'update' === $mode || empty( $current['meta'][ $field ] ) ) ) $payload[ $field ] = $record[ $input ];
 		$id = $current ? absint( $current['id'] ) : ContactPanda_Store::create_contact( $payload ); if ( is_wp_error( $id ) || ! $id ) return new WP_Error( 'contactpanda_csv_contact', __( 'Person could not be saved.', 'contactpanda' ) );
@@ -477,6 +490,7 @@ final class ContactPanda_Data_Tools {
 	private static function render_merge_preview( $token, $state ) {
 		$records = array(); foreach ( $state['ids'] as $id ) { $record = 'contacts' === $state['entity'] ? ContactPanda_Store::contact( $id ) : ContactPanda_Store::company( $id ); if ( $record ) $records[ $id ] = $record; }
 		$fields = 'contacts' === $state['entity'] ? array( 'first_name' => __( 'First name', 'contactpanda' ), 'last_name' => __( 'Last name', 'contactpanda' ), 'email' => __( 'Primary email address', 'contactpanda' ), 'position' => __( 'Position', 'contactpanda' ), 'wp_user_id' => __( 'WordPress user', 'contactpanda' ), 'meta__anrede' => __( 'Salutation', 'contactpanda' ), 'meta__titel_vorangestellt' => __( 'Title before name', 'contactpanda' ), 'meta__titel_nachgestellt' => __( 'Title after name', 'contactpanda' ), 'meta__berufsbezeichnung' => __( 'Job title', 'contactpanda' ), 'meta__primary_phone' => __( 'Primary phone number', 'contactpanda' ), 'meta__address_1' => __( 'Street address', 'contactpanda' ), 'meta__address_2' => __( 'Address line 2', 'contactpanda' ), 'meta__postcode' => __( 'Postal code', 'contactpanda' ), 'meta__city' => __( 'City', 'contactpanda' ), 'meta__state' => __( 'State', 'contactpanda' ), 'meta__country' => __( 'Country', 'contactpanda' ) ) : array( 'name' => __( 'Company name', 'contactpanda' ), 'legal_name' => __( 'Legal name', 'contactpanda' ), 'industry' => __( 'Industry', 'contactpanda' ), 'website' => __( 'Website', 'contactpanda' ), 'email' => __( 'Email', 'contactpanda' ), 'phone_number' => __( 'Phone', 'contactpanda' ), 'vat_id' => __( 'VAT ID', 'contactpanda' ), 'street' => __( 'Street address', 'contactpanda' ), 'address_2' => __( 'Address line 2', 'contactpanda' ), 'postcode' => __( 'Postal code', 'contactpanda' ), 'city' => __( 'City', 'contactpanda' ), 'country' => __( 'Country', 'contactpanda' ) );
+		foreach ( ContactPanda_Custom_Fields::definitions( $state['entity'] ) as $definition ) $fields[ 'meta__' . ContactPanda_Custom_Fields::meta_key( $definition['key'] ) ] = $definition['label'];
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_merge_commit"><input type="hidden" name="merge_token" value="' . esc_attr( $token ) . '">'; wp_nonce_field( 'contactpanda_merge_commit' );
 		echo '<h3>' . esc_html__( 'Choose the primary record', 'contactpanda' ) . '</h3><div class="contactpanda-merge-primary">';
 		foreach ( $records as $id => $record ) { $name = 'contacts' === $state['entity'] ? trim( $record['first_name'] . ' ' . $record['last_name'] ) : $record['name']; echo '<label><input type="radio" name="primary_id" value="' . esc_attr( $id ) . '"' . checked( $id, array_key_first( $records ), false ) . '> ' . esc_html( ( $name ?: __( 'Unnamed record', 'contactpanda' ) ) . ' #' . $id ) . '</label>'; }

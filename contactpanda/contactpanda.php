@@ -25,6 +25,7 @@ require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-schema.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-store.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-trash.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-data-tools.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-custom-fields.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-github-updater.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-registration.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-my-account.php';
@@ -50,6 +51,7 @@ add_action(
 add_action( 'plugins_loaded', array( 'ContactPanda_Plugin', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Trash', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Data_Tools', 'boot' ), 30 );
+add_action( 'plugins_loaded', array( 'ContactPanda_Custom_Fields', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Registration', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_My_Account', 'boot' ), 31 );
 

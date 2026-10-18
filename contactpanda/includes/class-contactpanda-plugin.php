@@ -921,13 +921,13 @@ final class ContactPanda_Plugin {
 	}
 
 	private static function contact_output_fields() {
-		return array(
+		return (array) apply_filters( 'contactpanda_contact_output_fields', array(
 			'first_name' => __( 'First name', 'contactpanda' ), 'last_name' => __( 'Last name', 'contactpanda' ), 'title_prefix' => __( 'Prefix title', 'contactpanda' ), 'title_suffix' => __( 'Suffix title', 'contactpanda' ),
 			'email' => __( 'Email', 'contactpanda' ), 'phone' => __( 'Phone', 'contactpanda' ), 'company' => __( 'Company', 'contactpanda' ), 'position' => __( 'Position / Job title', 'contactpanda' ), 'uid' => __( 'VAT ID', 'contactpanda' ),
 			'address_1' => __( 'Street and house number', 'contactpanda' ), 'address_2' => __( 'Address line 2', 'contactpanda' ), 'postcode' => __( 'Postcode', 'contactpanda' ), 'city' => __( 'Location', 'contactpanda' ), 'state' => __( 'State / region', 'contactpanda' ), 'country' => __( 'Country', 'contactpanda' ),
 			'tags' => __( 'Tags', 'contactpanda' ), 'roles' => __( 'WordPress roles', 'contactpanda' ), 'optin_status' => __( 'Opt-in status', 'contactpanda' ), 'email_confirmed' => __( 'Email confirmed', 'contactpanda' ), 'marketable' => __( 'Marketable', 'contactpanda' ),
 			'orders' => __( 'Orders', 'contactpanda' ), 'order_total' => __( 'Order total', 'contactpanda' ), 'events' => __( 'Events', 'contactpanda' ), 'created_at' => __( 'Date created', 'contactpanda' ),
-		);
+		) );
 	}
 
 	private static function csv_safe_value( $value ) {
@@ -964,7 +964,7 @@ final class ContactPanda_Plugin {
 			$status = self::optin_status( $contact );
 			$confirmed = ContactPanda_Store::standalone() ? (bool) self::meta( $contact, array( 'email_confirmed' ) ) : in_array( $status, array( 2, 4, 5, 'confirmed', 'weekly', 'monthly' ), true );
 			$summary = isset( $order_summaries[ $id ] ) ? $order_summaries[ $id ] : self::empty_order_summary();
-			$rows[] = array(
+			$row = array(
 				'first_name' => self::value( $contact, array( 'first_name', 'get_first_name' ) ), 'last_name' => self::value( $contact, array( 'last_name', 'get_last_name' ) ),
 				'title_prefix' => self::meta( $contact, array( 'titel_vorangestellt', 'title_prefix' ) ), 'title_suffix' => self::meta( $contact, array( 'titel_nachgestellt', 'title_suffix' ) ),
 				'email' => self::value( $contact, array( 'email', 'get_email' ) ), 'phone' => self::format_phone( self::meta( $contact, array( 'primary_phone', 'phone', 'phone_number' ) ) ), 'company' => $company, 'position' => self::meta( $contact, array( 'berufsbezeichnung', 'job_title', 'position' ) ), 'uid' => $uid,
@@ -972,6 +972,7 @@ final class ContactPanda_Plugin {
 				'tags' => implode( ', ', $tag_names ), 'roles' => implode( ', ', $roles ), 'optin_status' => self::status_label( $status ), 'email_confirmed' => $confirmed ? __( 'Yes', 'contactpanda' ) : __( 'No', 'contactpanda' ), 'marketable' => self::is_marketable_status( $status ) ? __( 'Yes', 'contactpanda' ) : __( 'No', 'contactpanda' ),
 				'orders' => (string) $summary['count'], 'order_total' => function_exists( 'wc_format_decimal' ) ? wc_format_decimal( $summary['total'], 2 ) : number_format( (float) $summary['total'], 2, '.', '' ), 'events' => (string) ( $event_summaries[ $id ]['visited'] ?? 0 ), 'created_at' => self::value( $contact, array( 'created_at', 'date_created', 'get_date_created' ) ),
 			);
+			$rows[] = (array) apply_filters( 'contactpanda_contact_output_row', $row, $contact );
 		}
 		return $rows;
 	}
@@ -1991,6 +1992,7 @@ final class ContactPanda_Plugin {
 			self::render_user_account_controls( $id, $contact, $user, $readonly );
 		}
 		echo '</section>';
+		do_action( 'contactpanda_render_person_custom_fields', $id, $contact, $readonly, 'sidebar' );
 
 		self::render_contact_tags( $contact, ! $readonly );
 		self::render_marketing( $contact, ! $readonly );
@@ -2094,6 +2096,7 @@ final class ContactPanda_Plugin {
 	private static function render_index() {
 		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only search.
 		echo '<div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CRM</p><h1>' . esc_html__( 'Companies', 'contactpanda' ) . '</h1><p>' . esc_html__( 'A unified view of companies, contacts, orders, and invoices.', 'contactpanda' ) . '</p></div><div class="contactpanda-heading-actions">';
+		do_action( 'contactpanda_company_heading_actions' );
 		if ( current_user_can( 'manage_options' ) ) echo '<a class="button contactpanda-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-firmen&section=import' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a>';
 		echo '<button type="button" class="button button-primary contactpanda-heading-action contactpanda-open-new-company">' . esc_html__( 'Add company', 'contactpanda' ) . '</button></div></div>';
 
@@ -2110,8 +2113,8 @@ final class ContactPanda_Plugin {
 		}
 		if ( '' !== $search ) {
 			$companies = array_values( array_filter( $companies, static function ( $company ) use ( $search ) {
-				$name = self::value( $company, array( 'get_name', 'name', 'company_name' ) );
-				return false !== stripos( $name, $search );
+				$haystack = self::value( $company, array( 'get_name', 'name', 'company_name' ) ) . ' ' . ContactPanda_Custom_Fields::searchable_text( $company, 'companies' );
+				return false !== stripos( $haystack, $search );
 			} ) );
 		}
 		echo __( '<section class="contactpanda-card"><div class="contactpanda-toolbar"><h2>Companies overview</h2><span class="contactpanda-count">', 'contactpanda' ) . esc_html( count( $companies ) ) . __( ' entries</span></div>', 'contactpanda' );
@@ -2485,6 +2488,7 @@ final class ContactPanda_Plugin {
 					self::value( $contact, array( 'first_name', 'get_first_name' ) ),
 					self::value( $contact, array( 'last_name', 'get_last_name' ) ),
 					self::value( $contact, array( 'email', 'get_email' ) ),
+					ContactPanda_Custom_Fields::searchable_text( $contact, 'contacts' ),
 				) );
 				$haystack = function_exists( 'mb_strtolower' ) ? mb_strtolower( $haystack ) : strtolower( $haystack );
 				if ( false === strpos( $haystack, $needle ) ) {
@@ -2510,6 +2514,11 @@ final class ContactPanda_Plugin {
 		return self::companies_available();
 	}
 
+	/** Public, read-only company list for separately loadable Basic modules. */
+	public static function extension_companies() {
+		return self::companies_available() ? self::companies() : array();
+	}
+
 	/** Import one CSV company into Groundhogg Companies when that extension exists. */
 	public static function extension_import_company( $record, $mode = 'fill', $source_id = '' ) {
 		if ( ContactPanda_Store::standalone() || ! self::companies_available() ) return new WP_Error( 'contactpanda_csv_groundhogg_companies', __( 'Groundhogg Companies is required for this company import.', 'contactpanda' ) );
@@ -2518,7 +2527,7 @@ final class ContactPanda_Plugin {
 		$existing = false;
 		foreach ( self::companies() as $company ) if ( 0 === strcasecmp( self::value( $company, array( 'name', 'company_name', 'get_name' ) ), $name ) ) { $existing = $company; break; }
 		if ( $existing && 'skip' === $mode ) return 'skipped';
-		$input = array( 'name' => $name, 'meta' => array( 'contactpanda_csv_source_id' => sanitize_text_field( $source_id ) ) );
+		$input = array( 'name' => $name, 'meta' => array_merge( array( 'contactpanda_csv_source_id' => sanitize_text_field( $source_id ) ), ContactPanda_Custom_Fields::custom_meta_from_record( $record, 'companies', $existing, $mode ) ) );
 		$map = array( 'legal_name', 'email', 'phone', 'website', 'industry', 'vat_id', 'address_1', 'address_2', 'postcode', 'city', 'country' );
 		foreach ( $map as $field ) if ( ! empty( $record[ $field ] ) ) $input['meta'][ $field ] = sanitize_text_field( $record[ $field ] );
 		if ( $existing ) {
@@ -2581,7 +2590,7 @@ final class ContactPanda_Plugin {
 		if ( ContactPanda_Store::standalone() || ! is_email( $email ) ) return new WP_Error( 'contactpanda_csv_groundhogg', __( 'A valid Groundhogg email address is required.', 'contactpanda' ) );
 		$existing = self::extension_contact_by_email( $email );
 		if ( $existing && 'skip' === $mode ) return 'skipped';
-		$payload = array( 'email' => $email, 'meta' => array( 'contactpanda_csv_source_id' => sanitize_text_field( $source_id ) ), 'expand' => array( 'tags', 'meta' ) );
+		$payload = array( 'email' => $email, 'meta' => array_merge( array( 'contactpanda_csv_source_id' => sanitize_text_field( $source_id ) ), ContactPanda_Custom_Fields::custom_meta_from_record( $record, 'contacts', $existing, $mode ) ), 'expand' => array( 'tags', 'meta' ) );
 		foreach ( array( 'first_name', 'last_name' ) as $field ) {
 			$value = sanitize_text_field( $record[ $field ] ?? '' );
 			$current = $existing ? self::value( $existing, array( $field, 'get_' . $field ) ) : '';
@@ -3115,7 +3124,9 @@ final class ContactPanda_Plugin {
 			self::uid_field( __( 'VAT ID', 'contactpanda' ), $uid, $id, 'company', $uid_verified );
 		}
 		echo __( '<p class="description contactpanda-uid-help">Linked to German Market (billing_vat) and B2B Market (b2b_uid) for the primary contact. EU validation only runs when requested.</p>', 'contactpanda' );
-		echo __( '</section><section class="contactpanda-card"><h2>Billing address</h2>', 'contactpanda' );
+		echo '</section>';
+		do_action( 'contactpanda_render_company_custom_fields', $id, $company, $readonly, 'sidebar' );
+		echo __( '<section class="contactpanda-card"><h2>Billing address</h2>', 'contactpanda' );
 		foreach ( array( __( 'Company', 'contactpanda' ) => 'company', __( 'First name', 'contactpanda' ) => 'first_name', __( 'Last name', 'contactpanda' ) => 'last_name', __( 'Street', 'contactpanda' ) => 'address_1', __( 'Address line 2', 'contactpanda' ) => 'address_2', __( 'Postcode', 'contactpanda' ) => 'postcode', __( 'Location', 'contactpanda' ) => 'city', __( 'Country', 'contactpanda' ) => 'country' ) as $label => $key ) {
 			self::field( $label, isset( $billing[ $key ] ) ? $billing[ $key ] : '' );
 		}
@@ -4295,6 +4306,27 @@ final class ContactPanda_Plugin {
 			}
 		}
 		echo '</div></section>';
+	}
+
+	/** Save extension-owned metadata through the currently selected data source. */
+	public static function extension_update_custom_meta( $entity, $id, $meta ) {
+		$entity = in_array( $entity, array( 'company', 'companies' ), true ) ? 'companies' : 'contacts';
+		$id = absint( $id );
+		if ( ! $id || ! is_array( $meta ) ) return false;
+		$clean = array();
+		foreach ( $meta as $key => $value ) {
+			$key = sanitize_key( $key );
+			if ( 0 !== strpos( $key, ContactPanda_Custom_Fields::PREFIX ) ) continue;
+			$clean[ $key ] = is_scalar( $value ) ? $value : '';
+		}
+		if ( ContactPanda_Store::standalone() ) {
+			if ( 'contacts' === $entity ) return ContactPanda_Store::update_contact( $id, array( 'meta' => $clean ) );
+			$result = true;
+			foreach ( $clean as $key => $value ) $result = ContactPanda_Store::update_company( $id, $key, $value ) && $result;
+			return $result;
+		}
+		$ability = 'contacts' === $entity ? 'groundhogg/update-contact' : 'groundhogg-companies/update-company';
+		return false !== self::execute_ability( $ability, array( 'id' => $id, 'meta' => $clean ) );
 	}
 
 	private static function execute_ability( $name, $input ) {

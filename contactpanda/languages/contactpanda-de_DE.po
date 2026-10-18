@@ -3121,6 +3121,9 @@ msgstr "Du hast keine Berechtigung für diese Ansicht."
 msgid "You do not have permission."
 msgstr "Keine Berechtigung."
 
+msgid "You do not have permission to export companies."
+msgstr "Sie haben keine Berechtigung, Firmen zu exportieren."
+
 #: contactpanda/includes/class-contactpanda-my-account.php:360 contactpanda/includes/class-contactpanda-my-account.php:369
 msgid "Your addresses have been saved."
 msgstr "Ihre Adressen wurden gespeichert."
@@ -4206,3 +4209,123 @@ msgstr "Als primäre Telefonnummer verwenden"
 
 msgid "%1$d created, %2$d updated, %3$d skipped, %4$d errors"
 msgstr "%1$d erstellt, %2$d aktualisiert, %3$d übersprungen, %4$d Fehler"
+
+msgid "Add custom field"
+msgstr "Benutzerdefiniertes Feld hinzufügen"
+
+msgid "Add at least one option for a selection field."
+msgstr "Fügen Sie für ein Auswahlfeld mindestens eine Auswahlmöglichkeit hinzu."
+
+msgid "Applies to"
+msgstr "Gilt für"
+
+msgid "Checkbox"
+msgstr "Ankreuzfeld"
+
+msgid "Confirm the deletion first."
+msgstr "Bestätigen Sie zuerst das Löschen."
+
+msgid "Create additional fields for people or companies. Values are stored in ContactPanda or Groundhogg metadata and remain available if a field definition is later removed."
+msgstr "Erstellen Sie zusätzliche Felder für Personen oder Firmen. Die Werte werden in den Metadaten von ContactPanda oder Groundhogg gespeichert und bleiben erhalten, wenn eine Felddefinition später entfernt wird."
+
+msgid "Custom fields"
+msgstr "Benutzerdefinierte Felder"
+
+msgid "Delete custom field?"
+msgstr "Benutzerdefiniertes Feld löschen?"
+
+msgid "Delete field definition"
+msgstr "Felddefinition löschen"
+
+msgid "Enter a valid URL for “%s”."
+msgstr "Geben Sie eine gültige URL für „%s“ ein."
+
+msgid "Enter a valid date for “%s”."
+msgstr "Geben Sie ein gültiges Datum für „%s“ ein."
+
+msgid "Enter a valid field name, internal key, and field type."
+msgstr "Geben Sie einen gültigen Feldnamen, internen Schlüssel und Feldtyp ein."
+
+msgid "Enter a valid number for “%s”."
+msgstr "Geben Sie eine gültige Zahl für „%s“ ein."
+
+msgid "Field name"
+msgstr "Feldname"
+
+msgid "Field type"
+msgstr "Feldtyp"
+
+msgid "I understand that this field definition will be removed."
+msgstr "Ich habe verstanden, dass diese Felddefinition entfernt wird."
+
+msgid "Internal key"
+msgstr "Interner Schlüssel"
+
+msgid "Lowercase letters, numbers and underscores. The key cannot be changed later."
+msgstr "Kleinbuchstaben, Zahlen und Unterstriche. Der Schlüssel kann später nicht geändert werden."
+
+msgid "Multi-line text"
+msgstr "Mehrzeiliger Text"
+
+msgid "No custom fields have been created yet."
+msgstr "Es wurden noch keine benutzerdefinierten Felder erstellt."
+
+msgid "Number"
+msgstr "Zahl"
+
+msgid "One option per line"
+msgstr "Eine Auswahlmöglichkeit pro Zeile"
+
+msgid "Required"
+msgstr "Pflichtfeld"
+
+msgid "Required field"
+msgstr "Als Pflichtfeld verwenden"
+
+msgid "Save custom fields"
+msgstr "Benutzerdefinierte Felder speichern"
+
+msgid "Select a valid option for “%s”."
+msgstr "Wählen Sie eine gültige Option für „%s“."
+
+msgid "Selection"
+msgstr "Auswahl"
+
+msgid "Selection options"
+msgstr "Auswahlmöglichkeiten"
+
+msgid "Sort order"
+msgstr "Sortierreihenfolge"
+
+msgid "Text"
+msgstr "Text"
+
+msgid "The custom field was created."
+msgstr "Das benutzerdefinierte Feld wurde erstellt."
+
+msgid "The custom field was updated."
+msgstr "Das benutzerdefinierte Feld wurde aktualisiert."
+
+msgid "The custom fields could not be saved."
+msgstr "Die benutzerdefinierten Felder konnten nicht gespeichert werden."
+
+msgid "The custom fields were saved."
+msgstr "Die benutzerdefinierten Felder wurden gespeichert."
+
+msgid "The field definition was removed. Existing values were retained."
+msgstr "Die Felddefinition wurde entfernt. Vorhandene Werte wurden beibehalten."
+
+msgid "The field “%s” is required."
+msgstr "Das Feld „%s“ ist ein Pflichtfeld."
+
+msgid "The field “%s” will no longer be displayed. Existing values are retained and can be restored by creating the same internal key again."
+msgstr "Das Feld „%s“ wird nicht mehr angezeigt. Vorhandene Werte bleiben erhalten und können durch erneutes Anlegen desselben internen Schlüssels wiederhergestellt werden."
+
+msgid "This internal key is already used for that data type."
+msgstr "Dieser interne Schlüssel wird für diesen Datentyp bereits verwendet."
+
+msgid "URL"
+msgstr "URL"
+
+msgid "— Please select —"
+msgstr "— Bitte auswählen —"
