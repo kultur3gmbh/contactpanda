@@ -1,0 +1,4208 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ContactPanda 0.3.0\n"
+"Report-Msgid-Bugs-To: https://kultur3.com/\n"
+"POT-Creation-Date: 2026-10-18 18:00+0200\n"
+"PO-Revision-Date: 2026-10-16 09:00+0200\n"
+"Last-Translator: Kultur3 GmbH\n"
+"Language-Team: German\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: contactpanda\n"
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1309
+msgid " and copied to the WooCommerce billing address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2558
+msgid " attended</span></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1499 contactpanda/includes/class-contactpanda-plugin.php:1757
+msgid " entries</span></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:456 contactpanda/includes/class-contactpanda-plugin.php:481 contactpanda/includes/class-contactpanda-plugin.php:566
+msgid " Note: "
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2845
+msgid " save</button>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1552
+msgid " select"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1330
+msgid " was saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1553
+msgid "\" aria-label=\"Edit person\" title=\"Edit person\"><span class=\"dashicons dashicons-edit\" aria-hidden=\"true\"></span></a><a class=\"contactpanda-person-row-action\" href=\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2748
+msgid "\" aria-label=\"Remove tag from this person\">&times;</button></span>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2567
+msgid "\" aria-label=\"View event details\" title=\"View event details\"><span class=\"dashicons dashicons-visibility\"></span></button></td>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2877
+msgid "\" aria-label=\"View invoice PDF\" title=\"View invoice PDF\"><span class=\"dashicons dashicons-media-document\"></span></a>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2875
+msgid "\" aria-label=\"View order information\" title=\"View order information\"><span class=\"dashicons dashicons-visibility\"></span></button>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1553
+msgid "\" aria-label=\"View person\" title=\"View person\"><span class=\"dashicons dashicons-visibility\" aria-hidden=\"true\"></span></a></div></td>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2877
+msgid "\" data-title=\"Invoice for order #"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3703
+msgid "\" placeholder=\"Phone number\"></span>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1511
+msgid "\" placeholder=\"Search by name or email\"><button class=\"button\">Search</button>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1758
+msgid "\" placeholder=\"Search company name\"><button class=\"button\">Search</button>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2537
+msgid "\" tabindex=\"-1\">Activities</button></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2534
+msgid "\" tabindex=\"-1\">Events <span class=\"contactpanda-count\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2693
+msgid "\"><div class=\"contactpanda-toolbar\"><h2>Marketing &amp; consent</h2>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2997
+msgid "\"><h2>Edit customer roles</h2><p>Multiple WordPress roles are supported. Start typing and select a suggested role. Changes immediately affect this user account's permissions.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2711
+msgid "\">Edit marketing consent</h2>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2471
+msgid "\">Edit</a>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2444 contactpanda/includes/class-contactpanda-plugin.php:2612
+msgid "\">Next →</a>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2572
+msgid "\">Open order</a>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1760
+msgid "\">Show all</a>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2609
+msgid "\">← Back</a>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2440
+msgid "\">← Back</a> "
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2468
+msgid "\">← Companies overview</a>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:573
+#, php-format
+msgid "%1$d changed, %2$d already marketable, %3$d skipped due to unsubscribe or blocked status, %4$d failed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:690
+#, php-format
+msgid "%1$d contacts, %2$d companies, %3$d tags, %4$d tag assignments, %5$d skipped, %6$d errors. Completed: %7$s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:528
+#, php-format
+msgid "%1$d new, %2$d updated, %3$d mailings, %4$d skipped, %5$d errors. Completed: %6$s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:452
+#, php-format
+msgid "%1$d of %2$d ContactPanda database tables are present. Schema version: %3$s."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:619
+#, php-format
+msgid "%1$d people · created on %2$s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:526
+#, php-format
+msgid "%1$d subscribers and %2$d historical mailings were found. No data has been changed yet."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:486
+#, php-format
+msgid "%1$d unique customers found: %2$d new and %3$d already present. No data has been changed yet."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1224
+#, php-format
+msgid "%1$s Edited by: %2$s."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:456 contactpanda/includes/class-contactpanda-plugin.php:476
+#, php-format
+msgid "%1$s on %2$s. Source: %3$s. Edited by: %4$s.%5$s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:303
+#, php-format
+msgid "%d contacts can be assigned from the library. Confirm to apply the changes."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:303
+#, php-format
+msgid "%d missing salutations were assigned."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:200
+#, php-format
+msgid "%d people selected"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2589
+#, php-format
+msgid "%d sent"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:652 contactpanda/includes/class-contactpanda-registration.php:656
+#, php-format
+msgid "%s theme style"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2659 contactpanda/includes/class-contactpanda-plugin.php:3762 contactpanda/includes/class-contactpanda-registration.php:305 contactpanda/includes/class-contactpanda-registration.php:1076
+msgid "--- Please select ---"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:199
+msgid "1 person selected"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3013
+msgid "</button><button type=\"button\" class=\"button contactpanda-close-user-account\">Cancel</button></div></div></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2754
+msgid "</div></div></div><p class=\"description contactpanda-tag-autosave-note\">Selecting a tag saves it immediately for this contact. Press Enter to create a new tag.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2966
+msgid "</div></div><div class=\"contactpanda-role-picker-message\" aria-live=\"polite\"></div></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1098
+msgid "</div><table><thead><tr><th>Item</th><th class=\"num\">Quantity</th><th class=\"num\">Total</th></tr></thead><tbody>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1498
+msgid "</p></div><button type=\"button\" class=\"button button-primary contactpanda-heading-action contactpanda-open-new-person\">Add person</button></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2494
+msgid "</section><section class=\"contactpanda-card\"><h2>Billing address</h2>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1093
+msgid "</strong></div><div><span>Invoice number</span><strong>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1093
+msgid "</strong></div><div><span>Payment method</span><strong>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3810
+msgid "</strong><span class=\"contactpanda-vat-check\" title=\"Successfully validated through EU VIES\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2578
+msgid "</tbody></table><p class=\"description\">Events are assigned by matching the attendee email address stored by Event Tickets.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2899
+msgid "</tbody><tfoot><tr><th colspan=\"6\">Grand total</th><td><strong>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2475
+msgid "<aside><section class=\"contactpanda-card contactpanda-master-data\"><h2>Master data</h2>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2992
+msgid "<button type=\"button\" class=\"button button-small contactpanda-open-roles\">Edit customer roles</button>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2981
+msgid "<button type=\"button\" class=\"button button-small contactpanda-open-user-account\" data-mode=\"create\">Create user account</button>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2976
+msgid "<button type=\"button\" class=\"button button-small contactpanda-open-user-account\" data-mode=\"link\">Link existing account</button>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2701
+msgid "<button type=\"button\" class=\"button contactpanda-open-consent\">Edit consent</button>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1094
+msgid "<div class=\"addresses\"><section><h2>Billing address</h2><p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1767
+msgid "<div class=\"contactpanda-empty\"><span class=\"dashicons dashicons-building\"></span><h3>No companies found</h3><p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1743
+msgid "<div class=\"contactpanda-heading\"><div><p class=\"contactpanda-eyebrow\">CRM</p><h1>Companies</h1><p>A unified view of companies, contacts, orders, and invoices.</p></div><button type=\"button\" class=\"button button-primary contactpanda-heading-action contactpanda-open-new-company\">Add company</button></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1498
+msgid "<div class=\"contactpanda-heading\"><div><p class=\"contactpanda-eyebrow\">CRM</p><h1>People</h1><p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2632
+msgid "<div class=\"contactpanda-modal-message\" aria-live=\"polite\"></div><div class=\"contactpanda-modal-actions\"><button type=\"button\" class=\"button button-primary contactpanda-save-bulk\">Enable with confirmation</button><button type=\"button\" class=\"button contactpanda-close-bulk\">Cancel</button></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2718
+msgid "<div class=\"contactpanda-modal-message\" aria-live=\"polite\"></div><div class=\"contactpanda-modal-actions\"><button type=\"button\" class=\"button button-primary contactpanda-save-consent\">Save with confirmation</button><button type=\"button\" class=\"button contactpanda-close-consent\">Cancel</button></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2671
+msgid "<div class=\"contactpanda-modal-message\" aria-live=\"polite\"></div><div class=\"contactpanda-modal-actions\"><button type=\"button\" class=\"button button-primary contactpanda-save-new-person\">Create person</button><button type=\"button\" class=\"button contactpanda-close-new-person\">Cancel</button></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2999
+msgid "<div class=\"contactpanda-modal-message\"></div><div class=\"contactpanda-modal-actions\"><button type=\"button\" class=\"button button-primary contactpanda-save-roles\">Save roles</button><button type=\"button\" class=\"button contactpanda-close-roles\">Cancel</button></div></div></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2558
+msgid "<div class=\"contactpanda-toolbar\"><h2>Events</h2><span class=\"contactpanda-count\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2972
+msgid "<div class=\"contactpanda-user-account\"><span>WordPress user account</span>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1093
+msgid "<div class=\"facts\"><div><span>Order date</span><strong>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1747
+msgid "<div class=\"notice notice-warning inline\"><p><strong>Diagnostics:</strong> Not all required extensions were detected: "
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3580
+msgid "<div><span></span><strong>No company notes yet</strong><p>Groundhogg currently provides no notes for this company.</p></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3076
+msgid "<div><span></span><strong>No contact notes yet</strong><p>Groundhogg currently provides no notes for this person.</p></div>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1758
+msgid "<form class=\"contactpanda-search\" method=\"get\"><input type=\"hidden\" name=\"page\" value=\"contactpanda-firmen\"><label class=\"screen-reader-text\" for=\"contactpanda-company-search\">Search companies</label><input id=\"contactpanda-company-search\" type=\"search\" name=\"s\" value=\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2625
+msgid "<h2 id=\"contactpanda-bulk-title\">Enable marketable status for multiple people</h2>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3074
+msgid "<h2>Activities <span class=\"contactpanda-count\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2762
+msgid "<h2>Addresses</h2>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2854
+msgid "<h2>Orders &amp; invoices <span class=\"contactpanda-count\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1092
+msgid "<header><div><span class=\"eyebrow\">WooCommerce order</span><h1>Order #"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2962
+msgid "<input type=\"text\" class=\"contactpanda-token-input contactpanda-role-input\" placeholder=\"Search WordPress roles\" aria-label=\"Search WordPress roles\" autocomplete=\"off\"></div><div class=\"contactpanda-token-suggestions contactpanda-role-suggestions\" role=\"listbox\" hidden>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2750
+msgid "<input type=\"text\" class=\"contactpanda-token-input contactpanda-tag-input\" placeholder=\"Search or create a tag\" aria-label=\"Search or create a tag\" autocomplete=\"off\"></div><div class=\"contactpanda-token-suggestions contactpanda-tag-suggestions\" role=\"listbox\" hidden>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3011
+msgid "<label class=\"contactpanda-confirm\"><input type=\"checkbox\" class=\"contactpanda-account-invite\" checked> <span>Send an invitation to set the password.</span></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2631
+msgid "<label class=\"contactpanda-confirm\"><input type=\"checkbox\" class=\"contactpanda-bulk-confirmed\"> <span>I confirm that explicit marketing consent exists for every selected person.</span></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2717
+msgid "<label class=\"contactpanda-confirm\"><input type=\"checkbox\" class=\"contactpanda-consent-confirmed\"> <span>I confirm that explicit consent has been given.</span></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1511
+msgid "<label class=\"screen-reader-text\" for=\"contactpanda-person-search\">Search people</label><input id=\"contactpanda-person-search\" type=\"search\" name=\"s\" value=\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2837
+msgid "<label>Billing email<input type=\"email\" data-key=\"email\" value=\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2839
+msgid "<label>Billing phone"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2841
+msgid "<label>Billing phone<input type=\"text\" value=\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2808 contactpanda/includes/class-contactpanda-plugin.php:2830
+msgid "<label>Country<select data-key=\"country\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2629
+msgid "<label>Date<input type=\"date\" class=\"contactpanda-bulk-date\" value=\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2715
+msgid "<label>Date<input type=\"date\" class=\"contactpanda-consent-date\" value=\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2713
+msgid "<label>Decision<select class=\"contactpanda-consent-decision\"><option value=\"grant\">Grant consent</option><option value=\"revoke\">Withdraw consent</option></select></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2660
+msgid "<label>Email address<input type=\"email\" class=\"contactpanda-new-email\" autocomplete=\"email\" required></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2657
+msgid "<label>First name<input type=\"text\" class=\"contactpanda-new-first-name\" autocomplete=\"given-name\"></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2658
+msgid "<label>Last name<input type=\"text\" class=\"contactpanda-new-last-name\" autocomplete=\"family-name\"></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2630
+msgid "<label>Note / evidence<textarea class=\"contactpanda-bulk-note\" rows=\"3\" placeholder=\"Optional evidence note\"></textarea></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2716
+msgid "<label>Note / evidence<textarea class=\"contactpanda-consent-note\" rows=\"3\" placeholder=\"Optional evidence note\"></textarea></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2628
+msgid "<label>Source<select class=\"contactpanda-bulk-source\"><option value=\"\">Please select</option><option value=\"personally\">In person</option><option value=\"phone\">By phone</option><option value=\"written\">In writing</option><option value=\"email\">By email</option><option value=\"import\">Documented import</option><option value=\"other\">Other</option></select></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2714
+msgid "<label>Source<select class=\"contactpanda-consent-source\"><option value=\"\">Please select</option><option value=\"personally\">In person</option><option value=\"phone\">By phone</option><option value=\"written\">In writing</option><option value=\"email\">By email</option><option value=\"import\">Documented import</option><option value=\"other\">Other</option></select></label>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2500
+msgid "<main><section class=\"contactpanda-card\"><h2>Contacts <span class=\"contactpanda-count\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2627
+msgid "<p class=\"contactpanda-bulk-modal-count\"><strong>0 people selected</strong></p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2773
+msgid "<p class=\"contactpanda-muted contactpanda-woocommerce-address-note\">No linked WordPress/WooCommerce customer account. The contact address is saved independently; billing and shipping addresses become available after an account is linked.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2510
+msgid "<p class=\"contactpanda-muted\">No contacts were returned by the public Companies interface.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2560
+msgid "<p class=\"contactpanda-muted\">No event booking was found for this person.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2518
+msgid "<p class=\"contactpanda-muted\">No order was found using the contacts' email addresses.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2856
+msgid "<p class=\"contactpanda-muted\">No order was found using the email address.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2493
+msgid "<p class=\"description contactpanda-uid-help\">Linked to German Market (billing_vat) and B2B Market (b2b_uid) for the primary contact. EU validation only runs when requested.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2794
+msgid "<p class=\"description\">Only the WooCommerce customer profile is saved. Existing orders and historical invoices are not changed.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3009
+msgid "<p>An account with a secure random password will be created. This does not grant marketing consent.</p><label>Username<input type=\"text\" class=\"contactpanda-account-username\" value=\""
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2712
+msgid "<p>Only change this when consent or withdrawal is actually documented.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2626
+msgid "<p>Only selected people without an unsubscribe or blocked status will be changed. Already marketable contacts remain unchanged.</p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1665
+msgid "<section class=\"contactpanda-card contactpanda-master-data\"><h2>Master data</h2>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3824
+msgid "<section class=\"contactpanda-card contactpanda-status\"><h2>System status</h2>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2530
+msgid "<section class=\"contactpanda-card contactpanda-tabs-card\" data-tabs><div class=\"contactpanda-tabs\" role=\"tablist\" aria-label=\"Person data\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1757
+msgid "<section class=\"contactpanda-card\"><div class=\"contactpanda-toolbar\"><h2>Companies overview</h2><span class=\"contactpanda-count\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1499
+msgid "<section class=\"contactpanda-card\"><div class=\"contactpanda-toolbar\"><h2>People overview</h2><span class=\"contactpanda-count\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3578
+msgid "<section class=\"contactpanda-card\"><h2>Activities <span class=\"contactpanda-count\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2514
+msgid "<section class=\"contactpanda-card\"><h2>Orders &amp; invoices <span class=\"contactpanda-count\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1108
+msgid "<section class=\"note\"><h2>Customer note</h2><p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1096
+msgid "<section><h2>Shipping address</h2><p>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2879
+msgid "<span class=\"contactpanda-document-unavailable\" title=\"German Market does not provide an invoice action for this order\">—</span>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2736
+msgid "<span class=\"contactpanda-muted\">No tags assigned yet.</span>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3699
+msgid "<span class=\"contactpanda-phone-input-group\"><select class=\"contactpanda-phone-prefix\" aria-label=\"Country calling code\">"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3818
+msgid "<span class=\"contactpanda-vat-check\" title=\"Successfully validated through EU VIES\">✓</span>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2979
+msgid "<strong>No user account</strong>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2889
+msgid "<table class=\"widefat contactpanda-table contactpanda-orders-table\"><thead><tr><th>Order number</th><th>Date</th><th>Invoice number</th><th>Actions</th><th>Status</th><th>Payment method</th><th>Total</th></tr></thead><tbody>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2563
+msgid "<table class=\"widefat contactpanda-table\"><thead><tr><th>Event</th><th><span class=\"screen-reader-text\">Preview</span></th><th>Date</th><th>Status</th><th>Booking</th></tr></thead><tbody>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1527
+msgid "<td class=\"check-column\"><input type=\"checkbox\" class=\"contactpanda-select-all\" aria-label=\"Select all people on this page\"></td>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1530
+msgid "<th><span class=\"screen-reader-text\">Actions</span></th>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1540
+msgid "<th><span class=\"screen-reader-text\">Email confirmation and marketing status</span></th></tr></thead><tbody>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1531
+msgid "<th>Email</th><th>Phone</th>"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:480
+msgid "A Groundhogg tag has no readable ID."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1650
+#, php-format
+msgid "A new business registration was submitted.\n\nPerson: %1$s\nCompany: %2$s\nEmail: %3$s\nRequested role: %4$s\n\nReview: %5$s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:747 contactpanda/includes/class-contactpanda-plugin.php:750 contactpanda/includes/class-contactpanda-store.php:101
+msgid "A person with this email address already exists."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1374
+msgid "A user account already exists for this email address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1164
+msgid "A user account already exists for this email address. Please reload the page and use “Link”."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:381
+msgid "A VAT ID is optional unless this setting is enabled. Every entered VAT ID must be successfully validated through EU VIES."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2974
+msgid "Account available"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:306 contactpanda/includes/class-contactpanda-registration.php:873
+msgid "Actions"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:769
+msgid "Active"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:652
+msgid "Active theme"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:684
+msgid "Activities"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1105
+msgid "Add a separate shipping address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1086
+msgid "Add company details"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:886 contactpanda/includes/class-contactpanda-plugin.php:893
+msgid "Add new tag"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:305
+msgid "Add or update entry"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1676 contactpanda/includes/class-contactpanda-plugin.php:1691
+msgid "Address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:677 contactpanda/includes/class-contactpanda-plugin.php:2495 contactpanda/includes/class-contactpanda-plugin.php:2804 contactpanda/includes/class-contactpanda-plugin.php:2826 contactpanda/includes/class-contactpanda-registration.php:1097 contactpanda/includes/class-contactpanda-registration.php:1107 contactpanda/includes/class-contactpanda-my-account.php:209 contactpanda/includes/class-contactpanda-my-account.php:278
+msgid "Address line 2"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2532 contactpanda/includes/class-contactpanda-my-account.php:234
+msgid "Addresses"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:380
+msgid "Adds a separate business registration with company data, VAT ID validation, and a requested customer role."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:412
+msgid "After double opt-in confirmation"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1512
+msgid "All"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2645
+#, php-format
+msgid "All filtered people (%d)"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2815
+msgid "Also copy this address to the WooCommerce billing address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:537
+#, php-format
+msgid "An unreadable tag assignment was found on Groundhogg contact %d."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:651
+msgid "Appearance"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:905 contactpanda/includes/class-contactpanda-plugin.php:1525
+msgid "Apply"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:317
+msgid "Apply the assignments immediately after checking."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:881
+msgid "Approve"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2393
+msgid "ascending"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:317
+msgid "Assign missing salutations"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:906 contactpanda/includes/class-contactpanda-plugin.php:1773
+msgid "Assigned people"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2569
+msgid "Attended"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:160
+msgid "Attended events"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3135 contactpanda/includes/class-contactpanda-plugin.php:3663 contactpanda/includes/class-contactpanda-registration.php:1178
+msgid "Austria"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:850
+msgid "Available"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2616
+msgid "Available delivery, opening, and click information is read from the respective source. Privacy features or blocked images may affect tracking."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:394
+msgid "Available placeholders: {first_name}, {site_name}, {confirmation_link}."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:411
+msgid "Available placeholders: {first_name}, {site_name}, {confirmation_link}. If the confirmation link is omitted, it is appended automatically."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3669
+msgid "Belgium"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1330 contactpanda/includes/class-contactpanda-plugin.php:2790 contactpanda/includes/class-contactpanda-registration.php:968 contactpanda/includes/class-contactpanda-my-account.php:236
+msgid "Billing address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2202 contactpanda/includes/class-contactpanda-plugin.php:2206 contactpanda/includes/class-contactpanda-plugin.php:2338 contactpanda/includes/class-contactpanda-plugin.php:2342
+msgid "Blocked"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2569
+msgid "Booked"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:226
+msgid "Broadcast"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:905
+msgid "Bulk actions"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1525
+msgid "Bulk edit"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:219
+msgid "Bulk editing failed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:960
+msgid "Business customer"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:365
+msgid "Business customers"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:459
+msgid "By default, uninstalling ContactPanda does not delete customer data."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2242
+msgid "By email"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2240
+msgid "By phone"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:190 contactpanda/includes/class-contactpanda-plugin.php:895 contactpanda/includes/class-contactpanda-plugin.php:2650 contactpanda/includes/class-contactpanda-plugin.php:2676 contactpanda/includes/class-contactpanda-registration.php:725
+msgid "Cancel"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:93 contactpanda/includes/class-contactpanda-my-account.php:120 contactpanda/includes/class-contactpanda-my-account.php:218
+msgid "Change password"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:214 contactpanda/includes/class-contactpanda-registration.php:937 contactpanda/includes/class-contactpanda-my-account.php:64
+msgid "Checking EU VIES…"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:201
+msgid "Checking the selected contacts…"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2639
+msgid "Choose whether selected people or all currently filtered people should be used."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:234
+msgid "Choose whether selected people or all filtered people should be used."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1099 contactpanda/includes/class-contactpanda-registration.php:1109 contactpanda/includes/class-contactpanda-my-account.php:211 contactpanda/includes/class-contactpanda-my-account.php:280
+msgid "City"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2594
+msgid "Clicked"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:191
+msgid "Close"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:80
+msgid "Close registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:56 contactpanda/includes/class-contactpanda-plugin.php:57 contactpanda/includes/class-contactpanda-registration.php:684
+msgid "Companies"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:676 contactpanda/includes/class-contactpanda-plugin.php:1533 contactpanda/includes/class-contactpanda-plugin.php:1678 contactpanda/includes/class-contactpanda-plugin.php:1693 contactpanda/includes/class-contactpanda-plugin.php:1773 contactpanda/includes/class-contactpanda-plugin.php:2495 contactpanda/includes/class-contactpanda-plugin.php:2663 contactpanda/includes/class-contactpanda-plugin.php:2826 contactpanda/includes/class-contactpanda-registration.php:873
+msgid "Company"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2457
+msgid "Company #"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:206 contactpanda/includes/class-contactpanda-my-account.php:270 contactpanda/includes/class-contactpanda-my-account.php:275
+msgid "Company (optional)"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2481 contactpanda/includes/class-contactpanda-plugin.php:2489
+msgid "Company address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2662
+msgid "Company assignment (optional)"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:252
+msgid "Company management is unavailable because Groundhogg Companies is not active."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2477 contactpanda/includes/class-contactpanda-plugin.php:2485 contactpanda/includes/class-contactpanda-plugin.php:2676
+msgid "Company name"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3583
+msgid "Company note"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2202 contactpanda/includes/class-contactpanda-plugin.php:2206 contactpanda/includes/class-contactpanda-plugin.php:2338 contactpanda/includes/class-contactpanda-plugin.php:2342
+msgid "Complaint"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2698
+msgid "Completed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:270
+msgid "Configure ContactPanda and its optional integrations."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1482 contactpanda/includes/class-contactpanda-registration.php:1487
+msgid "Confirm email address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:222
+msgid "Confirm new password"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1021
+msgid "Confirm newsletter subscription"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:173
+msgid "Confirm your newsletter subscription at {site_name}"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:162
+msgid "Confirm your registration at {site_name}"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:425
+msgid "Confirmation is required."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:414
+msgid "Confirmation text for business customers"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:413
+msgid "Confirmation text for standard customers"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1128
+msgid "Confirmations"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:301
+msgid "Saved assignments are applied automatically when the same first name is entered again. A manually selected salutation updates the library."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:310
+msgid "Confirmed selection"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2506
+msgid "Contact"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1309 contactpanda/includes/class-contactpanda-plugin.php:2802
+msgid "Contact address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1309
+#, php-format
+msgid "Contact address updated%1$s. Edited by: %2$s."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:619 contactpanda/includes/class-contactpanda-plugin.php:619
+msgid "Contact list"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3079
+msgid "Contact note"
+msgstr ""
+
+#: contactpanda/contactpanda.php:3
+msgid "ContactPanda Basic – User-Friendly CRM for WordPress"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:653
+msgid "ContactPanda can inherit the theme typography, colors, form fields, buttons, borders, and corner radii. Its functional layout remains intact."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:484
+msgid "ContactPanda can merge customer profiles from WooCommerce into the ContactPanda database using the email address as the unique key. Orders, invoices, prices, and WooCommerce data remain unchanged."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:347
+msgid "WooCommerce customer data could not be read. No ContactPanda data was changed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:706
+msgid "Groundhogg contact comparison: %1$d found in the source, %2$d imported or updated."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:641
+msgid "The WooCommerce import could not be completed. WooCommerce data was not changed. Please review the ContactPanda data before trying again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1494
+msgid "ContactPanda contacts, company relationships, orders, events, and marketing status in one view."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-schema.php:236
+msgid "ContactPanda could not create all required database fields."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-schema.php:233
+msgid "ContactPanda could not create all standalone database tables."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:299
+msgid "ContactPanda could not save the change."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:725
+msgid "ContactPanda CRM records and imported newsletter archives will be deleted. ContactPanda-created email drafts, WordPress users, WooCommerce orders and invoices, Groundhogg data, and event data remain unchanged."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:447 contactpanda/includes/class-contactpanda-registration.php:679
+msgid "ContactPanda database"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1656 contactpanda/includes/class-contactpanda-plugin.php:2469
+#, php-format
+msgid "ContactPanda ID %d"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:447
+msgid "ContactPanda is responsible for contacts, companies, tags, consent, activities, and—when ContactPanda Plus is active—newsletter delivery. Groundhogg is not written to in this mode."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:671
+#, php-format
+msgid "ContactPanda now adopts the styles from %s."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:612
+msgid "ContactPanda only lists possible duplicates here. No records are merged automatically. A later merge step will require selecting a primary record and confirming every conflict."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3006
+msgid "ContactPanda person"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:45 contactpanda/includes/class-contactpanda-registration.php:271
+msgid "ContactPanda settings"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-schema.php:254
+msgid "ContactPanda standalone tables are incomplete."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:652 contactpanda/includes/class-contactpanda-registration.php:655
+msgid "ContactPanda style"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:684
+msgid "Contacts"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:677 contactpanda/includes/class-contactpanda-plugin.php:2495 contactpanda/includes/class-contactpanda-registration.php:1100 contactpanda/includes/class-contactpanda-registration.php:1110 contactpanda/includes/class-contactpanda-my-account.php:213 contactpanda/includes/class-contactpanda-my-account.php:282
+msgid "Country"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:211 contactpanda/includes/class-contactpanda-registration.php:1153 contactpanda/includes/class-contactpanda-my-account.php:557
+msgid "Country calling code"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:79
+msgid "Create a customer account to manage your profile, addresses, orders, and bookings."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3013
+msgid "Create account"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:882
+msgid "Create and manage tags in the currently selected data source."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2676 contactpanda/includes/class-contactpanda-plugin.php:2676
+msgid "Create company"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:972
+msgid "Create customer account"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2656
+msgid "Create new person"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:682
+msgid "Create or update ContactPanda database and activate"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:516
+msgid "Create the ContactPanda database before importing newsletter subscribers."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:122
+msgid "Create the ContactPanda database before selecting ContactPanda mode."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:209
+msgid "Create the new user account now?"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3004
+msgid "Create user account"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:221
+msgid "Creating company…"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:220
+msgid "Creating person…"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:222
+msgid "Creation failed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3674
+msgid "Croatia"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:220
+msgid "Current password"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2990
+msgid "Customer / WordPress roles"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:367
+msgid "Customer account registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:783
+msgid "Customer groups, roles, prices, and tax rules remain untouched."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1120
+msgid "Customer role"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1512
+msgid "Customers"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3670
+msgid "Czechia"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:767
+msgid "Data preserved in detected plugins"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:438
+msgid "Data source"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:679
+msgid "Date created"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:905 contactpanda/includes/class-contactpanda-plugin.php:912 contactpanda/includes/class-contactpanda-registration.php:311
+msgid "Delete"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:231
+msgid "Delete the selected tags and all their contact assignments? The people themselves will not be deleted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:230
+#, php-format
+msgid "Delete the tag “%1$s”? It is currently assigned to %2$d people. The people themselves will not be deleted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:954
+#, php-format
+msgid "Deleted tags: %d"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:687
+msgid "Deletes ContactPanda CRM records and imported Groundhogg newsletter archives. ContactPanda-created newsletter drafts, Groundhogg, WordPress, WooCommerce, invoices, and events remain untouched."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:919
+msgid "Deleting a tag removes only the tag and its assignments. People and their other data remain unchanged."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2594
+msgid "Delivered"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3144
+msgid "Denmark"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2393
+msgid "descending"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:906 contactpanda/includes/class-contactpanda-plugin.php:2482 contactpanda/includes/class-contactpanda-plugin.php:2490
+msgid "Description"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:893
+msgid "Description (optional)"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3826
+msgid "detected"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:228
+msgid "Do you really want ContactPanda-owned customer data to be permanently deleted when the plugin is uninstalled? Data from Groundhogg, WooCommerce, German Market, B2B Market, The Events Calendar, and Event Tickets will not be deleted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2696
+msgid "Documented date"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2243
+msgid "Documented import"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2698
+msgid "Double opt-in"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:398
+msgid "Double opt-in email"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:612
+msgid "Duplicate review"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:912 contactpanda/includes/class-contactpanda-plugin.php:1661 contactpanda/includes/class-contactpanda-plugin.php:1795
+msgid "Edit"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3772 contactpanda/includes/class-contactpanda-plugin.php:3782 contactpanda/includes/class-contactpanda-plugin.php:3803 contactpanda/includes/class-contactpanda-plugin.php:3811
+#, php-format
+msgid "Edit %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3795
+msgid "Edit address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2469
+msgid "Edit company"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1656
+msgid "Edit person"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:886
+msgid "Edit tag"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1618
+#, php-format
+msgid "Edited by: %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:676
+msgid "Email"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1674 contactpanda/includes/class-contactpanda-plugin.php:1689 contactpanda/includes/class-contactpanda-registration.php:992 contactpanda/includes/class-contactpanda-registration.php:1068
+msgid "Email address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2222
+msgid "Email address confirmed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2222
+msgid "Email address not confirmed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:883
+msgid "Email confirmation is still pending."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:678 contactpanda/includes/class-contactpanda-registration.php:873
+msgid "Email confirmed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:399
+msgid "Email subject"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:400
+msgid "Email text"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1525
+msgid "Enable marketable status"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:390
+msgid "Enable separate newsletter signup"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:370
+msgid "Enable standard customer registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1373 contactpanda/includes/class-contactpanda-registration.php:1229
+msgid "EU VIES did not return a usable response."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:187
+msgid "Event"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2565
+msgid "Event #"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1514
+msgid "Event attendees"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:679 contactpanda/includes/class-contactpanda-plugin.php:1538
+msgid "Events"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:784
+msgid "Events and venue data remain untouched."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:372
+msgid "Every account registration offers an optional, unchecked marketing consent. Account registration never implies marketing consent."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1224
+msgid "Existing WordPress user account linked."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:512
+msgid "Explicit confirmation is required."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1525
+msgid "Export"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:232 contactpanda/includes/class-contactpanda-plugin.php:2639
+msgid "Export contacts"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2650 contactpanda/includes/class-contactpanda-registration.php:314
+msgid "Export CSV"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:181 contactpanda/includes/class-contactpanda-plugin.php:2659 contactpanda/includes/class-contactpanda-plugin.php:3754 contactpanda/includes/class-contactpanda-registration.php:305 contactpanda/includes/class-contactpanda-registration.php:309 contactpanda/includes/class-contactpanda-registration.php:1076
+msgid "Family"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3148
+msgid "Faroe Islands"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:675 contactpanda/includes/class-contactpanda-plugin.php:1528 contactpanda/includes/class-contactpanda-plugin.php:1667 contactpanda/includes/class-contactpanda-plugin.php:1682 contactpanda/includes/class-contactpanda-plugin.php:2495 contactpanda/includes/class-contactpanda-plugin.php:2826 contactpanda/includes/class-contactpanda-registration.php:305 contactpanda/includes/class-contactpanda-registration.php:306 contactpanda/includes/class-contactpanda-registration.php:990 contactpanda/includes/class-contactpanda-registration.php:1078 contactpanda/includes/class-contactpanda-my-account.php:201 contactpanda/includes/class-contactpanda-my-account.php:272
+msgid "First name"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:293
+msgid "First names"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3667 contactpanda/includes/class-contactpanda-registration.php:1182
+msgid "France"
+msgstr ""
+
+#: contactpanda/contactpanda.php:4
+msgid "Free contact and company management for WordPress with a complete WooCommerce customer overview and optional Groundhogg compatibility."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:156
+#, php-format
+msgid "From your dashboard you can manage your <a href=\"%1$s\">profile</a>, <a href=\"%2$s\">addresses</a>, <a href=\"%3$s\">payment methods</a>, and <a href=\"%4$s\">password</a>."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1679 contactpanda/includes/class-contactpanda-plugin.php:1694
+msgid "Function in company"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:261
+msgid "General"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:365
+msgid "General customer registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3664 contactpanda/includes/class-contactpanda-registration.php:1179
+msgid "Germany"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2598 contactpanda/includes/class-contactpanda-plugin.php:3374
+msgid "Groundhogg"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1766
+msgid "Groundhogg Companies returned no companies."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3006
+msgid "Groundhogg contact"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:780
+msgid "Groundhogg contacts, companies, tags, funnels, and activities remain untouched."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1496
+msgid "Groundhogg contacts, company relationships, and marketing status in one view."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1497
+msgid "Groundhogg contacts, orders, and marketing status in one view."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:470
+msgid "Groundhogg could not change the marketing status."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:849
+msgid "Groundhogg could not change the tag assignment."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:834
+msgid "Groundhogg could not create the tag."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:308 contactpanda/includes/class-contactpanda-plugin.php:374
+msgid "Groundhogg could not save the change."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:440
+msgid "Groundhogg frontend mode"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1656 contactpanda/includes/class-contactpanda-plugin.php:2469
+#, php-format
+msgid "Groundhogg ID %d"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:443
+msgid "Groundhogg is configured as the data source but is currently inactive. ContactPanda has not switched the data source automatically."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1148
+msgid "Groundhogg is unavailable; no user account was created."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:686
+msgid "Groundhogg remains read only. Contacts, companies, tags, and—with ContactPanda Plus—mail templates and completed broadcasts are imported without duplicates."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:440
+msgid "Groundhogg remains responsible for contacts, companies, tags, consent, broadcasts, funnels, and automations. ContactPanda provides the user-friendly interface."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:163
+msgid "Hello {first_name},\n\nplease confirm your email address by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:174
+msgid "Hello {first_name},\n\nplease confirm your newsletter subscription by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3672
+msgid "Hungary"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1132
+msgid "I accept the terms and conditions."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:198
+msgid "I confirm that explicit consent has been given."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:197
+msgid "I confirm that the withdrawal or unsubscribe has actually been documented."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:994 contactpanda/includes/class-contactpanda-registration.php:1129
+msgid "I have read the privacy policy."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1135
+msgid "I would also like to receive news and offers by email. I can withdraw this consent at any time."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:995
+msgid "I would like to receive the newsletter and confirm that I can withdraw my consent at any time."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:310
+msgid "Import"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:316
+msgid "Import and merge CSV"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:490 contactpanda/includes/class-contactpanda-registration.php:532
+msgid "Import and merge now"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:486 contactpanda/includes/class-contactpanda-registration.php:526
+msgid "Import preview"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:513
+msgid "Import The Newsletter Plugin data"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:484
+msgid "Import WooCommerce customers"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:583 contactpanda/includes/class-contactpanda-registration.php:590
+msgid "Imported newsletter subscription."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:473
+msgid "Imports are started only after an explicit confirmation. Source systems remain unchanged, and existing ContactPanda contacts are matched by email address before new records are created."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2239
+msgid "In person"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2241
+msgid "In writing"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2480 contactpanda/includes/class-contactpanda-plugin.php:2488 contactpanda/includes/class-contactpanda-registration.php:1088
+msgid "Industry"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2646
+msgid "Information to include"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:656
+msgid "Inherit compatible typography, colors, fields, buttons, borders, and spacing from the active theme."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:769
+msgid "Installed, inactive"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:848
+msgid "Integration status"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:705
+#, php-format
+msgid "Intentionally omitted system tags: %d"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:476
+#, php-format
+msgid "Internal Groundhogg status tag “%s” was intentionally omitted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1234
+msgid "Invalid address selection."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:261
+msgid "Invalid field."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:324
+msgid "Invalid person field."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:422
+msgid "Invalid selection."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:814
+msgid "Invalid tag action."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:185
+msgid "Invoice"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:782
+msgid "Invoices and invoice documents remain untouched."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3666 contactpanda/includes/class-contactpanda-registration.php:1181
+msgid "Italy"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:528
+msgid "Last import:"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:690
+msgid "Last migration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:675 contactpanda/includes/class-contactpanda-plugin.php:1529 contactpanda/includes/class-contactpanda-plugin.php:1668 contactpanda/includes/class-contactpanda-plugin.php:1683 contactpanda/includes/class-contactpanda-plugin.php:2495 contactpanda/includes/class-contactpanda-plugin.php:2826 contactpanda/includes/class-contactpanda-registration.php:991 contactpanda/includes/class-contactpanda-registration.php:1079 contactpanda/includes/class-contactpanda-my-account.php:202 contactpanda/includes/class-contactpanda-my-account.php:273
+msgid "Last name"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1087
+msgid "Legal company name"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3013
+msgid "Link"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:208
+msgid "Link the existing account to this person?"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3004
+msgid "Link user account"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1211
+msgid "Linking failed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:677 contactpanda/includes/class-contactpanda-plugin.php:1773 contactpanda/includes/class-contactpanda-plugin.php:2495 contactpanda/includes/class-contactpanda-plugin.php:2804 contactpanda/includes/class-contactpanda-plugin.php:2826
+msgid "Location"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2594
+msgid "Mailing"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2607
+msgid "Mailing pages"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2536 contactpanda/includes/class-contactpanda-plugin.php:2589
+msgid "Mailings"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:370
+msgid "Makes the standard customer account form available through [contactpanda_registration]."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:310
+msgid "Manual"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:678
+msgid "Marketable"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:458 contactpanda/includes/class-contactpanda-plugin.php:491 contactpanda/includes/class-contactpanda-plugin.php:2200 contactpanda/includes/class-contactpanda-plugin.php:2203 contactpanda/includes/class-contactpanda-plugin.php:2336 contactpanda/includes/class-contactpanda-plugin.php:2339
+msgid "Marketing allowed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1517
+msgid "Marketing consent confirmed through the registration double opt-in."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:568
+msgid "Marketing consent enabled by bulk edit"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:562
+#, php-format
+msgid "Marketing consent enabled by bulk edit on %1$s. Source: %2$s. Edited by: %3$s.%4$s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:455 contactpanda/includes/class-contactpanda-plugin.php:474 contactpanda/includes/class-contactpanda-store.php:419
+msgid "Marketing consent granted manually"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:455 contactpanda/includes/class-contactpanda-plugin.php:474 contactpanda/includes/class-contactpanda-store.php:419
+msgid "Marketing consent revoked manually"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2695
+msgid "Marketing status"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:458 contactpanda/includes/class-contactpanda-plugin.php:492
+msgid "Marketing status and log were saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:617
+msgid "Match"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:686
+msgid "Migrate data from Groundhogg"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:262
+msgid "Migration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:473
+msgid "Migration center"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:264
+msgid "Miscellaneous parameters"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2201 contactpanda/includes/class-contactpanda-plugin.php:2205 contactpanda/includes/class-contactpanda-plugin.php:2337 contactpanda/includes/class-contactpanda-plugin.php:2341
+msgid "Monthly"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:179 contactpanda/includes/class-contactpanda-plugin.php:2659 contactpanda/includes/class-contactpanda-plugin.php:3754 contactpanda/includes/class-contactpanda-registration.php:305 contactpanda/includes/class-contactpanda-registration.php:309 contactpanda/includes/class-contactpanda-registration.php:1076
+msgid "Mr"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:180 contactpanda/includes/class-contactpanda-plugin.php:2659 contactpanda/includes/class-contactpanda-plugin.php:3754 contactpanda/includes/class-contactpanda-registration.php:305 contactpanda/includes/class-contactpanda-registration.php:309 contactpanda/includes/class-contactpanda-registration.php:1076
+msgid "Ms"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:91 contactpanda/includes/class-contactpanda-my-account.php:116 contactpanda/includes/class-contactpanda-my-account.php:198
+msgid "My profile"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:892 contactpanda/includes/class-contactpanda-plugin.php:906 contactpanda/includes/class-contactpanda-registration.php:1075
+msgid "Name"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:77
+msgid "Name and postal code"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3668 contactpanda/includes/class-contactpanda-registration.php:1183
+msgid "Netherlands"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:182 contactpanda/includes/class-contactpanda-plugin.php:2659 contactpanda/includes/class-contactpanda-plugin.php:3754 contactpanda/includes/class-contactpanda-registration.php:305 contactpanda/includes/class-contactpanda-registration.php:309 contactpanda/includes/class-contactpanda-registration.php:1076
+msgid "Neutral"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1646
+#, php-format
+msgid "New business registration: %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:79
+msgid "New here?"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:221
+msgid "New password"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:695
+#, php-format
+msgid "Newsletter archive: %1$d email templates and %2$d completed broadcasts imported; %3$d errors."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:392
+msgid "Newsletter confirmation email"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:391
+msgid "Newsletter confirmation subject"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1043
+msgid "Newsletter consent confirmed through double opt-in."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:365 contactpanda/includes/class-contactpanda-registration.php:989
+msgid "Newsletter signup"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:601
+#, php-format
+msgid "Newsletter subscriber import completed: %1$d new contacts, %2$d updated contacts, %3$d skipped."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2140
+msgid "Newsletter unsubscribed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1654
+msgid "Next person →"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:722 contactpanda/includes/class-contactpanda-plugin.php:722 contactpanda/includes/class-contactpanda-plugin.php:2620 contactpanda/includes/class-contactpanda-registration.php:879
+msgid "No"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1766
+msgid "No companies have been created in ContactPanda yet."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:520
+msgid "No compatible The Newsletter Plugin subscriber table was detected. Nothing will be changed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:450
+msgid "No ContactPanda customer tables have been created. With Groundhogg active, they are created only after an explicit ContactPanda setup or migration."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:614
+msgid "No likely duplicates were found using phone number, WordPress account, or matching name and address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:876
+msgid "No longer available"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2591
+msgid "No mailing with a reliable recipient assignment was found for this person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:900
+msgid "No matching tags were found."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:178
+msgid "No orders have been placed yet."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1519
+msgid "No people found"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1525
+msgid "No person selected"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1765
+msgid "No result was found for this company name."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2990
+msgid "No role"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:194
+msgid "No usable response was received."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1154
+msgid "No valid email address is stored for this person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2698
+msgid "Not completed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3826
+msgid "not detected"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:850
+msgid "Not detected"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:417
+msgid "Notification email address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:380
+msgid "Offer business customer registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3020
+msgid "Only administrators may manage user accounts and roles."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:749
+msgid "Only ContactPanda data was deleted. The empty ContactPanda database is ready for a new migration."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:438
+msgid "Only one system may be the leading source for contacts, companies, tags, and consent data."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:623
+msgid "Open first"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:193
+msgid "Open in new window"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:623
+msgid "Open second"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2594
+msgid "Opened"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:678
+msgid "Opt-in status"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:186
+msgid "Order"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1113
+msgid "Order #"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:185
+#, php-format
+msgid "Order #%s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:679 contactpanda/includes/class-contactpanda-my-account.php:158
+msgid "Order total"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:679 contactpanda/includes/class-contactpanda-plugin.php:1535 contactpanda/includes/class-contactpanda-plugin.php:2531 contactpanda/includes/class-contactpanda-my-account.php:157
+msgid "Orders"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2244
+msgid "Other"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:155
+msgid "Overview"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2442 contactpanda/includes/class-contactpanda-plugin.php:2607
+#, php-format
+msgid "Page %1$d of %2$d"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:377
+msgid "Page after successful submission"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1069
+msgid "Password"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:868
+msgid "Pending business registrations"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:47 contactpanda/includes/class-contactpanda-plugin.php:48
+msgid "People"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2645
+msgid "People to include"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:461
+msgid "Permanently delete all ContactPanda-owned customer data when the plugin is uninstalled."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:229
+msgid "Permanently delete all data from the ContactPanda database now? Groundhogg, WordPress, WooCommerce, invoices, and events will remain untouched."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:725
+msgid "Permanently delete ContactPanda data?"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:725
+msgid "Permanently delete data"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:873
+msgid "Person"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1656 contactpanda/includes/class-contactpanda-plugin.php:1789
+#, php-format
+msgid "Person #%d"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:676 contactpanda/includes/class-contactpanda-plugin.php:1675 contactpanda/includes/class-contactpanda-plugin.php:1690 contactpanda/includes/class-contactpanda-plugin.php:1773 contactpanda/includes/class-contactpanda-plugin.php:2479 contactpanda/includes/class-contactpanda-plugin.php:2487 contactpanda/includes/class-contactpanda-registration.php:1153 contactpanda/includes/class-contactpanda-my-account.php:205
+msgid "Phone"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:212 contactpanda/includes/class-contactpanda-registration.php:1157 contactpanda/includes/class-contactpanda-my-account.php:561 contactpanda/includes/class-contactpanda-store.php:76
+msgid "Phone number"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1385
+msgid "Please complete all required billing details."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1382
+msgid "Please complete all required contact details."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1008
+msgid "Please complete all required fields and confirm the newsletter consent."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:379
+msgid "Please complete the billing address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1411 contactpanda/includes/class-contactpanda-my-account.php:383
+msgid "Please complete the separate shipping address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1542
+msgid "Please confirm your email address before signing in."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:796
+msgid "Please enter a company name."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1390
+msgid "Please enter a formally valid EU VAT ID."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:202 contactpanda/includes/class-contactpanda-plugin.php:822
+msgid "Please enter a tag name."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1266
+msgid "Please enter a valid billing email address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:519
+msgid "Please enter a valid date that is not in the future."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:432
+msgid "Please enter a valid date."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:349 contactpanda/includes/class-contactpanda-plugin.php:741 contactpanda/includes/class-contactpanda-registration.php:1372
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1367
+msgid "Please enter a valid username."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:269
+msgid "Please enter a valid website address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1388
+msgid "Please enter a VAT ID."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1168
+msgid "Please enter an available, valid username."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:744
+msgid "Please enter at least a first or last name."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:323
+msgid "Please enter your first and last name."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1120 contactpanda/includes/class-contactpanda-registration.php:1165
+msgid "Please select"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:275 contactpanda/includes/class-contactpanda-plugin.php:354
+msgid "Please select a European country calling code."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1271
+msgid "Please select a European telephone calling code."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:204
+msgid "Please select a suggested WordPress role."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:841
+msgid "Please select a tag."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1407
+msgid "Please select a valid billing country."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1263
+msgid "Please select a valid country."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:358
+msgid "Please select a valid salutation."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1174 contactpanda/includes/class-contactpanda-plugin.php:3028
+msgid "Please select at least one permitted role."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:667
+msgid "Please select at least one person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:954
+msgid "Please select at least one tag."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:509
+msgid "Please select between 1 and 100 people."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1396
+msgid "Please select one of the available customer roles."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1120
+msgid "Please select the customer group you would like to request. The role is assigned only after approval."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:428 contactpanda/includes/class-contactpanda-plugin.php:515
+msgid "Please select the source of consent."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2669
+msgid "Position / function in the company"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:676 contactpanda/includes/class-contactpanda-plugin.php:1677 contactpanda/includes/class-contactpanda-plugin.php:1692 contactpanda/includes/class-contactpanda-registration.php:1080
+msgid "Position / Job title"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:617
+msgid "Possible duplicate"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1098 contactpanda/includes/class-contactpanda-registration.php:1108 contactpanda/includes/class-contactpanda-my-account.php:210 contactpanda/includes/class-contactpanda-my-account.php:279
+msgid "Postal code"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:677 contactpanda/includes/class-contactpanda-plugin.php:2495 contactpanda/includes/class-contactpanda-plugin.php:2804 contactpanda/includes/class-contactpanda-plugin.php:2826
+msgid "Postcode"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:675 contactpanda/includes/class-contactpanda-plugin.php:1670 contactpanda/includes/class-contactpanda-plugin.php:1685 contactpanda/includes/class-contactpanda-registration.php:1077 contactpanda/includes/class-contactpanda-my-account.php:203
+msgid "Prefix title"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:192
+msgid "Preview"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:489 contactpanda/includes/class-contactpanda-registration.php:531
+msgid "Preview import"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:619
+msgid "Print"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:233
+msgid "Print contact list"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1525
+msgid "Print list"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:375
+msgid "Privacy policy page"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:960
+msgid "Private customer"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:207
+msgid "Profile address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:390
+msgid "Provides [contactpanda_newsletter_signup]. The form creates or updates a ContactPanda contact but never creates a WordPress user account."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:176
+msgid "Recent orders"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:416
+msgid "Redirect delay in seconds"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:415
+msgid "Redirect page after confirmation"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:373
+msgid "Redirects the public WordPress registration to the selected ContactPanda registration page. Administrative login remains available."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:80 contactpanda/includes/class-contactpanda-my-account.php:80
+msgid "Register now"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:873
+msgid "Registered"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:263
+msgid "Registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1618
+msgid "Registration approved"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:852
+msgid "Registration data is stored in compatible WordPress and WooCommerce profile fields. Existing orders and invoices are never changed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:926
+msgid "Registration is currently unavailable because no customer role has been configured."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:374
+msgid "Registration page"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1618
+msgid "Registration rejected"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:960
+msgid "Registration type"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:887
+msgid "Reject"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:206 contactpanda/includes/class-contactpanda-plugin.php:2960
+#, php-format
+msgid "Remove role %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1070
+msgid "Repeat password"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:373
+msgid "Replace the standard WordPress registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1120
+msgid "Requested customer role"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:873
+msgid "Requested role"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:371
+msgid "Require email confirmation"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:381
+msgid "Require VAT ID"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:905
+msgid "Resend confirmation"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:687
+msgid "Reset ContactPanda data"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:617
+msgid "Review"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:382
+msgid "Roles customers may request"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3169
+msgid "Romania"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:203
+msgid "Running tag action…"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1673 contactpanda/includes/class-contactpanda-plugin.php:2659 contactpanda/includes/class-contactpanda-plugin.php:3761 contactpanda/includes/class-contactpanda-registration.php:305 contactpanda/includes/class-contactpanda-registration.php:306 contactpanda/includes/class-contactpanda-registration.php:1076
+msgid "Salutation"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:301
+msgid "Salutation library"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:85
+msgid "Same WordPress account"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:189
+msgid "Save"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:247
+msgid "Save addresses"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:657
+msgid "Save appearance"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2818
+msgid "Save contact address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:462
+msgid "Save general settings"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:223
+msgid "Save new password"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:214
+msgid "Save profile"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:207
+msgid "Save the selected roles and the resulting permissions for this account?"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:216
+msgid "Saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:210
+msgid "Saving address…"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:196
+msgid "Saving failed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:218
+msgid "Saving with confirmation…"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:215 contactpanda/includes/class-contactpanda-my-account.php:62
+msgid "Saving…"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:898
+msgid "Search"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:898 contactpanda/includes/class-contactpanda-plugin.php:898
+msgid "Search tags"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:912
+#, php-format
+msgid "Select %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:906
+msgid "Select all tags"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2662
+msgid "Select an existing company by typing its name, or enter a new company name. Similar existing names are suggested to avoid duplicates."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1525
+msgid "Select bulk action"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:885
+msgid "Select this role again in the settings before approval."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2645
+msgid "Selected people"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1557 contactpanda/includes/class-contactpanda-plugin.php:1557 contactpanda/includes/class-contactpanda-plugin.php:3780 contactpanda/includes/class-contactpanda-plugin.php:3780 contactpanda/includes/class-contactpanda-plugin.php:3789 contactpanda/includes/class-contactpanda-plugin.php:3789
+msgid "Send email"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2594
+msgid "Sent"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:46 contactpanda/includes/class-contactpanda-registration.php:270
+msgid "Settings"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1330 contactpanda/includes/class-contactpanda-plugin.php:2791 contactpanda/includes/class-contactpanda-my-account.php:245
+msgid "Shipping address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:396
+msgid "Shown after the confirmation link has been opened."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:395
+msgid "Shown after the form has been submitted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3671
+msgid "Slovakia"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3673
+msgid "Slovenia"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2391
+#, php-format
+msgid "Sort %1$s %2$s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2594 contactpanda/includes/class-contactpanda-plugin.php:2697 contactpanda/includes/class-contactpanda-registration.php:306
+msgid "Source"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2202 contactpanda/includes/class-contactpanda-plugin.php:2206 contactpanda/includes/class-contactpanda-plugin.php:2338 contactpanda/includes/class-contactpanda-plugin.php:2342
+msgid "Spam"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:212 contactpanda/includes/class-contactpanda-my-account.php:281
+msgid "State / Province"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:677 contactpanda/includes/class-contactpanda-plugin.php:2804 contactpanda/includes/class-contactpanda-plugin.php:2826
+msgid "State / region"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:492
+msgid "Status saved; the additional log note could not be created."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2495
+msgid "Street"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:677 contactpanda/includes/class-contactpanda-plugin.php:2804 contactpanda/includes/class-contactpanda-plugin.php:2826 contactpanda/includes/class-contactpanda-registration.php:1096 contactpanda/includes/class-contactpanda-registration.php:1106 contactpanda/includes/class-contactpanda-my-account.php:208 contactpanda/includes/class-contactpanda-my-account.php:277
+msgid "Street and house number"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:972
+msgid "Submit business registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:995
+msgid "Subscribe to newsletter"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:525
+msgid "Subscribers are matched by email address. Historical mailings and available statistics are imported as read-only archives by ContactPanda Plus. Unsubscribed and bounced states take precedence and are never changed into a marketing consent by the import."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:675 contactpanda/includes/class-contactpanda-plugin.php:1671 contactpanda/includes/class-contactpanda-plugin.php:1686 contactpanda/includes/class-contactpanda-my-account.php:204
+msgid "Suffix title"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:217 contactpanda/includes/class-contactpanda-plugin.php:3765
+#, php-format
+msgid "Suggestion: %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3665 contactpanda/includes/class-contactpanda-registration.php:1180
+msgid "Switzerland"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:224
+msgid "Tag action failed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:851
+msgid "Tag assigned."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:692
+#, php-format
+msgid "Tag comparison: %1$d in Groundhogg, %2$d in ContactPanda; %3$d source assignments processed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:480
+#, php-format
+msgid "Tag ID %d has no name."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:523
+#, php-format
+msgid "Tag ID %d is assigned to a contact but was not found in the tag list."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:851
+msgid "Tag removed from this person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:698
+#, php-format
+msgid "Tag warnings: %d"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:487
+#, php-format
+msgid "Tag “%s” could not be stored."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:65 contactpanda/includes/class-contactpanda-plugin.php:66 contactpanda/includes/class-contactpanda-plugin.php:678 contactpanda/includes/class-contactpanda-plugin.php:882 contactpanda/includes/class-contactpanda-plugin.php:897 contactpanda/includes/class-contactpanda-plugin.php:2728 contactpanda/includes/class-contactpanda-registration.php:684
+msgid "Tags"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:376
+msgid "Terms and conditions page"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:388
+msgid "Text after business customer registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:396
+msgid "Text after newsletter confirmation"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:395
+msgid "Text after newsletter signup"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:378
+msgid "Text after standard customer registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:161
+msgid "Thank you. Please check your inbox and confirm your email address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:160
+msgid "Thank you. Please check your inbox and confirm your email address. Your requested customer role will only be assigned after approval."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:180
+msgid "Thank you. Please check your inbox and confirm your newsletter subscription."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:371
+msgid "The account remains blocked until the email address has been confirmed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:225
+msgid "The broadcast could not be loaded."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1070
+msgid "The broadcast does not contain a displayable email."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1076
+msgid "The broadcast email could not be rendered."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2704
+msgid "The change is saved in the selected leading data source and documented as an activity."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:63
+msgid "The changes could not be saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:800
+msgid "The company could not be created in the selected data source."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2452
+msgid "The company could not be loaded from the selected data source."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:264
+msgid "The company name must not be empty."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:802
+msgid "The company was created."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1025
+msgid "The confirmation email could not be sent. Please try again later."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1035 contactpanda/includes/class-contactpanda-registration.php:1504
+msgid "The confirmation link is invalid or has expired."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1286
+msgid "The contact address could not be saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1310
+msgid "The contact address was saved and copied to the WooCommerce billing address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1292
+msgid "The contact address was saved, but no linked WooCommerce customer account is available for copying."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1304
+msgid "The contact address was saved, but WooCommerce could not copy it to the billing address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1310
+msgid "The contact address was saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:681
+msgid "The ContactPanda database tables do not exist yet or require an update. Creating or updating them does not change Groundhogg or any connected plugin."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:734
+msgid "The ContactPanda database was created and activated."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:911
+msgid "The ContactPanda registration form is disabled in the settings."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:471
+msgid "The current password is incorrect."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:386
+msgid "The customer only requests a role. It is assigned exclusively after an administrator approves the registration. Privileged administrative roles are excluded."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:435
+msgid "The date must not be in the future."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:553
+msgid "The detected newsletter table does not contain a compatible email field."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:313
+msgid "The dictionary is empty."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1354 contactpanda/includes/class-contactpanda-registration.php:1221
+msgid "The EU VIES service is currently unavailable. The VAT ID was not evaluated."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3007
+#, php-format
+msgid "The existing account <strong>%1$s</strong> with the same email address will be linked to this %2$s."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1159
+msgid "The existing user account cannot be linked."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1001 contactpanda/includes/class-contactpanda-registration.php:1252
+msgid "The form session has expired. Please try again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:741
+msgid "The Groundhogg migration was completed. Review the migration report before switching modes."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:465
+msgid "The migration prerequisites are not available."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:892
+msgid "The name is displayed in contact profiles and filters."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:223 contactpanda/includes/class-contactpanda-my-account.php:474
+msgid "The new password must contain at least 10 characters."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:477
+msgid "The new passwords do not match."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:597
+msgid "The newsletter import preview is ready. No source or ContactPanda data has been changed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:514
+msgid "The Newsletter Plugin is installed but inactive. Existing source tables can still be read without changing them."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1003 contactpanda/includes/class-contactpanda-registration.php:1016
+msgid "The newsletter signup could not be processed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:547
+msgid "The newsletter subscriber source or the ContactPanda database is not available."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1040
+msgid "The newsletter subscription could not be saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1086
+msgid "The order was not found."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:533
+msgid "The original newsletter plugin data remains unchanged."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1377
+msgid "The password must contain at least 10 characters."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1379
+msgid "The passwords do not match."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1239 contactpanda/includes/class-contactpanda-plugin.php:1618
+msgid "The person could not be loaded from the selected data source."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:120
+msgid "The person could not be saved in ContactPanda."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2656
+msgid "The person is created in the selected data source with the marketing status “Unconfirmed”."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:786
+msgid "The person was created with the status “Unconfirmed”."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1830 contactpanda/includes/class-contactpanda-plugin.php:1859
+msgid "The person was created, but the company assignment could not be saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1844
+msgid "The person was created, but the company could not be created."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:817 contactpanda/includes/class-contactpanda-plugin.php:1145
+msgid "The person was not found."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:227
+msgid "The preview could not be loaded."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:641
+msgid "The preview is ready. Review the totals before starting the import."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:285
+msgid "The primary contact does not have a WordPress user account."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1400
+msgid "The privacy policy must be acknowledged."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1257
+msgid "The registration could not be processed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:359
+msgid "The requested role is no longer enabled and was not assigned. Please update the allowed roles before approving this registration."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:362
+msgid "The requested role was not assigned because the email address has not yet been confirmed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:746
+msgid "The required deletion confirmation was not provided."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3039
+msgid "The role of the last administrator cannot be removed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:771
+msgid "The selected data source could not create the person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1519
+msgid "The selected data source returned no contacts for this search."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:979
+msgid "The separate ContactPanda newsletter signup is available only when the ContactPanda database is the active data source."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:213
+msgid "The server returned an invalid response."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:244
+msgid "The shipping address differs from the billing address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3795
+msgid "The structured contact address opens for editing."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:932
+msgid "The tag action could not be completed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:944
+msgid "The tag and its assignments were deleted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:937
+msgid "The tag could not be created or already exists."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:944
+msgid "The tag could not be deleted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:941
+msgid "The tag could not be renamed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:937
+msgid "The tag was created."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:941
+msgid "The tag was renamed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1403
+msgid "The terms and conditions must be accepted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1128
+msgid "The user account cannot be edited."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1204
+msgid "The user account could not be linked safely to ContactPanda; the newly created account was rolled back."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1218
+msgid "The user account could not be linked safely to Groundhogg; the newly created account was rolled back."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1225
+msgid "The user account was created and linked."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1225
+msgid "The user account was linked."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:281 contactpanda/includes/class-contactpanda-plugin.php:329 contactpanda/includes/class-contactpanda-plugin.php:1337 contactpanda/includes/class-contactpanda-registration.php:1200
+msgid "The VAT ID does not have a valid EU format."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1371 contactpanda/includes/class-contactpanda-registration.php:1244 contactpanda/includes/class-contactpanda-registration.php:1272 contactpanda/includes/class-contactpanda-my-account.php:396
+msgid "The VAT ID is not valid according to EU VIES."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1364 contactpanda/includes/class-contactpanda-registration.php:1246
+msgid "The VAT ID is valid according to EU VIES."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1330
+msgid "The WooCommerce "
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1136
+msgid "The WordPress roles were saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:870
+msgid "There are currently no registrations awaiting approval."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:725
+msgid "This action cannot be undone."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:442
+msgid "This address is blocked because of a delivery, spam, or complaint status. The ordinary consent override cannot remove this protection."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:461
+msgid "This affects only ContactPanda cp_ tables, ContactPanda options, and ContactPanda user metadata. Data belonging to other plugins is never deleted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1063
+msgid "This broadcast was not found for the person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1550
+msgid "This business registration was not approved. Please contact us."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:346
+msgid "This field must not be empty."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1246
+msgid "This person does not have a linked WooCommerce customer account."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:334
+msgid "This person does not have a linked WordPress user account."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:205
+msgid "This role is already assigned."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3031
+msgid "This super administrator account cannot be changed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:223
+msgid "This tag is already assigned to the person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:414
+msgid "This text is displayed after a business customer confirms the email address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:388
+msgid "This text is displayed after a business customer registration."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:378
+msgid "This text is displayed after a standard customer account registration."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:413
+msgid "This text is displayed after a standard customer confirms the email address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1369
+msgid "This username is already in use."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:785
+msgid "Tickets, attendees, and check-ins remain untouched."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1260
+msgid "Too many registration attempts. Please wait and try again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1004
+msgid "Too many signup attempts. Please wait and try again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1235
+msgid "Too many VAT ID checks. Please wait and try again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3178
+msgid "Türkiye"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2200 contactpanda/includes/class-contactpanda-plugin.php:2203 contactpanda/includes/class-contactpanda-plugin.php:2336 contactpanda/includes/class-contactpanda-plugin.php:2339
+msgid "Unconfirmed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2201 contactpanda/includes/class-contactpanda-plugin.php:2205 contactpanda/includes/class-contactpanda-plugin.php:2337 contactpanda/includes/class-contactpanda-plugin.php:2341
+msgid "Undeliverable"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:459
+msgid "Uninstallation and data"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3151
+msgid "United Kingdom"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2209 contactpanda/includes/class-contactpanda-plugin.php:2344
+msgid "Unknown"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:452
+msgid "unknown"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1795
+msgid "Unnamed company"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:623 contactpanda/includes/class-contactpanda-registration.php:623
+msgid "Unnamed contact"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1552 contactpanda/includes/class-contactpanda-plugin.php:1789
+msgid "Unnamed person"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:458 contactpanda/includes/class-contactpanda-plugin.php:491 contactpanda/includes/class-contactpanda-plugin.php:2200 contactpanda/includes/class-contactpanda-plugin.php:2204 contactpanda/includes/class-contactpanda-plugin.php:2336 contactpanda/includes/class-contactpanda-plugin.php:2340
+msgid "Unsubscribed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1614
+msgid "Update about your business registration"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:893
+msgid "Update tag"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:416
+msgid "Use 0 for an immediate redirect or up to 30 seconds."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:238
+msgid "Use address from my profile"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:893
+msgid "Use the description to document the purpose of this tag."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:655
+msgid "Use the neutral ContactPanda form and account design."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1066
+msgid "User account"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1067
+msgid "Username"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:188 contactpanda/includes/class-contactpanda-registration.php:1161 contactpanda/includes/class-contactpanda-my-account.php:243
+msgid "Validate VAT ID"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:676 contactpanda/includes/class-contactpanda-plugin.php:1680 contactpanda/includes/class-contactpanda-plugin.php:1695 contactpanda/includes/class-contactpanda-plugin.php:2483 contactpanda/includes/class-contactpanda-plugin.php:2491 contactpanda/includes/class-contactpanda-registration.php:873 contactpanda/includes/class-contactpanda-registration.php:1161 contactpanda/includes/class-contactpanda-my-account.php:243
+msgid "VAT ID"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:243
+msgid "VAT ID successfully validated"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:195 contactpanda/includes/class-contactpanda-registration.php:938 contactpanda/includes/class-contactpanda-my-account.php:65
+msgid "VAT ID validation could not be completed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1795
+msgid "View"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2469
+msgid "View company"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1656
+msgid "View person"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1773 contactpanda/includes/class-contactpanda-plugin.php:2478 contactpanda/includes/class-contactpanda-plugin.php:2486 contactpanda/includes/class-contactpanda-registration.php:1089
+msgid "Website"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:2201 contactpanda/includes/class-contactpanda-plugin.php:2204 contactpanda/includes/class-contactpanda-plugin.php:2337 contactpanda/includes/class-contactpanda-plugin.php:2340
+msgid "Weekly"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php:332
+msgid "WooCommerce and the ContactPanda database must be available for this import."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1327
+msgid "WooCommerce could not save the address."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:454
+#, php-format
+msgid "WooCommerce did not persist all address fields. Please try again. Affected fields: %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:644
+#, php-format
+msgid "WooCommerce import completed: %1$d new contacts, %2$d updated contacts, %3$d new companies, %4$d skipped."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1243
+msgid "WooCommerce is unavailable."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:781
+msgid "WordPress accounts, customer profiles, and orders remain untouched."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:678
+msgid "WordPress roles"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1135
+msgid "WordPress roles changed"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1135
+#, php-format
+msgid "WordPress roles changed to: %1$s. Edited by: %2$s."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1224
+msgid "WordPress user account"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1224
+msgid "WordPress user account created and linked."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:722 contactpanda/includes/class-contactpanda-plugin.php:722 contactpanda/includes/class-contactpanda-plugin.php:2620 contactpanda/includes/class-contactpanda-registration.php:879
+msgid "Yes"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:914
+msgid "You are already signed in."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:3034
+msgid "You cannot remove your own administrator role here."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:639
+msgid "You do not have permission to export or print contacts."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:857 contactpanda/includes/class-contactpanda-plugin.php:924
+msgid "You do not have permission to manage tags."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:662 contactpanda/includes/class-contactpanda-registration.php:753
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1378 contactpanda/includes/class-contactpanda-plugin.php:1397 contactpanda/includes/class-contactpanda-registration.php:255
+msgid "You do not have permission to view this page."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:248 contactpanda/includes/class-contactpanda-plugin.php:388 contactpanda/includes/class-contactpanda-plugin.php:3281 contactpanda/includes/class-contactpanda-registration.php:321 contactpanda/includes/class-contactpanda-registration.php:344 contactpanda/includes/class-contactpanda-registration.php:1580 contactpanda/includes/class-contactpanda-registration.php:1626
+msgid "You do not have permission."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:360 contactpanda/includes/class-contactpanda-my-account.php:369
+msgid "Your addresses have been saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1609
+msgid "Your business account and requested customer role have been approved. You can now sign in."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1609
+msgid "Your business account has been approved"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1547
+msgid "Your business account is still awaiting approval."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:1614
+msgid "Your business registration could not be approved. Please contact us if you have questions."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:170
+msgid "Your email address has been confirmed. You can now sign in."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:169
+msgid "Your email address has been confirmed. Your requested customer role is still awaiting approval."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:181
+msgid "Your newsletter subscription has been confirmed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:482
+msgid "Your password has been changed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:306 contactpanda/includes/class-contactpanda-my-account.php:315
+msgid "Your profile has been saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-my-account.php:513
+msgid "Your session has expired. Please sign in again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php:824
+msgid "— Select page —"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1652
+msgid "← People overview"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php:1653
+msgid "← Previous person"
+msgstr ""
+
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Trash"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "This action requires an administrator and standalone ContactPanda mode."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Select records and explicitly confirm the selected action."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Trash is available only for standalone ContactPanda records. Groundhogg records cannot be deleted here."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Only ContactPanda records are affected. WordPress users, orders, invoices, events, Groundhogg records and external source data are never deleted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Changed: %1$d. Failed or no longer in the required state: %2$d."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Active records"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Restore"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Delete permanently"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Move to Trash"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "I explicitly confirm the selected action for the checked records. Permanent deletion cannot be undone."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Select all records on this page"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Deleted at"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "No records found."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Previous page"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-trash.php
+msgid "Next page"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Trash and bulk actions"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-github-updater.php
+msgid "ContactPanda Plus updates require a valid CONTACTPANDA_PLUS_GITHUB_TOKEN in wp-config.php. The plugin remains usable without update access."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-github-updater.php
+msgid "The GitHub update service could not be reached. Please try again later."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-github-updater.php
+msgid "GitHub denied update access. Check the repository permission and token expiry in wp-config.php."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-github-updater.php
+msgid "No valid published GitHub release with matching update metadata and plugin ZIP was found."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-github-updater.php
+msgid "This update requires a newer WordPress, PHP, or active ContactPanda Basic version. Update those requirements first."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-github-updater.php
+msgid "The update ZIP failed integrity, plugin directory, version, or requirement validation. Nothing was installed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-github-updater.php
+msgid "GitHub updates are disabled for this plugin."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-github-updater.php
+msgid "Published GitHub release for the ContactPanda test phase. Automatic updates require administrator opt-in in the WordPress Plugins screen."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-github-updater.php
+msgid "Check for updates"
+msgstr ""
+
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Marketing consent confirmed by double opt-in"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "This email address cannot be subscribed because it has a protected delivery or complaint status."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "This confirmation request is no longer available. Please submit the signup form again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "A confirmation email was requested too often. Please wait a few minutes and try again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "A new confirmation email has been sent."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "The email address was changed too often. Please wait a few minutes and try again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "The email address was changed, but the new confirmation email could not be sent. Please request it again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "The email address was corrected and a new confirmation email has been sent."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "Please confirm your email address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+#, php-format
+msgid "We sent the confirmation email to %s."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "If you cannot find the message, please also check your spam folder."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "Send confirmation email again"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "Correct email address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-registration.php
+msgid "Save and send again"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Once weekly"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Admin notices"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Import CSV data"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Import people or companies from a CSV file. The preview and field mapping are shown before anything is saved. Empty CSV values never erase existing data."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Last CSV import"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "%1$d created, %2$d updated, %3$d skipped, %4$d errors."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Show import errors"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Data type"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Duplicate handling"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Fill missing values"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Skip existing records"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Update with non-empty CSV values"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "CSV file"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Upload and preview"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "In Groundhogg frontend mode, people are imported directly into Groundhogg and companies into Groundhogg Companies when available. Source files and external records are never changed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "%1$d data rows detected using “%2$s” as the delimiter. Map the columns before importing."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "ContactPanda field"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "CSV column"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Do not import"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "First rows"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "I checked the preview and field mapping."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Start import"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Select a CSV file no larger than 5 MB."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "The CSV file could not be read."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "No CSV header row was detected."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "The CSV file contains no data rows."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "tab"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Legal name"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Street address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Title before name"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Title after name"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Position"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "State"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Tags (comma separated)"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Marketing consent"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Confirm the field mapping before importing."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "The import preview expired. Upload the CSV file again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Map the required identifying field before importing."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Row %1$d: %2$s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "CSV import completed: %1$d created, %2$d updated, %3$d skipped, %4$d errors."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Company name is missing."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "A valid email address is required."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Person could not be saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Imported from a confirmed CSV field."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Merge duplicates"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Record merging is available in standalone ContactPanda mode. Groundhogg records must be merged in Groundhogg so its source identifiers remain authoritative."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Select two or more fragments, choose the primary record, and resolve conflicting fields. Related tags, consents, notes, and company links are retained; source fragments are moved to Trash."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Search records"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Enter a name, company, or email fragment to find records to merge."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Record"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Details"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Record #%d"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "No matching records found."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Compare selected records"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Select between two and twenty records to merge."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "WordPress user"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Choose the primary record"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Unnamed record"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Resolve field values"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Field"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Keep value from"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "After confirmation, source fragments are moved to the ContactPanda Trash. External systems, orders, invoices, and source records are not changed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "I reviewed the primary record and every conflicting value."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Merge records"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Confirm the reviewed merge before continuing."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "The merge preview expired. Select the records again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "%d duplicate fragments were merged and moved to Trash."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Optional central salutation library"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "You can optionally supplement your local library with a centrally maintained name list. Local and manually confirmed assignments always take precedence. No contact or customer data is uploaded."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Enable the central library"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "I understand that name-based salutations may be incomplete or incorrect and remain responsible for reviewing them."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Check weekly for library updates"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Save library settings"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Update central library now"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Installed central version: %1$s. Last check: %2$s."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Accept the library disclaimer before enabling it."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Central library updated: %d new names added."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Enable the central library before updating it."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "The central library could not be downloaded. Your local library was not changed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Optional notice cleanup"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "ContactPanda can add a Hide link to non-critical promotional, license-key, and upgrade reminders. Error messages, security warnings, and WordPress core update notices are never hidden."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Allow me to hide non-critical reminders"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Restore all hidden reminders for my account (%d)"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Save notice settings"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Hide this reminder"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Company could not be created."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Company could not be updated."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Select at least two active records and one primary record."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "The merge could not start safely."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "One of the selected records is no longer active."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Contact records merged"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Source record IDs moved to Trash: %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Company records merged"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "The records could not be merged safely. No changes were retained."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Groundhogg Companies is required for this company import."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Groundhogg Companies could not update this company."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Groundhogg Companies could not create this company."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "A valid Groundhogg email address is required."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Groundhogg could not update this person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Groundhogg could not create this person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Marketing consent imported from CSV"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "The mapped CSV consent field contained an affirmative value."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Save changes"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Add entry"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Central library"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "ContactPanda lists likely duplicates without changing them. Use the merge tool below to select a primary record and confirm every conflict."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Duplicates"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Import vCard contacts"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Import Apple Contacts and other vCard/VCF files. ContactPanda shows a preview first, matches existing people without deleting data, and never changes the source file."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Last vCard import"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Update with non-empty vCard values"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "vCard file"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "%d contact was found. No data has been changed yet."
+msgid_plural "%d contacts were found. No data has been changed yet."
+msgstr[0] ""
+msgstr[1] ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Optional tags for all imported contacts"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Tags separated by commas"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "I checked the vCard preview and want to start the non-destructive import."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Select a vCard file no larger than 5 MB."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "No readable contacts were found in the vCard file."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Confirm the vCard preview before importing."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "The vCard preview expired. Upload the file again."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Contact %1$d: %2$s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "vCard import completed: %1$d created, %2$d updated, %3$d skipped, %4$d errors."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Groundhogg requires an email address for vCard imports."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Resolve and complete field values"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Choose an existing value or edit the final value directly before merging."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Available values"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Final value"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-data-tools.php
+msgid "Neutral / not specified"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-store.php
+msgid "Enter a valid final email address before merging."
+msgstr ""
+
+msgid "%d historical broadcast recipient assignments were imported where Groundhogg made them available."
+msgstr ""
+
+msgid "%d historical recipient assignments were imported and linked to matching people."
+msgstr ""
+
+msgid "Built-in registration page"
+msgstr ""
+
+msgid "Connected systems remain the owners of their source data. ContactPanda Basic displays compatible data without changing it."
+msgstr ""
+
+msgid "ContactPanda uses a theme-compatible built-in page while no WordPress page is selected."
+msgstr ""
+
+msgid "Edit duplicates"
+msgstr ""
+
+msgid "General settings"
+msgstr ""
+
+msgid "Groundhogg is active and can remain the leading contact data source."
+msgstr ""
+
+msgid "Integrations"
+msgstr ""
+
+msgid "Job title"
+msgstr ""
+
+msgid "Learn about ContactPanda Plus"
+msgstr ""
+
+msgid "Mailing #%d"
+msgstr ""
+
+msgid "Manage this data centrally in ContactPanda Plus."
+msgstr ""
+
+msgid "Miscellaneous"
+msgstr ""
+
+msgid "No previous mailings were found."
+msgstr ""
+
+msgid "Reconcile now"
+msgstr ""
+
+msgid "Save time and costs, avoid duplicate work, and unlock additional automation, newsletter, and reporting options."
+msgstr ""
+
+msgid "The Newsletter Plugin is active. ContactPanda Basic provides a read-only overview; the source plugin remains unchanged."
+msgstr ""
+
+msgid "The Newsletter Plugin migration is available with ContactPanda Plus."
+msgstr ""
+
+msgid "View registration page"
+msgstr ""
+
+msgid "WooCommerce is active. Orders and customer information can be displayed in ContactPanda; existing orders, invoices, prices, and WooCommerce records are never changed."
+msgstr ""
+
+msgid "You do not have permission to import data."
+msgstr ""
+
+msgid "Review every file in a preview before ContactPanda saves any records."
+msgstr ""
+
+msgid "Drop a CSV file here"
+msgstr ""
+
+msgid "or click to select a file"
+msgstr ""
+
+msgid "Drop a vCard file here"
+msgstr ""
+
+msgid "or click to select a VCF file"
+msgstr ""
+
+msgid "View selection"
+msgstr ""
+
+msgid "Notes"
+msgstr ""
+
+msgid "The person could not be found."
+msgstr ""
+
+msgid "General note"
+msgstr ""
+
+msgid "Telephone call"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Meeting"
+msgstr ""
+
+msgid "Callback"
+msgstr ""
+
+msgid "Enter note content."
+msgstr ""
+
+msgid "The note was saved."
+msgstr ""
+
+msgid "The note could not be saved."
+msgstr ""
+
+msgid "Add note"
+msgstr ""
+
+msgid "Date and time"
+msgstr ""
+
+msgid "Title (optional)"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "Save note"
+msgstr ""
+
+msgid "No notes yet"
+msgstr ""
+
+msgid "Create the first note for this person."
+msgstr ""
+
+msgid "Last central synchronization:"
+msgstr ""
+
+msgid "Never"
+msgstr ""
+
+msgid "A unified view of companies, contacts, orders, and invoices."
+msgstr ""
+
+msgid "Add company"
+msgstr ""
+
+msgid "Add person"
+msgstr ""
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Add"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Add email address"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Add phone number"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Billing"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Business"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Choose another primary contact detail before removing this one."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Contact detail removed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Done"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Edit tags"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Email addresses"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Fax"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Find duplicates"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Landline"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Marketing: %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Mobile"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Newsletter"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "No email address saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "No phone number saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "No tags assigned yet."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Phone numbers"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Primary"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Private"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Remove"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Remove tag from this person"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Remove this contact detail?"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "The contact detail could not be removed."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "The contact detail could not be saved."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "The contact detail is invalid."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "The contact detail no longer exists."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "The primary contact detail could not be updated in the selected data source."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "This contact detail is already assigned to the person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "This email address belongs to another person."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Type"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Use as primary contact detail"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-plugin.php
+msgid "Successfully validated through EU VIES"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Every local import is recorded with its source, time, result, and affected records. Rollback retains later edits as conflicts instead of overwriting them."
+msgstr ""
+
+msgid "Import history"
+msgstr ""
+
+msgid "Import rollback is available only for local ContactPanda records."
+msgstr ""
+
+msgid "Import rolled back: %1$d records restored, %2$d new records moved to Trash, %3$d later edits retained as conflicts."
+msgstr ""
+
+msgid "Move “%s” to Trash?"
+msgstr ""
+
+msgid "No imports have been recorded yet."
+msgstr ""
+
+msgid "Permanently delete “%s”? This ContactPanda record cannot be restored afterwards."
+msgstr ""
+
+msgid "Primary email address"
+msgstr ""
+
+msgid "Primary phone number"
+msgstr ""
+
+msgid "Restore “%s”?"
+msgstr ""
+
+msgid "Result"
+msgstr ""
+
+msgid "Roll back"
+msgstr ""
+
+msgid "Roll back this import? New records will be moved to Trash, earlier values will be restored, and later edits will be retained as conflicts."
+msgstr ""
+
+msgid "Select only the records that should be combined. At least two are required."
+msgstr ""
+
+msgid "Show records"
+msgstr ""
+
+msgid "This import cannot be rolled back."
+msgstr ""
+
+msgid "Use as primary email address"
+msgstr ""
+
+msgid "Use as primary phone number"
+msgstr ""
+
+msgid "%1$d created, %2$d updated, %3$d skipped, %4$d errors"
+msgstr ""
