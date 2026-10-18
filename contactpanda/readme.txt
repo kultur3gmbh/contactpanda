@@ -2,12 +2,17 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
 
 == Changelog ==
+
+= 0.3.1 =
+* Activates the public GitHub release channel for verified ContactPanda Basic updates in WordPress.
+* Publishes matching ZIP and checksum metadata while retaining explicit WordPress auto-update opt-in.
+* Keeps ContactPanda Plus and ContactPanda Checkout on their independent update and version channels.
 
 = 0.3.0 =
 * Renames the plugin and all new internal identifiers to ContactPanda, including clean-install database tables using the WordPress table prefix followed by cp_.
