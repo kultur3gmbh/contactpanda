@@ -1711,7 +1711,15 @@ final class ContactPanda_Plugin {
 		$event_summaries = array();
 
 		if ( $needs_complete_result ) {
-			$contacts = self::all_contacts( $search );
+			// The two quick filters only need stable contact identities while their
+			// WooCommerce/Event relationships are calculated. Loading every complete
+			// Groundhogg contact (including tags and meta) can exhaust memory on real
+			// sites before the first filtered page is rendered.
+			$uses_relationship_filter = in_array( $customer_filter, array( 'besteller', 'event-besucher' ), true )
+				|| in_array( $orderby, array( 'order_total', 'event_count' ), true );
+			$contacts = $uses_relationship_filter && ! $segment_id && ! $advanced_filter && ! $import_run
+				? self::all_contact_identities( $search )
+				: self::all_contacts( $search );
 			if ( 'besteller' === $customer_filter || 'order_total' === $orderby ) {
 				$order_summaries = self::contact_order_summaries( $contacts );
 			}
@@ -1747,6 +1755,9 @@ final class ContactPanda_Plugin {
 			$pages = max( 1, (int) ceil( $total / $limit ) );
 			$page = min( $page, $pages );
 			$contacts = array_slice( $contacts, ( $page - 1 ) * $limit, $limit );
+			if ( $uses_relationship_filter && ! $segment_id && ! $advanced_filter && ! $import_run ) {
+				$contacts = self::hydrate_contact_identities( $contacts );
+			}
 		} else {
 			$result = self::contact_search( $search, $limit, ( $page - 1 ) * $limit );
 			$contacts = isset( $result['contacts'] ) && is_array( $result['contacts'] ) ? $result['contacts'] : array();
@@ -2342,6 +2353,54 @@ final class ContactPanda_Plugin {
 		}
 
 		return array_values( $contacts );
+	}
+
+	/**
+	 * Return only the fields needed to match WooCommerce orders and event
+	 * attendees. Full contacts are hydrated after filtering and pagination.
+	 */
+	private static function all_contact_identities( $search = '' ) {
+		if ( ContactPanda_Store::standalone() ) {
+			return self::all_contacts( $search );
+		}
+		global $wpdb;
+		$table = $wpdb->prefix . 'gh_contacts';
+		$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
+		if ( $table !== $exists ) {
+			return self::all_contacts( $search );
+		}
+		$sql = "SELECT ID AS id, user_id, email, first_name, last_name, optin_status FROM `{$table}`"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- fixed Groundhogg table name.
+		$needle = trim( (string) $search );
+		if ( '' !== $needle ) {
+			$like = '%' . $wpdb->esc_like( $needle ) . '%';
+			$sql .= $wpdb->prepare( ' WHERE first_name LIKE %s OR last_name LIKE %s OR email LIKE %s', $like, $like, $like );
+		}
+		$sql .= ' ORDER BY ID ASC';
+		$rows = $wpdb->get_results( $sql, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- optional search is prepared above.
+		return is_array( $rows ) ? $rows : array();
+	}
+
+	/** Hydrate only the current result page after a lightweight relationship filter. */
+	private static function hydrate_contact_identities( $identities ) {
+		$contacts = array();
+		foreach ( (array) $identities as $identity ) {
+			$id = absint( self::value( $identity, array( 'id', 'ID' ) ) );
+			if ( ! $id ) continue;
+			if ( class_exists( '\\Groundhogg\\Contact' ) ) {
+				try {
+					$contact = new \Groundhogg\Contact( $id );
+					if ( ! method_exists( $contact, 'exists' ) || $contact->exists() ) {
+						$contacts[] = $contact;
+						continue;
+					}
+				} catch ( Throwable $e ) {
+					// Fall through to the stable ability adapter.
+				}
+			}
+			$contact = self::contact( $id );
+			if ( $contact ) $contacts[] = $contact;
+		}
+		return $contacts;
 	}
 
 	private static function groundhogg_all_contacts( $search = '' ) {
@@ -4086,11 +4145,15 @@ final class ContactPanda_Plugin {
 			$summaries[ $contact_id ] = self::empty_order_summary();
 			$summaries[ $contact_id ]['order_ids'] = array();
 
-			$user = self::contact_user( $contact );
-			if ( $user ) {
-				$user_map[ (int) $user->ID ][] = $contact_id;
+			$user_id = absint( self::value( $contact, array( 'user_id', 'get_user_id' ) ) );
+			if ( $user_id ) {
+				$user_map[ $user_id ][] = $contact_id;
 			}
 			$emails = self::contact_emails( $contact );
+			// Only hydrate a WordPress user when the lightweight contact identity
+			// already contains its ID. Looking up every contact by email turns the
+			// quick filter into hundreds of individual database queries.
+			$user = $user_id ? get_user_by( 'id', $user_id ) : false;
 			if ( $user ) {
 				$emails[] = $user->user_email;
 				$emails[] = get_user_meta( $user->ID, 'billing_email', true );
