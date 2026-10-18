@@ -5,6 +5,28 @@
 	function format(template, value) { return String(template).replace(/%[sd]/, value); }
 
 	document.addEventListener('click', function (event) {
+		var inlineOpen = event.target.closest('.contactpanda-inline-edit-open');
+		if (inlineOpen) {
+			var inlineRow = inlineOpen.closest('.contactpanda-list-inline-edit');
+			if (inlineRow) {
+				inlineRow.classList.add('is-editing');
+				inlineRow.querySelectorAll('.contactpanda-inline-edit-fields').forEach(function (fields) { fields.hidden = false; });
+				inlineRow.querySelectorAll('.contactpanda-inline-edit-display, .contactpanda-inline-edit-open').forEach(function (display) { display.hidden = true; });
+				var firstInput = inlineRow.querySelector('.contactpanda-inline-edit-fields input, .contactpanda-inline-edit-fields textarea');
+				if (firstInput) firstInput.focus();
+			}
+			return;
+		}
+		var inlineCancel = event.target.closest('.contactpanda-inline-edit-cancel');
+		if (inlineCancel) {
+			var cancelRow = inlineCancel.closest('.contactpanda-list-inline-edit');
+			if (cancelRow) {
+				cancelRow.classList.remove('is-editing');
+				cancelRow.querySelectorAll('.contactpanda-inline-edit-fields').forEach(function (fields) { fields.hidden = true; });
+				cancelRow.querySelectorAll('.contactpanda-inline-edit-display, .contactpanda-inline-edit-open').forEach(function (display) { display.hidden = false; });
+			}
+			return;
+		}
 		var rollback = event.target.closest('.contactpanda-rollback-import');
 		if (rollback && !window.confirm(tr('confirmRollbackImport', 'Roll back this import?'))) { event.preventDefault(); return; }
 		var resetOpen = event.target.closest('[data-contactpanda-reset-open]');
@@ -132,6 +154,7 @@
 	});
 
 	document.addEventListener('change', function (event) {
+		if (event.target.closest('.contactpanda-central-library-form')) updateCentralLibraryForm(event.target.closest('.contactpanda-central-library-form'));
 		if (event.target.classList.contains('contactpanda-salutation-select')) saveSalutation(event.target);
 		if (event.target.classList.contains('contactpanda-new-salutation')) event.target.dataset.autoAssigned = '0';
 		if (event.target.classList.contains('contactpanda-consent-decision')) updateConsentConfirmation(event.target.closest('.contactpanda-marketing'));
@@ -141,6 +164,18 @@
 		}
 		if (event.target.classList.contains('contactpanda-person-select') || event.target.id === 'contactpanda-bulk-action') updateBulkSelection();
 	});
+
+	function updateCentralLibraryForm(form) {
+		if (!form) return;
+		var enabled = form.querySelector('[name="enabled"]');
+		var confirmed = form.querySelector('[name="confirmed"]');
+		var auto = form.querySelector('[name="auto"]');
+		var save = form.querySelector('[name="save"]');
+		if (auto) auto.disabled = !enabled.checked;
+		if (save) save.disabled = !!(enabled.checked && confirmed && !confirmed.checked);
+	}
+
+	document.querySelectorAll('.contactpanda-central-library-form').forEach(updateCentralLibraryForm);
 
 	document.addEventListener('input', function (event) {
 		if (!event.target.classList.contains('contactpanda-new-first-name')) return;
@@ -167,7 +202,7 @@
 			if (!result.success) throw new Error(result.data && result.data.message ? result.data.message : tr('saveFailed', 'Saving failed.'));
 			message.textContent = tr('saved', 'Saved.'); message.classList.add('is-success');
 			var value = field.querySelector('.contactpanda-salutation-value');
-			if (value) { value.dataset.value = select.value; value.textContent = result.data.display; }
+			if (value) { value.dataset.value = select.value; value.textContent = result.data.display; value.classList.toggle('is-empty', !select.value); }
 			var suggestion = field.querySelector('.contactpanda-salutation-suggestion'); if (suggestion) suggestion.remove();
 			closeSalutation(field, true);
 		}).catch(function (error) { message.textContent = error.message; }).finally(function () { select.disabled = false; });

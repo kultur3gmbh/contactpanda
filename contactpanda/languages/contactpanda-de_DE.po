@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.3.3\n"
+"Project-Id-Version: ContactPanda 0.3.4\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-18 18:00+0200\n"
@@ -1267,11 +1267,11 @@ msgstr "EU-VIES hat keine auswertbare Antwort geliefert."
 
 #: contactpanda/includes/class-contactpanda-plugin.php:187
 msgid "Event"
-msgstr "Veranstaltung"
+msgstr "Event"
 
 #: contactpanda/includes/class-contactpanda-plugin.php:2565
 msgid "Event #"
-msgstr "Veranstaltung #"
+msgstr "Event #"
 
 #: contactpanda/includes/class-contactpanda-plugin.php:1514
 msgid "Event attendees"
@@ -1279,11 +1279,11 @@ msgstr "Event-Besucher"
 
 #: contactpanda/includes/class-contactpanda-plugin.php:679 contactpanda/includes/class-contactpanda-plugin.php:1538
 msgid "Events"
-msgstr "Veranstaltungen"
+msgstr "Events"
 
 #: contactpanda/includes/class-contactpanda-registration.php:784
 msgid "Events and venue data remain untouched."
-msgstr "Veranstaltungen und Veranstaltungsorte bleiben unverändert."
+msgstr "Events und Veranstaltungsorte bleiben unverändert."
 
 #: contactpanda/includes/class-contactpanda-registration.php:372
 msgid "Every account registration offers an optional, unchecked marketing consent. Account registration never implies marketing consent."
@@ -4419,3 +4419,27 @@ msgstr "Firmen werden importiert…"
 
 msgid "Migration completed."
 msgstr "Migration abgeschlossen."
+
+msgid "Use central library"
+msgstr "Zentrale Bibliothek verwenden"
+
+msgid "By enabling the central library you accept that name-based salutations can be incomplete or incorrect and remain responsible for reviewing them. Disabling synchronization keeps names already added to your local library."
+msgstr "Mit der Aktivierung der zentralen Bibliothek akzeptieren Sie, dass namensbasierte Anreden unvollständig oder falsch sein können, und bleiben für deren Prüfung verantwortlich. Beim Deaktivieren bleiben bereits übernommene Namen in Ihrer lokalen Bibliothek erhalten."
+
+msgid "I understand the limitations of name-based salutation assignments."
+msgstr "Ich habe die Einschränkungen namensbasierter Anrede-Zuordnungen verstanden."
+
+msgid "Confirm the limitations before enabling the central library."
+msgstr "Bestätigen Sie die Einschränkungen, bevor Sie die zentrale Bibliothek aktivieren."
+
+msgid "Add salutation"
+msgstr "Anrede hinzufügen"
+
+msgid "Keep email addresses and phone numbers"
+msgstr "E-Mail-Adressen und Telefonnummern behalten"
+
+msgid "Select every value that should remain and choose exactly one primary value in each group."
+msgstr "Wählen Sie alle Werte aus, die erhalten bleiben sollen, und bestimmen Sie in jeder Gruppe genau einen Hauptwert."
+
+msgid "Choose one primary value for every selected email or phone group."
+msgstr "Wählen Sie für jede ausgewählte E-Mail- oder Telefongruppe genau einen Hauptwert."

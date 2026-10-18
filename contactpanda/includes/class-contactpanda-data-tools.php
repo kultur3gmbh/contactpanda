@@ -489,8 +489,9 @@ final class ContactPanda_Data_Tools {
 
 	private static function render_merge_preview( $token, $state ) {
 		$records = array(); foreach ( $state['ids'] as $id ) { $record = 'contacts' === $state['entity'] ? ContactPanda_Store::contact( $id ) : ContactPanda_Store::company( $id ); if ( $record ) $records[ $id ] = $record; }
-		$fields = 'contacts' === $state['entity'] ? array( 'first_name' => __( 'First name', 'contactpanda' ), 'last_name' => __( 'Last name', 'contactpanda' ), 'email' => __( 'Primary email address', 'contactpanda' ), 'position' => __( 'Position', 'contactpanda' ), 'wp_user_id' => __( 'WordPress user', 'contactpanda' ), 'meta__anrede' => __( 'Salutation', 'contactpanda' ), 'meta__titel_vorangestellt' => __( 'Title before name', 'contactpanda' ), 'meta__titel_nachgestellt' => __( 'Title after name', 'contactpanda' ), 'meta__berufsbezeichnung' => __( 'Job title', 'contactpanda' ), 'meta__primary_phone' => __( 'Primary phone number', 'contactpanda' ), 'meta__address_1' => __( 'Street address', 'contactpanda' ), 'meta__address_2' => __( 'Address line 2', 'contactpanda' ), 'meta__postcode' => __( 'Postal code', 'contactpanda' ), 'meta__city' => __( 'City', 'contactpanda' ), 'meta__state' => __( 'State', 'contactpanda' ), 'meta__country' => __( 'Country', 'contactpanda' ) ) : array( 'name' => __( 'Company name', 'contactpanda' ), 'legal_name' => __( 'Legal name', 'contactpanda' ), 'industry' => __( 'Industry', 'contactpanda' ), 'website' => __( 'Website', 'contactpanda' ), 'email' => __( 'Email', 'contactpanda' ), 'phone_number' => __( 'Phone', 'contactpanda' ), 'vat_id' => __( 'VAT ID', 'contactpanda' ), 'street' => __( 'Street address', 'contactpanda' ), 'address_2' => __( 'Address line 2', 'contactpanda' ), 'postcode' => __( 'Postal code', 'contactpanda' ), 'city' => __( 'City', 'contactpanda' ), 'country' => __( 'Country', 'contactpanda' ) );
+		$fields = 'contacts' === $state['entity'] ? array( 'first_name' => __( 'First name', 'contactpanda' ), 'last_name' => __( 'Last name', 'contactpanda' ), 'position' => __( 'Position', 'contactpanda' ), 'wp_user_id' => __( 'WordPress user', 'contactpanda' ), 'meta__anrede' => __( 'Salutation', 'contactpanda' ), 'meta__titel_vorangestellt' => __( 'Title before name', 'contactpanda' ), 'meta__titel_nachgestellt' => __( 'Title after name', 'contactpanda' ), 'meta__berufsbezeichnung' => __( 'Job title', 'contactpanda' ), 'meta__address_1' => __( 'Street address', 'contactpanda' ), 'meta__address_2' => __( 'Address line 2', 'contactpanda' ), 'meta__postcode' => __( 'Postal code', 'contactpanda' ), 'meta__city' => __( 'City', 'contactpanda' ), 'meta__state' => __( 'State', 'contactpanda' ), 'meta__country' => __( 'Country', 'contactpanda' ) ) : array( 'name' => __( 'Company name', 'contactpanda' ), 'legal_name' => __( 'Legal name', 'contactpanda' ), 'industry' => __( 'Industry', 'contactpanda' ), 'website' => __( 'Website', 'contactpanda' ), 'email' => __( 'Email', 'contactpanda' ), 'phone_number' => __( 'Phone', 'contactpanda' ), 'vat_id' => __( 'VAT ID', 'contactpanda' ), 'street' => __( 'Street address', 'contactpanda' ), 'address_2' => __( 'Address line 2', 'contactpanda' ), 'postcode' => __( 'Postal code', 'contactpanda' ), 'city' => __( 'City', 'contactpanda' ), 'country' => __( 'Country', 'contactpanda' ) );
 		foreach ( ContactPanda_Custom_Fields::definitions( $state['entity'] ) as $definition ) $fields[ 'meta__' . ContactPanda_Custom_Fields::meta_key( $definition['key'] ) ] = $definition['label'];
+		echo '<div class="contactpanda-modal contactpanda-merge-modal" role="dialog" aria-modal="true" aria-labelledby="contactpanda-merge-title"><div class="contactpanda-modal-panel contactpanda-merge-panel"><div class="contactpanda-merge-header"><h2 id="contactpanda-merge-title">' . esc_html__( 'Merge duplicates', 'contactpanda' ) . '</h2><a class="button-link" href="' . esc_url( self::duplicates_url() ) . '" aria-label="' . esc_attr__( 'Close', 'contactpanda' ) . '"><span class="dashicons dashicons-no-alt" aria-hidden="true"></span></a></div>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_merge_commit"><input type="hidden" name="merge_token" value="' . esc_attr( $token ) . '">'; wp_nonce_field( 'contactpanda_merge_commit' );
 		echo '<h3>' . esc_html__( 'Choose the primary record', 'contactpanda' ) . '</h3><div class="contactpanda-merge-primary">';
 		foreach ( $records as $id => $record ) { $name = 'contacts' === $state['entity'] ? trim( $record['first_name'] . ' ' . $record['last_name'] ) : $record['name']; echo '<label><input type="radio" name="primary_id" value="' . esc_attr( $id ) . '"' . checked( $id, array_key_first( $records ), false ) . '> ' . esc_html( ( $name ?: __( 'Unnamed record', 'contactpanda' ) ) . ' #' . $id ) . '</label>'; }
@@ -516,7 +517,36 @@ final class ContactPanda_Data_Tools {
 			}
 			echo '</td></tr>';
 		}
-		echo '</tbody></table><div class="notice notice-warning inline"><p>' . esc_html__( 'After confirmation, source fragments are moved to the ContactPanda Trash. External systems, orders, invoices, and source records are not changed.', 'contactpanda' ) . '</p></div><p><label><input type="checkbox" name="confirmed" value="1" required> ' . esc_html__( 'I reviewed the primary record and every conflicting value.', 'contactpanda' ) . '</label></p><p><button class="button button-primary">' . esc_html__( 'Merge records', 'contactpanda' ) . '</button> <a class="button" href="' . esc_url( self::duplicates_url() ) . '">' . esc_html__( 'Cancel', 'contactpanda' ) . '</a></p></form>';
+		echo '</tbody></table>';
+		if ( 'contacts' === $state['entity'] ) self::render_merge_channels( $records );
+		echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'After confirmation, source fragments are moved to the ContactPanda Trash. External systems, orders, invoices, and source records are not changed.', 'contactpanda' ) . '</p></div><p><label><input type="checkbox" name="confirmed" value="1" required> ' . esc_html__( 'I reviewed the primary record and every conflicting value.', 'contactpanda' ) . '</label></p><p><button class="button button-primary">' . esc_html__( 'Merge records', 'contactpanda' ) . '</button> <a class="button" href="' . esc_url( self::duplicates_url() ) . '">' . esc_html__( 'Cancel', 'contactpanda' ) . '</a></p></form></div></div>';
+	}
+
+	private static function render_merge_channels( $records ) {
+		$channels = array( 'email' => array(), 'phone' => array() );
+		foreach ( $records as $record ) {
+			$meta = is_array( $record['meta'] ?? null ) ? $record['meta'] : array();
+			if ( ! empty( $record['email'] ) ) $channels['email'][] = sanitize_email( $record['email'] );
+			if ( ! empty( $meta['primary_phone'] ) ) $channels['phone'][] = sanitize_text_field( $meta['primary_phone'] );
+			foreach ( is_array( $meta['contactpanda_contact_channels'] ?? null ) ? $meta['contactpanda_contact_channels'] : array() as $channel ) {
+				$type = sanitize_key( $channel['type'] ?? '' );
+				if ( isset( $channels[ $type ] ) && ! empty( $channel['value'] ) ) $channels[ $type ][] = sanitize_text_field( $channel['value'] );
+			}
+		}
+		echo '<input type="hidden" name="channel_selection_submitted" value="1"><section class="contactpanda-merge-channels"><h3>' . esc_html__( 'Keep email addresses and phone numbers', 'contactpanda' ) . '</h3><p class="description">' . esc_html__( 'Select every value that should remain and choose exactly one primary value in each group.', 'contactpanda' ) . '</p>';
+		foreach ( $channels as $type => $values ) {
+			$unique = array();
+			foreach ( $values as $value ) { $key = 'email' === $type ? strtolower( sanitize_email( $value ) ) : preg_replace( '/\D+/', '', $value ); if ( $key && ! isset( $unique[ $key ] ) ) $unique[ $key ] = $value; }
+			if ( ! $unique ) continue;
+			echo '<fieldset><legend>' . esc_html( 'email' === $type ? __( 'Email addresses', 'contactpanda' ) : __( 'Phone numbers', 'contactpanda' ) ) . '</legend>';
+			$first = true;
+			foreach ( $unique as $value ) {
+				echo '<label><input type="checkbox" name="channels[' . esc_attr( $type ) . '][]" value="' . esc_attr( $value ) . '" checked> <span>' . esc_html( $value ) . '</span> <input type="radio" name="primary_channel[' . esc_attr( $type ) . ']" value="' . esc_attr( $value ) . '"' . checked( $first, true, false ) . '> <small>' . esc_html__( 'Primary', 'contactpanda' ) . '</small></label>';
+				$first = false;
+			}
+			echo '</fieldset>';
+		}
+		echo '</section>';
 	}
 
 	public static function handle_merge_commit() {
@@ -526,7 +556,12 @@ final class ContactPanda_Data_Tools {
 		if ( ! is_array( $state ) ) self::redirect_duplicate_notice( 'error', __( 'The merge preview expired. Select the records again.', 'contactpanda' ) );
 		$choices = isset( $_POST['choices'] ) && is_array( $_POST['choices'] ) ? array_map( 'absint', wp_unslash( $_POST['choices'] ) ) : array();
 		$resolved = isset( $_POST['resolved'] ) && is_array( $_POST['resolved'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['resolved'] ) ) : array();
-		$result = ContactPanda_Store::merge_records( $state['entity'], $state['ids'], absint( $_POST['primary_id'] ?? 0 ), $choices, $resolved );
+		$channels = array();
+		foreach ( array( 'email', 'phone' ) as $type ) $channels[ $type ] = isset( $_POST['channels'][ $type ] ) && is_array( $_POST['channels'][ $type ] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['channels'][ $type ] ) ) : array();
+		$channels['_submitted'] = ! empty( $_POST['channel_selection_submitted'] );
+		$primary_channels = isset( $_POST['primary_channel'] ) && is_array( $_POST['primary_channel'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['primary_channel'] ) ) : array();
+		foreach ( array( 'email', 'phone' ) as $type ) if ( empty( $channels[ $type ] ) ) $primary_channels[ $type ] = '';
+		$result = ContactPanda_Store::merge_records( $state['entity'], $state['ids'], absint( $_POST['primary_id'] ?? 0 ), $choices, $resolved, $channels, $primary_channels );
 		if ( is_wp_error( $result ) ) self::redirect_duplicate_notice( 'error', $result->get_error_message(), array( 'merge_token' => $token ) );
 		delete_transient( 'contactpanda_merge_' . get_current_user_id() . '_' . $token ); self::redirect_duplicate_notice( 'success', sprintf( __( '%d duplicate fragments were merged and moved to Trash.', 'contactpanda' ), $result['merged'] ) );
 	}
@@ -534,8 +569,14 @@ final class ContactPanda_Data_Tools {
 	public static function render_central_library() {
 		$settings = wp_parse_args( (array) get_option( self::CENTRAL_OPTION, array() ), array( 'enabled' => 0, 'auto' => 0, 'source_url' => '', 'version' => '', 'updated_at' => '', 'last_success_at' => '', 'error' => '' ) );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Optional central salutation library', 'contactpanda' ) . '</h2><p>' . esc_html__( 'You can optionally supplement your local library with a centrally maintained name list. Local and manually confirmed assignments always take precedence. No contact or customer data is uploaded.', 'contactpanda' ) . '</p>';
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_central_salutations">'; wp_nonce_field( 'contactpanda_central_salutations' );
-		echo '<input type="hidden" name="enabled" value="1"><p class="description">' . esc_html__( 'By enabling the central library you accept that name-based salutations can be incomplete or incorrect and remain responsible for reviewing them.', 'contactpanda' ) . '</p><p><label><input type="checkbox" name="auto" value="1"' . checked( ! empty( $settings['auto'] ), true, false ) . '> ' . esc_html__( 'Check weekly for library updates', 'contactpanda' ) . '</label></p><p><button class="button button-primary" name="sync" value="1">' . esc_html( empty( $settings['enabled'] ) ? __( 'Enable central library', 'contactpanda' ) : __( 'Update central library now', 'contactpanda' ) ) . '</button></p></form>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-central-library-form"><input type="hidden" name="action" value="contactpanda_central_salutations">'; wp_nonce_field( 'contactpanda_central_salutations' );
+		echo '<p><label class="contactpanda-switch"><input type="checkbox" name="enabled" value="1"' . checked( ! empty( $settings['enabled'] ), true, false ) . '> <strong>' . esc_html__( 'Use central library', 'contactpanda' ) . '</strong></label></p>';
+		echo '<div class="contactpanda-central-library-options"><p class="description">' . esc_html__( 'By enabling the central library you accept that name-based salutations can be incomplete or incorrect and remain responsible for reviewing them. Disabling synchronization keeps names already added to your local library.', 'contactpanda' ) . '</p>';
+		if ( empty( $settings['enabled'] ) ) echo '<p><label><input type="checkbox" name="confirmed" value="1"> ' . esc_html__( 'I understand the limitations of name-based salutation assignments.', 'contactpanda' ) . '</label></p>';
+		echo '<p><label><input type="checkbox" name="auto" value="1"' . checked( ! empty( $settings['auto'] ), true, false ) . '> ' . esc_html__( 'Check weekly for library updates', 'contactpanda' ) . '</label></p></div>';
+		echo '<p class="contactpanda-central-library-actions"><button class="button button-primary" name="save" value="1">' . esc_html__( 'Save library settings', 'contactpanda' ) . '</button>';
+		if ( ! empty( $settings['enabled'] ) ) echo ' <button class="button" name="sync" value="1">' . esc_html__( 'Update central library now', 'contactpanda' ) . '</button>';
+		echo '</p></form>';
 		if ( $settings['version'] || $settings['updated_at'] ) echo '<p class="description">' . esc_html( sprintf( __( 'Installed central version: %1$s. Last check: %2$s.', 'contactpanda' ), $settings['version'] ?: '—', $settings['updated_at'] ?: '—' ) ) . '</p>';
 		if ( $settings['error'] ) echo '<div class="notice notice-warning inline"><p>' . esc_html( $settings['error'] ) . '</p></div>';
 		echo '</section>';
@@ -544,7 +585,13 @@ final class ContactPanda_Data_Tools {
 	public static function handle_central_settings() {
 		self::require_admin( 'contactpanda_central_salutations' );
 		$enabled = ! empty( $_POST['enabled'] );
-		$settings = (array) get_option( self::CENTRAL_OPTION, array() ); $settings['enabled'] = $enabled ? 1 : 0; $settings['auto'] = $enabled && ! empty( $_POST['auto'] ) ? 1 : 0; update_option( self::CENTRAL_OPTION, $settings, false );
+		$settings = (array) get_option( self::CENTRAL_OPTION, array() );
+		$was_enabled = ! empty( $settings['enabled'] );
+		if ( $enabled && ! $was_enabled && empty( $_POST['confirmed'] ) ) {
+			set_transient( 'contactpanda_database_notice_' . get_current_user_id(), array( 'type' => 'error', 'message' => __( 'Confirm the limitations before enabling the central library.', 'contactpanda' ) ), MINUTE_IN_SECONDS );
+			wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=salutations' ) ); exit;
+		}
+		$settings['enabled'] = $enabled ? 1 : 0; $settings['auto'] = $enabled && ! empty( $_POST['auto'] ) ? 1 : 0; update_option( self::CENTRAL_OPTION, $settings, false );
 		if ( $settings['auto'] && ! wp_next_scheduled( 'contactpanda_central_salutation_sync' ) ) wp_schedule_event( time() + HOUR_IN_SECONDS, 'contactpanda_weekly', 'contactpanda_central_salutation_sync' );
 		if ( ! $settings['auto'] ) wp_clear_scheduled_hook( 'contactpanda_central_salutation_sync' );
 		if ( $enabled && ! empty( $_POST['sync'] ) ) {

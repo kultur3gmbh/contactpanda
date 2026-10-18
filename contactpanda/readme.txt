@@ -2,12 +2,18 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.3.3
+Stable tag: 0.3.4
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
 
 == Changelog ==
+
+= 0.3.4 =
+* Adds explicit central salutation-library controls with safe opt-in and retained local data when disabled.
+* Adds direct list editing for people, companies, and tags.
+* Improves duplicate merging with a modal editor and selectable email and phone values.
+* Improves person master-data layout, empty salutations, and compact email/phone add controls.
 
 = 0.3.3 =
 * Adds a clear administrator setting for verified automatic Basic updates from the public GitHub release channel.

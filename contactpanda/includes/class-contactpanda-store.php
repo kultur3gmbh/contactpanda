@@ -333,7 +333,7 @@ final class ContactPanda_Store {
 	public static function update_company( $id, $field, $value ) {
 		global $wpdb;
 		$tables = ContactPanda_Schema::table_names();
-		$map = array( 'name' => 'name', 'domain' => 'website', 'phone' => 'phone_number', 'industry' => 'industry' );
+		$map = array( 'name' => 'name', 'domain' => 'website', 'phone' => 'phone_number', 'industry' => 'industry', 'street' => 'street', 'address_2' => 'address_2', 'postcode' => 'postcode', 'city' => 'city', 'country' => 'country' );
 		if ( isset( $map[ $field ] ) ) {
 			return false !== $wpdb->update( $tables['companies'], array( $map[ $field ] => $value, 'updated_at' => current_time( 'mysql' ) ), array( 'id' => absint( $id ) ) );
 		}
@@ -456,7 +456,7 @@ final class ContactPanda_Store {
 	 * External systems are deliberately never called from this method. All
 	 * relationships and history remain attached to the selected primary record.
 	 */
-	public static function merge_records( $entity, $ids, $primary_id, $choices = array(), $resolved = array() ) {
+	public static function merge_records( $entity, $ids, $primary_id, $choices = array(), $resolved = array(), $selected_channels = array(), $primary_channels = array() ) {
 		global $wpdb;
 		$entity = 'companies' === $entity ? 'companies' : 'contacts';
 		$ids = array_values( array_unique( array_filter( array_map( 'absint', (array) $ids ) ) ) );
@@ -469,6 +469,13 @@ final class ContactPanda_Store {
 		}
 		if ( 'companies' === $entity && isset( $resolved['email'] ) && '' !== trim( (string) $resolved['email'] ) && ! is_email( $resolved['email'] ) ) {
 			return new WP_Error( 'contactpanda_merge_email', __( 'Enter a valid final email address before merging.', 'contactpanda' ) );
+		}
+		if ( 'contacts' === $entity ) {
+			foreach ( array( 'email', 'phone' ) as $channel_type ) {
+				$selected = array_values( array_filter( array_map( 'sanitize_text_field', (array) ( $selected_channels[ $channel_type ] ?? array() ) ) ) );
+				$primary = sanitize_text_field( $primary_channels[ $channel_type ] ?? '' );
+				if ( $selected && ( ! $primary || ! in_array( $primary, $selected, true ) ) ) return new WP_Error( 'contactpanda_merge_primary_channel', __( 'Choose one primary value for every selected email or phone group.', 'contactpanda' ) );
+			}
 		}
 		$tables = ContactPanda_Schema::table_names();
 		$table = $tables[ $entity ];
@@ -559,9 +566,19 @@ final class ContactPanda_Store {
 					}
 				}
 				if ( $merged_channels ) {
-					$primary_email = strtolower( sanitize_email( $update['email'] ?? $by_id[ $primary_id ]['email'] ?? '' ) );
+					$has_channel_selection = ! empty( $selected_channels['_submitted'] );
+					if ( $has_channel_selection ) {
+						$allowed_channels = array();
+						foreach ( array( 'email', 'phone' ) as $channel_type ) foreach ( (array) ( $selected_channels[ $channel_type ] ?? array() ) as $selected_value ) {
+							$key = 'email' === $channel_type ? 'email:' . strtolower( sanitize_email( $selected_value ) ) : 'phone:' . preg_replace( '/\D+/', '', $selected_value );
+							if ( $key ) $allowed_channels[ $key ] = true;
+						}
+						$merged_channels = array_intersect_key( $merged_channels, $allowed_channels );
+					}
+					$primary_email = strtolower( sanitize_email( $primary_channels['email'] ?? $update['email'] ?? $by_id[ $primary_id ]['email'] ?? '' ) );
 					$selected_meta = self::contact_meta( $primary_id );
-					$primary_phone = preg_replace( '/\D+/', '', (string) ( $selected_meta['primary_phone'] ?? '' ) );
+					$primary_phone_value = sanitize_text_field( $primary_channels['phone'] ?? $selected_meta['primary_phone'] ?? '' );
+					$primary_phone = preg_replace( '/\D+/', '', $primary_phone_value );
 					$email_primary_assigned = false;
 					$phone_primary_assigned = false;
 					foreach ( $merged_channels as $key => $channel ) {
@@ -572,6 +589,10 @@ final class ContactPanda_Store {
 					if ( ! $email_primary_assigned ) foreach ( $merged_channels as $key => $channel ) if ( 'email' === $channel['type'] ) { $merged_channels[ $key ]['is_primary'] = 1; break; }
 					if ( ! $phone_primary_assigned ) foreach ( $merged_channels as $key => $channel ) if ( 'phone' === $channel['type'] ) { $merged_channels[ $key ]['is_primary'] = 1; break; }
 					self::set_contact_meta( $primary_id, 'contactpanda_contact_channels', array_values( $merged_channels ) );
+					if ( $has_channel_selection ) {
+						$wpdb->update( $table, array( 'email' => $primary_email ?: null, 'email_normalized' => $primary_email ?: null, 'updated_at' => $now ), array( 'id' => $primary_id ) );
+						self::set_contact_meta( $primary_id, 'primary_phone', $primary_phone_value );
+					}
 				}
 				foreach ( $donors as $donor ) {
 					foreach ( self::contact_meta( $donor ) as $key => $value ) if ( ! array_key_exists( 'meta__' . $key, $resolved ) && ( ! isset( $primary_meta[ $key ] ) || '' === (string) $primary_meta[ $key ] ) ) self::set_contact_meta( $primary_id, $key, $value );
