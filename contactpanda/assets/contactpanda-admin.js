@@ -1196,11 +1196,22 @@
 			};
 			pollMigration();
 			var migrationTimer = window.setInterval(pollMigration, 1200);
-			fetch(migrationForm.action, {method: 'POST', body: new FormData(migrationForm), credentials: 'same-origin'}).then(function (response) {
+			var migrationData = new FormData(migrationForm);
+			migrationData.set('action', 'contactpanda_migrate_groundhogg');
+			fetch(CONTACTPANDA_CONFIG.ajaxUrl, {method: 'POST', body: migrationData, credentials: 'same-origin'}).then(parseResponse).then(function (result) {
 				window.clearInterval(migrationTimer);
-				window.location.href = response.url || window.location.href;
-			}).catch(function () {
-				window.clearInterval(migrationTimer); migrationForm.dataset.running = '0'; if (migrationButton) migrationButton.disabled = false;
+				if (!result.success || !result.data || !result.data.redirect) {
+					throw new Error(result.data && result.data.message ? result.data.message : tr('invalidServerResponse', 'The server returned an invalid response.'));
+				}
+				window.location.href = result.data.redirect;
+			}).catch(function (error) {
+				window.clearInterval(migrationTimer);
+				migrationForm.dataset.running = '0';
+				if (migrationButton) migrationButton.disabled = false;
+				if (migrationProgress) {
+					migrationProgress.querySelector('strong').textContent = error.message;
+					migrationProgress.querySelector('small').textContent = '';
+				}
 			});
 			return;
 		}

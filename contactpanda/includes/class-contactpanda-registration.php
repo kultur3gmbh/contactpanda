@@ -28,6 +28,7 @@ final class ContactPanda_Registration {
 		add_action( 'admin_post_contactpanda_registration_resend', array( __CLASS__, 'handle_resend' ) );
 		add_action( 'admin_post_contactpanda_setup_standalone', array( __CLASS__, 'handle_setup_standalone' ) );
 		add_action( 'admin_post_contactpanda_migrate_groundhogg', array( __CLASS__, 'handle_migrate_groundhogg' ) );
+		add_action( 'wp_ajax_contactpanda_migrate_groundhogg', array( __CLASS__, 'handle_migrate_groundhogg_ajax' ) );
 		add_action( 'admin_post_contactpanda_reset_standalone', array( __CLASS__, 'handle_reset_standalone' ) );
 		add_action( 'admin_post_contactpanda_adopt_theme_styles', array( __CLASS__, 'handle_adopt_theme_styles' ) );
 		add_action( 'admin_post_contactpanda_salutation_dictionary', array( __CLASS__, 'handle_salutation_dictionary' ) );
@@ -830,13 +831,43 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	public static function handle_migrate_groundhogg() {
 		self::guard_database_action( 'contactpanda_migrate_groundhogg' );
+		$result = self::run_groundhogg_migration();
+		if ( is_wp_error( $result ) ) self::database_redirect( 'error', $result->get_error_message() );
+		self::database_redirect( 'success', __( 'The Groundhogg migration was completed and ContactPanda is now the leading data source. Groundhogg remains active and unchanged. You may switch the data source back later, but ContactPanda changes are not migrated back to Groundhogg.', 'contactpanda' ) );
+	}
+
+	public static function handle_migrate_groundhogg_ajax() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to perform this action.', 'contactpanda' ) ), 403 );
+		}
+		check_ajax_referer( 'contactpanda_migrate_groundhogg', '_wpnonce' );
+		$result = self::run_groundhogg_migration();
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( array( 'message' => $result->get_error_message() ), 400 );
+		}
+		set_transient(
+			'contactpanda_database_notice_' . get_current_user_id(),
+			array(
+				'type'    => 'success',
+				'message' => __( 'The Groundhogg migration was completed and ContactPanda is now the leading data source. Groundhogg remains active and unchanged. You may switch the data source back later, but ContactPanda changes are not migrated back to Groundhogg.', 'contactpanda' ),
+			),
+			MINUTE_IN_SECONDS
+		);
+		wp_send_json_success(
+			array(
+				'redirect' => admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=migration' ),
+			)
+		);
+	}
+
+	private static function run_groundhogg_migration() {
 		delete_transient( 'contactpanda_groundhogg_migration_' . get_current_user_id() );
 		$result = ContactPanda_Store::migrate_groundhogg();
-		if ( is_wp_error( $result ) ) self::database_redirect( 'error', $result->get_error_message() );
+		if ( is_wp_error( $result ) ) return $result;
 		$settings = self::general_settings();
 		$settings['data_source'] = 'standalone';
 		update_option( self::GENERAL_OPTION, $settings, false );
-		self::database_redirect( 'success', __( 'The Groundhogg migration was completed and ContactPanda is now the leading data source. Groundhogg remains active and unchanged. You may switch the data source back later, but ContactPanda changes are not migrated back to Groundhogg.', 'contactpanda' ) );
+		return $result;
 	}
 
 	public static function store_migration_progress( $progress ) {

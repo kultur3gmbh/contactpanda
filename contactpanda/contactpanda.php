@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda Basic – User-Friendly CRM for WordPress
  * Description: Free contact and company management for WordPress with a complete WooCommerce customer overview and optional Groundhogg compatibility.
- * Version: 0.3.4
+ * Version: 0.3.5
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.3.4' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.3.4-20261019-1' );
+define( 'CONTACTPANDA_VERSION', '0.3.5' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.3.5-20261019-1' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CONTACTPANDA_URL', plugin_dir_url( __FILE__ ) );

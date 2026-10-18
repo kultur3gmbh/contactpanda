@@ -52,5 +52,11 @@ namespace {
 	$optin->setAccessible( true );
 	verify( 2 === $optin->invoke( null, $contacts[0] ), 'Groundhogg object opt-in status is preserved' );
 
+	$registration_source = file_get_contents( __DIR__ . '/../contactpanda/includes/class-contactpanda-registration.php' );
+	$admin_script = file_get_contents( __DIR__ . '/../contactpanda/assets/contactpanda-admin.js' );
+	verify( false !== strpos( $registration_source, "wp_ajax_contactpanda_migrate_groundhogg'" ), 'Groundhogg migration has a dedicated authenticated AJAX action' );
+	verify( false !== strpos( $admin_script, "fetch(CONTACTPANDA_CONFIG.ajaxUrl" ), 'Groundhogg migration uses the WordPress AJAX endpoint' );
+	verify( false === strpos( $admin_script, 'fetch(migrationForm.action' ), 'Migration no longer follows an unchecked admin-post response URL' );
+
 	echo "Groundhogg migration source tests passed.\n";
 }
