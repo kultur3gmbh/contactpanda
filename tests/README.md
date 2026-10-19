@@ -4,7 +4,7 @@ Use sanitized fixtures only. Production customer data must never be copied here.
 
 With PHP CLI, the check runs `tests/trash.php` for both record types, soft deletion and restoration, preserved relationships and source tables, permanent deletion restricted to Trash, administrator/mode/confirmation guards, malformed requests, transactional rollback, non-default table prefixes, and retained event/activity records.
 
-The focused WooCommerce import, Groundhogg migration-source, and marketing-status-icon tests verify the protected integration and list-display branches with sanitized fixtures.
+The focused WooCommerce import and customer-filtered order-summary tests, Groundhogg migration-source test, and marketing-status-icon tests verify the protected integration and list-display branches with sanitized fixtures.
 
 It also runs `tests/github-updater.php` for the public Basic and private Plus release channels, plus `tests/vcard-import.php` for multi-contact Apple/standard vCard parsing, encoded names, addresses, and stable source identifiers. `wordpress-update-integration.php` is deliberately blocked unless it receives a disposable local WordPress installation containing a `.contactpanda-isolated-test` marker; see `docs/isolated-update-test.md`.
 

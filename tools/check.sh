@@ -13,6 +13,7 @@ if command -v php >/dev/null 2>&1; then
   done < <(find contactpanda tests -type f -name '*.php' -print0)
   php tests/trash.php || status=1
   php tests/woocommerce-import.php || status=1
+	php tests/order-summary-query.php || status=1
   php tests/groundhogg-migration-source.php || status=1
   php tests/marketing-status-icons.php || status=1
   php tests/github-updater.php || status=1
@@ -21,7 +22,7 @@ if command -v php >/dev/null 2>&1; then
 elif command -v python3 >/dev/null 2>&1; then
   echo "PHP CLI is unavailable; running the offline structural fallback."
   python3 tools/check_php_structure.py contactpanda tests || status=1
-  echo "SKIPPED: PHP trash, WooCommerce import, Groundhogg migration, marketing status icon, updater, and vCard behavior tests require PHP CLI."
+  echo "SKIPPED: PHP trash, WooCommerce import and order summary, Groundhogg migration, marketing status icon, updater, and vCard behavior tests require PHP CLI."
 else
   echo "PHP or Python 3 is required for source validation." >&2
   status=1

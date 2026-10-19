@@ -2320,7 +2320,10 @@ final class ContactPanda_Plugin {
 		$input = array(
 			'limit'  => $limit,
 			'offset' => $offset,
-			'expand' => array( 'tags', 'meta', 'work_details' ),
+			// The people list only reads contact fields and metadata. Loading tags and
+			// work details for every row needlessly inflates Groundhogg responses on
+			// larger sites; those expansions remain available in the detail view.
+			'expand' => array( 'meta' ),
 		);
 		if ( '' !== $search ) {
 			$input['search'] = $search;
@@ -4243,35 +4246,24 @@ final class ContactPanda_Plugin {
 			return $summaries;
 		}
 
-		$args = array(
-			'limit'    => 250,
-			'paginate' => true,
-			'return'   => 'objects',
-			'status'   => self::summary_order_statuses(),
-		);
-		$filtered_query = false;
-		if ( class_exists( '\\Automattic\\WooCommerce\\Utilities\\OrderUtil' ) && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ) {
-			$field_query = array( 'relation' => 'OR' );
-			if ( $user_map ) {
-				$field_query[] = array( 'field' => 'customer_id', 'value' => array_keys( $user_map ), 'compare' => 'IN' );
-			}
-			if ( $email_map ) {
-				$field_query[] = array( 'field' => 'billing_email', 'value' => array_keys( $email_map ), 'compare' => 'IN' );
-			}
-			$args['field_query'] = $field_query;
-			$filtered_query = true;
-		}
-
-		try {
-			self::accumulate_order_summaries( $args, $user_map, $email_map, $summaries );
-		} catch ( Throwable $e ) {
-			if ( $filtered_query ) {
-				unset( $args['field_query'] );
-				try {
-					self::accumulate_order_summaries( $args, $user_map, $email_map, $summaries );
-				} catch ( Throwable $fallback_error ) {
-					// Keep the list available even when WooCommerce cannot return the summary.
-				}
+		// WooCommerce's public `customer` query accepts both user IDs and billing
+		// email addresses and works with the classic posts data store as well as
+		// HPOS. The previous classic-store fallback queried every order on the site,
+		// which could exhaust WordPress memory merely by opening the people list.
+		$customers = array_values( array_unique( array_merge( array_keys( $user_map ), array_keys( $email_map ) ), SORT_REGULAR ) );
+		foreach ( array_chunk( $customers, 100 ) as $customer_chunk ) {
+			$args = array(
+				'customer' => $customer_chunk,
+				'limit'    => 100,
+				'paginate' => true,
+				'return'   => 'objects',
+				'status'   => self::summary_order_statuses(),
+			);
+			try {
+				self::accumulate_order_summaries( $args, $user_map, $email_map, $summaries );
+			} catch ( Throwable $e ) {
+				// A broken optional WooCommerce data source must not take down the CRM list.
+				continue;
 			}
 		}
 
@@ -4304,12 +4296,15 @@ final class ContactPanda_Plugin {
 	private static function accumulate_order_summaries( $args, $user_map, $email_map, &$summaries ) {
 		$page = 1;
 		do {
-			$args['paged'] = $page;
+			$args['page'] = $page;
 			$result = wc_get_orders( $args );
 			$orders = is_object( $result ) && isset( $result->orders ) ? $result->orders : ( is_array( $result ) ? $result : array() );
 			$max_pages = is_object( $result ) && isset( $result->max_num_pages ) ? max( 1, absint( $result->max_num_pages ) ) : 1;
 
 			foreach ( $orders as $order ) {
+				if ( ! is_object( $order ) || is_a( $order, 'WC_Order_Refund' ) || ! method_exists( $order, 'get_id' ) || ! method_exists( $order, 'get_total' ) ) {
+					continue;
+				}
 				$matched_contacts = array();
 				$customer_id = method_exists( $order, 'get_customer_id' ) ? (int) $order->get_customer_id() : 0;
 				$email = method_exists( $order, 'get_billing_email' ) ? strtolower( sanitize_email( $order->get_billing_email() ) ) : '';
