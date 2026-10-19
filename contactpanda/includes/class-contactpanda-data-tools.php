@@ -496,8 +496,8 @@ final class ContactPanda_Data_Tools {
 		foreach ( ContactPanda_Custom_Fields::definitions( $state['entity'] ) as $definition ) $fields[ 'meta__' . ContactPanda_Custom_Fields::meta_key( $definition['key'] ) ] = $definition['label'];
 		echo '<div class="contactpanda-modal contactpanda-merge-modal" role="dialog" aria-modal="true" aria-labelledby="contactpanda-merge-title"><div class="contactpanda-modal-panel contactpanda-merge-panel"><div class="contactpanda-merge-header"><h2 id="contactpanda-merge-title">' . esc_html__( 'Merge duplicates', 'contactpanda' ) . '</h2><a class="button-link" href="' . esc_url( self::duplicates_url() ) . '" aria-label="' . esc_attr__( 'Close', 'contactpanda' ) . '"><span class="dashicons dashicons-no-alt" aria-hidden="true"></span></a></div>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_merge_commit"><input type="hidden" name="merge_token" value="' . esc_attr( $token ) . '">'; wp_nonce_field( 'contactpanda_merge_commit' );
-		echo '<h3>' . esc_html__( 'Choose the primary record', 'contactpanda' ) . '</h3><div class="contactpanda-merge-primary">';
-		foreach ( $records as $id => $record ) { $name = 'contacts' === $state['entity'] ? trim( $record['first_name'] . ' ' . $record['last_name'] ) : $record['name']; echo '<label><input type="radio" name="primary_id" value="' . esc_attr( $id ) . '"' . checked( $id, array_key_first( $records ), false ) . '> ' . esc_html( ( $name ?: __( 'Unnamed record', 'contactpanda' ) ) . ' #' . $id ) . '</label>'; }
+		echo '<h3>' . esc_html__( 'Choose records and the primary record', 'contactpanda' ) . '</h3><p class="description">' . esc_html__( 'Keep at least two records selected. Unselected candidates remain unchanged.', 'contactpanda' ) . '</p><div class="contactpanda-merge-primary">';
+		foreach ( $records as $id => $record ) { $name = 'contacts' === $state['entity'] ? trim( $record['first_name'] . ' ' . $record['last_name'] ) : $record['name']; echo '<label data-contactpanda-merge-record-card="' . esc_attr( $id ) . '"><input type="checkbox" class="contactpanda-merge-record-toggle" name="merge_ids[]" value="' . esc_attr( $id ) . '" checked> <span>' . esc_html( ( $name ?: __( 'Unnamed record', 'contactpanda' ) ) . ' #' . $id ) . '</span> <input type="radio" name="primary_id" value="' . esc_attr( $id ) . '" data-contactpanda-primary-record="' . esc_attr( $id ) . '"' . checked( $id, array_key_first( $records ), false ) . '> <small>' . esc_html__( 'Primary', 'contactpanda' ) . '</small></label>'; }
 		echo '</div><h3>' . esc_html__( 'Resolve and complete field values', 'contactpanda' ) . '</h3><p class="description">' . esc_html__( 'Choose an existing value or edit the final value directly before merging.', 'contactpanda' ) . '</p><table class="widefat striped contactpanda-merge-table"><thead><tr><th>' . esc_html__( 'Field', 'contactpanda' ) . '</th><th>' . esc_html__( 'Available values', 'contactpanda' ) . '</th><th>' . esc_html__( 'Final value', 'contactpanda' ) . '</th></tr></thead><tbody>';
 		foreach ( $fields as $field => $label ) {
 			$first = true;
@@ -507,7 +507,7 @@ final class ContactPanda_Data_Tools {
 				$value = 0 === strpos( $field, 'meta__' ) ? ( $record['meta'][ substr( $field, 6 ) ] ?? '' ) : ( $record[ $field ] ?? '' );
 				if ( '' === trim( (string) $value ) ) continue;
 				if ( $first ) $default = (string) $value;
-				echo '<label class="contactpanda-merge-choice"><input type="radio" name="choices[' . esc_attr( $field ) . ']" value="' . esc_attr( $id ) . '" data-contactpanda-merge-field="' . esc_attr( $field ) . '" data-contactpanda-merge-value="' . esc_attr( (string) $value ) . '"' . checked( $first, true, false ) . '> ' . esc_html( (string) $value ) . ' <small>#' . esc_html( $id ) . '</small></label>';
+				echo '<label class="contactpanda-merge-choice" data-contactpanda-merge-source="' . esc_attr( $id ) . '"><input type="radio" name="choices[' . esc_attr( $field ) . ']" value="' . esc_attr( $id ) . '" data-contactpanda-merge-field="' . esc_attr( $field ) . '" data-contactpanda-merge-value="' . esc_attr( (string) $value ) . '"' . checked( $first, true, false ) . '> ' . esc_html( (string) $value ) . ' <small>#' . esc_html( $id ) . '</small></label>';
 				$first = false;
 			}
 			if ( $first ) echo '&mdash;';
@@ -527,24 +527,31 @@ final class ContactPanda_Data_Tools {
 
 	private static function render_merge_channels( $records ) {
 		$channels = array( 'email' => array(), 'phone' => array() );
-		foreach ( $records as $record ) {
+		foreach ( $records as $record_id => $record ) {
 			$meta = is_array( $record['meta'] ?? null ) ? $record['meta'] : array();
-			if ( ! empty( $record['email'] ) ) $channels['email'][] = sanitize_email( $record['email'] );
-			if ( ! empty( $meta['primary_phone'] ) ) $channels['phone'][] = sanitize_text_field( $meta['primary_phone'] );
+			if ( ! empty( $record['email'] ) ) $channels['email'][] = array( 'value' => sanitize_email( $record['email'] ), 'source' => absint( $record_id ) );
+			if ( ! empty( $meta['primary_phone'] ) ) $channels['phone'][] = array( 'value' => sanitize_text_field( $meta['primary_phone'] ), 'source' => absint( $record_id ) );
 			foreach ( is_array( $meta['contactpanda_contact_channels'] ?? null ) ? $meta['contactpanda_contact_channels'] : array() as $channel ) {
 				$type = sanitize_key( $channel['type'] ?? '' );
-				if ( isset( $channels[ $type ] ) && ! empty( $channel['value'] ) ) $channels[ $type ][] = sanitize_text_field( $channel['value'] );
+				if ( isset( $channels[ $type ] ) && ! empty( $channel['value'] ) ) $channels[ $type ][] = array( 'value' => sanitize_text_field( $channel['value'] ), 'source' => absint( $record_id ) );
 			}
 		}
 		echo '<input type="hidden" name="channel_selection_submitted" value="1"><section class="contactpanda-merge-channels"><h3>' . esc_html__( 'Keep email addresses and phone numbers', 'contactpanda' ) . '</h3><p class="description">' . esc_html__( 'Select every value that should remain and choose exactly one primary value in each group.', 'contactpanda' ) . '</p>';
 		foreach ( $channels as $type => $values ) {
 			$unique = array();
-			foreach ( $values as $value ) { $key = 'email' === $type ? strtolower( sanitize_email( $value ) ) : preg_replace( '/\D+/', '', $value ); if ( $key && ! isset( $unique[ $key ] ) ) $unique[ $key ] = $value; }
+			foreach ( $values as $entry ) {
+				$value = $entry['value'];
+				$key = 'email' === $type ? strtolower( sanitize_email( $value ) ) : preg_replace( '/\D+/', '', $value );
+				if ( ! $key ) continue;
+				if ( ! isset( $unique[ $key ] ) ) $unique[ $key ] = array( 'value' => $value, 'sources' => array() );
+				$unique[ $key ]['sources'][] = absint( $entry['source'] );
+			}
 			if ( ! $unique ) continue;
 			echo '<fieldset><legend>' . esc_html( 'email' === $type ? __( 'Email addresses', 'contactpanda' ) : __( 'Phone numbers', 'contactpanda' ) ) . '</legend>';
 			$first = true;
-			foreach ( $unique as $value ) {
-				echo '<label><input type="checkbox" name="channels[' . esc_attr( $type ) . '][]" value="' . esc_attr( $value ) . '" checked> <span>' . esc_html( $value ) . '</span> <input type="radio" name="primary_channel[' . esc_attr( $type ) . ']" value="' . esc_attr( $value ) . '"' . checked( $first, true, false ) . '> <small>' . esc_html__( 'Primary', 'contactpanda' ) . '</small></label>';
+			foreach ( $unique as $entry ) {
+				$value = $entry['value'];
+				echo '<label data-contactpanda-merge-channel-sources="' . esc_attr( implode( ',', array_unique( $entry['sources'] ) ) ) . '"><input type="checkbox" name="channels[' . esc_attr( $type ) . '][]" value="' . esc_attr( $value ) . '" checked> <span>' . esc_html( $value ) . '</span> <input type="radio" name="primary_channel[' . esc_attr( $type ) . ']" value="' . esc_attr( $value ) . '"' . checked( $first, true, false ) . '> <small>' . esc_html__( 'Primary', 'contactpanda' ) . '</small></label>';
 				$first = false;
 			}
 			echo '</fieldset>';
@@ -557,14 +564,45 @@ final class ContactPanda_Data_Tools {
 		if ( '1' !== ( $_POST['confirmed'] ?? '' ) ) self::redirect_duplicate_notice( 'error', __( 'Confirm the reviewed merge before continuing.', 'contactpanda' ) );
 		$token = sanitize_key( wp_unslash( $_POST['merge_token'] ?? '' ) ); $state = get_transient( 'contactpanda_merge_' . get_current_user_id() . '_' . $token );
 		if ( ! is_array( $state ) ) self::redirect_duplicate_notice( 'error', __( 'The merge preview expired. Select the records again.', 'contactpanda' ) );
+		$selected_ids = isset( $_POST['merge_ids'] ) && is_array( $_POST['merge_ids'] ) ? array_values( array_intersect( array_map( 'absint', wp_unslash( $_POST['merge_ids'] ) ), array_map( 'absint', $state['ids'] ) ) ) : array();
+		if ( count( $selected_ids ) < 2 ) self::redirect_duplicate_notice( 'error', __( 'Keep at least two records selected for the merge.', 'contactpanda' ), array( 'merge_token' => $token ) );
+		$primary_id = absint( $_POST['primary_id'] ?? 0 );
+		if ( ! in_array( $primary_id, $selected_ids, true ) ) self::redirect_duplicate_notice( 'error', __( 'The primary record must be one of the selected records.', 'contactpanda' ), array( 'merge_token' => $token ) );
 		$choices = isset( $_POST['choices'] ) && is_array( $_POST['choices'] ) ? array_map( 'absint', wp_unslash( $_POST['choices'] ) ) : array();
 		$resolved = isset( $_POST['resolved'] ) && is_array( $_POST['resolved'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['resolved'] ) ) : array();
 		$channels = array();
 		foreach ( array( 'email', 'phone' ) as $type ) $channels[ $type ] = isset( $_POST['channels'][ $type ] ) && is_array( $_POST['channels'][ $type ] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['channels'][ $type ] ) ) : array();
+		if ( 'contacts' === $state['entity'] ) {
+			$allowed_channels = array( 'email' => array(), 'phone' => array() );
+			foreach ( $selected_ids as $selected_id ) {
+				$record = ContactPanda_Store::contact( $selected_id );
+				if ( ! $record ) continue;
+				$meta = is_array( $record['meta'] ?? null ) ? $record['meta'] : array();
+				if ( ! empty( $record['email'] ) ) $allowed_channels['email'][] = strtolower( sanitize_email( $record['email'] ) );
+				if ( ! empty( $meta['primary_phone'] ) ) $allowed_channels['phone'][] = preg_replace( '/\D+/', '', (string) $meta['primary_phone'] );
+				foreach ( is_array( $meta['contactpanda_contact_channels'] ?? null ) ? $meta['contactpanda_contact_channels'] : array() as $channel ) {
+					$type = sanitize_key( $channel['type'] ?? '' );
+					if ( ! isset( $allowed_channels[ $type ] ) || empty( $channel['value'] ) ) continue;
+					$allowed_channels[ $type ][] = 'email' === $type ? strtolower( sanitize_email( $channel['value'] ) ) : preg_replace( '/\D+/', '', (string) $channel['value'] );
+				}
+			}
+			foreach ( array( 'email', 'phone' ) as $type ) {
+				$channels[ $type ] = array_values( array_filter( $channels[ $type ], function ( $value ) use ( $type, $allowed_channels ) {
+					$normalized = 'email' === $type ? strtolower( sanitize_email( $value ) ) : preg_replace( '/\D+/', '', (string) $value );
+					return $normalized && in_array( $normalized, $allowed_channels[ $type ], true );
+				} ) );
+			}
+		}
 		$channels['_submitted'] = ! empty( $_POST['channel_selection_submitted'] );
 		$primary_channels = isset( $_POST['primary_channel'] ) && is_array( $_POST['primary_channel'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['primary_channel'] ) ) : array();
-		foreach ( array( 'email', 'phone' ) as $type ) if ( empty( $channels[ $type ] ) ) $primary_channels[ $type ] = '';
-		$result = ContactPanda_Store::merge_records( $state['entity'], $state['ids'], absint( $_POST['primary_id'] ?? 0 ), $choices, $resolved, $channels, $primary_channels );
+		foreach ( array( 'email', 'phone' ) as $type ) {
+			if ( empty( $channels[ $type ] ) ) {
+				$primary_channels[ $type ] = '';
+			} elseif ( empty( $primary_channels[ $type ] ) || ! in_array( $primary_channels[ $type ], $channels[ $type ], true ) ) {
+				$primary_channels[ $type ] = reset( $channels[ $type ] );
+			}
+		}
+		$result = ContactPanda_Store::merge_records( $state['entity'], $selected_ids, $primary_id, $choices, $resolved, $channels, $primary_channels );
 		if ( is_wp_error( $result ) ) self::redirect_duplicate_notice( 'error', $result->get_error_message(), array( 'merge_token' => $token ) );
 		delete_transient( 'contactpanda_merge_' . get_current_user_id() . '_' . $token ); self::redirect_duplicate_notice( 'success', sprintf( __( '%d duplicate fragments were merged and moved to Trash.', 'contactpanda' ), $result['merged'] ) );
 	}

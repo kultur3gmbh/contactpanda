@@ -3,7 +3,7 @@
 defined( 'ABSPATH' ) || exit;
 
 final class ContactPanda_Schema {
-	const VERSION = '2.0.0';
+	const VERSION = '2.1.0';
 	const VERSION_OPTION = 'contactpanda_db_version';
 
 	/**
@@ -127,11 +127,13 @@ final class ContactPanda_Schema {
 			relationship_type varchar(60) NOT NULL DEFAULT '',
 			position varchar(190) NOT NULL DEFAULT '',
 			is_primary tinyint(1) unsigned NOT NULL DEFAULT 0,
+			is_primary_company tinyint(1) unsigned NOT NULL DEFAULT 0,
 			created_at datetime NOT NULL,
 			updated_at datetime NOT NULL,
 			PRIMARY KEY  (id),
 			UNIQUE KEY company_contact (company_id,contact_id),
-			KEY contact_id (contact_id)
+			KEY contact_id (contact_id),
+			KEY contact_primary_company (contact_id,is_primary_company)
 		) $charset;";
 
 		$sql[] = "CREATE TABLE {$tables['tags']} (
@@ -318,6 +320,7 @@ final class ContactPanda_Schema {
 		$required = array(
 			'contacts'   => array( 'uuid', 'title_prefix', 'vat_id', 'vat_status', 'vat_verified_at' ),
 			'companies'  => array( 'uuid', 'legal_name', 'vat_id', 'vat_status', 'vat_verified_at' ),
+			'company_contacts' => array( 'company_id', 'contact_id', 'is_primary', 'is_primary_company' ),
 			'tags'       => array( 'description' ),
 			'salutations' => array( 'first_name_normalized', 'salutation', 'source' ),
 			'import_runs' => array( 'uuid', 'source', 'entity_type', 'status', 'started_at' ),

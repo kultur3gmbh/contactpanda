@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.4.3\n"
+"Project-Id-Version: ContactPanda 0.4.5\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-18 18:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -4562,4 +4562,51 @@ msgid "View event details"
 msgstr ""
 
 msgid "Waiting list"
+msgstr ""
+msgid "Primary company"
+msgstr ""
+
+msgid "No company assigned."
+msgstr ""
+
+msgid "Position / role"
+msgstr ""
+
+msgid "Use as primary company"
+msgstr ""
+
+msgid "Remove this company assignment?"
+msgstr ""
+
+msgid "Remove assignment"
+msgstr ""
+
+msgid "Add company assignment"
+msgstr ""
+
+msgid "Select company"
+msgstr ""
+
+msgid "Or create company"
+msgstr ""
+
+msgid "Add assignment"
+msgstr ""
+
+msgid "Call phone number"
+msgstr ""
+
+msgid "Move records to Trash from the People or Companies list. This page only restores or permanently deletes records that are already in Trash."
+msgstr ""
+
+msgid "Choose records and the primary record"
+msgstr ""
+
+msgid "Keep at least two records selected. Unselected candidates remain unchanged."
+msgstr ""
+
+msgid "Keep at least two records selected for the merge."
+msgstr ""
+
+msgid "The primary record must be one of the selected records."
 msgstr ""

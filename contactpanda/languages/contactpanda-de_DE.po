@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.4.3\n"
+"Project-Id-Version: ContactPanda 0.4.5\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-18 18:00+0200\n"
@@ -4563,3 +4563,50 @@ msgstr "Eventdetails anzeigen"
 
 msgid "Waiting list"
 msgstr "Warteliste"
+msgid "Primary company"
+msgstr "Hauptfirma"
+
+msgid "No company assigned."
+msgstr "Keine Firma zugeordnet."
+
+msgid "Position / role"
+msgstr "Position / Funktion"
+
+msgid "Use as primary company"
+msgstr "Als Hauptfirma verwenden"
+
+msgid "Remove this company assignment?"
+msgstr "Diese Firmenzuordnung entfernen?"
+
+msgid "Remove assignment"
+msgstr "Zuordnung entfernen"
+
+msgid "Add company assignment"
+msgstr "Firmenzuordnung hinzufügen"
+
+msgid "Select company"
+msgstr "Firma auswählen"
+
+msgid "Or create company"
+msgstr "Oder Firma erstellen"
+
+msgid "Add assignment"
+msgstr "Zuordnung hinzufügen"
+
+msgid "Call phone number"
+msgstr "Telefonnummer anrufen"
+
+msgid "Move records to Trash from the People or Companies list. This page only restores or permanently deletes records that are already in Trash."
+msgstr "Verschieben Sie Datensätze in der Personen- oder Firmenliste in den Papierkorb. Diese Seite stellt nur bereits gelöschte Datensätze wieder her oder löscht sie endgültig."
+
+msgid "Choose records and the primary record"
+msgstr "Datensätze und Hauptdatensatz auswählen"
+
+msgid "Keep at least two records selected. Unselected candidates remain unchanged."
+msgstr "Lassen Sie mindestens zwei Datensätze ausgewählt. Nicht ausgewählte Kandidaten bleiben unverändert."
+
+msgid "Keep at least two records selected for the merge."
+msgstr "Wählen Sie mindestens zwei Datensätze für die Zusammenführung aus."
+
+msgid "The primary record must be one of the selected records."
+msgstr "Der Hauptdatensatz muss einer der ausgewählten Datensätze sein."

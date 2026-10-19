@@ -1153,6 +1153,41 @@
 	}
 
 	document.addEventListener('change', function (event) {
+		if (event.target.matches('.contactpanda-merge-record-toggle')) {
+			var recordId = event.target.value;
+			var enabled = event.target.checked;
+			document.querySelectorAll('[data-contactpanda-primary-record="' + recordId + '"], [data-contactpanda-merge-source="' + recordId + '"] input').forEach(function (input) {
+				input.disabled = !enabled;
+				if (!enabled && input.checked) input.checked = false;
+			});
+			var selected = document.querySelectorAll('.contactpanda-merge-record-toggle:checked');
+			var primary = document.querySelector('[data-contactpanda-primary-record]:checked');
+			if (!primary && selected.length) {
+				var nextPrimary = document.querySelector('[data-contactpanda-primary-record="' + selected[0].value + '"]');
+				if (nextPrimary) nextPrimary.checked = true;
+			}
+			document.querySelectorAll('[data-contactpanda-merge-channel-sources]').forEach(function (label) {
+				var sourceIds = (label.getAttribute('data-contactpanda-merge-channel-sources') || '').split(',');
+				var available = sourceIds.some(function (sourceId) {
+					var sourceToggle = document.querySelector('.contactpanda-merge-record-toggle[value="' + sourceId + '"]');
+					return sourceToggle && sourceToggle.checked;
+				});
+				label.querySelectorAll('input').forEach(function (input) {
+					input.disabled = !available;
+					if (!available) input.checked = false;
+				});
+			});
+			document.querySelectorAll('.contactpanda-merge-channels fieldset').forEach(function (fieldset) {
+				var checkedPrimary = fieldset.querySelector('input[type="radio"]:checked:not(:disabled)');
+				if (checkedPrimary) return;
+				var firstAvailable = fieldset.querySelector('input[type="checkbox"]:checked:not(:disabled)');
+				if (!firstAvailable) return;
+				var firstLabel = firstAvailable.closest('label');
+				var firstPrimary = firstLabel && firstLabel.querySelector('input[type="radio"]');
+				if (firstPrimary) firstPrimary.checked = true;
+			});
+			return;
+		}
 		if (event.target.matches('[data-contactpanda-merge-field]')) {
 			var mergeField = event.target.getAttribute('data-contactpanda-merge-field');
 			var mergeTarget = document.querySelector('[data-contactpanda-merge-target="' + mergeField + '"]');

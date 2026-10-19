@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || exit;
 /** Lifecycle operations are deliberately limited to the standalone ContactPanda tables. */
 final class ContactPanda_Trash {
 	public static function boot() {
-		add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
+		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 99 );
 		add_action( 'admin_post_contactpanda_record_action', array( __CLASS__, 'handle' ) );
 	}
 
@@ -83,7 +83,7 @@ final class ContactPanda_Trash {
 	}
 
 	public static function handle() {
-		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! self::available() ) wp_die( esc_html__( 'This action requires an administrator and standalone ContactPanda mode.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! current_user_can( 'manage_options' ) || ! self::available() ) wp_die( esc_html__( 'This action requires an administrator and standalone ContactPanda mode.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		check_admin_referer( 'contactpanda_record_action' );
 		$entity = isset( $_POST['entity'] ) && is_string( $_POST['entity'] ) ? sanitize_key( wp_unslash( $_POST['entity'] ) ) : '';
 		$operation = isset( $_POST['operation'] ) && is_string( $_POST['operation'] ) ? sanitize_key( wp_unslash( $_POST['operation'] ) ) : '';
@@ -105,7 +105,7 @@ final class ContactPanda_Trash {
 		echo '<div class="wrap"><h1>' . esc_html__( 'Trash', 'contactpanda' ) . '</h1>';
 		if ( ! self::available() ) { echo '<p>' . esc_html__( 'Trash is available only for standalone ContactPanda records. Groundhogg records cannot be deleted here.', 'contactpanda' ) . '</p></div>'; return; }
 		$entity = isset( $_GET['entity'] ) && 'companies' === $_GET['entity'] ? 'companies' : 'contacts';
-		$trashed = ! isset( $_GET['trashed'] ) || '1' === $_GET['trashed'];
+		$trashed = true;
 		$page = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1;
 		$id = isset( $_GET['record'] ) ? absint( $_GET['record'] ) : 0;
 		$search = isset( $_GET['s'] ) && is_string( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
@@ -113,13 +113,13 @@ final class ContactPanda_Trash {
 		if ( isset( $_GET['changed'], $_GET['failed'] ) ) echo '<div class="notice notice-info"><p>' . esc_html( sprintf( __( 'Changed: %1$d. Failed or no longer in the required state: %2$d.', 'contactpanda' ), absint( $_GET['changed'] ), absint( $_GET['failed'] ) ) ) . '</p></div>';
 		echo '<p>';
 		foreach ( array( 'contacts' => __( 'People', 'contactpanda' ), 'companies' => __( 'Companies', 'contactpanda' ) ) as $key => $label ) echo '<a class="button" href="' . esc_url( self::url( $key, 0, $trashed ) ) . '">' . esc_html( $label ) . '</a> ';
-		echo '</p><p><a href="' . esc_url( self::url( $entity, 0, false ) ) . '">' . esc_html__( 'Active records', 'contactpanda' ) . '</a> | <a href="' . esc_url( self::url( $entity, 0, true ) ) . '">' . esc_html__( 'Trash', 'contactpanda' ) . '</a></p>';
+		echo '</p><p class="description">' . esc_html__( 'Move records to Trash from the People or Companies list. This page only restores or permanently deletes records that are already in Trash.', 'contactpanda' ) . '</p>';
 		echo '<form method="get"><input type="hidden" name="page" value="contactpanda-trash"><input type="hidden" name="entity" value="' . esc_attr( $entity ) . '"><input type="hidden" name="trashed" value="' . ( $trashed ? '1' : '0' ) . '"><label>' . esc_html__( 'Search', 'contactpanda' ) . ' <input type="search" name="s" value="' . esc_attr( $search ) . '"></label> <button class="button">' . esc_html__( 'Search', 'contactpanda' ) . '</button></form>';
 		$result = self::records( $entity, $trashed, $page, $search, $id );
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_record_action"><input type="hidden" name="entity" value="' . esc_attr( $entity ) . '">';
 		wp_nonce_field( 'contactpanda_record_action' );
 		echo '<p><label>' . esc_html__( 'Bulk actions', 'contactpanda' ) . ' <select name="operation">';
-		$operations = $trashed ? array( 'restore' => __( 'Restore', 'contactpanda' ), 'purge' => __( 'Delete permanently', 'contactpanda' ) ) : array( 'trash' => __( 'Move to Trash', 'contactpanda' ) );
+		$operations = array( 'restore' => __( 'Restore', 'contactpanda' ), 'purge' => __( 'Delete permanently', 'contactpanda' ) );
 		$selected_operation = isset( $_GET['operation'] ) && is_string( $_GET['operation'] ) ? sanitize_key( wp_unslash( $_GET['operation'] ) ) : key( $operations );
 		foreach ( $operations as $key => $label ) echo '<option value="' . esc_attr( $key ) . '"' . ( $selected_operation === $key ? ' selected' : '' ) . '>' . esc_html( $label ) . '</option>';
 		echo '</select></label></p><p><label><input type="checkbox" name="confirmed" value="1" required> ' . esc_html__( 'I explicitly confirm the selected action for the checked records. Permanent deletion cannot be undone.', 'contactpanda' ) . '</label></p><p><button class="button">' . esc_html__( 'Apply', 'contactpanda' ) . '</button></p>';

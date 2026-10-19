@@ -311,13 +311,16 @@ final class ContactPanda_Store {
 		return $company_id ? self::link_company_contact( $company_id, $contact['id'] ) : false;
 	}
 
-	public static function link_company_contact( $company_id, $contact_id, $position = '', $primary = false ) {
+	public static function link_company_contact( $company_id, $contact_id, $position = '', $primary = false, $primary_company = false ) {
 		global $wpdb;
 		$table = ContactPanda_Schema::table_names()['company_contacts'];
 		if ( $primary && $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE company_id = %d AND contact_id <> %d AND is_primary = 1 LIMIT 1", absint( $company_id ), absint( $contact_id ) ) ) ) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 			$primary = false;
 		}
-		return false !== $wpdb->replace(
+		if ( $primary_company ) {
+			$wpdb->update( $table, array( 'is_primary_company' => 0, 'updated_at' => current_time( 'mysql' ) ), array( 'contact_id' => absint( $contact_id ) ) );
+		}
+		$saved = false !== $wpdb->replace(
 			$table,
 			array(
 				'company_id'        => absint( $company_id ),
@@ -325,10 +328,54 @@ final class ContactPanda_Store {
 				'relationship_type' => 'employee',
 				'position'          => sanitize_text_field( $position ),
 				'is_primary'        => $primary ? 1 : 0,
+				'is_primary_company' => $primary_company ? 1 : 0,
 				'created_at'        => current_time( 'mysql' ),
 				'updated_at'        => current_time( 'mysql' ),
 			)
 		);
+		if ( $saved ) self::ensure_primary_company( $contact_id );
+		return $saved;
+	}
+
+	public static function contact_company_relations( $contact_id ) {
+		global $wpdb;
+		$tables = ContactPanda_Schema::table_names();
+		$sql = "SELECT r.company_id,r.contact_id,r.relationship_type,r.position,r.is_primary,r.is_primary_company,c.name,c.legal_name,c.website FROM `{$tables['company_contacts']}` r INNER JOIN `{$tables['companies']}` c ON c.id=r.company_id WHERE r.contact_id=%d AND c.deleted_at IS NULL ORDER BY r.is_primary_company DESC,c.name ASC";
+		return (array) $wpdb->get_results( $wpdb->prepare( $sql, absint( $contact_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table names.
+	}
+
+	public static function remove_company_contact( $company_id, $contact_id ) {
+		global $wpdb;
+		$table = ContactPanda_Schema::table_names()['company_contacts'];
+		$deleted = false !== $wpdb->delete( $table, array( 'company_id' => absint( $company_id ), 'contact_id' => absint( $contact_id ) ) );
+		if ( $deleted ) self::ensure_primary_company( $contact_id );
+		return $deleted;
+	}
+
+	public static function update_contact_company_relation( $company_id, $contact_id, $position, $primary_company ) {
+		global $wpdb;
+		$table = ContactPanda_Schema::table_names()['company_contacts'];
+		$company_id = absint( $company_id );
+		$contact_id = absint( $contact_id );
+		if ( ! $company_id || ! $contact_id ) return false;
+		if ( $primary_company ) {
+			$wpdb->update( $table, array( 'is_primary_company' => 0, 'updated_at' => current_time( 'mysql' ) ), array( 'contact_id' => $contact_id ) );
+		}
+		$updated = false !== $wpdb->update(
+			$table,
+			array( 'position' => sanitize_text_field( $position ), 'is_primary_company' => $primary_company ? 1 : 0, 'updated_at' => current_time( 'mysql' ) ),
+			array( 'company_id' => $company_id, 'contact_id' => $contact_id )
+		);
+		if ( $updated ) self::ensure_primary_company( $contact_id );
+		return $updated;
+	}
+
+	private static function ensure_primary_company( $contact_id ) {
+		global $wpdb;
+		$table = ContactPanda_Schema::table_names()['company_contacts'];
+		if ( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE contact_id=%d AND is_primary_company=1 LIMIT 1", absint( $contact_id ) ) ) ) return;
+		$id = absint( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE contact_id=%d ORDER BY id ASC LIMIT 1", absint( $contact_id ) ) ) );
+		if ( $id ) $wpdb->update( $table, array( 'is_primary_company' => 1, 'updated_at' => current_time( 'mysql' ) ), array( 'id' => $id ) );
 	}
 
 	public static function update_company( $id, $field, $value ) {
@@ -350,7 +397,7 @@ final class ContactPanda_Store {
 	public static function company_map() {
 		global $wpdb;
 		$tables = ContactPanda_Schema::table_names();
-		$rows = $wpdb->get_results( "SELECT company_id, contact_id FROM `{$tables['company_contacts']}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$rows = $wpdb->get_results( "SELECT company_id, contact_id, position, is_primary_company FROM `{$tables['company_contacts']}` ORDER BY is_primary_company DESC, id ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		$companies = array();
 		foreach ( self::companies() as $company ) {
 			$companies[ $company['id'] ] = $company;
@@ -358,7 +405,10 @@ final class ContactPanda_Store {
 		$map = array();
 		foreach ( (array) $rows as $row ) {
 			if ( isset( $companies[ $row['company_id'] ] ) ) {
-				$map[ $row['contact_id'] ][] = $companies[ $row['company_id'] ];
+				$company = $companies[ $row['company_id'] ];
+				$company['relationship_position'] = $row['position'];
+				$company['is_primary_company'] = ! empty( $row['is_primary_company'] );
+				$map[ $row['contact_id'] ][] = $company;
 			}
 		}
 		return $map;
@@ -598,12 +648,13 @@ final class ContactPanda_Store {
 				foreach ( $donors as $donor ) {
 					foreach ( self::contact_meta( $donor ) as $key => $value ) if ( ! array_key_exists( 'meta__' . $key, $resolved ) && ( ! isset( $primary_meta[ $key ] ) || '' === (string) $primary_meta[ $key ] ) ) self::set_contact_meta( $primary_id, $key, $value );
 					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['contact_tags']}` (contact_id,tag_id,assigned_at,assigned_by,source) SELECT %d,tag_id,assigned_at,assigned_by,source FROM `{$tables['contact_tags']}` WHERE contact_id=%d", $primary_id, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['company_contacts']}` (company_id,contact_id,relationship_type,position,is_primary,created_at,updated_at) SELECT company_id,%d,relationship_type,position,is_primary,created_at,%s FROM `{$tables['company_contacts']}` WHERE contact_id=%d", $primary_id, $now, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['company_contacts']}` (company_id,contact_id,relationship_type,position,is_primary,is_primary_company,created_at,updated_at) SELECT company_id,%d,relationship_type,position,is_primary,0,created_at,%s FROM `{$tables['company_contacts']}` WHERE contact_id=%d", $primary_id, $now, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$wpdb->update( $tables['consents'], array( 'contact_id' => $primary_id ), array( 'contact_id' => $donor ) );
 					$wpdb->update( $tables['activities'], array( 'contact_id' => $primary_id ), array( 'contact_id' => $donor ) );
 					$wpdb->delete( $tables['contact_tags'], array( 'contact_id' => $donor ) );
 					$wpdb->delete( $tables['company_contacts'], array( 'contact_id' => $donor ) );
 				}
+				self::ensure_primary_company( $primary_id );
 				self::set_contact_meta( $primary_id, 'merged_contact_ids', $ids );
 				self::set_contact_meta( $primary_id, 'merged_email_aliases', array_values( array_unique( array_filter( $aliases ) ) ) );
 				$wpdb->query( $wpdb->prepare( "UPDATE `{$table}` SET deleted_at=%s, updated_at=%s WHERE id IN (" . implode( ',', array_fill( 0, count( $donors ), '%d' ) ) . ')', array_merge( array( $now, $now ), $donors ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table and numeric placeholders.
@@ -628,12 +679,15 @@ final class ContactPanda_Store {
 					if ( $source && isset( $by_id[ $source ] ) ) { $source_meta = self::company_meta( $source ); if ( '' !== trim( (string) ( $source_meta[ $meta_key ] ?? '' ) ) ) self::set_company_meta( $primary_id, $meta_key, $source_meta[ $meta_key ] ); }
 					if ( array_key_exists( $choice_key, $resolved ) ) self::set_company_meta( $primary_id, $meta_key, sanitize_text_field( $resolved[ $choice_key ] ) );
 				}
+				$affected_contacts = array();
 				foreach ( $donors as $donor ) {
 					foreach ( self::company_meta( $donor ) as $key => $value ) if ( '' === (string) ( self::company_meta( $primary_id )[ $key ] ?? '' ) ) self::set_company_meta( $primary_id, $key, $value );
-					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['company_contacts']}` (company_id,contact_id,relationship_type,position,is_primary,created_at,updated_at) SELECT %d,contact_id,relationship_type,position,is_primary,created_at,%s FROM `{$tables['company_contacts']}` WHERE company_id=%d", $primary_id, $now, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$affected_contacts = array_merge( $affected_contacts, array_map( 'absint', (array) $wpdb->get_col( $wpdb->prepare( "SELECT contact_id FROM `{$tables['company_contacts']}` WHERE company_id=%d", $donor ) ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['company_contacts']}` (company_id,contact_id,relationship_type,position,is_primary,is_primary_company,created_at,updated_at) SELECT %d,contact_id,relationship_type,position,is_primary,is_primary_company,created_at,%s FROM `{$tables['company_contacts']}` WHERE company_id=%d", $primary_id, $now, $donor ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 					$wpdb->update( $tables['activities'], array( 'company_id' => $primary_id ), array( 'company_id' => $donor ) );
 					$wpdb->delete( $tables['company_contacts'], array( 'company_id' => $donor ) );
 				}
+				foreach ( array_unique( $affected_contacts ) as $contact_id ) self::ensure_primary_company( $contact_id );
 				self::set_company_meta( $primary_id, 'merged_company_ids', $ids );
 				$wpdb->query( $wpdb->prepare( "UPDATE `{$table}` SET deleted_at=%s, updated_at=%s WHERE id IN (" . implode( ',', array_fill( 0, count( $donors ), '%d' ) ) . ')', array_merge( array( $now, $now ), $donors ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				self::add_activity( 0, $primary_id, 'merge', __( 'Company records merged', 'contactpanda' ), sprintf( __( 'Source record IDs moved to Trash: %s', 'contactpanda' ), implode( ', ', $donors ) ) );

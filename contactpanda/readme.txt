@@ -2,12 +2,19 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.4.3
+Stable tag: 0.4.5
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
 
 == Changelog ==
+
+= 0.4.5 =
+* Lets administrators assign several companies to one person and mark exactly one relationship as the primary company.
+* Adds direct email and telephone actions to every saved contact channel and aligns row email actions consistently.
+* Allows duplicate candidates to be deselected inside the merge review before choosing final values and primary channels.
+* Restricts the Trash screen to records already moved there; moving active records to Trash remains in the People and Companies lists.
+* Keeps the ContactPanda Plus menu order stable by placing Trash after optional Plus modules.
 
 = 0.4.3 =
 * Adds stable tag-added events for ContactPanda Plus flow triggers, including genuine additions performed through bulk actions.
