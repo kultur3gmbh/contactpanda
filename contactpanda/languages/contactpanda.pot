@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.3.7\n"
+"Project-Id-Version: ContactPanda 0.4.0\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-18 18:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -4481,4 +4481,77 @@ msgid "The central library could not be downloaded (%s). Your local library was 
 msgstr ""
 
 msgid "The central library returned no valid entries. Your local library was not changed."
+msgstr ""
+msgid "%d booking"
+msgid_plural "%d bookings"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Advanced segments, automated actions, and flows are not part of ContactPanda Basic."
+msgstr ""
+
+msgid "Amelia and The Events Calendar are active. ContactPanda will not combine their bookings."
+msgstr ""
+
+msgid "Amelia appointment"
+msgstr ""
+
+msgid "Amelia event"
+msgstr ""
+
+msgid "Appointment"
+msgstr ""
+
+msgid "Bookings are assigned by matching the email address stored by the selected event source."
+msgstr ""
+
+msgid "Canceled"
+msgstr ""
+
+msgid "Choose event source"
+msgstr ""
+
+msgid "Choose which source ContactPanda should display. Data from different event systems is never mixed."
+msgstr ""
+
+msgid "ContactPanda Basic displays bookings from one event source in the people list and person details. Source data is never changed."
+msgstr ""
+
+msgid "Events and appointments"
+msgstr ""
+
+msgid "No-show"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Read-only display"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Save event source"
+msgstr ""
+
+msgid "Select the event source for ContactPanda."
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "The Events Calendar event"
+msgstr ""
+
+msgid "The event was not found."
+msgstr ""
+
+msgid "The selected event source is unavailable."
+msgstr ""
+
+msgid "View event details"
+msgstr ""
+
+msgid "Waiting list"
 msgstr ""

@@ -4,7 +4,7 @@
 
 `ContactPanda Basic` ist das kostenlose, eigenständig lauffähige Haupt-Plugin. Es enthält Personen, Firmen, Adressen, Tags, Einwilligungen, Registrierung, Aktivitäten, Groundhogg-Kompatibilität und die grundlegende WooCommerce-Kundenansicht. Bestellungen bleiben in WooCommerce; ContactPanda liest sie über die öffentliche CRUD-API und legt keine Bestellkopien an.
 
-`ContactPanda Plus` benötigt Basic und ergänzt abgegrenzte Module. In 0.14.0 sind E-Mail-Vorlagen und Newsletter-Versand, die direkt in die Personenliste integrierte visuelle Kontaktsuche, Kampagnen, Formularadapter sowie die Integration für The Events Calendar/Event Tickets Plus enthalten. Künftige Module für Amelia, GiveWP, B2B, Berichte und Automatisierungen verwenden dieselben Erweiterungspunkte. Eine Deaktivierung von Plus entfernt weder Daten noch Einstellungen.
+`ContactPanda Plus` benötigt Basic und ergänzt abgegrenzte Module wie E-Mail-Vorlagen, Newsletter-Versand, gespeicherte Suchen, Kampagnen und Formularadapter. Die rein lesende Eventanzeige für The Events Calendar/Event Tickets und Amelia gehört seit 0.4.0 zu Basic. Künftige erweiterte Segmente, Berichte und Flows bleiben Plus vorbehalten. Eine Deaktivierung von Plus entfernt weder Daten noch Einstellungen.
 
 ```text
 ContactPanda Basic
@@ -18,13 +18,13 @@ ContactPanda Basic
         ├── E-Mail-Vorlagen und Newsletter-Versand
         ├── Events und Event Tickets
         ├── WooCommerce- und Veranstaltungssegmente
-        ├── Amelia (geplant)
+        ├── Amelia (lesend)
         ├── B2B (geplant)
         ├── Berichte (geplant)
         └── Automatisierungen (geplant)
 ```
 
-Basic enthält keine direkte Abfrage von Event-Tickets-Daten. Plus liefert Verfügbarkeit, Teilnehmerzahlen und Veranstaltungslisten über `contactpanda_events_available`, `contactpanda_event_summaries` und `contactpanda_contact_events`. Zusätzliche Einstellungsbereiche werden über `contactpanda_settings_tabs` und `contactpanda_render_settings_tab_{name}` registriert.
+Basic stellt über einen isolierten, rein lesenden Adapter Verfügbarkeit, Teilnehmerzahlen und Veranstaltungslisten bereit. Unterstützt werden The Events Calendar/Event Tickets und Amelia. Sind beide Systeme aktiv, muss eine globale Quelle ausgewählt werden; Ergebnisse werden niemals gemischt. Plus kann dieselben normalisierten Erweiterungspunkte für Segmente verwenden. Zusätzliche Einstellungsbereiche werden über `contactpanda_settings_tabs` und `contactpanda_render_settings_tab_{name}` registriert.
 
 ## E-Mail-Vorlagen
 
@@ -73,7 +73,7 @@ Im Groundhogg-Frontend-Modus ist Groundhogg Companies ein optionales Modul. Ist 
 
 ## Optionale Veranstaltungsintegration
 
-Sind The Events Calendar, Event Tickets und Event Tickets Plus aktiv, erscheint in der Personenliste die Zahl der eindeutig zugeordneten Veranstaltungen. Die Zuordnung erfolgt über die normalisierte E-Mail-Adresse der Event-Tickets-Teilnehmerliste; Buchung und Check-in führen beide zu einer Zuordnung, mehrere Tickets derselben E-Mail-Adresse für dieselbe Veranstaltung zählen einmal. Die Detailansicht zeigt alle gefundenen Veranstaltungsbuchungen und kann „Gebucht“ und „Besucht“ weiterhin unterscheiden. Fehlt eine Voraussetzung, bleiben Spalte und Tab ausgeblendet. Es werden keine Buchungen, Tickets oder Check-ins verändert und keine Veranstaltungsdaten dupliziert.
+Ist eine unterstützte Eventquelle aktiv und ausgewählt, erscheint in der Personenliste die Zahl der eindeutig zugeordneten Buchungen. Die Zuordnung erfolgt über normalisierte E-Mail-Adressen. The Events Calendar verwendet die Event-Tickets-Teilnehmerliste und Check-ins; Amelia verwendet seine lokalen Kunden-, Buchungs-, Termin- und Eventtabellen mit dem tatsächlichen WordPress-Tabellenpräfix. Die Detailansicht unterscheidet Buchungen, Teilnahmen und weitere verfügbare Buchungsstatus. Fehlt eine Quelle, bleiben Spalte und Tab ausgeblendet. Es werden keine Buchungen, Tickets, Termine oder Check-ins verändert und keine Veranstaltungsdaten dupliziert.
 
 ## Schutzregeln
 

@@ -971,7 +971,7 @@ final class ContactPanda_Plugin {
 				'email' => self::value( $contact, array( 'email', 'get_email' ) ), 'phone' => self::format_phone( self::meta( $contact, array( 'primary_phone', 'phone', 'phone_number' ) ) ), 'company' => $company, 'position' => self::meta( $contact, array( 'berufsbezeichnung', 'job_title', 'position' ) ), 'uid' => $uid,
 				'address_1' => $address['address_1'] ?? '', 'address_2' => $address['address_2'] ?? '', 'postcode' => $address['postcode'] ?? '', 'city' => $address['city'] ?? '', 'state' => $address['state'] ?? '', 'country' => isset( $countries[ $address['country'] ?? '' ] ) ? $countries[ $address['country'] ] : ( $address['country'] ?? '' ),
 				'tags' => implode( ', ', $tag_names ), 'roles' => implode( ', ', $roles ), 'optin_status' => self::status_label( $status ), 'email_confirmed' => $confirmed ? __( 'Yes', 'contactpanda' ) : __( 'No', 'contactpanda' ), 'marketable' => self::is_marketable_status( $status ) ? __( 'Yes', 'contactpanda' ) : __( 'No', 'contactpanda' ),
-				'orders' => (string) $summary['count'], 'order_total' => function_exists( 'wc_format_decimal' ) ? wc_format_decimal( $summary['total'], 2 ) : number_format( (float) $summary['total'], 2, '.', '' ), 'events' => (string) ( $event_summaries[ $id ]['visited'] ?? 0 ), 'created_at' => self::value( $contact, array( 'created_at', 'date_created', 'get_date_created' ) ),
+				'orders' => (string) $summary['count'], 'order_total' => function_exists( 'wc_format_decimal' ) ? wc_format_decimal( $summary['total'], 2 ) : number_format( (float) $summary['total'], 2, '.', '' ), 'events' => (string) ( $event_summaries[ $id ]['count'] ?? $event_summaries[ $id ]['visited'] ?? 0 ), 'created_at' => self::value( $contact, array( 'created_at', 'date_created', 'get_date_created' ) ),
 			);
 			$rows[] = (array) apply_filters( 'contactpanda_contact_output_row', $row, $contact );
 		}
@@ -1842,7 +1842,7 @@ final class ContactPanda_Plugin {
 			$company = $companies_enabled && isset( $company_map[ $id ][0] ) ? $company_map[ $id ][0] : false;
 			$status = self::optin_status( $contact );
 			$order_summary = isset( $order_summaries[ $id ] ) ? $order_summaries[ $id ] : self::empty_order_summary();
-			$event_summary = isset( $event_summaries[ $id ] ) ? $event_summaries[ $id ] : array( 'visited' => 0 );
+			$event_summary = isset( $event_summaries[ $id ] ) ? $event_summaries[ $id ] : array( 'count' => 0, 'visited' => 0 );
 			$edit_url = add_query_arg( array( 'page' => self::people_page_slug(), 'person' => $id, 'contactpanda_list_state' => $list_state ), admin_url( 'admin.php' ) );
 			$view_url = add_query_arg( 'ansicht', 'anzeigen', $edit_url );
 			$display_name = trim( $first_name . ' ' . $last_name );
@@ -1880,7 +1880,7 @@ final class ContactPanda_Plugin {
 			echo '<td class="contactpanda-order-count">' . esc_html( $order_summary['count'] ) . '</td>';
 			echo '<td class="contactpanda-order-total">' . wp_kses_post( $order_summary['formatted_total'] ) . '</td>';
 			if ( $events_enabled ) {
-				echo '<td class="contactpanda-event-count">' . esc_html( $event_summary['visited'] ) . '</td>';
+				echo '<td class="contactpanda-event-count">' . esc_html( $event_summary['count'] ?? $event_summary['visited'] ) . '</td>';
 			}
 			echo '<td><div class="contactpanda-person-status-actions">' . self::email_confirmation_icon( $status, $contact ) . self::marketing_icon_badge( $status ) . '</div></td></tr>';
 		}
@@ -3061,8 +3061,8 @@ final class ContactPanda_Plugin {
 			$right_value = isset( $order_summaries[ $right_id ]['total'] ) ? (float) $order_summaries[ $right_id ]['total'] : 0.0;
 			$comparison = $left_value <=> $right_value;
 		} elseif ( 'event_count' === $orderby ) {
-			$left_value = isset( $event_summaries[ $left_id ]['visited'] ) ? (int) $event_summaries[ $left_id ]['visited'] : 0;
-			$right_value = isset( $event_summaries[ $right_id ]['visited'] ) ? (int) $event_summaries[ $right_id ]['visited'] : 0;
+			$left_value = isset( $event_summaries[ $left_id ]['count'] ) ? (int) $event_summaries[ $left_id ]['count'] : ( isset( $event_summaries[ $left_id ]['visited'] ) ? (int) $event_summaries[ $left_id ]['visited'] : 0 );
+			$right_value = isset( $event_summaries[ $right_id ]['count'] ) ? (int) $event_summaries[ $right_id ]['count'] : ( isset( $event_summaries[ $right_id ]['visited'] ) ? (int) $event_summaries[ $right_id ]['visited'] : 0 );
 			$comparison = $left_value <=> $right_value;
 		} elseif ( 'company' === $orderby ) {
 			$left_company = isset( $company_map[ $left_id ][0] ) ? self::value( $company_map[ $left_id ][0], array( 'name', 'get_name', 'company_name' ) ) : '';
@@ -3221,8 +3221,7 @@ final class ContactPanda_Plugin {
 	}
 
 	private static function render_person_events( $events ) {
-		$visited = count( array_filter( $events, static function ( $event ) { return ! empty( $event['visited'] ); } ) );
-		echo __( '<div class="contactpanda-toolbar"><h2>Events</h2><span class="contactpanda-count">', 'contactpanda' ) . esc_html( $visited ) . __( ' attended</span></div>', 'contactpanda' );
+		echo '<div class="contactpanda-toolbar"><h2>' . esc_html__( 'Events', 'contactpanda' ) . '</h2><span class="contactpanda-count">' . esc_html( sprintf( _n( '%d booking', '%d bookings', count( $events ), 'contactpanda' ), count( $events ) ) ) . '</span></div>';
 		if ( ! $events ) {
 			echo __( '<p class="contactpanda-muted">No event booking was found for this person.</p>', 'contactpanda' );
 			return;
@@ -3230,19 +3229,20 @@ final class ContactPanda_Plugin {
 		echo __( '<table class="widefat contactpanda-table"><thead><tr><th>Event</th><th><span class="screen-reader-text">Preview</span></th><th>Date</th><th>Status</th><th>Booking</th></tr></thead><tbody>', 'contactpanda' );
 		foreach ( $events as $event ) {
 			$title = $event['title'] ? $event['title'] : __( 'Event #', 'contactpanda' ) . $event['event_id'];
-			echo '<tr><td><a href="' . esc_url( $event['event_url'] ) . '"><strong>' . esc_html( $title ) . '</strong></a></td>';
-			echo '<td><button type="button" class="button-link contactpanda-eye-action contactpanda-preview-event" data-event="' . esc_attr( $event['event_id'] ) . __( '" aria-label="View event details" title="View event details"><span class="dashicons dashicons-visibility"></span></button></td>', 'contactpanda' );
+			$event_url = isset( $event['event_url'] ) ? $event['event_url'] : '';
+			echo '<tr><td>' . ( $event_url ? '<a href="' . esc_url( $event_url ) . '"><strong>' . esc_html( $title ) . '</strong></a>' : '<strong>' . esc_html( $title ) . '</strong>' ) . '</td>';
+			echo '<td><button type="button" class="button-link contactpanda-eye-action contactpanda-preview-event" data-event="' . esc_attr( $event['event_key'] ?? $event['event_id'] ) . '" aria-label="' . esc_attr__( 'View event details', 'contactpanda' ) . '" title="' . esc_attr__( 'View event details', 'contactpanda' ) . '"><span class="dashicons dashicons-visibility"></span></button></td>';
 			echo '<td>' . esc_html( $event['date'] ? $event['date'] : '—' ) . '</td>';
-			echo '<td><span class="contactpanda-mini-badge">' . esc_html( $event['visited'] ? __( 'Attended', 'contactpanda' ) : __( 'Booked', 'contactpanda' ) ) . '</span></td>';
+			echo '<td><span class="contactpanda-mini-badge">' . esc_html( $event['status_label'] ?? ( $event['visited'] ? __( 'Attended', 'contactpanda' ) : __( 'Booked', 'contactpanda' ) ) ) . '</span></td>';
 			echo '<td>';
-			if ( $event['order_url'] ) {
+			if ( ! empty( $event['order_url'] ) ) {
 				echo '<a href="' . esc_url( $event['order_url'] ) . __( '">Open order</a>', 'contactpanda' );
 			} else {
 				echo '—';
 			}
 			echo '</td></tr>';
 		}
-		echo __( '</tbody></table><p class="description">Events are assigned by matching the attendee email address stored by Event Tickets.</p>', 'contactpanda' );
+		echo '</tbody></table><p class="description">' . esc_html__( 'Bookings are assigned by matching the email address stored by the selected event source.', 'contactpanda' ) . '</p>';
 	}
 
 	private static function render_person_broadcasts( $contact_id, $broadcasts ) {
@@ -4054,7 +4054,7 @@ final class ContactPanda_Plugin {
 		foreach ( $contacts as $contact ) {
 			$contact_id = absint( self::value( $contact, array( 'id', 'ID' ) ) );
 			if ( $contact_id ) {
-				$summaries[ $contact_id ] = array( 'visited' => 0 );
+				$summaries[ $contact_id ] = array( 'count' => 0, 'visited' => 0 );
 			}
 		}
 		return (array) apply_filters( 'contactpanda_event_summaries', $summaries, $contacts );

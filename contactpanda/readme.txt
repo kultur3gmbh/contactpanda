@@ -2,12 +2,18 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.3.7
+Stable tag: 0.4.0
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
 
 == Changelog ==
+
+= 0.4.0 =
+* Restores read-only event bookings and attendance in the People list and person details without requiring ContactPanda Plus.
+* Adds read-only Amelia appointments and event bookings matched through customer email addresses.
+* Requires a single site-wide event source when Amelia and The Events Calendar/Event Tickets are active, preventing mixed results.
+* Keeps source systems unchanged and reserves advanced event segments and future flows for ContactPanda Plus.
 
 = 0.3.7 =
 * Prevents the People list from loading the complete WooCommerce order history when calculating customer totals.
