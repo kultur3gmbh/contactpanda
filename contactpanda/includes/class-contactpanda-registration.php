@@ -329,31 +329,39 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		foreach ( $sections as $key => $label ) echo '<a class="nav-tab ' . ( $current === $key ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=' . sanitize_key( $key ) ) ) . '">' . esc_html( $label ) . '</a>';
 		echo '</nav>';
 		if ( 'salutations' !== $current ) { do_action( 'contactpanda_render_misc_settings_section_' . $current ); return; }
-		$rows = ContactPanda_Store::salutations();
+		$language = ContactPanda_Store::salutation_language( isset( $_GET['library_language'] ) ? wp_unslash( $_GET['library_language'] ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- list filter.
+		$search = isset( $_GET['salutation_search'] ) ? sanitize_text_field( wp_unslash( $_GET['salutation_search'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- list filter.
+		$page = max( 1, absint( $_GET['salutation_page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- list pagination.
+		$per_page = 50;
+		$total_rows = ContactPanda_Store::salutations_count( $language, $search );
+		$rows = ContactPanda_Store::salutations( $language, $per_page, ( $page - 1 ) * $per_page, $search );
 		$central_settings = (array) get_option( 'contactpanda_central_salutation_library', array() );
 		$last_sync_value = $central_settings['last_success_at'] ?? ( empty( $central_settings['error'] ) ? ( $central_settings['updated_at'] ?? '' ) : '' );
 		$last_sync = $last_sync_value ? mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $last_sync_value ) : __( 'Never', 'contactpanda' );
-		$edit_id = isset( $_GET['edit_salutation'] ) ? absint( $_GET['edit_salutation'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only editor selection.
-		$editing = $edit_id ? ContactPanda_Store::salutation( $edit_id ) : false;
+		$edit_id = 0;
+		$editing = false;
+		do_action( 'contactpanda_render_salutation_tools' );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Salutation library', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Saved assignments are applied automatically when the same first name is entered again. A manually selected salutation updates the library.', 'contactpanda' ) . '</p><p class="description"><strong>' . esc_html__( 'Last central synchronization:', 'contactpanda' ) . '</strong> ' . esc_html( $last_sync ) . '</p>';
+		echo '<form method="get" class="contactpanda-search"><input type="hidden" name="page" value="contactpanda-settings"><input type="hidden" name="tab" value="misc"><input type="hidden" name="misc_section" value="salutations"><select name="library_language" aria-label="' . esc_attr__( 'Language', 'contactpanda' ) . '">'; foreach ( array( 'de' => 'Deutsch', 'en' => 'English', 'fr' => 'Français', 'es' => 'Español', 'it' => 'Italiano' ) as $code => $label ) echo '<option value="' . esc_attr( $code ) . '"' . selected( $language, $code, false ) . '>' . esc_html( $label ) . '</option>'; echo '</select><input type="search" name="salutation_search" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Search first names', 'contactpanda' ) . '"><button class="button">' . esc_html__( 'Apply', 'contactpanda' ) . '</button></form>';
 		$bulk = get_transient( 'contactpanda_salutation_bulk_' . get_current_user_id() );
 		if ( is_array( $bulk ) ) { delete_transient( 'contactpanda_salutation_bulk_' . get_current_user_id() ); echo '<div class="notice notice-info inline"><p>' . esc_html( $bulk['applied'] ? sprintf( __( '%d missing salutations were assigned.', 'contactpanda' ), absint( $bulk['count'] ) ) : sprintf( __( '%d contacts can be assigned from the library. Confirm to apply the changes.', 'contactpanda' ), absint( $bulk['count'] ) ) ) . '</p></div>'; }
-		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-settings-grid"><input type="hidden" name="action" value="contactpanda_salutation_dictionary"><input type="hidden" name="operation" value="save"><input type="hidden" name="original_id" value="' . esc_attr( $edit_id ) . '">'; wp_nonce_field( 'contactpanda_salutation_dictionary' );
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-settings-grid"><input type="hidden" name="action" value="contactpanda_salutation_dictionary"><input type="hidden" name="operation" value="save"><input type="hidden" name="original_id" value="' . esc_attr( $edit_id ) . '"><input type="hidden" name="language" value="' . esc_attr( $language ) . '">'; wp_nonce_field( 'contactpanda_salutation_dictionary' );
 		echo '<label><span>' . esc_html__( 'First name', 'contactpanda' ) . '</span><input required name="first_name" value="' . esc_attr( $editing['first_name'] ?? '' ) . '"></label><label><span>' . esc_html__( 'Salutation', 'contactpanda' ) . '</span><select name="salutation" required><option value="">' . esc_html__( '--- Please select ---', 'contactpanda' ) . '</option><option value="mr"' . selected( $editing['salutation'] ?? '', 'mr', false ) . '>' . esc_html__( 'Mr', 'contactpanda' ) . '</option><option value="ms"' . selected( $editing['salutation'] ?? '', 'ms', false ) . '>' . esc_html__( 'Ms', 'contactpanda' ) . '</option><option value="family"' . selected( $editing['salutation'] ?? '', 'family', false ) . '>' . esc_html__( 'Family', 'contactpanda' ) . '</option><option value="neutral"' . selected( $editing['salutation'] ?? '', 'neutral', false ) . '>' . esc_html__( 'Neutral', 'contactpanda' ) . '</option></select></label><p><button class="button button-primary">' . ( $editing ? esc_html__( 'Save changes', 'contactpanda' ) : esc_html__( 'Add entry', 'contactpanda' ) ) . '</button>' . ( $editing ? ' <a class="button" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=salutations' ) ) . '">' . esc_html__( 'Cancel', 'contactpanda' ) . '</a>' : '' ) . '</p></form>';
 		echo '<table class="widefat striped contactpanda-table"><thead><tr><th>' . esc_html__( 'First name', 'contactpanda' ) . '</th><th>' . esc_html__( 'Salutation', 'contactpanda' ) . '</th><th>' . esc_html__( 'Source', 'contactpanda' ) . '</th><th>' . esc_html__( 'Actions', 'contactpanda' ) . '</th></tr></thead><tbody>';
 		foreach ( $rows as $row ) {
-			$delete = wp_nonce_url( admin_url( 'admin-post.php?action=contactpanda_salutation_dictionary&operation=delete&id=' . absint( $row['id'] ) ), 'contactpanda_salutation_dictionary' );
-			$edit = admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=salutations&edit_salutation=' . absint( $row['id'] ) );
+			$delete = wp_nonce_url( admin_url( 'admin-post.php?action=contactpanda_salutation_dictionary&operation=delete&id=' . rawurlencode( (string) $row['id'] ) ), 'contactpanda_salutation_dictionary' );
 			$salutation_labels = array( 'mr' => __( 'Mr', 'contactpanda' ), 'ms' => __( 'Ms', 'contactpanda' ), 'family' => __( 'Family', 'contactpanda' ), 'neutral' => __( 'Neutral', 'contactpanda' ) );
 			$source_labels = array( 'manual' => __( 'Manual', 'contactpanda' ), 'confirmed' => __( 'Confirmed selection', 'contactpanda' ), 'import' => __( 'Import', 'contactpanda' ), 'central' => __( 'Central library', 'contactpanda' ) );
-			echo '<tr><td>' . esc_html( $row['first_name'] ) . '</td><td>' . esc_html( $salutation_labels[ $row['salutation'] ] ?? $row['salutation'] ) . '</td><td>' . esc_html( $source_labels[ $row['source'] ] ?? $row['source'] ) . '</td><td><a href="' . esc_url( $edit ) . '">' . esc_html__( 'Edit', 'contactpanda' ) . '</a> · <a href="' . esc_url( $delete ) . '">' . esc_html__( 'Delete', 'contactpanda' ) . '</a></td></tr>';
+			echo '<tr><td colspan="4"><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-salutation-inline"><input type="hidden" name="action" value="contactpanda_salutation_dictionary"><input type="hidden" name="operation" value="save"><input type="hidden" name="original_id" value="' . esc_attr( $row['id'] ) . '"><input type="hidden" name="language" value="' . esc_attr( $language ) . '">'; wp_nonce_field( 'contactpanda_salutation_dictionary' );
+			echo '<input aria-label="' . esc_attr__( 'First name', 'contactpanda' ) . '" name="first_name" value="' . esc_attr( $row['first_name'] ) . '"><select aria-label="' . esc_attr__( 'Salutation', 'contactpanda' ) . '" name="salutation">'; foreach ( $salutation_labels as $key => $label ) echo '<option value="' . esc_attr( $key ) . '"' . selected( $row['salutation'], $key, false ) . '>' . esc_html( $label ) . '</option>'; echo '</select><span>' . esc_html( $source_labels[ $row['source'] ] ?? $row['source'] ) . '</span><button class="button button-small">' . esc_html__( 'Save', 'contactpanda' ) . '</button><a class="button-link-delete" href="' . esc_url( $delete ) . '">' . esc_html__( 'Delete', 'contactpanda' ) . '</a></form></td></tr>';
 		}
 		if ( ! $rows ) echo '<tr><td colspan="4">' . esc_html__( 'The dictionary is empty.', 'contactpanda' ) . '</td></tr>';
-		echo '</tbody></table><div class="contactpanda-database-actions"><a class="button" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=contactpanda_export_salutations' ), 'contactpanda_export_salutations' ) ) . '">' . esc_html__( 'Export CSV', 'contactpanda' ) . '</a>';
-		echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_salutation_dictionary"><input type="hidden" name="operation" value="import">'; wp_nonce_field( 'contactpanda_salutation_dictionary' );
+		echo '</tbody></table>';
+		if ( $total_rows > $per_page ) { $base = array( 'page' => 'contactpanda-settings', 'tab' => 'misc', 'misc_section' => 'salutations', 'library_language' => $language, 'salutation_search' => $search ); echo '<div class="tablenav"><div class="tablenav-pages">'; if ( $page > 1 ) echo '<a class="button" href="' . esc_url( add_query_arg( array_merge( $base, array( 'salutation_page' => $page - 1 ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Previous', 'contactpanda' ) . '</a>'; echo '<span>' . esc_html( sprintf( __( 'Page %1$d of %2$d', 'contactpanda' ), $page, (int) ceil( $total_rows / $per_page ) ) ) . '</span>'; if ( $page * $per_page < $total_rows ) echo '<a class="button" href="' . esc_url( add_query_arg( array_merge( $base, array( 'salutation_page' => $page + 1 ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Next', 'contactpanda' ) . '</a>'; echo '</div></div>'; }
+		echo '<div class="contactpanda-database-actions"><a class="button" href="' . esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=contactpanda_export_salutations&language=' . $language ), 'contactpanda_export_salutations' ) ) . '">' . esc_html__( 'Export CSV', 'contactpanda' ) . '</a>';
+		echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_salutation_dictionary"><input type="hidden" name="operation" value="import"><input type="hidden" name="language" value="' . esc_attr( $language ) . '">'; wp_nonce_field( 'contactpanda_salutation_dictionary' );
 		echo '<input type="file" name="dictionary_file" accept=".csv,text/csv" required><button class="button">' . esc_html__( 'Import and merge CSV', 'contactpanda' ) . '</button></form></div>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-salutation-bulk">'; wp_nonce_field( 'contactpanda_assign_missing_salutations' ); echo '<input type="hidden" name="action" value="contactpanda_assign_missing_salutations"><label><input type="checkbox" name="confirm_apply" value="1"> ' . esc_html__( 'Apply the assignments immediately after checking.', 'contactpanda' ) . '</label> <button class="button">' . esc_html__( 'Reconcile now', 'contactpanda' ) . '</button></form></section>';
-		do_action( 'contactpanda_render_salutation_tools' );
 	}
 
 	public static function handle_salutation_dictionary() {
@@ -361,13 +369,13 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		check_admin_referer( 'contactpanda_salutation_dictionary' );
 		$operation = sanitize_key( wp_unslash( $_REQUEST['operation'] ?? '' ) );
 		if ( 'delete' === $operation ) {
-			ContactPanda_Store::delete_salutation( absint( $_GET['id'] ?? 0 ) );
+			ContactPanda_Store::delete_salutation( sanitize_text_field( wp_unslash( $_GET['id'] ?? '' ) ) );
 		} elseif ( 'save' === $operation ) {
-			$original_id = absint( $_POST['original_id'] ?? 0 );
+			$original_id = sanitize_text_field( wp_unslash( $_POST['original_id'] ?? '' ) );
 			$original = $original_id ? ContactPanda_Store::salutation( $original_id ) : false;
 			$first_name = sanitize_text_field( wp_unslash( $_POST['first_name'] ?? '' ) );
 			if ( $original && 0 !== strcasecmp( $original['first_name'], $first_name ) ) ContactPanda_Store::delete_salutation( $original_id );
-			ContactPanda_Store::learn_salutation( $first_name, sanitize_key( wp_unslash( $_POST['salutation'] ?? '' ) ), 'manual' );
+			ContactPanda_Store::learn_salutation( $first_name, sanitize_key( wp_unslash( $_POST['salutation'] ?? '' ) ), 'manual', sanitize_key( wp_unslash( $_POST['language'] ?? '' ) ) );
 		} elseif ( 'import' === $operation && ! empty( $_FILES['dictionary_file']['tmp_name'] ) ) {
 			$handle = fopen( $_FILES['dictionary_file']['tmp_name'], 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- protected uploaded CSV stream.
 			if ( $handle ) {
@@ -375,7 +383,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 				while ( false !== ( $row = fgetcsv( $handle, 0, ';' ) ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fgetcsv
 					if ( $first && isset( $row[0] ) && false !== stripos( $row[0], 'vorname' ) ) { $first = false; continue; }
 					$first = false; if ( count( $row ) < 2 ) continue;
-					ContactPanda_Store::learn_salutation( $row[0], $row[1], 'import' );
+					ContactPanda_Store::learn_salutation( $row[0], $row[1], 'import', sanitize_key( wp_unslash( $_POST['language'] ?? '' ) ) );
 				}
 				fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 			}
@@ -389,7 +397,8 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		nocache_headers(); header( 'Content-Type: text/csv; charset=UTF-8' ); header( 'Content-Disposition: attachment; filename="contactpanda-anreden.csv"' );
 		$out = fopen( 'php://output', 'w' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		fputcsv( $out, array( 'Vorname', 'Anrede', 'Quelle' ), ';' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
-		foreach ( ContactPanda_Store::salutations() as $row ) fputcsv( $out, array( $row['first_name'], $row['salutation'], $row['source'] ), ';' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
+		$language = ContactPanda_Store::salutation_language( isset( $_GET['language'] ) ? wp_unslash( $_GET['language'] ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- signed export filter.
+		foreach ( ContactPanda_Store::salutations( $language ) as $row ) fputcsv( $out, array( $row['first_name'], $row['salutation'], $row['source'] ), ';' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fputcsv
 		fclose( $out ); exit; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 	}
 
@@ -469,8 +478,6 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	private static function render_general_settings() {
 		$settings = self::general_settings();
-		$groundhogg = self::groundhogg_active();
-		$schema = ContactPanda_Schema::status();
 		$notice = get_transient( 'contactpanda_database_notice_' . get_current_user_id() );
 		if ( $notice ) {
 			delete_transient( 'contactpanda_database_notice_' . get_current_user_id() );
@@ -480,30 +487,25 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		self::render_automatic_updates();
 		echo '<form method="post" action="options.php">';
 		settings_fields( 'contactpanda_general' );
-		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Data source', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Only one system may be the leading source for contacts, companies, tags, and consent data.', 'contactpanda' ) . '</p><div class="contactpanda-source-options">';
-		$standalone_ready = ContactPanda_Store::ready();
-		echo '<label class="contactpanda-source-option' . ( $standalone_ready ? '' : ' is-disabled' ) . '"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[data_source]" value="standalone"' . checked( 'standalone', $settings['data_source'], false ) . ( $standalone_ready ? '' : ' disabled' ) . '><span><strong>' . esc_html__( 'ContactPanda database', 'contactpanda' ) . '</strong><small>' . esc_html__( 'ContactPanda is responsible for contacts, companies, tags, consent, activities, and—when ContactPanda Plus is active—newsletter delivery. Groundhogg remains unchanged. New standalone changes cannot be migrated back to Groundhogg.', 'contactpanda' ) . '</small></span></label>';
-		if ( $groundhogg ) {
-			echo '<label class="contactpanda-source-option"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[data_source]" value="groundhogg"' . checked( 'groundhogg', $settings['data_source'], false ) . '><span><strong>' . esc_html__( 'Groundhogg frontend mode', 'contactpanda' ) . '</strong><small>' . esc_html__( 'Groundhogg remains responsible for contacts, companies, tags, consent, broadcasts, funnels, and automations. Every change made through ContactPanda is saved directly in Groundhogg.', 'contactpanda' ) . '</small></span></label>';
-		} elseif ( 'groundhogg' === $settings['data_source'] ) {
-			echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Groundhogg is configured as the data source but is currently inactive. ContactPanda has not switched the data source automatically.', 'contactpanda' ) . '</p></div>';
-		}
-		echo '</div>';
-		if ( 0 === $schema['count'] ) {
-			echo '<p class="description">' . esc_html__( 'No ContactPanda customer tables have been created. With Groundhogg active, they are created only after an explicit ContactPanda setup or migration.', 'contactpanda' ) . '</p>';
-		} else {
-			echo '<p class="description">' . esc_html( sprintf( __( '%1$d of %2$d ContactPanda database tables are present. Schema version: %3$s.', 'contactpanda' ), $schema['count'], $schema['total'], $schema['version'] ?: __( 'unknown', 'contactpanda' ) ) ) . '</p>';
-		}
-		submit_button();
-		echo '</section></form>';
-
-		echo '<form method="post" action="options.php">';
-		settings_fields( 'contactpanda_general' );
 		echo '<section class="contactpanda-card contactpanda-settings-card contactpanda-danger-card"><h2>' . esc_html__( 'Uninstallation and data', 'contactpanda' ) . '</h2><p><strong>' . esc_html__( 'By default, uninstalling ContactPanda does not delete customer data.', 'contactpanda' ) . '</strong></p>';
 		self::render_preserved_integrations();
 		echo '<div class="contactpanda-setting-row"><input type="hidden" name="' . esc_attr( self::GENERAL_OPTION ) . '[delete_on_uninstall]" value="0"><label><input type="checkbox" data-contactpanda-delete-on-uninstall name="' . esc_attr( self::GENERAL_OPTION ) . '[delete_on_uninstall]" value="1"' . checked( ! empty( $settings['delete_on_uninstall'] ), true, false ) . '> <strong>' . esc_html__( 'Permanently delete all ContactPanda-owned customer data when the plugin is uninstalled.', 'contactpanda' ) . '</strong></label><p class="description">' . esc_html__( 'This affects only ContactPanda cp_ tables, ContactPanda options, and ContactPanda user metadata. Data belonging to other plugins is never deleted.', 'contactpanda' ) . '</p></div>';
 		submit_button( __( 'Save general settings', 'contactpanda' ) );
 		echo '</section></form>';
+	}
+
+	private static function render_data_source_settings() {
+		$settings = self::general_settings();
+		$groundhogg = self::groundhogg_active();
+		$schema = ContactPanda_Schema::status();
+		echo '<form method="post" action="options.php">'; settings_fields( 'contactpanda_general' );
+		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Leading data source', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Only one system may be the leading source for contacts, companies, tags, and consent data.', 'contactpanda' ) . '</p><div class="contactpanda-source-options">';
+		$standalone_ready = ContactPanda_Store::ready();
+		echo '<label class="contactpanda-source-option' . ( $standalone_ready ? '' : ' is-disabled' ) . '"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[data_source]" value="standalone"' . checked( 'standalone', $settings['data_source'], false ) . ( $standalone_ready ? '' : ' disabled' ) . '><span><strong>' . esc_html__( 'ContactPanda database', 'contactpanda' ) . '</strong><small>' . esc_html__( 'ContactPanda stores independent changes in its own database. Groundhogg remains unchanged. A later reverse migration to Groundhogg is not provided.', 'contactpanda' ) . '</small></span></label>';
+		if ( $groundhogg ) echo '<label class="contactpanda-source-option"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[data_source]" value="groundhogg"' . checked( 'groundhogg', $settings['data_source'], false ) . '><span><strong>' . esc_html__( 'Groundhogg frontend mode', 'contactpanda' ) . '</strong><small>' . esc_html__( 'Groundhogg remains the leading system. Changes made through ContactPanda are written directly to Groundhogg.', 'contactpanda' ) . '</small></span></label>';
+		elseif ( 'groundhogg' === $settings['data_source'] ) echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Groundhogg is configured as the data source but is currently inactive. ContactPanda has not switched the data source automatically.', 'contactpanda' ) . '</p></div>';
+		echo '</div><p class="description">' . esc_html( sprintf( __( '%1$d of %2$d ContactPanda database tables are present. Schema version: %3$s.', 'contactpanda' ), $schema['count'], $schema['total'], $schema['version'] ?: __( 'unknown', 'contactpanda' ) ) ) . '</p>';
+		submit_button( __( 'Save data source', 'contactpanda' ) ); echo '</section></form>';
 	}
 
 	private static function render_migration_settings() {
@@ -519,7 +521,6 @@ The link is valid for 24 hours.', 'contactpanda' ),
 			self::render_woocommerce_import();
 		}
 		self::render_newsletter_plugin_migration();
-		do_action( 'contactpanda_render_migration_tools' );
 	}
 
 	private static function render_woocommerce_import() {
@@ -653,8 +654,15 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	public static function render_duplicate_preview() {
 		if ( ! ContactPanda_Store::ready() ) return;
-		$candidates = ContactPanda_Store::duplicate_groups( 50 );
+		$search = isset( $_GET['duplicate_search'] ) ? sanitize_text_field( wp_unslash( $_GET['duplicate_search'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- list filter.
+		$page = max( 1, absint( $_GET['duplicate_page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- list pagination.
+		$per_page = 20;
+		$candidates = ContactPanda_Store::duplicate_groups( 250 );
+		if ( $search ) $candidates = array_values( array_filter( $candidates, static function ( $group ) use ( $search ) { return false !== stripos( implode( ' ', (array) $group['names'] ), $search ); } ) );
+		$total = count( $candidates );
+		$candidates = array_slice( $candidates, ( $page - 1 ) * $per_page, $per_page );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Duplicate review', 'contactpanda' ) . '</h2><p>' . esc_html__( 'ContactPanda lists likely duplicates without changing them. Use the merge tool below to select a primary record and confirm every conflict.', 'contactpanda' ) . '</p>';
+		echo '<form method="get" class="contactpanda-search"><input type="hidden" name="page" value="contactpanda-settings"><input type="hidden" name="tab" value="other"><input type="hidden" name="other_section" value="duplicates"><label class="screen-reader-text" for="contactpanda-duplicate-search">' . esc_html__( 'Search duplicates', 'contactpanda' ) . '</label><input id="contactpanda-duplicate-search" type="search" name="duplicate_search" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Search by name', 'contactpanda' ) . '"><button class="button">' . esc_html__( 'Search', 'contactpanda' ) . '</button></form>';
 		if ( ! $candidates ) {
 			echo '<p>' . esc_html__( 'No likely duplicates were found using phone number, WordPress account, or matching name and address.', 'contactpanda' ) . '</p></section>';
 			return;
@@ -667,22 +675,38 @@ The link is valid for 24 hours.', 'contactpanda' ),
 			foreach ( $group['ids'] as $index => $id ) echo '<label><input type="checkbox" name="ids[]" value="' . esc_attr( $id ) . '" checked> ' . esc_html( $group['names'][ $index ] ?: sprintf( __( 'Record #%d', 'contactpanda' ), $id ) ) . ' <small>#' . esc_html( $id ) . '</small></label>';
 			wp_nonce_field( 'contactpanda_merge_group' ); echo '<p class="description">' . esc_html__( 'Select only the records that should be combined. At least two are required.', 'contactpanda' ) . '</p><button class="button">' . esc_html__( 'Edit duplicates', 'contactpanda' ) . '</button></form></td></tr>';
 		}
-		echo '</tbody></table></section>';
+		echo '</tbody></table>';
+		if ( $total > $per_page ) {
+			$base = array( 'page' => 'contactpanda-settings', 'tab' => 'other', 'other_section' => 'duplicates', 'duplicate_search' => $search );
+			echo '<div class="tablenav"><div class="tablenav-pages">';
+			if ( $page > 1 ) echo '<a class="button" href="' . esc_url( add_query_arg( array_merge( $base, array( 'duplicate_page' => $page - 1 ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Previous', 'contactpanda' ) . '</a>';
+			echo '<span>' . esc_html( sprintf( __( 'Page %1$d of %2$d', 'contactpanda' ), $page, (int) ceil( $total / $per_page ) ) ) . '</span>';
+			if ( $page * $per_page < $total ) echo '<a class="button" href="' . esc_url( add_query_arg( array_merge( $base, array( 'duplicate_page' => $page + 1 ) ), admin_url( 'admin.php' ) ) ) . '">' . esc_html__( 'Next', 'contactpanda' ) . '</a>';
+			echo '</div></div>';
+		}
+		echo '</section>';
 	}
 
 	private static function render_integrations_settings() {
-		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Integrations', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Connected systems remain the owners of their source data. ContactPanda Basic displays compatible data without changing it.', 'contactpanda' ) . '</p></section>';
-		if ( class_exists( 'WooCommerce' ) ) {
+		$sections = (array) apply_filters( 'contactpanda_integration_sections', array( 'woocommerce' => 'WooCommerce', 'groundhogg' => 'Groundhogg', 'messaging' => __( 'SMS and WhatsApp gateways', 'contactpanda' ), 'email' => __( 'Email delivery', 'contactpanda' ) ) );
+		$current = isset( $_GET['integration_section'] ) ? sanitize_key( wp_unslash( $_GET['integration_section'] ) ) : 'woocommerce'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- navigation only.
+		if ( ! isset( $sections[ $current ] ) ) $current = 'woocommerce';
+		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs">'; foreach ( $sections as $key => $label ) echo '<a class="nav-tab ' . ( $current === $key ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=integrations&integration_section=' . sanitize_key( $key ) ) ) . '">' . esc_html( $label ) . '</a>'; echo '</nav>';
+		if ( 'woocommerce' === $current && class_exists( 'WooCommerce' ) ) {
 			echo '<section class="contactpanda-card contactpanda-settings-card"><h2>WooCommerce</h2><p>' . esc_html__( 'WooCommerce is active. Orders and customer information can be displayed in ContactPanda; existing orders, invoices, prices, and WooCommerce records are never changed.', 'contactpanda' ) . '</p>';
 			self::render_plus_promotion( 'woocommerce' ); echo '</section>';
-		}
-		if ( self::newsletter_plugin_installed() ) self::render_newsletter_plugin_readonly();
-		if ( self::groundhogg_active() ) {
+		} elseif ( 'woocommerce' === $current ) echo '<section class="contactpanda-card contactpanda-settings-card"><h2>WooCommerce</h2><p>' . esc_html__( 'WooCommerce is not active.', 'contactpanda' ) . '</p></section>';
+		if ( 'groundhogg' === $current ) {
+			self::render_data_source_settings();
+			if ( self::newsletter_plugin_installed() ) self::render_newsletter_plugin_readonly();
+			if ( self::groundhogg_active() ) {
 			$settings = self::general_settings();
 			$leading = 'groundhogg' === $settings['data_source'];
-			echo '<section class="contactpanda-card contactpanda-settings-card"><h2>Groundhogg</h2><p>' . esc_html( $leading ? __( 'Groundhogg is active and is currently the leading contact data source.', 'contactpanda' ) : __( 'Groundhogg is active but is currently not the leading contact data source.', 'contactpanda' ) ) . '</p><p>' . esc_html( $leading ? __( 'ContactPanda is the user interface for Groundhogg in this mode. Changes made in ContactPanda are saved directly in Groundhogg.', 'contactpanda' ) : __( 'ContactPanda now stores new changes in its own database. These standalone changes cannot be migrated back to Groundhogg.', 'contactpanda' ) ) . '</p><p><a class="button" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general' ) ) . '">' . esc_html__( 'Change data source', 'contactpanda' ) . '</a></p></section>';
+			echo '<section class="contactpanda-card contactpanda-settings-card"><h2>Groundhogg</h2><p>' . esc_html( $leading ? __( 'Groundhogg is active and is currently the leading contact data source.', 'contactpanda' ) : __( 'Groundhogg is active but is currently not the leading contact data source.', 'contactpanda' ) ) . '</p><p>' . esc_html( $leading ? __( 'ContactPanda is the user interface for Groundhogg in this mode. Changes made in ContactPanda are saved directly in Groundhogg.', 'contactpanda' ) : __( 'ContactPanda now stores new changes in its own database. These standalone changes cannot be migrated back to Groundhogg.', 'contactpanda' ) ) . '</p></section>';
+			}
 		}
-		do_action( 'contactpanda_render_integrations_settings' );
+		do_action( 'contactpanda_render_integration_section_' . $current );
+		do_action( 'contactpanda_render_integrations_settings', $current );
 	}
 
 	private static function render_newsletter_plugin_readonly() {

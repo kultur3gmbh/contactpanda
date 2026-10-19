@@ -3,7 +3,7 @@
 defined( 'ABSPATH' ) || exit;
 
 final class ContactPanda_Schema {
-	const VERSION = '2.1.0';
+	const VERSION = '2.2.0';
 	const VERSION_OPTION = 'contactpanda_db_version';
 
 	/**
@@ -223,12 +223,13 @@ final class ContactPanda_Schema {
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			first_name varchar(190) NOT NULL,
 			first_name_normalized varchar(190) NOT NULL,
+			language varchar(10) NOT NULL DEFAULT 'de',
 			salutation varchar(20) NOT NULL DEFAULT '',
 			source varchar(60) NOT NULL DEFAULT 'manual',
 			created_at datetime NOT NULL,
 			updated_at datetime NOT NULL,
 			PRIMARY KEY  (id),
-			UNIQUE KEY first_name_normalized (first_name_normalized),
+			UNIQUE KEY language_name (language,first_name_normalized),
 			KEY salutation (salutation)
 		) $charset;";
 
@@ -272,6 +273,14 @@ final class ContactPanda_Schema {
 
 		foreach ( $sql as $statement ) {
 			dbDelta( $statement );
+		}
+		$old_salutation_index = $wpdb->get_var( "SHOW INDEX FROM `{$tables['salutations']}` WHERE Key_name='first_name_normalized'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		if ( $old_salutation_index ) {
+			$wpdb->query( "ALTER TABLE `{$tables['salutations']}` DROP INDEX `first_name_normalized`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		}
+		$new_salutation_index = $wpdb->get_var( "SHOW INDEX FROM `{$tables['salutations']}` WHERE Key_name='language_name'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		if ( ! $new_salutation_index ) {
+			$wpdb->query( "ALTER TABLE `{$tables['salutations']}` ADD UNIQUE KEY `language_name` (`language`,`first_name_normalized`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		}
 
 		$status = self::status();
@@ -322,7 +331,7 @@ final class ContactPanda_Schema {
 			'companies'  => array( 'uuid', 'legal_name', 'vat_id', 'vat_status', 'vat_verified_at' ),
 			'company_contacts' => array( 'company_id', 'contact_id', 'is_primary', 'is_primary_company' ),
 			'tags'       => array( 'description' ),
-			'salutations' => array( 'first_name_normalized', 'salutation', 'source' ),
+			'salutations' => array( 'first_name_normalized', 'language', 'salutation', 'source' ),
 			'import_runs' => array( 'uuid', 'source', 'entity_type', 'status', 'started_at' ),
 			'import_items' => array( 'import_run_id', 'entity_type', 'record_id', 'action' ),
 		);

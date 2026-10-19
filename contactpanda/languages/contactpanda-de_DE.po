@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.4.5\n"
+"Project-Id-Version: ContactPanda 0.5.0\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
-"PO-Revision-Date: 2026-10-18 18:00+0200\n"
+"PO-Revision-Date: 2026-10-19 20:00+0200\n"
 "Last-Translator: Kultur3 GmbH\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -4610,3 +4610,78 @@ msgstr "Wählen Sie mindestens zwei Datensätze für die Zusammenführung aus."
 
 msgid "The primary record must be one of the selected records."
 msgstr "Der Hauptdatensatz muss einer der ausgewählten Datensätze sein."
+
+msgid "ContactPanda stores independent changes in its own database. Groundhogg remains unchanged. A later reverse migration to Groundhogg is not provided."
+msgstr "ContactPanda speichert neue Änderungen in der eigenen Datenbank. Groundhogg bleibt unverändert. Eine spätere Rückmigration zu Groundhogg ist nicht vorgesehen."
+
+msgid "Email delivery"
+msgstr "E-Mail-Versand"
+
+msgid "Export log"
+msgstr "Exportprotokoll"
+
+msgid "Exports are recorded without storing exported customer data in the log."
+msgstr "Exporte werden protokolliert, ohne exportierte Kundendaten im Protokoll zu speichern."
+
+msgid "Filter and export people"
+msgstr "Personen filtern und exportieren"
+
+msgid "Filtered export"
+msgstr "Gefilterter Export"
+
+msgid "Groundhogg remains the leading system. Changes made through ContactPanda are written directly to Groundhogg."
+msgstr "Groundhogg bleibt das führende System. Änderungen in ContactPanda werden direkt in Groundhogg gespeichert."
+
+msgid "Import / Export"
+msgstr "Import / Export"
+
+msgid "Import and export"
+msgstr "Import und Export"
+
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Leading data source"
+msgstr "Führende Datenquelle"
+
+msgid "Move data with previews, filters, and a traceable history."
+msgstr "Daten mit Vorabansicht, Filtern und nachvollziehbarem Verlauf übertragen."
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "No exports have been recorded yet."
+msgstr "Es wurden noch keine Exporte protokolliert."
+
+msgid "Open a list, apply the required search and filters, and export exactly that result. This keeps the exported selection visible and verifiable before download."
+msgstr "Öffnen Sie eine Liste, wenden Sie Suche und Filter an und exportieren Sie genau dieses Ergebnis. So bleibt die Auswahl vor dem Download sichtbar und überprüfbar."
+
+msgid "Open companies"
+msgstr "Firmen öffnen"
+
+msgid "Previous"
+msgstr "Zurück"
+
+msgid "Records"
+msgstr "Datensätze"
+
+msgid "SMS and WhatsApp gateways"
+msgstr "SMS- und WhatsApp-Gateways"
+
+msgid "Save data source"
+msgstr "Datenquelle speichern"
+
+msgid "Search by name"
+msgstr "Nach Namen suchen"
+
+msgid "Search duplicates"
+msgstr "Duplikate suchen"
+
+msgid "Search first names"
+msgstr "Vornamen suchen"
+
+msgid "User"
+msgstr "Benutzer"
+
+msgid "WooCommerce is not active."
+msgstr "WooCommerce ist nicht aktiv."

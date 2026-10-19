@@ -455,33 +455,54 @@ final class ContactPanda_Store {
 		return false !== $wpdb->update( $table, array( 'name' => $name, 'slug' => $slug, 'description' => sanitize_textarea_field( $description ), 'updated_at' => current_time( 'mysql' ) ), array( 'id' => absint( $tag_id ) ) );
 	}
 
-	public static function salutations() {
-		global $wpdb;
-		$table = ContactPanda_Schema::table_names()['salutations'];
-		if ( self::ready() ) return (array) $wpdb->get_results( "SELECT * FROM `{$table}` ORDER BY first_name ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		$rows = array_values( (array) get_option( 'contactpanda_salutation_library', array() ) );
-		foreach ( $rows as $index => &$row ) $row['id'] = $index + 1;
-		unset( $row ); usort( $rows, static function ( $a, $b ) { return strcasecmp( $a['first_name'], $b['first_name'] ); } ); return $rows;
+	public static function salutation_language( $language = '' ) {
+		$language = strtolower( substr( sanitize_key( $language ?: determine_locale() ), 0, 2 ) );
+		return in_array( $language, array( 'de', 'en', 'fr', 'es', 'it' ), true ) ? $language : 'de';
 	}
 
-	public static function suggested_salutation( $first_name ) {
+	public static function salutations( $language = '', $limit = 0, $offset = 0, $search = '' ) {
+		global $wpdb;
+		$language = self::salutation_language( $language );
+		$table = ContactPanda_Schema::table_names()['salutations'];
+		if ( self::ready() ) {
+			$where = 'language=%s'; $args = array( $language );
+			if ( $search ) { $where .= ' AND first_name LIKE %s'; $args[] = '%' . $wpdb->esc_like( $search ) . '%'; }
+			$sql = "SELECT * FROM `{$table}` WHERE {$where} ORDER BY first_name ASC"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name and fixed clause.
+			if ( $limit ) { $sql .= ' LIMIT %d OFFSET %d'; $args[] = absint( $limit ); $args[] = absint( $offset ); }
+			return (array) $wpdb->get_results( $wpdb->prepare( $sql, $args ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- prepared dynamic parameters.
+		}
+		$rows = array();
+		foreach ( (array) get_option( 'contactpanda_salutation_library', array() ) as $key => $row ) {
+			if ( $language !== ( $row['language'] ?? 'de' ) || ( $search && false === stripos( $row['first_name'] ?? '', $search ) ) ) continue;
+			$row['id'] = (string) $key;
+			$rows[] = $row;
+		}
+		usort( $rows, static function ( $a, $b ) { return strcasecmp( $a['first_name'], $b['first_name'] ); } ); return $limit ? array_slice( $rows, $offset, $limit ) : $rows;
+	}
+
+	public static function salutations_count( $language = '', $search = '' ) { return count( self::salutations( $language, 0, 0, $search ) ); }
+
+	public static function suggested_salutation( $first_name, $language = '' ) {
 		global $wpdb;
 		$normalized = self::normalize_first_name( $first_name );
+		$language = self::salutation_language( $language );
 		if ( ! $normalized ) return '';
-		if ( ! self::ready() ) { $library = (array) get_option( 'contactpanda_salutation_library', array() ); return isset( $library[ $normalized ]['salutation'] ) ? (string) $library[ $normalized ]['salutation'] : ''; }
+		if ( ! self::ready() ) { $library = (array) get_option( 'contactpanda_salutation_library', array() ); $key = $language . ':' . $normalized; return isset( $library[ $key ]['salutation'] ) ? (string) $library[ $key ]['salutation'] : ( isset( $library[ $normalized ]['salutation'] ) ? (string) $library[ $normalized ]['salutation'] : '' ); }
 		$table = ContactPanda_Schema::table_names()['salutations'];
-		return (string) $wpdb->get_var( $wpdb->prepare( "SELECT salutation FROM `{$table}` WHERE first_name_normalized=%s", $normalized ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		return (string) $wpdb->get_var( $wpdb->prepare( "SELECT salutation FROM `{$table}` WHERE first_name_normalized=%s AND language=%s", $normalized, $language ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 	}
 
-	public static function learn_salutation( $first_name, $salutation, $source = 'confirmed' ) {
+	public static function learn_salutation( $first_name, $salutation, $source = 'confirmed', $language = '' ) {
 		global $wpdb;
 		$salutation = sanitize_key( $salutation );
 		$normalized = self::normalize_first_name( $first_name );
+		$language = self::salutation_language( $language );
 		if ( ! $normalized || ! in_array( $salutation, array( 'mr', 'ms', 'family', 'neutral' ), true ) ) return false;
-		if ( ! self::ready() ) { $library = (array) get_option( 'contactpanda_salutation_library', array() ); $now = current_time( 'mysql' ); $library[ $normalized ] = array( 'first_name' => sanitize_text_field( trim( $first_name ) ), 'first_name_normalized' => $normalized, 'salutation' => $salutation, 'source' => sanitize_key( $source ), 'created_at' => $library[ $normalized ]['created_at'] ?? $now, 'updated_at' => $now ); return update_option( 'contactpanda_salutation_library', $library, false ) || isset( $library[ $normalized ] ); }
+		$key = $language . ':' . $normalized;
+		if ( ! self::ready() ) { $library = (array) get_option( 'contactpanda_salutation_library', array() ); $now = current_time( 'mysql' ); $library[ $key ] = array( 'first_name' => sanitize_text_field( trim( $first_name ) ), 'first_name_normalized' => $normalized, 'language' => $language, 'salutation' => $salutation, 'source' => sanitize_key( $source ), 'created_at' => $library[ $key ]['created_at'] ?? $now, 'updated_at' => $now ); return update_option( 'contactpanda_salutation_library', $library, false ) || isset( $library[ $key ] ); }
 		$table = ContactPanda_Schema::table_names()['salutations'];
-		$existing = (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE first_name_normalized=%s", $normalized ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$data = array( 'first_name' => sanitize_text_field( trim( $first_name ) ), 'first_name_normalized' => $normalized, 'salutation' => $salutation, 'source' => sanitize_key( $source ), 'updated_at' => current_time( 'mysql' ) );
+		$existing = (int) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE first_name_normalized=%s AND language=%s", $normalized, $language ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$data = array( 'first_name' => sanitize_text_field( trim( $first_name ) ), 'first_name_normalized' => $normalized, 'language' => $language, 'salutation' => $salutation, 'source' => sanitize_key( $source ), 'updated_at' => current_time( 'mysql' ) );
 		if ( $existing ) return false !== $wpdb->update( $table, $data, array( 'id' => $existing ) );
 		$data['created_at'] = current_time( 'mysql' );
 		return false !== $wpdb->insert( $table, $data );
@@ -489,16 +510,18 @@ final class ContactPanda_Store {
 
 	public static function delete_salutation( $id ) {
 		global $wpdb;
-		if ( ! self::ready() ) { $target = array(); foreach ( self::salutations() as $row ) if ( absint( $row['id'] ?? 0 ) === absint( $id ) ) { $target = $row; break; } if ( empty( $target['first_name_normalized'] ) ) return false; $library = (array) get_option( 'contactpanda_salutation_library', array() ); unset( $library[ $target['first_name_normalized'] ] ); return update_option( 'contactpanda_salutation_library', $library, false ); }
+		if ( ! self::ready() ) { $library = (array) get_option( 'contactpanda_salutation_library', array() ); $key = sanitize_text_field( (string) $id ); if ( ! isset( $library[ $key ] ) ) return false; unset( $library[ $key ] ); return update_option( 'contactpanda_salutation_library', $library, false ); }
 		return false !== $wpdb->delete( ContactPanda_Schema::table_names()['salutations'], array( 'id' => absint( $id ) ) );
 	}
 
 	/** Return one salutation-library row by its local identifier. */
 	public static function salutation( $id ) {
-		foreach ( self::salutations() as $row ) {
-			if ( absint( $row['id'] ?? 0 ) === absint( $id ) ) return $row;
-		}
-		return false;
+		global $wpdb;
+		if ( self::ready() ) return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM `' . ContactPanda_Schema::table_names()['salutations'] . '` WHERE id=%d', absint( $id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$library = (array) get_option( 'contactpanda_salutation_library', array() );
+		$key = sanitize_text_field( (string) $id );
+		if ( ! isset( $library[ $key ] ) ) return false;
+		return array_merge( $library[ $key ], array( 'id' => $key ) );
 	}
 
 	/**

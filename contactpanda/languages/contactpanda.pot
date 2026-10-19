@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.4.5\n"
+"Project-Id-Version: ContactPanda 0.5.0\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
-"POT-Creation-Date: 2026-10-18 18:00+0200\n"
+"POT-Creation-Date: 2026-10-19 20:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
 "Last-Translator: Kultur3 GmbH\n"
 "Language-Team: German\n"
@@ -4609,4 +4609,79 @@ msgid "Keep at least two records selected for the merge."
 msgstr ""
 
 msgid "The primary record must be one of the selected records."
+msgstr ""
+
+msgid "ContactPanda stores independent changes in its own database. Groundhogg remains unchanged. A later reverse migration to Groundhogg is not provided."
+msgstr ""
+
+msgid "Email delivery"
+msgstr ""
+
+msgid "Export log"
+msgstr ""
+
+msgid "Exports are recorded without storing exported customer data in the log."
+msgstr ""
+
+msgid "Filter and export people"
+msgstr ""
+
+msgid "Filtered export"
+msgstr ""
+
+msgid "Groundhogg remains the leading system. Changes made through ContactPanda are written directly to Groundhogg."
+msgstr ""
+
+msgid "Import / Export"
+msgstr ""
+
+msgid "Import and export"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Leading data source"
+msgstr ""
+
+msgid "Move data with previews, filters, and a traceable history."
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "No exports have been recorded yet."
+msgstr ""
+
+msgid "Open a list, apply the required search and filters, and export exactly that result. This keeps the exported selection visible and verifiable before download."
+msgstr ""
+
+msgid "Open companies"
+msgstr ""
+
+msgid "Previous"
+msgstr ""
+
+msgid "Records"
+msgstr ""
+
+msgid "SMS and WhatsApp gateways"
+msgstr ""
+
+msgid "Save data source"
+msgstr ""
+
+msgid "Search by name"
+msgstr ""
+
+msgid "Search duplicates"
+msgstr ""
+
+msgid "Search first names"
+msgstr ""
+
+msgid "User"
+msgstr ""
+
+msgid "WooCommerce is not active."
 msgstr ""

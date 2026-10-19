@@ -85,11 +85,13 @@ final class ContactPanda_Plugin {
 		$priority = array(
 			'contactpanda'             => 10,
 			'contactpanda-firmen'      => 20,
+			'contactpanda-data-transfer' => 25,
 			'contactpanda-tags'        => 30,
 			'contactpanda-segments'    => 40,
 			'contactpanda-newsletters' => 50,
-			'contactpanda-campaigns'   => 60,
-			'contactpanda-flows'       => 65,
+			'contactpanda-campaigns'   => 55,
+			'contactpanda-flows'       => 60,
+			'contactpanda-helpdesk'    => 65,
 			'contactpanda-trash'       => 70,
 			'contactpanda-settings'    => 999,
 		);
@@ -844,6 +846,15 @@ final class ContactPanda_Plugin {
 			$columns = array( 'first_name', 'last_name', 'email', 'phone', 'company', 'postcode', 'city', 'country' );
 		}
 		$rows = self::contact_output_rows( $contacts );
+		$log = (array) get_option( 'contactpanda_export_log', array() );
+		$user = wp_get_current_user();
+		$log[] = array(
+			'created_at' => current_time( 'mysql' ),
+			'user'       => $user->display_name,
+			'entity'     => 'people',
+			'count'      => count( $rows ),
+		);
+		update_option( 'contactpanda_export_log', array_slice( $log, -100 ), false );
 		$filename = 'contactpanda-contacts-' . current_time( 'Y-m-d' ) . '.csv';
 		nocache_headers();
 		header( 'Content-Type: text/csv; charset=UTF-8' );
@@ -1793,7 +1804,7 @@ final class ContactPanda_Plugin {
 			if ( ContactPanda_Store::standalone() ) {
 				echo '<a class="button contactpanda-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=duplicates' ) ) . '">' . esc_html__( 'Find duplicates', 'contactpanda' ) . '</a>';
 			}
-			echo '<a class="button contactpanda-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=migration#contactpanda-import' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a>';
+			echo '<a class="button contactpanda-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=import&entity=contacts' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a>';
 		}
 		echo '<button type="button" class="button button-primary contactpanda-heading-action contactpanda-open-new-person">' . esc_html__( 'Add person', 'contactpanda' ) . '</button></div></div>';
 		echo __( '<section class="contactpanda-card"><div class="contactpanda-toolbar"><h2>People overview</h2><span class="contactpanda-count">', 'contactpanda' ) . esc_html( $total ) . __( ' entries</span></div>', 'contactpanda' );
@@ -2172,7 +2183,7 @@ final class ContactPanda_Plugin {
 		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only search.
 		echo '<div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CRM</p><h1>' . esc_html__( 'Companies', 'contactpanda' ) . '</h1><p>' . esc_html__( 'A unified view of companies, contacts, orders, and invoices.', 'contactpanda' ) . '</p></div><div class="contactpanda-heading-actions">';
 		do_action( 'contactpanda_company_heading_actions' );
-		if ( current_user_can( 'manage_options' ) ) echo '<a class="button contactpanda-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-firmen&section=import' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a>';
+		if ( current_user_can( 'manage_options' ) ) echo '<a class="button contactpanda-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=import&entity=companies' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a>';
 		echo '<button type="button" class="button button-primary contactpanda-heading-action contactpanda-open-new-company">' . esc_html__( 'Add company', 'contactpanda' ) . '</button></div></div>';
 
 		$missing = array_filter( self::dependencies(), static function ( $value ) { return false === $value; } );

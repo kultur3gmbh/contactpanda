@@ -6,6 +6,8 @@ With PHP CLI, the check runs `tests/trash.php` for both record types, soft delet
 
 The focused WooCommerce import and customer-filtered order-summary tests, Groundhogg migration-source test, and marketing-status-icon tests verify the protected integration and list-display branches with sanitized fixtures.
 
+`release-050.php` protects the 0.5.0 administration contracts for Import/Export, Groundhogg data-source selection, and multilingual salutation libraries.
+
 It also runs `tests/github-updater.php` for the public Basic and private Plus release channels, plus `tests/vcard-import.php` for multi-contact Apple/standard vCard parsing, encoded names, addresses, and stable source identifiers. `wordpress-update-integration.php` is deliberately blocked unless it receives a disposable local WordPress installation containing a `.contactpanda-isolated-test` marker; see `docs/isolated-update-test.md`.
 
 Without PHP, the script runs its structural fallback and explicitly reports the skipped behavior tests. Structural validation is not PHP execution or a WordPress integration test. The next test milestone remains a disposable WordPress environment covering installation, standalone and Groundhogg data-source modes, and optional dependencies both absent and active.

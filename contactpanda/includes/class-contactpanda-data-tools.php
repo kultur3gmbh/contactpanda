@@ -8,10 +8,10 @@ final class ContactPanda_Data_Tools {
 	const NOTICE_OPTION  = 'contactpanda_admin_notice_settings';
 
 	public static function boot() {
+		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 25 );
 		add_filter( 'cron_schedules', array( __CLASS__, 'cron_schedules' ) );
 		add_filter( 'contactpanda_settings_tabs', array( __CLASS__, 'settings_tabs' ) );
 		add_action( 'contactpanda_render_other_settings_section_duplicates', array( __CLASS__, 'render_duplicate_settings' ) );
-		add_action( 'contactpanda_render_migration_tools', array( __CLASS__, 'render_migration_tools' ) );
 		add_action( 'contactpanda_render_salutation_tools', array( __CLASS__, 'render_central_library' ) );
 		add_filter( 'contactpanda_misc_settings_sections', array( __CLASS__, 'misc_sections' ) );
 		add_action( 'contactpanda_render_misc_settings_section_admin_notices', array( __CLASS__, 'render_notice_settings' ) );
@@ -29,6 +29,48 @@ final class ContactPanda_Data_Tools {
 		add_action( 'wp_ajax_contactpanda_dismiss_admin_notice', array( __CLASS__, 'dismiss_admin_notice' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_notice_helper' ), 100 );
 		add_action( 'contactpanda_central_salutation_sync', array( __CLASS__, 'scheduled_central_sync' ) );
+	}
+
+	public static function menu() {
+		add_submenu_page(
+			'contactpanda',
+			__( 'Import and export', 'contactpanda' ),
+			__( 'Import / Export', 'contactpanda' ),
+			'manage_options',
+			'contactpanda-data-transfer',
+			array( __CLASS__, 'render_data_transfer' )
+		);
+	}
+
+	public static function render_data_transfer() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		}
+		$section = isset( $_GET['transfer_section'] ) ? sanitize_key( wp_unslash( $_GET['transfer_section'] ) ) : 'import'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
+		if ( ! in_array( $section, array( 'import', 'export' ), true ) ) $section = 'import';
+		echo '<div class="wrap contactpanda-wrap"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CONTACTPANDA</p><h1>' . esc_html__( 'Import and export', 'contactpanda' ) . '</h1><p>' . esc_html__( 'Move data with previews, filters, and a traceable history.', 'contactpanda' ) . '</p></div></div>';
+		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><a class="nav-tab ' . ( 'import' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=import' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'export' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=export' ) ) . '">' . esc_html__( 'Export', 'contactpanda' ) . '</a></nav>';
+		if ( 'export' === $section ) self::render_export();
+		else {
+			$entity = isset( $_GET['entity'] ) ? sanitize_key( wp_unslash( $_GET['entity'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only import filter.
+			if ( in_array( $entity, array( 'contacts', 'companies' ), true ) ) {
+				self::render_csv_import( $entity );
+				if ( 'contacts' === $entity ) self::render_vcard_import();
+				self::render_import_history( $entity );
+			} else self::render_migration_tools();
+		}
+		echo '</div>';
+	}
+
+	private static function render_export() {
+		$people_url = admin_url( 'admin.php?page=contactpanda#contactpanda-export' );
+		$companies_url = admin_url( 'admin.php?page=contactpanda-firmen' );
+		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Filtered export', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Open a list, apply the required search and filters, and export exactly that result. This keeps the exported selection visible and verifiable before download.', 'contactpanda' ) . '</p><p><a class="button button-primary" href="' . esc_url( $people_url ) . '">' . esc_html__( 'Filter and export people', 'contactpanda' ) . '</a> <a class="button" href="' . esc_url( $companies_url ) . '">' . esc_html__( 'Open companies', 'contactpanda' ) . '</a></p></section>';
+		$log = array_slice( array_reverse( (array) get_option( 'contactpanda_export_log', array() ) ), 0, 25 );
+		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Export log', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Exports are recorded without storing exported customer data in the log.', 'contactpanda' ) . '</p><table class="widefat striped"><thead><tr><th>' . esc_html__( 'Date', 'contactpanda' ) . '</th><th>' . esc_html__( 'User', 'contactpanda' ) . '</th><th>' . esc_html__( 'Type', 'contactpanda' ) . '</th><th>' . esc_html__( 'Records', 'contactpanda' ) . '</th></tr></thead><tbody>';
+		foreach ( $log as $entry ) echo '<tr><td>' . esc_html( $entry['created_at'] ?? '' ) . '</td><td>' . esc_html( $entry['user'] ?? '' ) . '</td><td>' . esc_html( $entry['entity'] ?? '' ) . '</td><td>' . esc_html( absint( $entry['count'] ?? 0 ) ) . '</td></tr>';
+		if ( ! $log ) echo '<tr><td colspan="4">' . esc_html__( 'No exports have been recorded yet.', 'contactpanda' ) . '</td></tr>';
+		echo '</tbody></table></section>';
 	}
 
 	public static function settings_tabs( $tabs ) {
@@ -57,7 +99,7 @@ final class ContactPanda_Data_Tools {
 		if ( in_array( $return_page, array( 'contactpanda', 'contactpanda-firmen' ), true ) ) {
 			return add_query_arg( array_merge( array( 'page' => $return_page, 'section' => 'import' ), $args ), admin_url( 'admin.php' ) );
 		}
-		return self::migration_url( $args );
+		return add_query_arg( array_merge( array( 'page' => 'contactpanda-data-transfer', 'transfer_section' => 'import' ), $args ), admin_url( 'admin.php' ) );
 	}
 
 	private static function duplicates_url( $args = array() ) {
@@ -667,7 +709,7 @@ final class ContactPanda_Data_Tools {
 			return new WP_Error( 'contactpanda_central_invalid', $settings['error'] );
 		}
 		$added = 0;
-		foreach ( $entries as $entry ) { if ( ! is_array( $entry ) ) continue; $name = sanitize_text_field( $entry['first_name'] ?? '' ); $salutation = sanitize_key( $entry['salutation'] ?? '' ); if ( $name && ! ContactPanda_Store::suggested_salutation( $name ) && ContactPanda_Store::learn_salutation( $name, $salutation, 'central' ) ) $added++; }
+		foreach ( $entries as $entry ) { if ( ! is_array( $entry ) ) continue; $name = sanitize_text_field( $entry['first_name'] ?? '' ); $salutation = sanitize_key( $entry['salutation'] ?? '' ); $language = ContactPanda_Store::salutation_language( $entry['language'] ?? 'de' ); if ( $name && ! ContactPanda_Store::suggested_salutation( $name, $language ) && ContactPanda_Store::learn_salutation( $name, $salutation, 'central', $language ) ) $added++; }
 		$settings['version'] = sanitize_text_field( $json['version'] ?? gmdate( 'Y-m-d' ) ); $settings['source_url'] = esc_url_raw( $url ); $settings['updated_at'] = current_time( 'mysql' ); $settings['last_success_at'] = $settings['updated_at']; $settings['error'] = ''; update_option( self::CENTRAL_OPTION, $settings, false ); return $added;
 	}
 

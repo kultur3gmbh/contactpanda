@@ -20,7 +20,7 @@ final class ContactPanda_Events {
 		add_filter( 'contactpanda_contact_event_map', array( __CLASS__, 'contact_event_map' ), 100, 2 );
 		add_filter( 'contactpanda_contact_has_event', array( __CLASS__, 'contact_has_event' ), 100, 3 );
 		add_filter( 'contactpanda_account_attended_event_count', array( __CLASS__, 'account_event_count' ), 100, 2 );
-		add_action( 'contactpanda_render_integrations_settings', array( __CLASS__, 'render_settings' ) );
+		add_action( 'contactpanda_render_integration_section_woocommerce', array( __CLASS__, 'render_settings' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'source_notice' ) );
 		add_action( 'admin_post_contactpanda_event_source', array( __CLASS__, 'save_source' ) );
 		add_action( 'wp_ajax_contactpanda_preview_event', array( __CLASS__, 'preview_event' ) );
