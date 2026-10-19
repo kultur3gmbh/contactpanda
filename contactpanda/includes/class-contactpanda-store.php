@@ -178,6 +178,7 @@ final class ContactPanda_Store {
 		}
 		$id = (int) $wpdb->insert_id;
 		self::update_contact( $id, $data );
+		do_action( 'contactpanda_contact_created', $id, $email );
 		return $id;
 	}
 
@@ -803,7 +804,12 @@ final class ContactPanda_Store {
 		self::set_contact_meta( $contact_id, 'optin_status', 'granted' === $status ? 'confirmed' : 'unsubscribed' );
 		self::set_contact_meta( $contact_id, 'marketing_consent_source', $source );
 		self::set_contact_meta( $contact_id, 'granted' === $status ? 'marketing_consent_date' : 'marketing_consent_revoked_date', $date );
-		return self::add_activity( $contact_id, 0, 'consent', 'granted' === $status ? __( 'Marketing consent granted manually', 'contactpanda' ) : __( 'Marketing consent revoked manually', 'contactpanda' ), $note );
+		$result = self::add_activity( $contact_id, 0, 'consent', 'granted' === $status ? __( 'Marketing consent granted manually', 'contactpanda' ) : __( 'Marketing consent revoked manually', 'contactpanda' ), $note );
+		if ( 'granted' === $status ) {
+			$contact = self::contact( $contact_id );
+			do_action( 'contactpanda_marketing_confirmed', absint( $contact_id ), $contact ? sanitize_email( $contact['email'] ?? '' ) : '' );
+		}
+		return $result;
 	}
 
 	public static function add_activity( $contact_id, $company_id, $type, $title, $content, $occurred_at = '' ) {

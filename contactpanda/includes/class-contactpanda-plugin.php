@@ -2748,6 +2748,7 @@ final class ContactPanda_Plugin {
 			)
 		);
 		self::update_wordpress_marketing_status( $email, $confirmed_at );
+		do_action( 'contactpanda_marketing_confirmed', $contact_id, $email );
 		return $contact_id;
 	}
 

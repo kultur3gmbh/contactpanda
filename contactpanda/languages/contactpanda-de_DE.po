@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.4.0\n"
+"Project-Id-Version: ContactPanda 0.4.1\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-18 18:00+0200\n"
