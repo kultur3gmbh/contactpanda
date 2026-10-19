@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.3.5\n"
+"Project-Id-Version: ContactPanda 0.3.6\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-18 18:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -4442,4 +4442,43 @@ msgid "Select every value that should remain and choose exactly one primary valu
 msgstr ""
 
 msgid "Choose one primary value for every selected email or phone group."
+msgstr ""
+
+msgid "Create additional fields for people or companies in the ContactPanda database. Existing values remain available if a field definition is later removed."
+msgstr ""
+
+msgid "Use as a required field"
+msgstr ""
+
+msgid "Dropdown options"
+msgstr ""
+
+msgid "Used only for Dropdown fields."
+msgstr ""
+
+msgid "Dropdown"
+msgstr ""
+
+msgid "Custom fields are managed by Groundhogg while Groundhogg is the leading data source."
+msgstr ""
+
+msgid "ContactPanda is responsible for contacts, companies, tags, consent, activities, and—when ContactPanda Plus is active—newsletter delivery. Groundhogg remains unchanged. New standalone changes cannot be migrated back to Groundhogg."
+msgstr ""
+
+msgid "Groundhogg remains responsible for contacts, companies, tags, consent, broadcasts, funnels, and automations. Every change made through ContactPanda is saved directly in Groundhogg."
+msgstr ""
+
+msgid "ContactPanda is the user interface for Groundhogg in this mode. Changes made in ContactPanda are saved directly in Groundhogg."
+msgstr ""
+
+msgid "ContactPanda now stores new changes in its own database. These standalone changes cannot be migrated back to Groundhogg."
+msgstr ""
+
+msgid "WooCommerce customer import is available only when the ContactPanda database is the leading data source."
+msgstr ""
+
+msgid "The central library could not be downloaded (%s). Your local library was not changed."
+msgstr ""
+
+msgid "The central library returned no valid entries. Your local library was not changed."
 msgstr ""

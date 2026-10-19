@@ -646,7 +646,7 @@ final class ContactPanda_Store {
 	}
 
 	public static function import_woocommerce( $dry_run = true ) {
-		if ( ! self::ready() || ! function_exists( 'wc_get_orders' ) ) {
+		if ( ! self::standalone() || ! function_exists( 'wc_get_orders' ) ) {
 			return new WP_Error( 'contactpanda_woocommerce_import_unavailable', __( 'WooCommerce and the ContactPanda database must be available for this import.', 'contactpanda' ) );
 		}
 		$customers = array();
@@ -738,21 +738,30 @@ final class ContactPanda_Store {
 			if ( ! empty( $data['name_inferred_from_email'] ) ) $payload['meta'] = array( 'name_inferred_from_email' => 1 );
 			if ( ! $existing ) $payload['source'] = 'woocommerce';
 			foreach ( array( 'first_name', 'last_name' ) as $field ) {
-				if ( ! $existing || '' !== trim( (string) ( $data[ $field ] ?? '' ) ) ) $payload[ $field ] = $data[ $field ] ?? '';
+				$incoming = trim( (string) ( $data[ $field ] ?? '' ) );
+				$current = $existing ? trim( (string) ( $existing[ $field ] ?? '' ) ) : '';
+				if ( $incoming && ( ! $existing || '' === $current ) ) $payload[ $field ] = $data[ $field ];
 			}
-			if ( ! $existing || '' !== trim( (string) ( $data['phone'] ?? '' ) ) ) $payload['primary_phone'] = $data['phone'] ?? '';
-			if ( ! empty( $data['user_id'] ) ) $payload['user_id'] = absint( $data['user_id'] );
+			$current_phone = $existing ? trim( (string) ( $existing['meta']['primary_phone'] ?? $existing['meta']['billing_phone'] ?? $existing['meta']['phone'] ?? '' ) ) : '';
+			if ( ! empty( $data['phone'] ) && ( ! $existing || '' === $current_phone ) ) $payload['primary_phone'] = $data['phone'];
+			if ( ! empty( $data['user_id'] ) && ( ! $existing || empty( $existing['user_id'] ) ) ) $payload['user_id'] = absint( $data['user_id'] );
 			$contact_id = $existing ? absint( $existing['id'] ) : self::create_contact( $payload );
 			if ( is_wp_error( $contact_id ) || ! $contact_id ) { $report['skipped']++; continue; }
 			if ( $existing ) self::update_contact( $contact_id, $payload );
 			$address = array();
 			foreach ( array( 'address_1', 'address_2', 'postcode', 'city', 'state', 'country' ) as $field ) {
-				$value = $data[ $field ] ?? '';
-				if ( $existing && '' === trim( (string) $value ) ) $value = $existing['meta'][ $field ] ?? '';
-				$address[ $field ] = $value;
+				$current = $existing ? (string) ( $existing['meta'][ $field ] ?? '' ) : '';
+				$incoming = (string) ( $data[ $field ] ?? '' );
+				$address[ $field ] = $existing && '' !== trim( $current ) ? $current : $incoming;
 			}
 			if ( ! self::update_contact_address( $contact_id, $address ) ) { $report['skipped']++; continue; }
-			if ( ! empty( $data['company'] ) ) {
+			$has_company = false;
+			if ( $existing ) {
+				global $wpdb;
+				$company_contacts_table = ContactPanda_Schema::table_names()['company_contacts'];
+				$has_company = (bool) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$company_contacts_table}` WHERE contact_id = %d LIMIT 1", $contact_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+			}
+			if ( ! $has_company && ! empty( $data['company'] ) ) {
 				$company_id = self::company_by_name( $data['company'], true );
 				if ( $company_id && ! self::company( $company_id ) ) { $report['skipped']++; continue; }
 				if ( ! $company_id ) { $company_id = self::create_company( array( 'name' => $data['company'] ) ); $report['companies']++; }

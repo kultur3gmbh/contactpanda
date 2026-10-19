@@ -22,7 +22,9 @@ final class ContactPanda_Custom_Fields {
 	}
 
 	public static function settings_section( $sections ) {
-		$sections['custom_fields'] = __( 'Custom fields', 'contactpanda' );
+		if ( ContactPanda_Store::standalone() ) {
+			$sections['custom_fields'] = __( 'Custom fields', 'contactpanda' );
+		}
 		return $sections;
 	}
 
@@ -32,6 +34,9 @@ final class ContactPanda_Custom_Fields {
 	}
 
 	public static function definitions( $entity = '' ) {
+		if ( ! ContactPanda_Store::standalone() ) {
+			return array();
+		}
 		$definitions = array_values( array_filter( (array) get_option( self::OPTION, array() ), array( __CLASS__, 'valid_definition' ) ) );
 		usort( $definitions, static function ( $left, $right ) {
 			$sort = (int) $left['sort'] <=> (int) $right['sort'];
@@ -91,6 +96,9 @@ final class ContactPanda_Custom_Fields {
 	}
 
 	public static function render_settings() {
+		if ( ! ContactPanda_Store::standalone() ) {
+			return;
+		}
 		$definitions = self::definitions();
 		$edit_id = isset( $_GET['edit_custom_field'] ) ? sanitize_key( wp_unslash( $_GET['edit_custom_field'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only editor selection.
 		$editing = false;
@@ -106,15 +114,16 @@ final class ContactPanda_Custom_Fields {
 			}
 		}
 
-		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Custom fields', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Create additional fields for people or companies. Values are stored in ContactPanda or Groundhogg metadata and remain available if a field definition is later removed.', 'contactpanda' ) . '</p>';
+		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Custom fields', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Create additional fields for people or companies in the ContactPanda database. Existing values remain available if a field definition is later removed.', 'contactpanda' ) . '</p>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-custom-field-form"><input type="hidden" name="action" value="contactpanda_save_custom_field"><input type="hidden" name="field_id" value="' . esc_attr( $editing['id'] ?? '' ) . '">';
 		wp_nonce_field( 'contactpanda_save_custom_field' );
-		echo '<div class="contactpanda-settings-grid"><label><span>' . esc_html__( 'Field name', 'contactpanda' ) . '</span><input name="label" required value="' . esc_attr( $editing['label'] ?? '' ) . '"></label><label><span>' . esc_html__( 'Internal key', 'contactpanda' ) . '</span><input name="field_key" required pattern="[a-z0-9_]+" value="' . esc_attr( $editing['key'] ?? '' ) . '"' . ( $editing ? ' readonly' : '' ) . '><small>' . esc_html__( 'Lowercase letters, numbers and underscores. The key cannot be changed later.', 'contactpanda' ) . '</small></label>';
+		echo '<div class="contactpanda-custom-field-primary"><label><span>' . esc_html__( 'Field name', 'contactpanda' ) . '</span><input name="label" required value="' . esc_attr( $editing['label'] ?? '' ) . '"></label><label><span>' . esc_html__( 'Internal key', 'contactpanda' ) . '</span><input name="field_key" required pattern="[a-z0-9_]+" value="' . esc_attr( $editing['key'] ?? '' ) . '"' . ( $editing ? ' readonly' : '' ) . '><small>' . esc_html__( 'Lowercase letters, numbers and underscores. The key cannot be changed later.', 'contactpanda' ) . '</small></label><label class="contactpanda-custom-field-required"><input type="checkbox" name="required" value="1"' . checked( ! empty( $editing['required'] ), true, false ) . '> <span>' . esc_html__( 'Use as a required field', 'contactpanda' ) . '</span></label></div>';
+		echo '<div class="contactpanda-custom-field-properties">';
 		echo '<label><span>' . esc_html__( 'Applies to', 'contactpanda' ) . '</span><select name="entity"><option value="contacts"' . selected( $editing['entity'] ?? 'contacts', 'contacts', false ) . '>' . esc_html__( 'People', 'contactpanda' ) . '</option><option value="companies"' . selected( $editing['entity'] ?? '', 'companies', false ) . '>' . esc_html__( 'Companies', 'contactpanda' ) . '</option></select></label>';
 		echo '<label><span>' . esc_html__( 'Field type', 'contactpanda' ) . '</span><select name="field_type">';
 		foreach ( self::type_labels() as $type => $label ) echo '<option value="' . esc_attr( $type ) . '"' . selected( $editing['type'] ?? 'text', $type, false ) . '>' . esc_html( $label ) . '</option>';
-		echo '</select></label><label><span>' . esc_html__( 'Sort order', 'contactpanda' ) . '</span><input type="number" name="sort" value="' . esc_attr( $editing['sort'] ?? 10 ) . '"></label><label><span>' . esc_html__( 'Selection options', 'contactpanda' ) . '</span><textarea name="options" rows="3" placeholder="' . esc_attr__( 'One option per line', 'contactpanda' ) . '">' . esc_textarea( implode( "\n", (array) ( $editing['options'] ?? array() ) ) ) . '</textarea></label></div>';
-		echo '<p><label><input type="checkbox" name="required" value="1"' . checked( ! empty( $editing['required'] ), true, false ) . '> ' . esc_html__( 'Required field', 'contactpanda' ) . '</label></p><p><button class="button button-primary">' . ( $editing ? esc_html__( 'Save changes', 'contactpanda' ) : esc_html__( 'Add custom field', 'contactpanda' ) ) . '</button>' . ( $editing ? ' <a class="button" href="' . esc_url( self::settings_url() ) . '">' . esc_html__( 'Cancel', 'contactpanda' ) . '</a>' : '' ) . '</p></form>';
+		echo '</select></label><label><span>' . esc_html__( 'Sort order', 'contactpanda' ) . '</span><input type="number" name="sort" value="' . esc_attr( $editing['sort'] ?? 10 ) . '"></label><label class="contactpanda-custom-field-options"><span>' . esc_html__( 'Dropdown options', 'contactpanda' ) . '</span><textarea name="options" rows="3" placeholder="' . esc_attr__( 'One option per line', 'contactpanda' ) . '">' . esc_textarea( implode( "\n", (array) ( $editing['options'] ?? array() ) ) ) . '</textarea><small>' . esc_html__( 'Used only for Dropdown fields.', 'contactpanda' ) . '</small></label></div>';
+		echo '<p><button class="button button-primary">' . ( $editing ? esc_html__( 'Save changes', 'contactpanda' ) : esc_html__( 'Add custom field', 'contactpanda' ) ) . '</button>' . ( $editing ? ' <a class="button" href="' . esc_url( self::settings_url() ) . '">' . esc_html__( 'Cancel', 'contactpanda' ) . '</a>' : '' ) . '</p></form>';
 		echo '<table class="widefat striped contactpanda-table"><thead><tr><th>' . esc_html__( 'Field', 'contactpanda' ) . '</th><th>' . esc_html__( 'Internal key', 'contactpanda' ) . '</th><th>' . esc_html__( 'Applies to', 'contactpanda' ) . '</th><th>' . esc_html__( 'Type', 'contactpanda' ) . '</th><th>' . esc_html__( 'Order', 'contactpanda' ) . '</th><th>' . esc_html__( 'Actions', 'contactpanda' ) . '</th></tr></thead><tbody>';
 		foreach ( $definitions as $definition ) {
 			$edit_url = self::settings_url( array( 'edit_custom_field' => $definition['id'] ) );
@@ -127,6 +136,7 @@ final class ContactPanda_Custom_Fields {
 
 	public static function handle_save_definition() {
 		if ( ! current_user_can( 'manage_options' ) ) wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		if ( ! ContactPanda_Store::standalone() ) wp_die( esc_html__( 'Custom fields are managed by Groundhogg while Groundhogg is the leading data source.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		check_admin_referer( 'contactpanda_save_custom_field' );
 		$id = sanitize_key( wp_unslash( $_POST['field_id'] ?? '' ) );
 		$key = sanitize_key( wp_unslash( $_POST['field_key'] ?? '' ) );
@@ -160,6 +170,7 @@ final class ContactPanda_Custom_Fields {
 
 	public static function handle_delete_definition() {
 		if ( ! current_user_can( 'manage_options' ) ) wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		if ( ! ContactPanda_Store::standalone() ) wp_die( esc_html__( 'Custom fields are managed by Groundhogg while Groundhogg is the leading data source.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		$id = sanitize_key( wp_unslash( $_POST['field_id'] ?? '' ) );
 		check_admin_referer( 'contactpanda_delete_custom_field_' . $id );
 		if ( '1' !== ( $_POST['confirmed'] ?? '' ) ) wp_die( esc_html__( 'Confirm the deletion first.', 'contactpanda' ), '', array( 'response' => 400 ) );
@@ -178,6 +189,7 @@ final class ContactPanda_Custom_Fields {
 	}
 
 	private static function render_value_card( $entity, $id, $record, $readonly ) {
+		if ( ! ContactPanda_Store::standalone() ) return;
 		$definitions = self::definitions( $entity );
 		if ( ! $definitions ) return;
 		echo '<section class="contactpanda-card contactpanda-custom-values"><h2>' . esc_html__( 'Custom fields', 'contactpanda' ) . '</h2>';
@@ -206,6 +218,7 @@ final class ContactPanda_Custom_Fields {
 
 	public static function handle_save_values() {
 		if ( ! current_user_can( 'edit_users' ) && ! current_user_can( 'manage_options' ) ) wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		if ( ! ContactPanda_Store::standalone() ) wp_die( esc_html__( 'Custom fields are managed by Groundhogg while Groundhogg is the leading data source.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		$entity = self::normalize_entity( sanitize_key( wp_unslash( $_POST['entity'] ?? 'contacts' ) ) );
 		$id = absint( $_POST['record_id'] ?? 0 );
 		check_admin_referer( 'contactpanda_save_custom_values_' . $entity . '_' . $id );
@@ -282,7 +295,7 @@ final class ContactPanda_Custom_Fields {
 	}
 
 	private static function type_labels() {
-		return array( 'text' => __( 'Text', 'contactpanda' ), 'textarea' => __( 'Multi-line text', 'contactpanda' ), 'number' => __( 'Number', 'contactpanda' ), 'date' => __( 'Date', 'contactpanda' ), 'select' => __( 'Selection', 'contactpanda' ), 'checkbox' => __( 'Checkbox', 'contactpanda' ), 'url' => __( 'URL', 'contactpanda' ) );
+		return array( 'text' => __( 'Text', 'contactpanda' ), 'textarea' => __( 'Multi-line text', 'contactpanda' ), 'number' => __( 'Number', 'contactpanda' ), 'date' => __( 'Date', 'contactpanda' ), 'select' => __( 'Dropdown', 'contactpanda' ), 'checkbox' => __( 'Checkbox', 'contactpanda' ), 'url' => __( 'URL', 'contactpanda' ) );
 	}
 
 	public static function contact_output_fields( $fields ) {

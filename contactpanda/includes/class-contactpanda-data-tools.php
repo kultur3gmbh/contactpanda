@@ -128,6 +128,9 @@ final class ContactPanda_Data_Tools {
 	}
 
 	public static function render_duplicate_settings() {
+		if ( ! ContactPanda_Store::standalone() ) {
+			return;
+		}
 		$notice = get_transient( 'contactpanda_database_notice_' . get_current_user_id() );
 		if ( $notice ) {
 			delete_transient( 'contactpanda_database_notice_' . get_current_user_id() );
@@ -607,11 +610,25 @@ final class ContactPanda_Data_Tools {
 	private static function sync_central_library() {
 		$settings = wp_parse_args( (array) get_option( self::CENTRAL_OPTION, array() ), array( 'enabled' => 0, 'source_url' => '', 'version' => '', 'updated_at' => '', 'last_success_at' => '', 'error' => '' ) );
 		if ( empty( $settings['enabled'] ) ) return new WP_Error( 'contactpanda_central_disabled', __( 'Enable the central library before updating it.', 'contactpanda' ) );
-		// The library repository keeps its existing URL until it is renamed on GitHub.
+		// The public library contains no customer data and may be replaced by a filtered URL.
 		$url = apply_filters( 'contactpanda_central_salutation_library_url', 'https://raw.githubusercontent.com/kultur3gmbh/contactpanda-salutations/main/salutations.json' );
 		$response = wp_safe_remote_get( $url, array( 'timeout' => 15, 'user-agent' => 'ContactPanda/' . CONTACTPANDA_VERSION ) );
-		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) { $settings['error'] = __( 'The central library could not be downloaded. Your local library was not changed.', 'contactpanda' ); $settings['updated_at'] = current_time( 'mysql' ); update_option( self::CENTRAL_OPTION, $settings, false ); return new WP_Error( 'contactpanda_central_download', $settings['error'] ); }
-		$json = json_decode( wp_remote_retrieve_body( $response ), true ); $entries = isset( $json['entries'] ) && is_array( $json['entries'] ) ? $json['entries'] : ( is_array( $json ) ? $json : array() ); $added = 0;
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			$reason = is_wp_error( $response ) ? sanitize_text_field( $response->get_error_message() ) : sprintf( 'HTTP %d', wp_remote_retrieve_response_code( $response ) );
+			$settings['error'] = sprintf( __( 'The central library could not be downloaded (%s). Your local library was not changed.', 'contactpanda' ), $reason );
+			$settings['updated_at'] = current_time( 'mysql' );
+			update_option( self::CENTRAL_OPTION, $settings, false );
+			return new WP_Error( 'contactpanda_central_download', $settings['error'] );
+		}
+		$json = json_decode( wp_remote_retrieve_body( $response ), true );
+		$entries = isset( $json['entries'] ) && is_array( $json['entries'] ) ? $json['entries'] : array();
+		if ( ! $entries ) {
+			$settings['error'] = __( 'The central library returned no valid entries. Your local library was not changed.', 'contactpanda' );
+			$settings['updated_at'] = current_time( 'mysql' );
+			update_option( self::CENTRAL_OPTION, $settings, false );
+			return new WP_Error( 'contactpanda_central_invalid', $settings['error'] );
+		}
+		$added = 0;
 		foreach ( $entries as $entry ) { if ( ! is_array( $entry ) ) continue; $name = sanitize_text_field( $entry['first_name'] ?? '' ); $salutation = sanitize_key( $entry['salutation'] ?? '' ); if ( $name && ! ContactPanda_Store::suggested_salutation( $name ) && ContactPanda_Store::learn_salutation( $name, $salutation, 'central' ) ) $added++; }
 		$settings['version'] = sanitize_text_field( $json['version'] ?? gmdate( 'Y-m-d' ) ); $settings['source_url'] = esc_url_raw( $url ); $settings['updated_at'] = current_time( 'mysql' ); $settings['last_success_at'] = $settings['updated_at']; $settings['error'] = ''; update_option( self::CENTRAL_OPTION, $settings, false ); return $added;
 	}

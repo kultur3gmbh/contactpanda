@@ -42,6 +42,7 @@ function is_wp_error( $value ) { return $value instanceof WP_Error; }
 function absint( $value ) { return abs( (int) $value ); }
 function sanitize_email( $value ) { return filter_var( $value, FILTER_SANITIZE_EMAIL ); }
 function current_time( $format ) { return '2026-10-16 12:00:00'; }
+function get_option( $key, $default = array() ) { return 'contactpanda_general_settings' === $key ? array( 'data_source' => 'standalone' ) : $default; }
 function get_role( $role ) { return 'customer' === $role ? (object) array( 'name' => $role ) : null; }
 function wc_get_order_statuses() { return array( 'wc-completed' => 'Completed' ); }
 function wc_get_orders( $args ) {

@@ -307,7 +307,12 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	private static function render_other_settings() {
-		$sections = (array) apply_filters( 'contactpanda_other_settings_sections', array( 'migration' => __( 'Migration', 'contactpanda' ), 'duplicates' => __( 'Duplicates', 'contactpanda' ), 'admin_notices' => __( 'Admin notices', 'contactpanda' ) ) );
+		$base_sections = array( 'migration' => __( 'Migration', 'contactpanda' ) );
+		if ( ContactPanda_Store::standalone() ) {
+			$base_sections['duplicates'] = __( 'Duplicates', 'contactpanda' );
+		}
+		$base_sections['admin_notices'] = __( 'Admin notices', 'contactpanda' );
+		$sections = (array) apply_filters( 'contactpanda_other_settings_sections', $base_sections );
 		$current = isset( $_GET['other_section'] ) ? sanitize_key( wp_unslash( $_GET['other_section'] ) ) : 'migration'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! isset( $sections[ $current ] ) ) $current = 'migration';
 		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs">'; foreach ( $sections as $key => $label ) echo '<a class="nav-tab ' . ( $current === $key ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=' . sanitize_key( $key ) ) ) . '">' . esc_html( $label ) . '</a>'; echo '</nav>';
@@ -476,15 +481,13 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		echo '<form method="post" action="options.php">';
 		settings_fields( 'contactpanda_general' );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Data source', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Only one system may be the leading source for contacts, companies, tags, and consent data.', 'contactpanda' ) . '</p><div class="contactpanda-source-options">';
-		if ( $groundhogg ) {
-			echo '<label class="contactpanda-source-option"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[data_source]" value="groundhogg"' . checked( 'groundhogg', $settings['data_source'], false ) . '><span><strong>' . esc_html__( 'Groundhogg frontend mode', 'contactpanda' ) . '</strong><small>' . esc_html__( 'Groundhogg remains responsible for contacts, companies, tags, consent, broadcasts, funnels, and automations. ContactPanda provides the user-friendly interface.', 'contactpanda' ) . '</small></span></label>';
-		} else {
-			if ( 'groundhogg' === $settings['data_source'] ) {
-				echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Groundhogg is configured as the data source but is currently inactive. ContactPanda has not switched the data source automatically.', 'contactpanda' ) . '</p></div>';
-			}
-		}
 		$standalone_ready = ContactPanda_Store::ready();
-		echo '<label class="contactpanda-source-option' . ( $standalone_ready ? '' : ' is-disabled' ) . '"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[data_source]" value="standalone"' . checked( 'standalone', $settings['data_source'], false ) . ( $standalone_ready ? '' : ' disabled' ) . '><span><strong>' . esc_html__( 'ContactPanda database', 'contactpanda' ) . '</strong><small>' . esc_html__( 'ContactPanda is responsible for contacts, companies, tags, consent, activities, and—when ContactPanda Plus is active—newsletter delivery. Groundhogg is not written to in this mode.', 'contactpanda' ) . '</small></span></label>';
+		echo '<label class="contactpanda-source-option' . ( $standalone_ready ? '' : ' is-disabled' ) . '"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[data_source]" value="standalone"' . checked( 'standalone', $settings['data_source'], false ) . ( $standalone_ready ? '' : ' disabled' ) . '><span><strong>' . esc_html__( 'ContactPanda database', 'contactpanda' ) . '</strong><small>' . esc_html__( 'ContactPanda is responsible for contacts, companies, tags, consent, activities, and—when ContactPanda Plus is active—newsletter delivery. Groundhogg remains unchanged. New standalone changes cannot be migrated back to Groundhogg.', 'contactpanda' ) . '</small></span></label>';
+		if ( $groundhogg ) {
+			echo '<label class="contactpanda-source-option"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[data_source]" value="groundhogg"' . checked( 'groundhogg', $settings['data_source'], false ) . '><span><strong>' . esc_html__( 'Groundhogg frontend mode', 'contactpanda' ) . '</strong><small>' . esc_html__( 'Groundhogg remains responsible for contacts, companies, tags, consent, broadcasts, funnels, and automations. Every change made through ContactPanda is saved directly in Groundhogg.', 'contactpanda' ) . '</small></span></label>';
+		} elseif ( 'groundhogg' === $settings['data_source'] ) {
+			echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Groundhogg is configured as the data source but is currently inactive. ContactPanda has not switched the data source automatically.', 'contactpanda' ) . '</p></div>';
+		}
 		echo '</div>';
 		if ( 0 === $schema['count'] ) {
 			echo '<p class="description">' . esc_html__( 'No ContactPanda customer tables have been created. With Groundhogg active, they are created only after an explicit ContactPanda setup or migration.', 'contactpanda' ) . '</p>';
@@ -512,7 +515,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		}
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Migration center', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Imports are started only after an explicit confirmation. Source systems remain unchanged, and existing ContactPanda contacts are matched by email address before new records are created.', 'contactpanda' ) . '</p></section>';
 		self::render_database_tools( $schema );
-		if ( class_exists( 'WooCommerce' ) && ContactPanda_Store::ready() ) {
+		if ( class_exists( 'WooCommerce' ) && ContactPanda_Store::standalone() ) {
 			self::render_woocommerce_import();
 		}
 		self::render_newsletter_plugin_migration();
@@ -677,7 +680,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		if ( self::groundhogg_active() ) {
 			$settings = self::general_settings();
 			$leading = 'groundhogg' === $settings['data_source'];
-			echo '<section class="contactpanda-card contactpanda-settings-card"><h2>Groundhogg</h2><p>' . esc_html( $leading ? __( 'Groundhogg is active and is currently the leading contact data source.', 'contactpanda' ) : __( 'Groundhogg is active but is currently not the leading contact data source.', 'contactpanda' ) ) . '</p><p>' . esc_html__( 'You can change the leading data source at any time. ContactPanda never writes standalone changes back to Groundhogg automatically.', 'contactpanda' ) . '</p><p><a class="button" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general' ) ) . '">' . esc_html__( 'Change data source', 'contactpanda' ) . '</a></p></section>';
+			echo '<section class="contactpanda-card contactpanda-settings-card"><h2>Groundhogg</h2><p>' . esc_html( $leading ? __( 'Groundhogg is active and is currently the leading contact data source.', 'contactpanda' ) : __( 'Groundhogg is active but is currently not the leading contact data source.', 'contactpanda' ) ) . '</p><p>' . esc_html( $leading ? __( 'ContactPanda is the user interface for Groundhogg in this mode. Changes made in ContactPanda are saved directly in Groundhogg.', 'contactpanda' ) : __( 'ContactPanda now stores new changes in its own database. These standalone changes cannot be migrated back to Groundhogg.', 'contactpanda' ) ) . '</p><p><a class="button" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general' ) ) . '">' . esc_html__( 'Change data source', 'contactpanda' ) . '</a></p></section>';
 		}
 		do_action( 'contactpanda_render_integrations_settings' );
 	}
@@ -715,6 +718,9 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	public static function handle_import_woocommerce() {
 		self::guard_database_action( 'contactpanda_import_woocommerce' );
+		if ( ! ContactPanda_Store::standalone() ) {
+			self::database_redirect( 'error', __( 'WooCommerce customer import is available only when the ContactPanda database is the leading data source.', 'contactpanda' ) );
+		}
 		$mode = sanitize_key( wp_unslash( $_POST['mode'] ?? 'preview' ) );
 		try {
 			$result = ContactPanda_Store::import_woocommerce( 'run' !== $mode );
