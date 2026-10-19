@@ -787,13 +787,51 @@ final class ContactPanda_Store {
 		return false !== $wpdb->delete( $tables['tags'], array( 'id' => $tag_id ) );
 	}
 
-	public static function assign_tag( $contact_id, $tag_id, $assign = true ) {
+	public static function assign_tag( $contact_id, $tag_id, $assign = true, $source = 'manual' ) {
 		global $wpdb;
 		$table = ContactPanda_Schema::table_names()['contact_tags'];
+		$contact_id = absint( $contact_id );
+		$tag_id = absint( $tag_id );
+		$source = sanitize_key( $source ) ?: 'manual';
+		if ( ! $contact_id || ! $tag_id ) return false;
+		$exists = (bool) $wpdb->get_var( $wpdb->prepare( "SELECT 1 FROM `{$table}` WHERE contact_id=%d AND tag_id=%d LIMIT 1", $contact_id, $tag_id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		if ( ! $assign ) {
-			return false !== $wpdb->delete( $table, array( 'contact_id' => absint( $contact_id ), 'tag_id' => absint( $tag_id ) ) );
+			if ( ! $exists ) return true;
+			$deleted = false !== $wpdb->delete( $table, array( 'contact_id' => $contact_id, 'tag_id' => $tag_id ) );
+			if ( $deleted ) do_action( 'contactpanda_tag_removed', $contact_id, $tag_id, $source );
+			return $deleted;
 		}
-		return false !== $wpdb->replace( $table, array( 'contact_id' => absint( $contact_id ), 'tag_id' => absint( $tag_id ), 'assigned_at' => current_time( 'mysql' ), 'assigned_by' => get_current_user_id(), 'source' => 'manual' ) );
+		if ( $exists ) return true;
+		$added = false !== $wpdb->insert( $table, array( 'contact_id' => $contact_id, 'tag_id' => $tag_id, 'assigned_at' => current_time( 'mysql' ), 'assigned_by' => get_current_user_id(), 'source' => $source ) );
+		if ( $added ) do_action( 'contactpanda_tag_added', $contact_id, $tag_id, $source );
+		return $added;
+	}
+
+	/** Record a channel-specific opt-in without changing the email marketing status. */
+	public static function record_channel_consent( $contact_id, $channel, $status, $source, $date, $note = '' ) {
+		$channel = sanitize_key( $channel );
+		if ( ! in_array( $channel, array( 'sms', 'whatsapp' ), true ) ) return false;
+		$status = sanitize_key( $status );
+		if ( ! in_array( $status, array( 'granted', 'revoked' ), true ) ) return false;
+		global $wpdb;
+		$tables = ContactPanda_Schema::table_names();
+		$date = preg_match( '/^\d{4}-\d{2}-\d{2}$/', (string) $date ) ? $date : current_time( 'Y-m-d' );
+		$inserted = $wpdb->insert( $tables['consents'], array( 'contact_id' => absint( $contact_id ), 'purpose' => $channel . '_marketing', 'status' => $status, 'legal_basis' => 'consent', 'source' => sanitize_text_field( $source ), 'proof_text' => sanitize_textarea_field( $note ), 'actor_user_id' => get_current_user_id(), 'occurred_at' => $date . ' 00:00:00', 'created_at' => current_time( 'mysql' ) ) );
+		if ( ! $inserted ) return false;
+		self::set_contact_meta( $contact_id, $channel . '_marketing_status', 'granted' === $status ? 'confirmed' : 'revoked' );
+		self::set_contact_meta( $contact_id, $channel . '_marketing_' . ( 'granted' === $status ? 'confirmed' : 'revoked' ) . '_at', $date );
+		self::set_contact_meta( $contact_id, $channel . '_marketing_source', sanitize_text_field( $source ) );
+		return self::add_activity( $contact_id, 0, 'consent', sprintf( 'granted' === $status ? __( '%s marketing consent granted', 'contactpanda' ) : __( '%s marketing consent revoked', 'contactpanda' ), strtoupper( $channel ) ), $note );
+	}
+
+	public static function channel_is_marketable( $contact, $channel ) {
+		$channel = sanitize_key( $channel );
+		if ( ! in_array( $channel, array( 'sms', 'whatsapp' ), true ) ) return false;
+		$status = self::value( $contact, array( $channel . '_marketing_status' ), '' );
+		if ( ! $status && is_array( $contact ) && isset( $contact['meta'] ) && is_array( $contact['meta'] ) ) {
+			$status = self::value( $contact['meta'], array( $channel . '_marketing_status' ), '' );
+		}
+		return in_array( sanitize_key( (string) $status ), array( 'confirmed', 'granted' ), true );
 	}
 
 	public static function record_consent( $contact_id, $status, $source, $date, $note = '' ) {

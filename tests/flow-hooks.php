@@ -12,5 +12,9 @@ if ( false === strpos( $store, "do_action( 'contactpanda_marketing_confirmed'" )
 	fwrite( STDERR, "The marketing-confirmed extension event is incomplete.\n" );
 	exit( 1 );
 }
+if ( false === strpos( $store, "do_action( 'contactpanda_tag_added'" ) || false === strpos( $store, 'record_channel_consent' ) || false === strpos( $store, 'channel_is_marketable' ) || false === strpos( $store, "isset( \$contact['meta'] )" ) ) {
+	fwrite( STDERR, "The tag and messaging-consent extension contracts are incomplete.\n" );
+	exit( 1 );
+}
 
 echo "ContactPanda flow hook checks passed.\n";
