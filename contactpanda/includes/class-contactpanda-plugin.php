@@ -176,7 +176,7 @@ final class ContactPanda_Plugin {
 			wp_localize_script( 'contactpanda-trash', 'CONTACTPANDA_TRASH', array( 'purge' => __( 'Permanently delete “%s”? This ContactPanda record cannot be restored afterwards.', 'contactpanda' ), 'restore' => __( 'Restore “%s”?', 'contactpanda' ), 'trash' => __( 'Move “%s” to Trash?', 'contactpanda' ) ) );
 			return;
 		}
-		if ( ! in_array( $hook, array( 'toplevel_page_contactpanda', 'contactpanda_page_contactpanda-firmen', 'contactpanda_page_contactpanda-tags', 'contactpanda_page_contactpanda-settings' ), true ) ) {
+		if ( ! in_array( $hook, array( 'toplevel_page_contactpanda', 'contactpanda_page_contactpanda-firmen', 'contactpanda_page_contactpanda-tags', 'contactpanda_page_contactpanda-settings', 'contactpanda_page_contactpanda-data-transfer' ), true ) ) {
 			return;
 		}
 		wp_enqueue_style( 'contactpanda', CONTACTPANDA_URL . 'assets/contactpanda-admin.css', array(), CONTACTPANDA_ASSET_VERSION );
@@ -1873,12 +1873,12 @@ final class ContactPanda_Plugin {
 		}
 
 		echo '<div class="contactpanda-bulk-toolbar"><label class="screen-reader-text" for="contactpanda-bulk-action">' . esc_html__( 'Select bulk action', 'contactpanda' ) . '</label><select id="contactpanda-bulk-action"><option value="">' . esc_html__( 'Bulk actions', 'contactpanda' ) . '</option><option value="marketable">' . esc_html__( 'Enable marketable status', 'contactpanda' ) . '</option></select><button type="button" class="button contactpanda-open-bulk" disabled>' . esc_html__( 'Execute', 'contactpanda' ) . '</button><span class="contactpanda-bulk-selection" aria-live="polite">' . esc_html__( 'No person selected', 'contactpanda' ) . '</span><span class="contactpanda-list-output-actions"><button type="button" class="button contactpanda-open-export"><span class="dashicons dashicons-download" aria-hidden="true"></span> ' . esc_html__( 'Export', 'contactpanda' ) . '</button><button type="button" class="button contactpanda-open-print"><span class="dashicons dashicons-printer" aria-hidden="true"></span> ' . esc_html__( 'Print list', 'contactpanda' ) . '</button></span></div>';
-		echo '<table class="widefat striped contactpanda-table"><thead><tr>';
+		echo '<div class="contactpanda-table-scroll"><table class="widefat striped contactpanda-table contactpanda-people-table"><thead><tr>';
 		echo __( '<td class="check-column"><input type="checkbox" class="contactpanda-select-all" aria-label="Select all people on this page"></td>', 'contactpanda' );
 		echo self::sortable_heading( __( 'First name', 'contactpanda' ), 'first_name', $orderby, $order, $customer_filter, $search );
 		echo self::sortable_heading( __( 'Last name', 'contactpanda' ), 'last_name', $orderby, $order, $customer_filter, $search );
 		echo __( '<th><span class="screen-reader-text">Actions</span></th>', 'contactpanda' );
-		echo __( '<th>Email</th><th>Phone</th>', 'contactpanda' );
+		echo __( '<th class="contactpanda-email-column">Email</th><th>Phone</th>', 'contactpanda' );
 		if ( $companies_enabled ) {
 			echo self::sortable_heading( __( 'Company', 'contactpanda' ), 'company', $orderby, $order, $customer_filter, $search );
 		}
@@ -1910,7 +1910,7 @@ final class ContactPanda_Plugin {
 			}
 			echo '</div></td>';
 			$email = self::value( $contact, array( 'email' ) );
-			echo '<td><div class="contactpanda-list-email"><span>' . esc_html( $email ?: '—' ) . '</span>';
+			echo '<td class="contactpanda-email-column"><div class="contactpanda-list-email"><span>' . esc_html( $email ?: '—' ) . '</span>';
 			if ( is_email( $email ) ) {
 				echo '<a class="contactpanda-mail-link" href="mailto:' . esc_attr( $email ) . '" aria-label="' . esc_attr__( 'Send email', 'contactpanda' ) . '" title="' . esc_attr__( 'Send email', 'contactpanda' ) . '"><span class="dashicons dashicons-email-alt" aria-hidden="true"></span></a>';
 			}
@@ -1937,7 +1937,7 @@ final class ContactPanda_Plugin {
 			}
 			echo '<td><div class="contactpanda-person-status-actions">' . self::email_confirmation_icon( $status, $contact ) . self::marketing_icon_badge( $status ) . '</div></td></tr>';
 		}
-		echo '</tbody></table>';
+		echo '</tbody></table></div>';
 		self::render_bulk_marketing_modal();
 		self::render_contact_output_modal( $total, $search, $customer_filter, $segment_id, $advanced_filter, $orderby, $order );
 		self::render_new_person_modal();

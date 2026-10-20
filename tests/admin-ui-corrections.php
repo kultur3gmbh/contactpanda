@@ -21,6 +21,18 @@ foreach ( array( 'contactpanda-search-primary', 'contactpanda-search-secondary',
 	}
 }
 
+foreach ( array( 'contactpanda-table-scroll', 'contactpanda-people-table', 'contactpanda-email-column' ) as $contract ) {
+	if ( false === strpos( $plugin, $contract ) ) {
+		fwrite( STDERR, "Missing responsive people-table contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+if ( false === strpos( $plugin, "'contactpanda_page_contactpanda-data-transfer'" ) ) {
+	fwrite( STDERR, "The Import / Export page does not load the ContactPanda administrator assets.\n" );
+	exit( 1 );
+}
+
 foreach ( array( 'contactpanda-company-relation-modal', 'Assign another company', 'Assign company', 'Remove this company assignment?' ) as $contract ) {
 	if ( false === strpos( $plugin, $contract ) ) {
 		fwrite( STDERR, "Missing company-assignment popup contract {$contract}.\n" );
@@ -35,7 +47,7 @@ foreach ( array( 'contactpanda-open-company-relation', 'contactpanda-close-compa
 	}
 }
 
-foreach ( array( 'contactpanda-file-drop-actions', 'contactpanda-search-primary', 'contactpanda-company-relation-modal' ) as $contract ) {
+foreach ( array( 'contactpanda-file-drop-actions', 'contactpanda-search-primary', 'contactpanda-company-relation-modal', 'contactpanda-table-scroll', 'contactpanda-email-column' ) as $contract ) {
 	if ( false === strpos( $styles, $contract ) ) {
 		fwrite( STDERR, "Missing administrator style contract {$contract}.\n" );
 		exit( 1 );

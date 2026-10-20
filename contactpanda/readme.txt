@@ -2,12 +2,18 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.6.1
+Stable tag: 0.6.2
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a permanently licensed newsletter option, a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
 
 == Changelog ==
+
+= 0.6.2 =
+* Keeps the People table visible and horizontally scrollable in Safari and on smaller screens.
+* Gives the email column a readable minimum width and truncates long addresses without breaking them across many lines.
+* Loads the ContactPanda design and interactions on Import / Export so CSV and vCard dropzones are displayed and usable.
+* Preserves standalone and Groundhogg data-source behavior without changing imported or external records.
 
 = 0.6.1 =
 * Restores clearly visible drag-and-drop areas for CSV and vCard imports while retaining file selection and preview workflows.
