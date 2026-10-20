@@ -1,13 +1,22 @@
-=== ContactPanda – User-Friendly CRM for WordPress ===
+=== ContactPanda ===
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.6.2
+Stable tag: 0.6.3
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a permanently licensed newsletter option, a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
 
 == Changelog ==
+
+= 0.6.3 =
+* Corrected and stabilized the People and Companies list columns, including responsive email presentation.
+* Added native Screen Options for optional People and Companies columns.
+* Restored the quick search and filter controls in Groundhogg data-source mode.
+* Repaired the responsive People and Companies detail layouts.
+* Kept automatic activities separate from contact notes, including historical Groundhogg entries.
+* Moved Licenses below General and kept Miscellaneous as the final settings tab.
+* Added the ContactPanda website icon to the WordPress admin menu.
 
 = 0.6.2 =
 * Keeps the People table visible and horizontally scrollable in Safari and on smaller screens.

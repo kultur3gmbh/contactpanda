@@ -280,6 +280,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab navigation.
 		if ( in_array( $tab, array( 'migration', 'duplicates' ), true ) ) { $_GET['other_section'] = $tab; $tab = 'other'; }
 		if ( 'registration' === $tab ) { $_GET['general_section'] = 'registration'; $tab = 'general'; }
+		if ( 'license' === $tab ) { $_GET['general_section'] = 'license'; $tab = 'general'; }
 		$tabs = (array) apply_filters(
 			'contactpanda_settings_tabs',
 			array(
@@ -289,6 +290,11 @@ The link is valid for 24 hours.', 'contactpanda' ),
 				'other'        => __( 'Miscellaneous', 'contactpanda' ),
 			)
 		);
+		if ( isset( $tabs['other'] ) ) {
+			$other_label = $tabs['other'];
+			unset( $tabs['other'] );
+			$tabs['other'] = $other_label;
+		}
 		if ( ! isset( $tabs[ $tab ] ) ) {
 			$tab = 'general';
 		}
@@ -317,8 +323,31 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	private static function render_general_tab() {
 		$section = isset( $_GET['general_section'] ) ? sanitize_key( wp_unslash( $_GET['general_section'] ) ) : 'settings'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$registration_label = self::customer_registration_enabled() ? __( 'Registration', 'contactpanda' ) : __( 'Newsletter signup', 'contactpanda' );
-		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><a class="nav-tab ' . ( 'settings' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general' ) ) . '">' . esc_html__( 'General settings', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'registration' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general&general_section=registration' ) ) . '">' . esc_html( $registration_label ) . '</a></nav>';
-		if ( 'registration' === $section ) self::render_registration_settings(); else self::render_general_settings();
+		$sections = (array) apply_filters(
+			'contactpanda_general_settings_sections',
+			array(
+				'settings'     => __( 'General settings', 'contactpanda' ),
+				'registration' => $registration_label,
+			)
+		);
+		if ( ! isset( $sections[ $section ] ) ) {
+			$section = 'settings';
+		}
+		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs">';
+		foreach ( $sections as $key => $label ) {
+			$url = 'settings' === $key
+				? admin_url( 'admin.php?page=contactpanda-settings&tab=general' )
+				: admin_url( 'admin.php?page=contactpanda-settings&tab=general&general_section=' . sanitize_key( $key ) );
+			echo '<a class="nav-tab ' . ( $section === $key ? 'nav-tab-active' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a>';
+		}
+		echo '</nav>';
+		if ( 'registration' === $section ) {
+			self::render_registration_settings();
+		} elseif ( 'settings' === $section ) {
+			self::render_general_settings();
+		} else {
+			do_action( 'contactpanda_render_general_settings_section_' . $section );
+		}
 	}
 
 	private static function render_other_settings() {

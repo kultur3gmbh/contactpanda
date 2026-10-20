@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.6.2\n"
+"Project-Id-Version: ContactPanda 0.6.3\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-19 20:00+0200\n"
@@ -928,8 +928,8 @@ msgid "Contact note"
 msgstr "Kontaktnotiz"
 
 #: contactpanda/contactpanda.php:3
-msgid "ContactPanda – User-Friendly CRM for WordPress"
-msgstr "ContactPanda – Benutzerfreundliches CRM für WordPress"
+msgid "ContactPanda"
+msgstr "ContactPanda"
 
 #: contactpanda/includes/class-contactpanda-registration.php:653
 msgid "ContactPanda can inherit the theme typography, colors, form fields, buttons, borders, and corner radii. Its functional layout remains intact."
@@ -6720,3 +6720,6 @@ msgstr "Benutzerrollen"
 
 msgid "View / edit"
 msgstr ""
+
+msgid "Email confirmation and marketing status"
+msgstr "E-Mail-Bestätigung und Marketingstatus"

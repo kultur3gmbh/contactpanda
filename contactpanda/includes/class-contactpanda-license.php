@@ -17,8 +17,8 @@ final class ContactPanda_License {
 	const RESPONSE_VERSION = 1;
 
 	public static function boot() {
-		add_filter( 'contactpanda_settings_tabs', array( __CLASS__, 'settings_tab' ), 5 );
-		add_action( 'contactpanda_render_settings_tab_license', array( __CLASS__, 'render_settings' ) );
+		add_filter( 'contactpanda_general_settings_sections', array( __CLASS__, 'settings_section' ), 20 );
+		add_action( 'contactpanda_render_general_settings_section_license', array( __CLASS__, 'render_settings' ) );
 		add_action( 'admin_post_contactpanda_activate_license', array( __CLASS__, 'activate' ) );
 		add_action( 'admin_post_contactpanda_disconnect_license', array( __CLASS__, 'disconnect' ) );
 		add_action( 'admin_post_contactpanda_check_licenses', array( __CLASS__, 'manual_check' ) );
@@ -28,9 +28,9 @@ final class ContactPanda_License {
 		}
 	}
 
-	public static function settings_tab( $tabs ) {
-		$tabs['license'] = __( 'Licenses', 'contactpanda' );
-		return $tabs;
+	public static function settings_section( $sections ) {
+		$sections['license'] = __( 'Licenses', 'contactpanda' );
+		return $sections;
 	}
 
 	private static function defaults() {
@@ -538,7 +538,7 @@ final class ContactPanda_License {
 	}
 
 	private static function redirect( $notice ) {
-		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-settings&tab=license&license_notice=' . sanitize_key( $notice ) ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-settings&tab=general&general_section=license&license_notice=' . sanitize_key( $notice ) ) );
 		exit;
 	}
 }
