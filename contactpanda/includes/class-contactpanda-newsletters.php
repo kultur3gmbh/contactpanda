@@ -26,7 +26,7 @@ final class ContactPanda_Basic_Newsletters {
 
 	public static function settings_tab( $tabs ) {
 		$tabs['newsletter'] = __( 'Email defaults', 'contactpanda' ); $ordered = array();
-		foreach ( array( 'general', 'integrations', 'misc', 'forms', 'newsletter', 'other' ) as $key ) if ( isset( $tabs[ $key ] ) ) $ordered[ $key ] = $tabs[ $key ];
+		foreach ( array( 'general', 'integrations', 'misc', 'forms', 'registration', 'newsletter', 'other' ) as $key ) if ( isset( $tabs[ $key ] ) ) $ordered[ $key ] = $tabs[ $key ];
 		foreach ( $tabs as $key => $label ) if ( ! isset( $ordered[ $key ] ) ) $ordered[ $key ] = $label;
 		return $ordered;
 	}

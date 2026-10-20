@@ -6723,3 +6723,21 @@ msgstr ""
 
 msgid "Email confirmation and marketing status"
 msgstr ""
+
+msgid "Quick search"
+msgstr ""
+
+msgid "Quick search by name, email, phone, or company"
+msgstr ""
+
+msgid "Registration & accounts"
+msgstr ""
+
+msgid "People overview"
+msgstr ""
+
+msgid "entries"
+msgstr ""
+
+msgid "Complete package enabled"
+msgstr ""

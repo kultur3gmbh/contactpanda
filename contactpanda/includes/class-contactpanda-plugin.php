@@ -75,15 +75,15 @@ final class ContactPanda_Plugin {
 		$columns = array(
 			'email'     => __( 'Email', 'contactpanda' ),
 			'phone'     => __( 'Phone', 'contactpanda' ),
-			'orders'    => __( 'Orders', 'contactpanda' ),
-			'marketing' => __( 'Email confirmation and marketing status', 'contactpanda' ),
 		);
 		if ( self::companies_available() ) {
 			$columns['company'] = __( 'Company', 'contactpanda' );
 		}
+		$columns['orders'] = __( 'Orders', 'contactpanda' );
 		if ( self::events_available() ) {
 			$columns['events'] = __( 'Events', 'contactpanda' );
 		}
+		$columns['marketing'] = __( 'Email confirmation and marketing status', 'contactpanda' );
 		return $columns;
 	}
 
@@ -1883,7 +1883,7 @@ final class ContactPanda_Plugin {
 			echo '<a class="button contactpanda-heading-action" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=import&entity=contacts' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a>';
 		}
 		echo '<button type="button" class="button button-primary contactpanda-heading-action contactpanda-open-new-person">' . esc_html__( 'Add person', 'contactpanda' ) . '</button></div></div>';
-		echo __( '<section class="contactpanda-card"><div class="contactpanda-toolbar"><h2>People overview</h2><span class="contactpanda-count">', 'contactpanda' ) . esc_html( $total ) . __( ' entries</span></div>', 'contactpanda' );
+		echo '<section class="contactpanda-card"><div class="contactpanda-toolbar"><h2>' . esc_html__( 'People overview', 'contactpanda' ) . '</h2><span class="contactpanda-count">' . esc_html( $total ) . ' ' . esc_html__( 'entries', 'contactpanda' ) . '</span></div>';
 		echo '<form class="contactpanda-search" method="get"><input type="hidden" name="page" value="' . esc_attr( self::people_page_slug() ) . '">';
 		if ( $advanced_filter ) {
 			echo '<input type="hidden" name="contactpanda_filter" value="' . esc_attr( $advanced_filter ) . '">';
@@ -1895,7 +1895,7 @@ final class ContactPanda_Plugin {
 			echo '<input type="hidden" name="orderby" value="' . esc_attr( $orderby ) . '"><input type="hidden" name="order" value="' . esc_attr( $order ) . '">';
 		}
 		echo '<div class="contactpanda-search-primary">';
-		echo __( '<label class="screen-reader-text" for="contactpanda-person-search">Search people</label><input id="contactpanda-person-search" type="search" name="s" value="', 'contactpanda' ) . esc_attr( $search ) . __( '" placeholder="Search by name, email, phone, or company"><button class="button">Search</button>', 'contactpanda' );
+		echo '<label class="screen-reader-text" for="contactpanda-person-search">' . esc_html__( 'Quick search', 'contactpanda' ) . '</label><input id="contactpanda-person-search" type="search" name="s" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Quick search by name, email, phone, or company', 'contactpanda' ) . '"><button class="button">' . esc_html__( 'Search', 'contactpanda' ) . '</button>';
 		echo '</div><div class="contactpanda-search-secondary">';
 		do_action( 'contactpanda_people_filter_controls', $segment_id );
 		echo '<span class="contactpanda-filter-buttons">' . self::people_filter_link( __( 'All', 'contactpanda' ), 'alle', $customer_filter, $search, $orderby, $order ) . self::people_filter_link( __( 'Customers', 'contactpanda' ), 'besteller', $customer_filter, $search, $orderby, $order );

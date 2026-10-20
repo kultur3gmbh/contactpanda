@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda
  * Description: Free contact and company management for WordPress with WooCommerce, event, Amelia, and optional Groundhogg overviews.
- * Version: 0.6.3
+ * Version: 0.6.4
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.6.3' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.6.3-20261020-1' );
+define( 'CONTACTPANDA_VERSION', '0.6.4' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.6.4-20261020-1' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CONTACTPANDA_URL', plugin_dir_url( __FILE__ ) );
@@ -90,7 +90,7 @@ function contactpanda_boot_newsletter_module() {
 			'enabled' => $enabled,
 		)
 	);
-	if ( ! $enabled || ! ContactPanda_Store::standalone() ) {
+	if ( ! $enabled ) {
 		return;
 	}
 	// ContactPanda Plus before 0.6.0 still owns these classes. Let that version
@@ -108,9 +108,15 @@ function contactpanda_boot_newsletter_module() {
 		);
 		return;
 	}
+	ContactPanda_Basic_Segments::boot();
+	if ( ! class_exists( 'ContactPanda_Segments', false ) ) {
+		class_alias( 'ContactPanda_Basic_Segments', 'ContactPanda_Segments' );
+	}
+	if ( ! ContactPanda_Store::standalone() ) {
+		return;
+	}
 	ContactPanda_Basic_Newsletters::boot();
 	ContactPanda_Basic_Newsletter_Campaigns::boot();
-	ContactPanda_Basic_Segments::boot();
 	// Preserve the established public class names for current extensions while
 	// avoiding redeclaration when an older Plus version already supplies them.
 	if ( ! class_exists( 'ContactPanda_Newsletters', false ) ) {
@@ -118,9 +124,6 @@ function contactpanda_boot_newsletter_module() {
 	}
 	if ( ! class_exists( 'ContactPanda_Newsletter_Campaigns', false ) ) {
 		class_alias( 'ContactPanda_Basic_Newsletter_Campaigns', 'ContactPanda_Newsletter_Campaigns' );
-	}
-	if ( ! class_exists( 'ContactPanda_Segments', false ) ) {
-		class_alias( 'ContactPanda_Basic_Segments', 'ContactPanda_Segments' );
 	}
 }
 add_action( 'plugins_loaded', 'contactpanda_boot_newsletter_module', 45 );
