@@ -6200,3 +6200,112 @@ msgstr ""
 
 msgid "No matching entries found."
 msgstr ""
+
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Licenses"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "ContactPanda licenses"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "ContactPanda Basic remains free and updateable without a license. Additional licenses can unlock Newsletter, Plus, or selected modules. A normal expiry ends updates and support, but granted modules remain usable."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Basic license"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Free license active"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Activated licenses"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "All modules"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Type"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Modules"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "No modules assigned"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Last checked"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Disconnect this website"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Module status"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Enabled"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Add or renew a license"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Check licenses now"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Only technical license and installation data is sent to mycontactpanda.com. Contacts, orders, messages, and newsletter content are never transmitted."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Master license"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Customer license"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Partner license"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Module license"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Disconnected"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Updates expired — modules remain usable"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "The ContactPanda license has been activated. Granted modules remain available after the update and support period ends."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "The website was disconnected from the license server. Previously granted modules remain available."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "The license information was updated."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "The license response could not be verified. No existing license information was changed."
+msgstr ""

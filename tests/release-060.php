@@ -16,7 +16,7 @@ foreach ( array( 'ContactPanda_License::newsletter_entitled', 'contactpanda_boot
 	}
 }
 
-foreach ( array( "'newsletter_granted'", 'Permanently enabled', 'contactpanda_updates_allowed', 'Features that were already granted remain available' ) as $contract ) {
+foreach ( array( "'licenses'", "'legacy_grants'", 'updates_allowed_for', 'contactpanda_license_daily_check', 'activation_token', 'signature_algorithm', 'canonical_json', 'Previously granted modules remain available' ) as $contract ) {
 	if ( false === strpos( $license, $contract ) ) {
 		fwrite( STDERR, "Missing durable license contract {$contract}.\n" );
 		exit( 1 );
@@ -37,8 +37,8 @@ foreach ( array( 'final class ContactPanda_Basic_Newsletters', 'final class Cont
 	}
 }
 
-if ( false === strpos( $updater, "apply_filters( 'contactpanda_updates_allowed'" ) ) {
-	fwrite( STDERR, "The updater is not connected to update-period eligibility.\n" );
+if ( false !== strpos( $license, "add_filter( 'contactpanda_updates_allowed'" ) ) {
+	fwrite( STDERR, "The free Basic updater must not be disabled by a paid module expiry.\n" );
 	exit( 1 );
 }
 

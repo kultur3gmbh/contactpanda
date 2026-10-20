@@ -14,7 +14,7 @@
 defined( 'ABSPATH' ) || exit;
 
 define( 'CONTACTPANDA_VERSION', '0.6.0' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.6.0-20261020-1' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.6.0-20261020-2' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CONTACTPANDA_URL', plugin_dir_url( __FILE__ ) );
@@ -147,3 +147,8 @@ function contactpanda_newsletter_admin_assets( $hook ) {
 add_action( 'admin_enqueue_scripts', 'contactpanda_newsletter_admin_assets', 20 );
 
 register_activation_hook( __FILE__, array( 'ContactPanda_Registration', 'activate' ) );
+
+function contactpanda_deactivate_license_schedule() {
+	wp_clear_scheduled_hook( ContactPanda_License::CHECK_HOOK );
+}
+register_deactivation_hook( __FILE__, 'contactpanda_deactivate_license_schedule' );
