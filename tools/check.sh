@@ -34,6 +34,10 @@ else
   status=1
 fi
 
+if command -v python3 >/dev/null 2>&1; then
+	python3 tests/compile-mo.py || status=1
+fi
+
 if command -v node >/dev/null 2>&1; then
   while IFS= read -r -d '' file; do
     if ! node --check "$file" >/dev/null; then

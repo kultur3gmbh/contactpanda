@@ -21,6 +21,25 @@ foreach ( array( 'contactpanda-search-primary', 'contactpanda-search-secondary',
 	}
 }
 
+foreach ( array( 'prevent_empty_translation', 'extension_create_contact', "__( 'Order total', 'contactpanda' )" ) as $contract ) {
+	if ( false === strpos( $plugin, $contract ) ) {
+		fwrite( STDERR, "Missing resilient administrator rendering contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+foreach ( array( 'contactpanda-heading', 'contactpanda-master-data', 'contactpanda-tabs-card' ) as $structural_class ) {
+	if ( ! preg_match( '/echo\s+[\'\"][^;]*' . preg_quote( $structural_class, '/' ) . '/', $plugin ) ) {
+		fwrite( STDERR, "Critical layout wrapper {$structural_class} must be emitted independently of translations.\n" );
+		exit( 1 );
+	}
+}
+
+if ( false !== strpos( $styles, '.contactpanda-people-table{table-layout:fixed}' ) ) {
+	fwrite( STDERR, "The people table must not use Safari-sensitive fixed layout.\n" );
+	exit( 1 );
+}
+
 foreach ( array( 'contactpanda-table-scroll', 'contactpanda-people-table', 'contactpanda-email-column' ) as $contract ) {
 	if ( false === strpos( $plugin, $contract ) ) {
 		fwrite( STDERR, "Missing responsive people-table contract {$contract}.\n" );

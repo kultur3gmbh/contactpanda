@@ -56,7 +56,15 @@ def parse_po(path):
         if line.startswith('"') and field:
             entry[field] += ast.literal_eval(line)
 
-    return dict(entries)
+    # Keep a usable translation when a development catalog accidentally contains
+    # the same msgid again with an empty msgstr.  A plain dict(entries) makes the
+    # last (empty) duplicate win and can remove complete controls or HTML wrappers
+    # at runtime.
+    messages = {}
+    for key, value in entries:
+        if key not in messages or value or not messages[key]:
+            messages[key] = value
+    return messages
 
 
 def compile_catalog(po_path, mo_path):
