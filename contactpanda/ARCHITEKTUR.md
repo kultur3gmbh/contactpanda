@@ -2,7 +2,7 @@
 
 ## Pakete
 
-`ContactPanda Basic` ist das kostenlose, eigenständig lauffähige Haupt-Plugin. Es enthält Personen, Firmen, Adressen, Tags, Einwilligungen, Registrierung, Aktivitäten, Groundhogg-Kompatibilität und die grundlegende WooCommerce-Kundenansicht. Bestellungen bleiben in WooCommerce; ContactPanda liest sie über die öffentliche CRUD-API und legt keine Bestellkopien an.
+`ContactPanda` ist das kostenlose, eigenständig lauffähige Haupt-Plugin. Es enthält Personen, Firmen, Adressen, Tags, Einwilligungen, Aktivitäten, Groundhogg-Kompatibilität und die grundlegende WooCommerce-Kundenansicht. Kunden-/Businessregistrierung und vCard-Austausch werden über stabile Kern-Schnittstellen ausschließlich durch Plus aktiviert. Bestellungen bleiben in WooCommerce; ContactPanda liest sie über die öffentliche CRUD-API und legt keine Bestellkopien an.
 
 Das Newsletter-Modul liegt seit 0.6.0 technisch in Basic. Es kann entweder durch eine eigenständige Newsletter-Lizenz oder durch ContactPanda Plus dauerhaft freigeschaltet werden. Das Ende des gebuchten Update- und Supportzeitraums deaktiviert weder Newsletter noch gespeicherte Inhalte oder Versandfunktionen; lediglich weitere Updates und Support stehen dann nicht mehr zur Verfügung.
 

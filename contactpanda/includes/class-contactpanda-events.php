@@ -67,7 +67,7 @@ final class ContactPanda_Events {
 		}
 		$selected = self::source();
 		echo '<section id="contactpanda-event-source" class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Events and appointments', 'contactpanda' ) . '</h2>';
-		echo '<p>' . esc_html__( 'ContactPanda Basic displays bookings from one event source in the people list and person details. Source data is never changed.', 'contactpanda' ) . '</p>';
+		echo '<p>' . esc_html__( 'ContactPanda displays bookings from one event source in the people list and person details. Source data is never changed.', 'contactpanda' ) . '</p>';
 		if ( count( $sources ) > 1 ) {
 			echo '<p><strong>' . esc_html__( 'Choose which source ContactPanda should display. Data from different event systems is never mixed.', 'contactpanda' ) . '</strong></p>';
 		}
@@ -78,7 +78,7 @@ final class ContactPanda_Events {
 			echo '<label class="contactpanda-source-option"><input type="radio" name="event_source" value="' . esc_attr( $key ) . '" ' . checked( $selected, $key, false ) . '> <span><strong>' . esc_html( $label ) . '</strong><small>' . esc_html__( 'Read-only display', 'contactpanda' ) . '</small></span></label>';
 		}
 		echo '<p><button class="button button-primary">' . esc_html__( 'Save event source', 'contactpanda' ) . '</button></p></form>';
-		echo '<p class="description">' . esc_html__( 'Advanced segments, automated actions, and flows are not part of ContactPanda Basic.', 'contactpanda' ) . '</p></section>';
+		echo '<p class="description">' . esc_html__( 'Advanced segments, automated actions, and flows are provided by ContactPanda Plus.', 'contactpanda' ) . '</p></section>';
 	}
 
 	public static function source_notice() {

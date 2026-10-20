@@ -7,6 +7,10 @@ final class ContactPanda_Data_Tools {
 	const CENTRAL_OPTION = 'contactpanda_central_salutation_library';
 	const NOTICE_OPTION  = 'contactpanda_admin_notice_settings';
 
+	public static function vcard_enabled() {
+		return (bool) apply_filters( 'contactpanda_vcard_enabled', false );
+	}
+
 	public static function boot() {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 25 );
 		add_filter( 'cron_schedules', array( __CLASS__, 'cron_schedules' ) );
@@ -17,8 +21,10 @@ final class ContactPanda_Data_Tools {
 		add_action( 'contactpanda_render_misc_settings_section_admin_notices', array( __CLASS__, 'render_notice_settings' ) );
 		add_action( 'admin_post_contactpanda_csv_preview', array( __CLASS__, 'handle_csv_preview' ) );
 		add_action( 'admin_post_contactpanda_csv_import', array( __CLASS__, 'handle_csv_import' ) );
-		add_action( 'admin_post_contactpanda_vcard_preview', array( __CLASS__, 'handle_vcard_preview' ) );
-		add_action( 'admin_post_contactpanda_vcard_import', array( __CLASS__, 'handle_vcard_import' ) );
+		if ( self::vcard_enabled() ) {
+			add_action( 'admin_post_contactpanda_vcard_preview', array( __CLASS__, 'handle_vcard_preview' ) );
+			add_action( 'admin_post_contactpanda_vcard_import', array( __CLASS__, 'handle_vcard_import' ) );
+		}
 		add_action( 'admin_post_contactpanda_rollback_import', array( __CLASS__, 'handle_import_rollback' ) );
 		add_action( 'admin_post_contactpanda_merge_preview', array( __CLASS__, 'handle_merge_preview' ) );
 		add_action( 'admin_post_contactpanda_merge_group', array( __CLASS__, 'handle_merge_group' ) );
@@ -55,7 +61,7 @@ final class ContactPanda_Data_Tools {
 			$entity = isset( $_GET['entity'] ) ? sanitize_key( wp_unslash( $_GET['entity'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only import filter.
 			if ( in_array( $entity, array( 'contacts', 'companies' ), true ) ) {
 				self::render_csv_import( $entity );
-				if ( 'contacts' === $entity ) self::render_vcard_import();
+				if ( 'contacts' === $entity && self::vcard_enabled() ) self::render_vcard_import();
 				self::render_import_history( $entity );
 			} else self::render_migration_tools();
 		}
@@ -126,7 +132,7 @@ final class ContactPanda_Data_Tools {
 
 	public static function render_migration_tools() {
 		self::render_csv_import();
-		self::render_vcard_import();
+		if ( self::vcard_enabled() ) self::render_vcard_import();
 		self::render_import_history();
 	}
 
@@ -139,7 +145,7 @@ final class ContactPanda_Data_Tools {
 		$entity = 'companies' === $entity ? 'companies' : 'contacts';
 		echo '<div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CRM</p><h1>' . esc_html__( 'Import', 'contactpanda' ) . '</h1><p>' . esc_html__( 'Review every file in a preview before ContactPanda saves any records.', 'contactpanda' ) . '</p></div></div>';
 		self::render_csv_import( $entity, $return_page );
-		if ( 'contacts' === $entity ) self::render_vcard_import( $return_page );
+		if ( 'contacts' === $entity && self::vcard_enabled() ) self::render_vcard_import( $return_page );
 		self::render_import_history( $entity );
 	}
 
@@ -356,6 +362,7 @@ final class ContactPanda_Data_Tools {
 	}
 
 	public static function handle_vcard_preview() {
+		if ( ! self::vcard_enabled() ) wp_die( esc_html__( 'vCard import requires ContactPanda Plus.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		self::require_admin( 'contactpanda_vcard_preview' );
 		$return_page = sanitize_key( wp_unslash( $_POST['return_page'] ?? '' ) );
 		if ( ! in_array( $return_page, array( 'contactpanda', 'contactpanda-firmen' ), true ) ) $return_page = '';
@@ -451,6 +458,7 @@ final class ContactPanda_Data_Tools {
 	}
 
 	public static function handle_vcard_import() {
+		if ( ! self::vcard_enabled() ) wp_die( esc_html__( 'vCard import requires ContactPanda Plus.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		self::require_admin( 'contactpanda_vcard_import' );
 		$token = sanitize_key( wp_unslash( $_POST['vcard_token'] ?? '' ) ); $data = get_transient( 'contactpanda_vcard_' . get_current_user_id() . '_' . $token );
 		$return_page = is_array( $data ) ? sanitize_key( $data['return_page'] ?? '' ) : '';

@@ -28,6 +28,7 @@ final class ContactPanda_Plugin {
 		add_action( 'wp_ajax_contactpanda_validate_vat', array( __CLASS__, 'validate_vat' ) );
 		add_action( 'admin_post_contactpanda_tag_action', array( __CLASS__, 'handle_tag_action' ) );
 		add_action( 'admin_post_contactpanda_export_contacts', array( __CLASS__, 'export_contacts' ) );
+		add_action( 'admin_post_contactpanda_export_contacts_vcard', array( __CLASS__, 'export_contacts_vcard' ) );
 		add_action( 'admin_post_contactpanda_print_contacts', array( __CLASS__, 'print_contacts' ) );
 		add_action( 'admin_post_contactpanda_assign_missing_salutations', array( __CLASS__, 'assign_missing_salutations' ) );
 		add_action( 'admin_post_contactpanda_add_contact_note', array( __CLASS__, 'handle_add_contact_note' ) );
@@ -867,6 +868,42 @@ final class ContactPanda_Plugin {
 		}
 		fclose( $output );
 		exit;
+	}
+
+	public static function export_contacts_vcard() {
+		self::guard_contact_output();
+		if ( ! class_exists( 'ContactPanda_Data_Tools' ) || ! ContactPanda_Data_Tools::vcard_enabled() ) {
+			wp_die( esc_html__( 'vCard export requires ContactPanda Plus.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		}
+		$rows = self::contact_output_rows( self::contacts_for_output() );
+		$log  = (array) get_option( 'contactpanda_export_log', array() );
+		$user = wp_get_current_user();
+		$log[] = array( 'created_at' => current_time( 'mysql' ), 'user' => $user->display_name, 'entity' => 'people-vcard', 'count' => count( $rows ) );
+		update_option( 'contactpanda_export_log', array_slice( $log, -100 ), false );
+		nocache_headers();
+		header( 'Content-Type: text/vcard; charset=UTF-8' );
+		header( 'Content-Disposition: attachment; filename="contactpanda-contacts-' . current_time( 'Y-m-d' ) . '.vcf"' );
+		foreach ( $rows as $row ) {
+			$first   = self::vcard_escape( $row['first_name'] ?? '' );
+			$last    = self::vcard_escape( $row['last_name'] ?? '' );
+			$email   = sanitize_email( $row['email'] ?? '' );
+			$phone   = self::vcard_escape( $row['phone'] ?? '' );
+			$company = self::vcard_escape( $row['company'] ?? '' );
+			$address = array_map( array( __CLASS__, 'vcard_escape' ), array( $row['address_1'] ?? '', $row['address_2'] ?? '', $row['city'] ?? '', $row['state'] ?? '', $row['postcode'] ?? '', $row['country'] ?? '' ) );
+			echo "BEGIN:VCARD\r\nVERSION:3.0\r\n";
+			echo 'N:' . $last . ';' . $first . ";;;\r\n";
+			echo 'FN:' . self::vcard_escape( trim( ( $row['first_name'] ?? '' ) . ' ' . ( $row['last_name'] ?? '' ) ) ) . "\r\n";
+			if ( $company ) echo 'ORG:' . $company . "\r\n";
+			if ( $email ) echo 'EMAIL;TYPE=INTERNET:' . $email . "\r\n";
+			if ( $phone ) echo 'TEL:' . $phone . "\r\n";
+			if ( array_filter( $address ) ) echo 'ADR:;' . $address[1] . ';' . $address[0] . ';' . $address[2] . ';' . $address[3] . ';' . $address[4] . ';' . $address[5] . "\r\n";
+			echo "END:VCARD\r\n";
+		}
+		exit;
+	}
+
+	private static function vcard_escape( $value ) {
+		return str_replace( array( "\\", ";", ",", "\r", "\n" ), array( "\\\\", "\\;", "\\,", '', "\\n" ), (string) $value );
 	}
 
 	public static function print_contacts() {
@@ -3384,7 +3421,9 @@ final class ContactPanda_Plugin {
 		foreach ( self::contact_output_fields() as $key => $label ) {
 			echo '<label><input type="checkbox" name="columns[]" value="' . esc_attr( $key ) . '"' . checked( in_array( $key, $default_columns, true ), true, false ) . '> ' . esc_html( $label ) . '</label>';
 		}
-		echo '</div></fieldset><div class="contactpanda-modal-message" aria-live="polite"></div><div class="contactpanda-modal-actions"><button type="submit" class="button button-primary contactpanda-submit-output">' . esc_html__( 'Export CSV', 'contactpanda' ) . '</button><button type="button" class="button contactpanda-close-output">' . esc_html__( 'Cancel', 'contactpanda' ) . '</button></div></form></div></div>';
+		echo '</div></fieldset><div class="contactpanda-modal-message" aria-live="polite"></div><div class="contactpanda-modal-actions"><button type="submit" class="button button-primary contactpanda-submit-output">' . esc_html__( 'Export CSV', 'contactpanda' ) . '</button>';
+		if ( class_exists( 'ContactPanda_Data_Tools' ) && ContactPanda_Data_Tools::vcard_enabled() ) echo '<button type="submit" class="button contactpanda-export-vcard">' . esc_html__( 'Export vCard', 'contactpanda' ) . '</button>';
+		echo '<button type="button" class="button contactpanda-close-output">' . esc_html__( 'Cancel', 'contactpanda' ) . '</button></div></form></div></div>';
 	}
 
 	private static function render_new_person_modal() {

@@ -928,8 +928,8 @@ msgid "Contact note"
 msgstr "Kontaktnotiz"
 
 #: contactpanda/contactpanda.php:3
-msgid "ContactPanda Basic – User-Friendly CRM for WordPress"
-msgstr "ContactPanda Basic – Benutzerfreundliches CRM für WordPress"
+msgid "ContactPanda – User-Friendly CRM for WordPress"
+msgstr "ContactPanda – Benutzerfreundliches CRM für WordPress"
 
 #: contactpanda/includes/class-contactpanda-registration.php:653
 msgid "ContactPanda can inherit the theme typography, colors, form fields, buttons, borders, and corner radii. Its functional layout remains intact."
@@ -3274,8 +3274,8 @@ msgid "No valid published GitHub release with matching update metadata and plugi
 msgstr "Es wurde kein gültiges veröffentlichtes GitHub-Release mit passenden Update-Metadaten und Plugin-ZIP gefunden."
 
 #: contactpanda/includes/class-contactpanda-github-updater.php
-msgid "This update requires a newer WordPress, PHP, or active ContactPanda Basic version. Update those requirements first."
-msgstr "Dieses Update benötigt eine neuere WordPress-, PHP- oder aktive ContactPanda-Basic-Version. Aktualisieren Sie zuerst diese Voraussetzungen."
+msgid "This update requires a newer WordPress, PHP, or active ContactPanda version. Update those requirements first."
+msgstr "Dieses Update benötigt eine neuere WordPress-, PHP- oder aktive ContactPanda-Version. Aktualisieren Sie zuerst diese Voraussetzungen."
 
 #: contactpanda/includes/class-contactpanda-github-updater.php
 msgid "The update ZIP failed integrity, plugin directory, version, or requirement validation. Nothing was installed."
@@ -3920,8 +3920,8 @@ msgstr "Jetzt abgleichen"
 msgid "Save time and costs, avoid duplicate work, and unlock additional automation, newsletter, and reporting options."
 msgstr "Sparen Sie Zeit und Kosten, vermeiden Sie doppelte Arbeit und nutzen Sie zusätzliche Möglichkeiten für Automatisierung, Newsletter und Auswertungen."
 
-msgid "The Newsletter Plugin is active. ContactPanda Basic provides a read-only overview; the source plugin remains unchanged."
-msgstr "The Newsletter Plugin ist aktiv. ContactPanda Basic bietet eine schreibgeschützte Übersicht; das Quell-Plugin bleibt unverändert."
+msgid "The Newsletter Plugin is active. ContactPanda provides a read-only overview; the source plugin remains unchanged."
+msgstr "The Newsletter Plugin ist aktiv. ContactPanda bietet eine schreibgeschützte Übersicht; das Quell-Plugin bleibt unverändert."
 
 msgid "The Newsletter Plugin migration is available with ContactPanda Plus."
 msgstr "Die Migration von The Newsletter Plugin ist mit ContactPanda Plus verfügbar."
@@ -4383,11 +4383,11 @@ msgstr "Datenquelle ändern"
 msgid "The Groundhogg migration was completed and ContactPanda is now the leading data source. Groundhogg remains active and unchanged. You may switch the data source back later, but ContactPanda changes are not migrated back to Groundhogg."
 msgstr "Die Groundhogg-Migration wurde abgeschlossen und ContactPanda ist nun die führende Datenquelle. Groundhogg bleibt aktiv und unverändert. Sie können die Datenquelle später zurückstellen; Änderungen aus ContactPanda werden jedoch nicht zu Groundhogg zurückmigriert."
 
-msgid "Automatic Basic updates"
-msgstr "Automatische Basic-Updates"
+msgid "Automatic ContactPanda updates"
+msgstr "Automatische ContactPanda-Updates"
 
-msgid "ContactPanda Basic checks the public GitHub release channel and validates version metadata, compatibility, and the ZIP checksum before WordPress installs an update."
-msgstr "ContactPanda Basic prüft den öffentlichen GitHub-Release-Kanal sowie Versionsdaten, Kompatibilität und ZIP-Prüfsumme, bevor WordPress ein Update installiert."
+msgid "ContactPanda checks the public GitHub release channel and validates version metadata, compatibility, and the ZIP checksum before WordPress installs an update."
+msgstr "ContactPanda prüft den öffentlichen GitHub-Release-Kanal sowie Versionsdaten, Kompatibilität und ZIP-Prüfsumme, bevor WordPress ein Update installiert."
 
 msgid "Only an administrator who may update plugins can change this setting."
 msgstr "Nur ein Administrator mit Berechtigung für Plugin-Updates kann diese Einstellung ändern."
@@ -4495,8 +4495,8 @@ msgid_plural "%d bookings"
 msgstr[0] "%d Buchung"
 msgstr[1] "%d Buchungen"
 
-msgid "Advanced segments, automated actions, and flows are not part of ContactPanda Basic."
-msgstr "Erweiterte Segmente, automatische Aktionen und Flows sind nicht Bestandteil von ContactPanda Basic."
+msgid "Advanced segments, automated actions, and flows are provided by ContactPanda Plus."
+msgstr "Erweiterte Segmente, automatische Aktionen und Flows werden von ContactPanda Plus bereitgestellt."
 
 msgid "Amelia and The Events Calendar are active. ContactPanda will not combine their bookings."
 msgstr "Amelia und The Events Calendar sind aktiv. ContactPanda mischt deren Buchungen nicht."
@@ -4522,8 +4522,8 @@ msgstr "Eventquelle auswählen"
 msgid "Choose which source ContactPanda should display. Data from different event systems is never mixed."
 msgstr "Wählen Sie aus, welche Quelle ContactPanda anzeigen soll. Daten verschiedener Eventsysteme werden niemals gemischt."
 
-msgid "ContactPanda Basic displays bookings from one event source in the people list and person details. Source data is never changed."
-msgstr "ContactPanda Basic zeigt Buchungen aus einer Eventquelle in der Personenliste und Personendetailansicht an. Quelldaten werden niemals verändert."
+msgid "ContactPanda displays bookings from one event source in the people list and person details. Source data is never changed."
+msgstr "ContactPanda zeigt Buchungen aus einer Eventquelle in der Personenliste und Personendetailansicht an. Quelldaten werden niemals verändert."
 
 msgid "Events and appointments"
 msgstr "Events und Termine"
@@ -6211,8 +6211,8 @@ msgid "ContactPanda licenses"
 msgstr "ContactPanda-Lizenzen"
 
 #: contactpanda/includes/class-contactpanda-license.php
-msgid "ContactPanda Basic remains free and updateable without a license. Additional licenses can unlock Newsletter, Plus, or selected modules. A normal expiry ends updates and support, but granted modules remain usable."
-msgstr "ContactPanda Basic bleibt ohne Lizenz kostenlos und updatefähig. Zusätzliche Lizenzen können Newsletter, Plus oder ausgewählte Module freischalten. Ein regulärer Ablauf beendet Updates und Support, freigeschaltete Module bleiben jedoch nutzbar."
+msgid "ContactPanda remains free and updateable without a license. Additional licenses can unlock Newsletter, Plus, or selected modules. A normal expiry ends updates and support, but granted modules remain usable."
+msgstr "ContactPanda bleibt ohne Lizenz kostenlos und updatefähig. Zusätzliche Lizenzen können Newsletter, Plus oder ausgewählte Module freischalten. Ein regulärer Ablauf beendet Updates und Support, freigeschaltete Module bleiben jedoch nutzbar."
 
 #: contactpanda/includes/class-contactpanda-license.php
 msgid "Basic license"
@@ -6309,3 +6309,18 @@ msgstr "Die Lizenzinformationen wurden aktualisiert."
 #: contactpanda/includes/class-contactpanda-license.php
 msgid "The license response could not be verified. No existing license information was changed."
 msgstr "Die Lizenzantwort konnte nicht verifiziert werden. Bestehende Lizenzinformationen wurden nicht verändert."
+
+msgid "The ContactPanda update package could not be verified."
+msgstr "Das ContactPanda-Updatepaket konnte nicht verifiziert werden."
+
+msgid "Customer account registration requires ContactPanda Plus."
+msgstr "Die Kundenkonto-Registrierung erfordert ContactPanda Plus."
+
+msgid "vCard import requires ContactPanda Plus."
+msgstr "Der vCard-Import erfordert ContactPanda Plus."
+
+msgid "vCard export requires ContactPanda Plus."
+msgstr "Der vCard-Export erfordert ContactPanda Plus."
+
+msgid "Export vCard"
+msgstr "vCard exportieren"

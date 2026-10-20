@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: ContactPanda Basic – User-Friendly CRM for WordPress
+ * Plugin Name: ContactPanda – User-Friendly CRM for WordPress
  * Description: Free contact and company management for WordPress with WooCommerce, event, Amelia, and optional Groundhogg overviews.
  * Version: 0.6.0
  * Update URI: https://github.com/kultur3gmbh/contactpanda
@@ -30,6 +30,7 @@ require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-data-tools.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-custom-fields.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-events.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-github-updater.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-licensed-updater.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-registration.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-my-account.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-newsletters.php';
@@ -42,7 +43,7 @@ add_action(
 		new ContactPanda_GitHub_Updater(
 			array(
 				'slug'       => 'contactpanda',
-				'name'       => 'ContactPanda Basic',
+				'name'       => 'ContactPanda',
 				'repo'       => 'contactpanda',
 				'zip_prefix' => 'contactpanda-basic',
 				'plugin'     => plugin_basename( CONTACTPANDA_FILE ),

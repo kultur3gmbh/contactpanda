@@ -174,8 +174,52 @@ final class ContactPanda_License {
 
 	private static function endpoint( $action = 'activate' ) {
 		$base = defined( 'CONTACTPANDA_LICENSE_ENDPOINT' ) ? CONTACTPANDA_LICENSE_ENDPOINT : 'https://mycontactpanda.com/wp-json/contactpanda-license/v1/activate';
-		$base = preg_replace( '#/(activate|check|deactivate)/?$#', '/' . sanitize_key( $action ), (string) $base );
+		$base = preg_replace( '#/(?:activate|check|deactivate|updates/check)/?$#', '', (string) $base );
+		$base = trailingslashit( $base ) . implode( '/', array_map( 'sanitize_key', explode( '/', trim( (string) $action, '/' ) ) ) );
 		return esc_url_raw( apply_filters( 'contactpanda_license_endpoint', $base, $action ) );
+	}
+
+	/**
+	 * Request signed update metadata for a licensed product.
+	 *
+	 * The activation token is transmitted only in the HTTPS request body. It is
+	 * never placed in a package URL or persisted by the updater cache.
+	 */
+	public static function product_update( $product, $entitlement, $installed_version, $channel = 'stable' ) {
+		$product          = sanitize_key( $product );
+		$entitlement      = sanitize_key( $entitlement );
+		$channel          = 'beta' === sanitize_key( $channel ) ? 'beta' : 'stable';
+		$installed_version = sanitize_text_field( $installed_version );
+		$state            = self::state();
+		$last_error       = new WP_Error( 'contactpanda_update_not_licensed' );
+
+		foreach ( $state['licenses'] as $license ) {
+			if ( empty( $license['activation_id'] ) || empty( $license['activation_token'] ) || in_array( $license['status'], array( 'blocked', 'disconnected', 'expired' ), true ) ) {
+				continue;
+			}
+			if ( ! in_array( 'all', $license['entitlements'], true ) && ! in_array( $entitlement, $license['entitlements'], true ) ) {
+				continue;
+			}
+			if ( $license['updates_until'] && strtotime( $license['updates_until'] . ' 23:59:59 UTC' ) < time() ) {
+				continue;
+			}
+			$data = self::request(
+				'updates/check',
+				array(
+					'activation_id'    => $license['activation_id'],
+					'activation_token' => $license['activation_token'],
+					'update_product'   => $product,
+					'installed_version'=> $installed_version,
+					'channel'          => $channel,
+				)
+			);
+			if ( is_wp_error( $data ) ) {
+				$last_error = $data;
+				continue;
+			}
+			return $data;
+		}
+		return $last_error;
 	}
 
 	private static function status_message( $code ) {
@@ -203,8 +247,8 @@ final class ContactPanda_License {
 
 		$catalog = apply_filters( 'contactpanda_license_modules', array( 'newsletter' => __( 'Newsletter', 'contactpanda' ) ) );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'ContactPanda licenses', 'contactpanda' ) . '</h2>';
-		echo '<p>' . esc_html__( 'ContactPanda Basic remains free and updateable without a license. Additional licenses can unlock Newsletter, Plus, or selected modules. A normal expiry ends updates and support, but granted modules remain usable.', 'contactpanda' ) . '</p>';
-		echo '<div class="contactpanda-license-status"><p><strong>' . esc_html__( 'Basic license', 'contactpanda' ) . ':</strong> ' . esc_html__( 'Free license active', 'contactpanda' ) . '</p></div>';
+		echo '<p>' . esc_html__( 'ContactPanda remains free and updateable without a license. Additional licenses can unlock Newsletter, Plus, or selected modules. A normal expiry ends updates and support, but granted modules remain usable.', 'contactpanda' ) . '</p>';
+		echo '<div class="contactpanda-license-status"><p><strong>' . esc_html__( 'ContactPanda license', 'contactpanda' ) . ':</strong> ' . esc_html__( 'Free license active', 'contactpanda' ) . '</p></div>';
 
 		if ( $state['licenses'] ) {
 			echo '<h3>' . esc_html__( 'Activated licenses', 'contactpanda' ) . '</h3>';

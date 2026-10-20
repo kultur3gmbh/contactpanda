@@ -1,4 +1,4 @@
-=== ContactPanda Basic – User-Friendly CRM for WordPress ===
+=== ContactPanda – User-Friendly CRM for WordPress ===
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4

@@ -326,6 +326,7 @@
 	document.addEventListener('submit', function (event) {
 		if (!event.target.classList.contains('contactpanda-output-form')) return;
 		var form = event.target;
+		form.querySelector('input[name="action"]').value = event.submitter && event.submitter.classList.contains('contactpanda-export-vcard') ? 'contactpanda_export_contacts_vcard' : 'contactpanda_export_contacts';
 		var selectedScope = form.querySelector('input[name="scope"]:checked');
 		var selected = selectedContactIds();
 		if (selectedScope && selectedScope.value === 'selected' && !selected.length) {

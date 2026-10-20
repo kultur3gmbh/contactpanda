@@ -1,0 +1,111 @@
+<?php
+
+defined( 'ABSPATH' ) || exit;
+
+/** Shared updater for privately distributed ContactPanda extensions. */
+final class ContactPanda_Licensed_Updater {
+	private $config;
+	private $metadata = null;
+
+	public function __construct( array $config ) {
+		$this->config = wp_parse_args(
+			$config,
+			array(
+				'product'     => '',
+				'entitlement' => '',
+				'plugin'      => '',
+				'slug'        => '',
+				'name'        => '',
+				'version'     => '',
+				'channel'     => 'stable',
+			)
+		);
+		if ( ! $this->config['product'] || ! $this->config['entitlement'] || ! $this->config['plugin'] ) {
+			return;
+		}
+		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'updates' ) );
+		add_filter( 'plugins_api', array( $this, 'plugin_information' ), 20, 3 );
+		add_filter( 'upgrader_pre_download', array( $this, 'verify_download' ), 10, 4 );
+	}
+
+	public function updates( $transient ) {
+		if ( ! is_object( $transient ) || empty( $transient->checked ) ) {
+			return $transient;
+		}
+		$data = $this->metadata();
+		if ( is_wp_error( $data ) || empty( $data['available'] ) || empty( $data['version'] ) || version_compare( $data['version'], $this->config['version'], '<=' ) ) {
+			return $transient;
+		}
+		$item = (object) array(
+			'id'           => 'contactpanda-' . $this->config['product'],
+			'slug'         => $this->config['slug'],
+			'plugin'       => $this->config['plugin'],
+			'new_version'  => sanitize_text_field( $data['version'] ),
+			'url'          => esc_url_raw( $data['homepage'] ?? 'https://mycontactpanda.com/' ),
+			'package'      => esc_url_raw( $data['package'] ?? '' ),
+			'requires'     => sanitize_text_field( $data['requires'] ?? '' ),
+			'requires_php' => sanitize_text_field( $data['requires_php'] ?? '' ),
+			'tested'       => sanitize_text_field( $data['tested'] ?? '' ),
+		);
+		if ( $item->package ) {
+			$transient->response[ $this->config['plugin'] ] = $item;
+		}
+		return $transient;
+	}
+
+	public function plugin_information( $result, $action, $args ) {
+		if ( 'plugin_information' !== $action || empty( $args->slug ) || $args->slug !== $this->config['slug'] ) {
+			return $result;
+		}
+		$data = $this->metadata();
+		if ( is_wp_error( $data ) || empty( $data['available'] ) ) {
+			return $result;
+		}
+		return (object) array(
+			'name'          => $this->config['name'],
+			'slug'          => $this->config['slug'],
+			'version'       => sanitize_text_field( $data['version'] ?? '' ),
+			'requires'      => sanitize_text_field( $data['requires'] ?? '' ),
+			'requires_php'  => sanitize_text_field( $data['requires_php'] ?? '' ),
+			'tested'        => sanitize_text_field( $data['tested'] ?? '' ),
+			'download_link' => esc_url_raw( $data['package'] ?? '' ),
+			'sections'      => array( 'changelog' => wp_kses_post( $data['changelog'] ?? '' ) ),
+		);
+	}
+
+	public function verify_download( $reply, $package, $upgrader, $hook_extra ) {
+		$data = $this->metadata();
+		if ( is_wp_error( $data ) || empty( $data['package'] ) || empty( $data['sha256'] ) || $package !== $data['package'] ) {
+			return $reply;
+		}
+		if ( ! function_exists( 'download_url' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		$file = download_url( $package, 300 );
+		if ( is_wp_error( $file ) ) {
+			return $file;
+		}
+		if ( ! hash_equals( strtolower( $data['sha256'] ), hash_file( 'sha256', $file ) ) ) {
+			wp_delete_file( $file );
+			return new WP_Error( 'contactpanda_update_checksum', __( 'The ContactPanda update package could not be verified.', 'contactpanda' ) );
+		}
+		return $file;
+	}
+
+	private function metadata() {
+		if ( null !== $this->metadata ) {
+			return $this->metadata;
+		}
+		$key    = 'contactpanda_update_' . md5( $this->config['product'] . '|' . $this->config['channel'] );
+		$cached = get_site_transient( $key );
+		if ( is_array( $cached ) ) {
+			$this->metadata = $cached;
+			return $cached;
+		}
+		$this->metadata = ContactPanda_License::product_update( $this->config['product'], $this->config['entitlement'], $this->config['version'], $this->config['channel'] );
+		if ( is_array( $this->metadata ) ) {
+			set_site_transient( $key, $this->metadata, 10 * MINUTE_IN_SECONDS );
+		}
+		return $this->metadata;
+	}
+}

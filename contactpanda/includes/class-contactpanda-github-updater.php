@@ -38,7 +38,7 @@ final class ContactPanda_GitHub_Updater {
 			'network' => __( 'The GitHub update service could not be reached. Please try again later.', 'contactpanda' ),
 			'access' => __( 'GitHub denied update access. Check the repository permission and token expiry in wp-config.php.', 'contactpanda' ),
 			'release' => __( 'No valid published GitHub release with matching update metadata and plugin ZIP was found.', 'contactpanda' ),
-			'compatibility' => __( 'This update requires a newer WordPress, PHP, or active ContactPanda Basic version. Update those requirements first.', 'contactpanda' ),
+			'compatibility' => __( 'This update requires a newer WordPress, PHP, or active ContactPanda version. Update those requirements first.', 'contactpanda' ),
 			'archive' => __( 'The update ZIP failed integrity, plugin directory, version, or requirement validation. Nothing was installed.', 'contactpanda' ),
 			'disabled' => __( 'GitHub updates are disabled for this plugin.', 'contactpanda' ),
 		);

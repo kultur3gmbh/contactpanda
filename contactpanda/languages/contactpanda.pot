@@ -928,7 +928,7 @@ msgid "Contact note"
 msgstr ""
 
 #: contactpanda/contactpanda.php:3
-msgid "ContactPanda Basic – User-Friendly CRM for WordPress"
+msgid "ContactPanda – User-Friendly CRM for WordPress"
 msgstr ""
 
 #: contactpanda/includes/class-contactpanda-registration.php:653
@@ -3274,7 +3274,7 @@ msgid "No valid published GitHub release with matching update metadata and plugi
 msgstr ""
 
 #: contactpanda/includes/class-contactpanda-github-updater.php
-msgid "This update requires a newer WordPress, PHP, or active ContactPanda Basic version. Update those requirements first."
+msgid "This update requires a newer WordPress, PHP, or active ContactPanda version. Update those requirements first."
 msgstr ""
 
 #: contactpanda/includes/class-contactpanda-github-updater.php
@@ -3920,7 +3920,7 @@ msgstr ""
 msgid "Save time and costs, avoid duplicate work, and unlock additional automation, newsletter, and reporting options."
 msgstr ""
 
-msgid "The Newsletter Plugin is active. ContactPanda Basic provides a read-only overview; the source plugin remains unchanged."
+msgid "The Newsletter Plugin is active. ContactPanda provides a read-only overview; the source plugin remains unchanged."
 msgstr ""
 
 msgid "The Newsletter Plugin migration is available with ContactPanda Plus."
@@ -4383,10 +4383,10 @@ msgstr ""
 msgid "The Groundhogg migration was completed and ContactPanda is now the leading data source. Groundhogg remains active and unchanged. You may switch the data source back later, but ContactPanda changes are not migrated back to Groundhogg."
 msgstr ""
 
-msgid "Automatic Basic updates"
+msgid "Automatic ContactPanda updates"
 msgstr ""
 
-msgid "ContactPanda Basic checks the public GitHub release channel and validates version metadata, compatibility, and the ZIP checksum before WordPress installs an update."
+msgid "ContactPanda checks the public GitHub release channel and validates version metadata, compatibility, and the ZIP checksum before WordPress installs an update."
 msgstr ""
 
 msgid "Only an administrator who may update plugins can change this setting."
@@ -4495,7 +4495,7 @@ msgid_plural "%d bookings"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Advanced segments, automated actions, and flows are not part of ContactPanda Basic."
+msgid "Advanced segments, automated actions, and flows are provided by ContactPanda Plus."
 msgstr ""
 
 msgid "Amelia and The Events Calendar are active. ContactPanda will not combine their bookings."
@@ -4522,7 +4522,7 @@ msgstr ""
 msgid "Choose which source ContactPanda should display. Data from different event systems is never mixed."
 msgstr ""
 
-msgid "ContactPanda Basic displays bookings from one event source in the people list and person details. Source data is never changed."
+msgid "ContactPanda displays bookings from one event source in the people list and person details. Source data is never changed."
 msgstr ""
 
 msgid "Events and appointments"
@@ -6211,7 +6211,7 @@ msgid "ContactPanda licenses"
 msgstr ""
 
 #: contactpanda/includes/class-contactpanda-license.php
-msgid "ContactPanda Basic remains free and updateable without a license. Additional licenses can unlock Newsletter, Plus, or selected modules. A normal expiry ends updates and support, but granted modules remain usable."
+msgid "ContactPanda remains free and updateable without a license. Additional licenses can unlock Newsletter, Plus, or selected modules. A normal expiry ends updates and support, but granted modules remain usable."
 msgstr ""
 
 #: contactpanda/includes/class-contactpanda-license.php
@@ -6308,4 +6308,19 @@ msgstr ""
 
 #: contactpanda/includes/class-contactpanda-license.php
 msgid "The license response could not be verified. No existing license information was changed."
+msgstr ""
+
+msgid "The ContactPanda update package could not be verified."
+msgstr ""
+
+msgid "Customer account registration requires ContactPanda Plus."
+msgstr ""
+
+msgid "vCard import requires ContactPanda Plus."
+msgstr ""
+
+msgid "vCard export requires ContactPanda Plus."
+msgstr ""
+
+msgid "Export vCard"
 msgstr ""

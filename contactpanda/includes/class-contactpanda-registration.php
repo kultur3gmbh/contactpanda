@@ -7,6 +7,11 @@ final class ContactPanda_Registration {
 	const GENERAL_OPTION = 'contactpanda_general_settings';
 	const NOTICE_PREFIX = 'contactpanda_registration_notice_';
 
+	/** Customer and business account registration is supplied by Plus. */
+	public static function customer_registration_enabled() {
+		return (bool) apply_filters( 'contactpanda_customer_registration_enabled', false );
+	}
+
 	public static function boot() {
 		// Complete pending schema changes before assets, menus, AJAX handlers, or
 		// front-end account screens can issue their first ContactPanda query.
@@ -14,10 +19,17 @@ final class ContactPanda_Registration {
 		add_action( 'admin_init', array( __CLASS__, 'ensure_contactpanda_database' ), 1 );
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 20 );
 		add_action( 'admin_init', array( __CLASS__, 'register_settings' ) );
-		add_shortcode( 'contactpanda_registration', array( __CLASS__, 'shortcode' ) );
+		if ( self::customer_registration_enabled() ) {
+			add_shortcode( 'contactpanda_registration', array( __CLASS__, 'shortcode' ) );
+			add_action( 'admin_post_nopriv_contactpanda_register', array( __CLASS__, 'handle_registration' ) );
+			add_action( 'admin_post_contactpanda_register', array( __CLASS__, 'handle_registration' ) );
+			add_action( 'wp_ajax_nopriv_contactpanda_registration_validate_vat', array( __CLASS__, 'validate_vat_ajax' ) );
+			add_action( 'wp_ajax_contactpanda_registration_validate_vat', array( __CLASS__, 'validate_vat_ajax' ) );
+			add_filter( 'register_url', array( __CLASS__, 'registration_url' ) );
+			add_action( 'login_form_register', array( __CLASS__, 'maybe_redirect_registration' ) );
+			add_action( 'template_redirect', array( __CLASS__, 'render_virtual_registration' ) );
+		}
 		add_shortcode( 'contactpanda_newsletter_signup', array( __CLASS__, 'newsletter_shortcode' ) );
-		add_action( 'admin_post_nopriv_contactpanda_register', array( __CLASS__, 'handle_registration' ) );
-		add_action( 'admin_post_contactpanda_register', array( __CLASS__, 'handle_registration' ) );
 		add_action( 'admin_post_nopriv_contactpanda_newsletter_signup', array( __CLASS__, 'handle_newsletter_signup' ) );
 		add_action( 'admin_post_contactpanda_newsletter_signup', array( __CLASS__, 'handle_newsletter_signup' ) );
 		add_action( 'admin_post_nopriv_contactpanda_pending_resend', array( __CLASS__, 'handle_pending_resend' ) );
@@ -38,14 +50,9 @@ final class ContactPanda_Registration {
 		add_action( 'admin_post_contactpanda_toggle_automatic_updates', array( __CLASS__, 'handle_automatic_updates' ) );
 		add_action( 'wp_ajax_contactpanda_migration_progress', array( __CLASS__, 'migration_progress_ajax' ) );
 		add_action( 'contactpanda_groundhogg_migration_progress', array( __CLASS__, 'store_migration_progress' ) );
-		add_action( 'wp_ajax_nopriv_contactpanda_registration_validate_vat', array( __CLASS__, 'validate_vat_ajax' ) );
-		add_action( 'wp_ajax_contactpanda_registration_validate_vat', array( __CLASS__, 'validate_vat_ajax' ) );
 		add_action( 'init', array( __CLASS__, 'handle_verification' ) );
 		add_filter( 'the_content', array( __CLASS__, 'success_page_notice' ), 8 );
 		add_filter( 'authenticate', array( __CLASS__, 'guard_login' ), 40, 3 );
-		add_filter( 'register_url', array( __CLASS__, 'registration_url' ) );
-		add_action( 'login_form_register', array( __CLASS__, 'maybe_redirect_registration' ) );
-		add_action( 'template_redirect', array( __CLASS__, 'render_virtual_registration' ) );
 	}
 
 	public static function menu() {
@@ -215,7 +222,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 				$input[ $required_text ] = $defaults[ $required_text ];
 			}
 		}
-		return array(
+		$sanitized = array(
 			'enabled'              => empty( $input['enabled'] ) ? 0 : 1,
 			'business_enabled'     => empty( $input['business_enabled'] ) ? 0 : 1,
 			'newsletter_enabled'   => empty( $input['newsletter_enabled'] ) ? 0 : 1,
@@ -243,6 +250,13 @@ The link is valid for 24 hours.', 'contactpanda' ),
 			'newsletter_success'   => isset( $input['newsletter_success'] ) ? sanitize_textarea_field( $input['newsletter_success'] ) : $defaults['newsletter_success'],
 			'newsletter_verified'  => isset( $input['newsletter_verified'] ) ? sanitize_textarea_field( $input['newsletter_verified'] ) : $defaults['newsletter_verified'],
 		);
+		if ( ! self::customer_registration_enabled() ) {
+			$current = wp_parse_args( (array) get_option( self::OPTION, array() ), $defaults );
+			foreach ( array( 'enabled', 'business_enabled', 'require_email_verify', 'require_approval', 'require_vat', 'allow_marketing', 'replace_registration', 'allowed_roles', 'registration_page_id', 'privacy_page_id', 'terms_page_id', 'admin_email', 'success_page_id', 'submission_message', 'customer_submission_message', 'confirmation_subject', 'confirmation_message', 'verified_message', 'customer_verified_message', 'verified_page_id', 'verified_delay' ) as $key ) {
+				$sanitized[ $key ] = $current[ $key ];
+			}
+		}
+		return $sanitized;
 	}
 
 	private static function allowed_roles() {
@@ -302,7 +316,8 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	private static function render_general_tab() {
 		$section = isset( $_GET['general_section'] ) ? sanitize_key( wp_unslash( $_GET['general_section'] ) ) : 'settings'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><a class="nav-tab ' . ( 'settings' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general' ) ) . '">' . esc_html__( 'General settings', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'registration' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general&general_section=registration' ) ) . '">' . esc_html__( 'Registration', 'contactpanda' ) . '</a></nav>';
+		$registration_label = self::customer_registration_enabled() ? __( 'Registration', 'contactpanda' ) : __( 'Newsletter signup', 'contactpanda' );
+		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><a class="nav-tab ' . ( 'settings' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general' ) ) . '">' . esc_html__( 'General settings', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'registration' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=general&general_section=registration' ) ) . '">' . esc_html( $registration_label ) . '</a></nav>';
 		if ( 'registration' === $section ) self::render_registration_settings(); else self::render_general_settings();
 	}
 
@@ -404,6 +419,10 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	private static function render_registration_settings() {
 		$settings = self::settings();
+		if ( ! self::customer_registration_enabled() ) {
+			self::render_newsletter_registration_settings( $settings );
+			return;
+		}
 		$roles = self::allowed_roles();
 		$section = isset( $_GET['registration_section'] ) ? sanitize_key( wp_unslash( $_GET['registration_section'] ) ) : 'customers'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display routing only.
 		if ( ! in_array( $section, array( 'customers', 'business', 'newsletter' ), true ) ) $section = 'customers';
@@ -474,6 +493,22 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 		self::render_integration_status();
 		self::render_pending_registrations();
+	}
+
+	private static function render_newsletter_registration_settings( $settings ) {
+		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><span class="nav-tab nav-tab-active">' . esc_html__( 'Newsletter signup', 'contactpanda' ) . '</span></nav>';
+		echo '<form method="post" action="options.php"><section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Newsletter signup', 'contactpanda' ) . '</h2>';
+		settings_fields( 'contactpanda_registration' );
+		self::checkbox_setting( 'newsletter_enabled', __( 'Enable separate newsletter signup', 'contactpanda' ), __( 'Provides [contactpanda_newsletter_signup]. The form creates or updates a ContactPanda contact but never creates a WordPress user account.', 'contactpanda' ), $settings );
+		self::text_setting( 'newsletter_subject', __( 'Newsletter confirmation subject', 'contactpanda' ), $settings );
+		echo '<div class="contactpanda-setting-row"><label for="contactpanda-newsletter-message"><strong>' . esc_html__( 'Newsletter confirmation email', 'contactpanda' ) . '</strong></label>';
+		wp_editor( $settings['newsletter_message'], 'contactpanda-newsletter-message', array( 'textarea_name' => self::OPTION . '[newsletter_message]', 'textarea_rows' => 8, 'media_buttons' => false, 'quicktags' => true ) );
+		echo '<p class="description">' . esc_html__( 'Available placeholders: {first_name}, {site_name}, {confirmation_link}.', 'contactpanda' ) . '</p></div>';
+		self::textarea_setting( 'newsletter_success', __( 'Text after newsletter signup', 'contactpanda' ), __( 'Shown after the form has been submitted.', 'contactpanda' ), $settings );
+		self::textarea_setting( 'newsletter_verified', __( 'Text after newsletter confirmation', 'contactpanda' ), __( 'Shown after the confirmation link has been opened.', 'contactpanda' ), $settings );
+		submit_button();
+		echo '</section></form>';
+		self::render_integration_status();
 	}
 
 	private static function render_general_settings() {
@@ -713,7 +748,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		global $wpdb;
 		$email_table = $wpdb->prefix . 'newsletter_emails';
 		$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $email_table ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>The Newsletter Plugin</h2><p>' . esc_html__( 'The Newsletter Plugin is active. ContactPanda Basic provides a read-only overview; the source plugin remains unchanged.', 'contactpanda' ) . '</p>';
+		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>The Newsletter Plugin</h2><p>' . esc_html__( 'The Newsletter Plugin is active. ContactPanda provides a read-only overview; the source plugin remains unchanged.', 'contactpanda' ) . '</p>';
 		if ( $exists ) {
 			$columns = (array) $wpdb->get_col( "SHOW COLUMNS FROM `{$email_table}`", 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery
 			$title_column = in_array( 'subject', $columns, true ) ? 'subject' : ( in_array( 'name', $columns, true ) ? 'name' : 'id' );
@@ -924,7 +959,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	private static function render_automatic_updates() {
 		$plugin = plugin_basename( CONTACTPANDA_FILE );
 		$enabled = in_array( $plugin, (array) get_site_option( 'auto_update_plugins', array() ), true );
-		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Automatic Basic updates', 'contactpanda' ) . '</h2><p>' . esc_html__( 'ContactPanda Basic checks the public GitHub release channel and validates version metadata, compatibility, and the ZIP checksum before WordPress installs an update.', 'contactpanda' ) . '</p>';
+		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Automatic ContactPanda updates', 'contactpanda' ) . '</h2><p>' . esc_html__( 'ContactPanda checks the public GitHub release channel and validates version metadata, compatibility, and the ZIP checksum before WordPress installs an update.', 'contactpanda' ) . '</p>';
 		if ( ! current_user_can( 'update_plugins' ) ) {
 			echo '<p>' . esc_html__( 'Only an administrator who may update plugins can change this setting.', 'contactpanda' ) . '</p></section>';
 			return;
@@ -1111,6 +1146,9 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	public static function shortcode( $atts = array() ) {
+		if ( ! self::customer_registration_enabled() ) {
+			return '';
+		}
 		$settings = self::settings();
 		if ( empty( $settings['enabled'] ) ) {
 			return current_user_can( 'manage_options' ) ? '<div class="contactpanda-registration-notice is-error">' . esc_html__( 'The ContactPanda registration form is disabled in the settings.', 'contactpanda' ) . '</div>' : '';
@@ -1630,6 +1668,9 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	public static function handle_registration() {
+		if ( ! self::customer_registration_enabled() ) {
+			wp_die( esc_html__( 'Customer account registration requires ContactPanda Plus.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		}
 		$redirect = isset( $_POST['redirect_to'] ) ? wp_validate_redirect( wp_unslash( $_POST['redirect_to'] ), home_url( '/' ) ) : home_url( '/' );
 		if ( ! isset( $_POST['contactpanda_registration_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['contactpanda_registration_nonce'] ) ), 'contactpanda_register' ) ) {
 			self::redirect_notice( $redirect, 'error', __( 'The form session has expired. Please try again.', 'contactpanda' ) );
@@ -1960,6 +2001,9 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	public static function registration_url( $url ) {
+		if ( ! self::customer_registration_enabled() ) {
+			return $url;
+		}
 		$settings = self::settings();
 		if ( ! is_multisite() && ! empty( $settings['enabled'] ) && ! empty( $settings['replace_registration'] ) ) {
 			$page_url = $settings['registration_page_id'] ? get_permalink( $settings['registration_page_id'] ) : self::virtual_registration_url();
@@ -1973,6 +2017,9 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	public static function render_virtual_registration() {
+		if ( ! self::customer_registration_enabled() ) {
+			return;
+		}
 		$virtual = isset( $_GET['contactpanda_registration'] ) ? sanitize_key( wp_unslash( $_GET['contactpanda_registration'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public read-only endpoint.
 		if ( is_admin() || '1' !== $virtual ) return;
 		$settings = self::settings();
@@ -1983,6 +2030,9 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	public static function maybe_redirect_registration() {
+		if ( ! self::customer_registration_enabled() ) {
+			return;
+		}
 		$settings = self::settings();
 		if ( is_multisite() || empty( $settings['enabled'] ) || empty( $settings['replace_registration'] ) ) {
 			return;

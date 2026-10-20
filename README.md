@@ -1,6 +1,6 @@
-# ContactPanda Basic
+# ContactPanda
 
-ContactPanda Basic is the free foundation of the modular ContactPanda contact and company management system for WordPress. It includes the standalone contact database, WordPress and WooCommerce integration, registration, customer account views, companies, tags, consent, and optional Groundhogg compatibility. Since 0.6.0, Basic also contains the shared newsletter implementation, which is permanently unlocked by either a Newsletter license or ContactPanda Plus; license expiry affects updates and support only.
+ContactPanda is the free foundation of the modular ContactPanda contact and company management system for WordPress. It includes the standalone contact database, WordPress and WooCommerce overviews, customer account views, companies, tags, consent, custom fields, events, and optional Groundhogg compatibility. The shared newsletter implementation can be unlocked by either a Newsletter license or ContactPanda Plus; license expiry affects updates and support only. Customer/business registration and vCard exchange are activated by ContactPanda Plus.
 
 The installable plugin is stored in `contactpanda/`. Optional commercial modules are developed separately in the private ContactPanda Plus repository.
 
