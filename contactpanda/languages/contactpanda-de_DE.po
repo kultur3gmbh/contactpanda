@@ -6324,3 +6324,399 @@ msgstr "Der vCard-Export erfordert ContactPanda Plus."
 
 msgid "Export vCard"
 msgstr "vCard exportieren"
+
+msgid "\" aria-label=\"Remove tag from this person\">&times;</button></span>"
+msgstr ""
+
+msgid "\" aria-label=\"View invoice PDF\" title=\"View invoice PDF\"><span class=\"dashicons dashicons-media-document\"></span></a>"
+msgstr ""
+
+msgid "\" aria-label=\"View order information\" title=\"View order information\"><span class=\"dashicons dashicons-visibility\"></span></button>"
+msgstr ""
+
+msgid "\" data-title=\"Invoice for order #"
+msgstr ""
+
+msgid "\" placeholder=\"Search by name, email, phone, or company\"><button class=\"button\">Search</button>"
+msgstr ""
+
+msgid "\" placeholder=\"Search company name\"><button class=\"button\">Search</button>"
+msgstr ""
+
+msgid "\" tabindex=\"-1\">Events <span class=\"contactpanda-count\">"
+msgstr ""
+
+msgid "\"><div class=\"contactpanda-toolbar\"><h2>Marketing &amp; consent</h2>"
+msgstr ""
+
+msgid "\"><h2>Edit customer roles</h2><p>Multiple WordPress roles are supported. Start typing and select a suggested role. Changes immediately affect this user account's permissions.</p>"
+msgstr ""
+
+msgid "\">Edit marketing consent</h2>"
+msgstr ""
+
+msgid "\">Edit</a>"
+msgstr ""
+
+msgid "\">Next →</a>"
+msgstr ""
+
+msgid "\">Open order</a>"
+msgstr ""
+
+msgid "\">Show all</a>"
+msgstr ""
+
+msgid "\">← Back</a>"
+msgstr ""
+
+msgid "\">← Back</a> "
+msgstr ""
+
+msgid "\">← Companies overview</a>"
+msgstr ""
+
+msgid "%d matching people"
+msgstr ""
+
+msgid "%s"
+msgstr ""
+
+msgid "1 matching person"
+msgstr ""
+
+msgid "</button><button type=\"button\" class=\"button contactpanda-close-user-account\">Cancel</button></div></div></div>"
+msgstr ""
+
+msgid "</div></div></div><p class=\"description contactpanda-tag-autosave-note\">Selecting a tag saves it immediately for this contact. Press Enter to create a new tag.</p>"
+msgstr ""
+
+msgid "</div></div><div class=\"contactpanda-role-picker-message\" aria-live=\"polite\"></div></div>"
+msgstr ""
+
+msgid "</div><table><thead><tr><th>Item</th><th class=\"num\">Quantity</th><th class=\"num\">Total</th></tr></thead><tbody>"
+msgstr ""
+
+msgid "</tbody><tfoot><tr><th colspan=\"6\">Grand total</th><td><strong>"
+msgstr ""
+
+msgid "<aside><section class=\"contactpanda-card contactpanda-master-data\"><h2>Master data</h2>"
+msgstr ""
+
+msgid "<button type=\"button\" class=\"button button-small contactpanda-open-roles\">Edit customer roles</button>"
+msgstr ""
+
+msgid "<button type=\"button\" class=\"button button-small contactpanda-open-user-account\" data-mode=\"create\">Create user account</button>"
+msgstr ""
+
+msgid "<button type=\"button\" class=\"button button-small contactpanda-open-user-account\" data-mode=\"link\">Link existing account</button>"
+msgstr ""
+
+msgid "<button type=\"button\" class=\"button contactpanda-open-consent\">Edit consent</button>"
+msgstr ""
+
+msgid "<div class=\"addresses\"><section><h2>Billing address</h2><p>"
+msgstr ""
+
+msgid "<div class=\"contactpanda-empty\"><span class=\"dashicons dashicons-building\"></span><h3>No companies found</h3><p>"
+msgstr ""
+
+msgid "<div class=\"contactpanda-heading\"><div><p class=\"contactpanda-eyebrow\">CRM</p><h1>People</h1><p>"
+msgstr ""
+
+msgid "<div class=\"contactpanda-modal-message\" aria-live=\"polite\"></div><div class=\"contactpanda-modal-actions\"><button type=\"button\" class=\"button button-primary contactpanda-save-bulk\">Enable with confirmation</button><button type=\"button\" class=\"button contactpanda-close-bulk\">Cancel</button></div>"
+msgstr ""
+
+msgid "<div class=\"contactpanda-modal-message\" aria-live=\"polite\"></div><div class=\"contactpanda-modal-actions\"><button type=\"button\" class=\"button button-primary contactpanda-save-consent\">Save with confirmation</button><button type=\"button\" class=\"button contactpanda-close-consent\">Cancel</button></div>"
+msgstr ""
+
+msgid "<div class=\"contactpanda-modal-message\" aria-live=\"polite\"></div><div class=\"contactpanda-modal-actions\"><button type=\"button\" class=\"button button-primary contactpanda-save-new-person\">Create person</button><button type=\"button\" class=\"button contactpanda-close-new-person\">Cancel</button></div>"
+msgstr ""
+
+msgid "<div class=\"contactpanda-modal-message\"></div><div class=\"contactpanda-modal-actions\"><button type=\"button\" class=\"button button-primary contactpanda-save-roles\">Save roles</button><button type=\"button\" class=\"button contactpanda-close-roles\">Cancel</button></div></div></div>"
+msgstr ""
+
+msgid "<div class=\"contactpanda-user-account\"><span>WordPress user account</span>"
+msgstr ""
+
+msgid "<div class=\"facts\"><div><span>Order date</span><strong>"
+msgstr ""
+
+msgid "<div class=\"notice notice-warning inline\"><p><strong>Diagnostics:</strong> Not all required extensions were detected: "
+msgstr ""
+
+msgid "<form class=\"contactpanda-search\" method=\"get\"><input type=\"hidden\" name=\"page\" value=\"contactpanda-firmen\"><label class=\"screen-reader-text\" for=\"contactpanda-company-search\">Search companies</label><input id=\"contactpanda-company-search\" type=\"search\" name=\"s\" value=\""
+msgstr ""
+
+msgid "<h2 id=\"contactpanda-bulk-title\">Enable marketable status for multiple people</h2>"
+msgstr ""
+
+msgid "<h2>Orders &amp; invoices <span class=\"contactpanda-count\">"
+msgstr ""
+
+msgid "<header><div><span class=\"eyebrow\">WooCommerce order</span><h1>Order #"
+msgstr ""
+
+msgid "<input type=\"text\" class=\"contactpanda-token-input contactpanda-role-input\" placeholder=\"Search WordPress roles\" aria-label=\"Search WordPress roles\" autocomplete=\"off\"></div><div class=\"contactpanda-token-suggestions contactpanda-role-suggestions\" role=\"listbox\" hidden>"
+msgstr ""
+
+msgid "<input type=\"text\" class=\"contactpanda-token-input contactpanda-tag-input\" placeholder=\"Search or create a tag\" aria-label=\"Search or create a tag\" autocomplete=\"off\"></div><div class=\"contactpanda-token-suggestions contactpanda-tag-suggestions\" role=\"listbox\" hidden>"
+msgstr ""
+
+msgid "<label class=\"contactpanda-confirm\"><input type=\"checkbox\" class=\"contactpanda-account-invite\" checked> <span>Send an invitation to set the password.</span></label>"
+msgstr ""
+
+msgid "<label class=\"contactpanda-confirm\"><input type=\"checkbox\" class=\"contactpanda-bulk-confirmed\"> <span>I confirm that explicit marketing consent exists for every selected person.</span></label>"
+msgstr ""
+
+msgid "<label class=\"contactpanda-confirm\"><input type=\"checkbox\" class=\"contactpanda-consent-confirmed\"> <span>I confirm that explicit consent has been given.</span></label>"
+msgstr ""
+
+msgid "<label class=\"screen-reader-text\" for=\"contactpanda-person-search\">Search people</label><input id=\"contactpanda-person-search\" type=\"search\" name=\"s\" value=\""
+msgstr ""
+
+msgid "<label>Billing email<input type=\"email\" data-key=\"email\" value=\""
+msgstr ""
+
+msgid "<label>Billing phone<input type=\"text\" value=\""
+msgstr ""
+
+msgid "<label>Country<select data-key=\"country\""
+msgstr ""
+
+msgid "<label>Date<input type=\"date\" class=\"contactpanda-bulk-date\" value=\""
+msgstr ""
+
+msgid "<label>Date<input type=\"date\" class=\"contactpanda-consent-date\" value=\""
+msgstr ""
+
+msgid "<label>Decision<select class=\"contactpanda-consent-decision\"><option value=\"grant\">Grant consent</option><option value=\"revoke\">Withdraw consent</option></select></label>"
+msgstr ""
+
+msgid "<label>Email address<input type=\"email\" class=\"contactpanda-new-email\" autocomplete=\"email\" required></label>"
+msgstr ""
+
+msgid "<label>First name<input type=\"text\" class=\"contactpanda-new-first-name\" autocomplete=\"given-name\"></label>"
+msgstr ""
+
+msgid "<label>Last name<input type=\"text\" class=\"contactpanda-new-last-name\" autocomplete=\"family-name\"></label>"
+msgstr ""
+
+msgid "<label>Note / evidence<textarea class=\"contactpanda-bulk-note\" rows=\"3\" placeholder=\"Optional evidence note\"></textarea></label>"
+msgstr ""
+
+msgid "<label>Note / evidence<textarea class=\"contactpanda-consent-note\" rows=\"3\" placeholder=\"Optional evidence note\"></textarea></label>"
+msgstr ""
+
+msgid "<label>Source<select class=\"contactpanda-bulk-source\"><option value=\"\">Please select</option><option value=\"personally\">In person</option><option value=\"phone\">By phone</option><option value=\"written\">In writing</option><option value=\"email\">By email</option><option value=\"import\">Documented import</option><option value=\"other\">Other</option></select></label>"
+msgstr ""
+
+msgid "<label>Source<select class=\"contactpanda-consent-source\"><option value=\"\">Please select</option><option value=\"personally\">In person</option><option value=\"phone\">By phone</option><option value=\"written\">In writing</option><option value=\"email\">By email</option><option value=\"import\">Documented import</option><option value=\"other\">Other</option></select></label>"
+msgstr ""
+
+msgid "<main><section class=\"contactpanda-card\"><h2>Contacts <span class=\"contactpanda-count\">"
+msgstr ""
+
+msgid "<p class=\"contactpanda-bulk-modal-count\"><strong>0 people selected</strong></p>"
+msgstr ""
+
+msgid "<p class=\"contactpanda-muted contactpanda-woocommerce-address-note\">No linked WordPress/WooCommerce customer account. The contact address is saved independently; billing and shipping addresses become available after an account is linked.</p>"
+msgstr ""
+
+msgid "<p class=\"contactpanda-muted\">No contacts were returned by the public Companies interface.</p>"
+msgstr ""
+
+msgid "<p class=\"contactpanda-muted\">No event booking was found for this person.</p>"
+msgstr ""
+
+msgid "<p class=\"contactpanda-muted\">No order was found using the contacts' email addresses.</p>"
+msgstr ""
+
+msgid "<p class=\"contactpanda-muted\">No order was found using the email address.</p>"
+msgstr ""
+
+msgid "<p class=\"description contactpanda-uid-help\">Linked to German Market (billing_vat) and B2B Market (b2b_uid) for the primary contact. EU validation only runs when requested.</p>"
+msgstr ""
+
+msgid "<p class=\"description\">Only the WooCommerce customer profile is saved. Existing orders and historical invoices are not changed.</p>"
+msgstr ""
+
+msgid "<p>An account with a secure random password will be created. This does not grant marketing consent.</p><label>Username<input type=\"text\" class=\"contactpanda-account-username\" value=\""
+msgstr ""
+
+msgid "<section class=\"contactpanda-card contactpanda-master-data\"><h2>Master data</h2>"
+msgstr ""
+
+msgid "<section class=\"contactpanda-card contactpanda-status\"><h2>System status</h2>"
+msgstr ""
+
+msgid "<section class=\"contactpanda-card contactpanda-tabs-card\" data-tabs><div class=\"contactpanda-tabs\" role=\"tablist\" aria-label=\"Person data\">"
+msgstr ""
+
+msgid "<section class=\"contactpanda-card\"><div class=\"contactpanda-toolbar\"><h2>Companies overview</h2><span class=\"contactpanda-count\">"
+msgstr ""
+
+msgid "<section class=\"contactpanda-card\"><div class=\"contactpanda-toolbar\"><h2>People overview</h2><span class=\"contactpanda-count\">"
+msgstr ""
+
+msgid "<section class=\"contactpanda-card\"><h2>Billing address</h2>"
+msgstr ""
+
+msgid "<section class=\"contactpanda-card\"><h2>Orders &amp; invoices <span class=\"contactpanda-count\">"
+msgstr ""
+
+msgid "<section class=\"note\"><h2>Customer note</h2><p>"
+msgstr ""
+
+msgid "<span class=\"contactpanda-document-unavailable\" title=\"German Market does not provide an invoice action for this order\">—</span>"
+msgstr ""
+
+msgid "<span class=\"contactpanda-muted\">No tags assigned yet.</span>"
+msgstr ""
+
+msgid "<table class=\"widefat contactpanda-table contactpanda-orders-table\"><thead><tr><th>Order number</th><th>Date</th><th>Invoice number</th><th>Actions</th><th>Status</th><th>Payment method</th><th>Total</th></tr></thead><tbody>"
+msgstr ""
+
+msgid "<table class=\"widefat contactpanda-table\"><thead><tr><th>Event</th><th><span class=\"screen-reader-text\">Preview</span></th><th>Date</th><th>Status</th><th>Booking</th></tr></thead><tbody>"
+msgstr ""
+
+msgid "<td class=\"check-column\"><input type=\"checkbox\" class=\"contactpanda-select-all\" aria-label=\"Select all people on this page\"></td>"
+msgstr ""
+
+msgid "<th><span class=\"screen-reader-text\">Actions</span></th>"
+msgstr ""
+
+msgid "<th><span class=\"screen-reader-text\">Email confirmation and marketing status</span></th></tr></thead><tbody>"
+msgstr ""
+
+msgid "Add new search"
+msgstr ""
+
+msgid "Address change"
+msgstr "Adressänderung"
+
+msgid "Assign another company"
+msgstr "Weitere Firma zuordnen"
+
+msgid "Assign company"
+msgstr "Firma zuordnen"
+
+msgid "Audience type"
+msgstr ""
+
+msgid "City contains"
+msgstr ""
+
+msgid "Company data"
+msgstr ""
+
+msgid "Company name contains"
+msgstr ""
+
+msgid "Company search"
+msgstr ""
+
+msgid "Country is"
+msgstr ""
+
+msgid "Create and manage searches independently from the people and company lists."
+msgstr ""
+
+msgid "Current consent and suppression status is always checked again immediately before every message is sent."
+msgstr ""
+
+msgid "Current newsletter logo"
+msgstr ""
+
+msgid "Delete this campaign group? Its mailings and statistics will be retained without a campaign assignment."
+msgstr "Diese Kampagne löschen? Die Aussendungen und Statistiken bleiben ohne Kampagnenzuordnung erhalten."
+
+msgid "Delete this salutation assignment?"
+msgstr "Diese Anrede-Zuordnung löschen?"
+
+msgid "Delete this saved search?"
+msgstr "Diese gespeicherte Suche löschen?"
+
+msgid "Double opt-in reminders"
+msgstr ""
+
+msgid "Dynamic – resolve matching contacts when sending starts"
+msgstr ""
+
+msgid "Edit company assignment"
+msgstr "Firmenzuordnung bearbeiten"
+
+msgid "Edit saved search"
+msgstr ""
+
+msgid "Email contains"
+msgstr ""
+
+msgid "Email defaults"
+msgstr ""
+
+msgid "Execute"
+msgstr "Ausführen"
+
+msgid "From your dashboard you can manage your <a href=\"%1$s\">profile</a>, <a href=\"%2$s\">addresses</a>, <a href=\"%3$s\">payment methods</a>, and <a href=\"%4$s\">password</a>."
+msgstr ""
+
+msgid "Full legal company name (optional)"
+msgstr ""
+
+msgid "Mailing progress: %d%%"
+msgstr ""
+
+msgid "Number of reminders"
+msgstr ""
+
+msgid "Optionally remind unconfirmed newsletter subscribers. Reminders stop automatically after confirmation or expiry and contain no marketing content."
+msgstr ""
+
+msgid "People search"
+msgstr ""
+
+msgid "Phone contains"
+msgstr ""
+
+msgid "Reapply global defaults"
+msgstr ""
+
+msgid "Reapply the global email appearance? Content blocks remain unchanged."
+msgstr ""
+
+msgid "Reminder %d after days"
+msgstr ""
+
+msgid "Reminder email text"
+msgstr ""
+
+msgid "Reminder subject"
+msgstr ""
+
+msgid "Reminder: confirm your newsletter subscription at {site_name}"
+msgstr ""
+
+msgid "Save and show results"
+msgstr ""
+
+msgid "Show results"
+msgstr ""
+
+msgid "Static – keep the contacts matching when this mailing is saved"
+msgstr ""
+
+msgid "This template is still used by a newsletter or automation and cannot be archived."
+msgstr ""
+
+msgid "Used in automations"
+msgstr ""
+
+msgid "Used in newsletters"
+msgstr ""
+
+msgid "User roles"
+msgstr "Benutzerrollen"
+
+msgid "View / edit"
+msgstr ""

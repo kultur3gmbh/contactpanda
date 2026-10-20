@@ -1443,7 +1443,7 @@ final class ContactPanda_Plugin {
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( array( 'message' => $result->get_error_message() ), 400 );
 		}
-		self::log_contact_note( $contact_id, __( 'WordPress roles changed', 'contactpanda' ), sprintf( __( 'WordPress roles changed to: %1$s. Edited by: %2$s.', 'contactpanda' ), implode( ', ', $roles ), wp_get_current_user()->display_name ) );
+		self::log_contact_activity( $contact_id, 'user_roles', __( 'WordPress roles changed', 'contactpanda' ), sprintf( __( 'WordPress roles changed to: %1$s. Edited by: %2$s.', 'contactpanda' ), implode( ', ', $roles ), wp_get_current_user()->display_name ) );
 		wp_send_json_success( array( 'message' => __( 'The WordPress roles were saved.', 'contactpanda' ) ) );
 	}
 
@@ -1532,7 +1532,7 @@ final class ContactPanda_Plugin {
 		if ( $created_user && $send_invite ) {
 			wp_new_user_notification( $user_id, null, 'user' );
 		}
-		self::log_contact_note( $contact_id, __( 'WordPress user account', 'contactpanda' ), sprintf( __( '%1$s Edited by: %2$s.', 'contactpanda' ), 'link' === $mode ? __( 'Existing WordPress user account linked.', 'contactpanda' ) : __( 'WordPress user account created and linked.', 'contactpanda' ), wp_get_current_user()->display_name ) );
+		self::log_contact_activity( $contact_id, 'user_account', __( 'WordPress user account', 'contactpanda' ), sprintf( __( '%1$s Edited by: %2$s.', 'contactpanda' ), 'link' === $mode ? __( 'Existing WordPress user account linked.', 'contactpanda' ) : __( 'WordPress user account created and linked.', 'contactpanda' ), wp_get_current_user()->display_name ) );
 		wp_send_json_success( array( 'message' => 'link' === $mode ? __( 'The user account was linked.', 'contactpanda' ) : __( 'The user account was created and linked.', 'contactpanda' ) ) );
 	}
 
@@ -1617,7 +1617,7 @@ final class ContactPanda_Plugin {
 			}
 
 			$display = self::format_address( $values );
-			self::log_contact_note( $contact_id, __( 'Contact address', 'contactpanda' ), sprintf( __( 'Contact address updated%1$s. Edited by: %2$s.', 'contactpanda' ), $sync ? __( ' and copied to the WooCommerce billing address', 'contactpanda' ) : '', wp_get_current_user()->display_name ) );
+			self::log_contact_activity( $contact_id, 'address_update', __( 'Contact address', 'contactpanda' ), sprintf( __( 'Contact address updated%1$s. Edited by: %2$s.', 'contactpanda' ), $sync ? __( ' and copied to the WooCommerce billing address', 'contactpanda' ) : '', wp_get_current_user()->display_name ) );
 			wp_send_json_success( array( 'message' => $sync ? __( 'The contact address was saved and copied to the WooCommerce billing address.', 'contactpanda' ) : __( 'The contact address was saved.', 'contactpanda' ), 'display' => $display ?: '—' ) );
 		}
 
@@ -1846,7 +1846,6 @@ final class ContactPanda_Plugin {
 		echo '<button type="button" class="button button-primary contactpanda-heading-action contactpanda-open-new-person">' . esc_html__( 'Add person', 'contactpanda' ) . '</button></div></div>';
 		echo __( '<section class="contactpanda-card"><div class="contactpanda-toolbar"><h2>People overview</h2><span class="contactpanda-count">', 'contactpanda' ) . esc_html( $total ) . __( ' entries</span></div>', 'contactpanda' );
 		echo '<form class="contactpanda-search" method="get"><input type="hidden" name="page" value="' . esc_attr( self::people_page_slug() ) . '">';
-		do_action( 'contactpanda_people_filter_controls', $segment_id );
 		if ( $advanced_filter ) {
 			echo '<input type="hidden" name="contactpanda_filter" value="' . esc_attr( $advanced_filter ) . '">';
 		}
@@ -1856,13 +1855,15 @@ final class ContactPanda_Plugin {
 		if ( $orderby ) {
 			echo '<input type="hidden" name="orderby" value="' . esc_attr( $orderby ) . '"><input type="hidden" name="order" value="' . esc_attr( $order ) . '">';
 		}
-		echo __( '<label class="screen-reader-text" for="contactpanda-person-search">Search people</label><input id="contactpanda-person-search" type="search" name="s" value="', 'contactpanda' ) . esc_attr( $search ) . __( '" placeholder="Search by name or email"><button class="button">Search</button>', 'contactpanda' );
+		echo '<div class="contactpanda-search-primary">';
+		echo __( '<label class="screen-reader-text" for="contactpanda-person-search">Search people</label><input id="contactpanda-person-search" type="search" name="s" value="', 'contactpanda' ) . esc_attr( $search ) . __( '" placeholder="Search by name, email, phone, or company"><button class="button">Search</button>', 'contactpanda' );
+		echo '</div><div class="contactpanda-search-secondary">';
+		do_action( 'contactpanda_people_filter_controls', $segment_id );
 		echo '<span class="contactpanda-filter-buttons">' . self::people_filter_link( __( 'All', 'contactpanda' ), 'alle', $customer_filter, $search, $orderby, $order ) . self::people_filter_link( __( 'Customers', 'contactpanda' ), 'besteller', $customer_filter, $search, $orderby, $order );
 		if ( $events_enabled ) {
 			echo self::people_filter_link( __( 'Event attendees', 'contactpanda' ), 'event-besucher', $customer_filter, $search, $orderby, $order );
 		}
-		echo '</span></form>';
-		self::render_trash_link( 'contacts' );
+		echo '</span></div></form>';
 		do_action( 'contactpanda_people_advanced_search', $advanced_filter, $total );
 		if ( ! $contacts ) {
 			echo '<div class="contactpanda-empty"><span class="dashicons dashicons-admin-users"></span><h3>' . esc_html__( 'No people found', 'contactpanda' ) . '</h3><p>' . esc_html__( 'The selected data source returned no contacts for this search.', 'contactpanda' ) . '</p></div>';
@@ -1871,7 +1872,7 @@ final class ContactPanda_Plugin {
 			return;
 		}
 
-		echo '<div class="contactpanda-bulk-toolbar"><label class="screen-reader-text" for="contactpanda-bulk-action">' . esc_html__( 'Select bulk action', 'contactpanda' ) . '</label><select id="contactpanda-bulk-action"><option value="">' . esc_html__( 'Bulk edit', 'contactpanda' ) . '</option><option value="marketable">' . esc_html__( 'Enable marketable status', 'contactpanda' ) . '</option></select><button type="button" class="button contactpanda-open-bulk" disabled>' . esc_html__( 'Apply', 'contactpanda' ) . '</button><span class="contactpanda-bulk-selection" aria-live="polite">' . esc_html__( 'No person selected', 'contactpanda' ) . '</span><span class="contactpanda-list-output-actions"><button type="button" class="button contactpanda-open-export"><span class="dashicons dashicons-download" aria-hidden="true"></span> ' . esc_html__( 'Export', 'contactpanda' ) . '</button><button type="button" class="button contactpanda-open-print"><span class="dashicons dashicons-printer" aria-hidden="true"></span> ' . esc_html__( 'Print list', 'contactpanda' ) . '</button></span></div>';
+		echo '<div class="contactpanda-bulk-toolbar"><label class="screen-reader-text" for="contactpanda-bulk-action">' . esc_html__( 'Select bulk action', 'contactpanda' ) . '</label><select id="contactpanda-bulk-action"><option value="">' . esc_html__( 'Bulk actions', 'contactpanda' ) . '</option><option value="marketable">' . esc_html__( 'Enable marketable status', 'contactpanda' ) . '</option></select><button type="button" class="button contactpanda-open-bulk" disabled>' . esc_html__( 'Execute', 'contactpanda' ) . '</button><span class="contactpanda-bulk-selection" aria-live="polite">' . esc_html__( 'No person selected', 'contactpanda' ) . '</span><span class="contactpanda-list-output-actions"><button type="button" class="button contactpanda-open-export"><span class="dashicons dashicons-download" aria-hidden="true"></span> ' . esc_html__( 'Export', 'contactpanda' ) . '</button><button type="button" class="button contactpanda-open-print"><span class="dashicons dashicons-printer" aria-hidden="true"></span> ' . esc_html__( 'Print list', 'contactpanda' ) . '</button></span></div>';
 		echo '<table class="widefat striped contactpanda-table"><thead><tr>';
 		echo __( '<td class="check-column"><input type="checkbox" class="contactpanda-select-all" aria-label="Select all people on this page"></td>', 'contactpanda' );
 		echo self::sortable_heading( __( 'First name', 'contactpanda' ), 'first_name', $orderby, $order, $customer_filter, $search );
@@ -2129,23 +2130,30 @@ final class ContactPanda_Plugin {
 		echo '<div class="contactpanda-company-relations"><div class="contactpanda-channel-heading"><span>' . esc_html__( 'Companies', 'contactpanda' ) . '</span></div>';
 		if ( ! $relations ) echo '<p class="contactpanda-muted">' . esc_html__( 'No company assigned.', 'contactpanda' ) . '</p>';
 		foreach ( $relations as $relation ) {
-			echo '<div class="contactpanda-company-relation"><div><strong>' . esc_html( $relation['name'] ) . '</strong>';
+			$modal_id = 'contactpanda-company-relation-' . absint( $contact_id ) . '-' . absint( $relation['company_id'] );
+			echo '<div class="contactpanda-company-relation">';
+			if ( ! $readonly ) echo '<button type="button" class="button-link contactpanda-company-relation-summary contactpanda-open-company-relation" data-modal="' . esc_attr( $modal_id ) . '" aria-haspopup="dialog">';
+			else echo '<div class="contactpanda-company-relation-summary">';
+			echo '<strong>' . esc_html( $relation['name'] ) . '</strong>';
 			if ( $relation['position'] ) echo '<small>' . esc_html( $relation['position'] ) . '</small>';
 			if ( ! empty( $relation['is_primary_company'] ) ) echo '<span class="contactpanda-primary-badge">' . esc_html__( 'Primary company', 'contactpanda' ) . '</span>';
-			echo '</div>';
+			echo $readonly ? '</div>' : '</button>';
 			if ( ! $readonly ) {
-				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-company-relation-form"><input type="hidden" name="action" value="contactpanda_contact_company"><input type="hidden" name="operation" value="update"><input type="hidden" name="contact_id" value="' . esc_attr( $contact_id ) . '"><input type="hidden" name="company_id" value="' . esc_attr( $relation['company_id'] ) . '">';
+				echo '<div id="' . esc_attr( $modal_id ) . '" class="contactpanda-consent-modal contactpanda-company-relation-modal" role="dialog" aria-modal="true" aria-labelledby="' . esc_attr( $modal_id . '-title' ) . '" hidden><div class="contactpanda-modal-panel"><h2 id="' . esc_attr( $modal_id . '-title' ) . '">' . esc_html__( 'Edit company assignment', 'contactpanda' ) . '</h2><p><strong>' . esc_html( $relation['name'] ) . '</strong></p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-company-relation-form"><input type="hidden" name="action" value="contactpanda_contact_company"><input type="hidden" name="contact_id" value="' . esc_attr( $contact_id ) . '"><input type="hidden" name="company_id" value="' . esc_attr( $relation['company_id'] ) . '">';
 				wp_nonce_field( 'contactpanda_contact_company_' . $contact_id );
-				echo '<label><span>' . esc_html__( 'Position / role', 'contactpanda' ) . '</span><input name="position" value="' . esc_attr( $relation['position'] ) . '"></label><label class="contactpanda-company-primary"><input type="checkbox" name="primary_company" value="1"' . checked( ! empty( $relation['is_primary_company'] ), true, false ) . '> ' . esc_html__( 'Use as primary company', 'contactpanda' ) . '</label><div><button class="button">' . esc_html__( 'Save', 'contactpanda' ) . '</button> <button class="button-link-delete" name="operation" value="remove" onclick="return confirm(' . esc_attr( wp_json_encode( __( 'Remove this company assignment?', 'contactpanda' ) ) ) . ');">' . esc_html__( 'Remove assignment', 'contactpanda' ) . '</button></div></form>';
+				echo '<label><span>' . esc_html__( 'Position / role', 'contactpanda' ) . '</span><input name="position" value="' . esc_attr( $relation['position'] ) . '"></label><label class="contactpanda-company-primary"><input type="checkbox" name="primary_company" value="1"' . checked( ! empty( $relation['is_primary_company'] ), true, false ) . '> ' . esc_html__( 'Use as primary company', 'contactpanda' ) . '</label><div class="contactpanda-modal-actions"><button class="button button-primary" name="operation" value="update">' . esc_html__( 'Save', 'contactpanda' ) . '</button><button type="button" class="button contactpanda-close-company-relation">' . esc_html__( 'Cancel', 'contactpanda' ) . '</button><button class="button-link-delete" name="operation" value="remove" onclick="return confirm(' . esc_attr( wp_json_encode( __( 'Remove this company assignment?', 'contactpanda' ) ) ) . ');">' . esc_html__( 'Remove assignment', 'contactpanda' ) . '</button></div></form></div></div>';
 			}
 			echo '</div>';
 		}
 		if ( ! $readonly ) {
-			echo '<details class="contactpanda-company-relation-add"><summary>' . esc_html__( 'Add company assignment', 'contactpanda' ) . '</summary><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_contact_company"><input type="hidden" name="operation" value="add"><input type="hidden" name="contact_id" value="' . esc_attr( $contact_id ) . '">';
+			$add_modal_id = 'contactpanda-company-relation-add-' . absint( $contact_id );
+			$add_label = $relations ? __( 'Assign another company', 'contactpanda' ) : __( 'Assign company', 'contactpanda' );
+			echo '<button type="button" class="button contactpanda-open-company-relation contactpanda-company-relation-add" data-modal="' . esc_attr( $add_modal_id ) . '" aria-haspopup="dialog"><span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span> ' . esc_html( $add_label ) . '</button>';
+			echo '<div id="' . esc_attr( $add_modal_id ) . '" class="contactpanda-consent-modal contactpanda-company-relation-modal" role="dialog" aria-modal="true" aria-labelledby="' . esc_attr( $add_modal_id . '-title' ) . '" hidden><div class="contactpanda-modal-panel"><h2 id="' . esc_attr( $add_modal_id . '-title' ) . '">' . esc_html( $add_label ) . '</h2><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_contact_company"><input type="hidden" name="operation" value="add"><input type="hidden" name="contact_id" value="' . esc_attr( $contact_id ) . '">';
 			wp_nonce_field( 'contactpanda_contact_company_' . $contact_id );
 			echo '<label><span>' . esc_html__( 'Company', 'contactpanda' ) . '</span><select name="company_id"><option value="0">' . esc_html__( 'Select company', 'contactpanda' ) . '</option>';
 			foreach ( ContactPanda_Store::companies() as $company ) echo '<option value="' . esc_attr( $company['id'] ) . '">' . esc_html( $company['name'] ) . '</option>';
-			echo '</select></label><label><span>' . esc_html__( 'Or create company', 'contactpanda' ) . '</span><input name="company_name"></label><label><span>' . esc_html__( 'Position / role', 'contactpanda' ) . '</span><input name="position"></label><label><input type="checkbox" name="primary_company" value="1"' . checked( empty( $relations ), true, false ) . '> ' . esc_html__( 'Use as primary company', 'contactpanda' ) . '</label><p><button class="button button-primary">' . esc_html__( 'Add assignment', 'contactpanda' ) . '</button></p></form></details>';
+			echo '</select></label><label><span>' . esc_html__( 'Or create company', 'contactpanda' ) . '</span><input name="company_name"></label><label><span>' . esc_html__( 'Position / role', 'contactpanda' ) . '</span><input name="position"></label><label><input type="checkbox" name="primary_company" value="1"' . checked( empty( $relations ), true, false ) . '> ' . esc_html__( 'Use as primary company', 'contactpanda' ) . '</label><div class="contactpanda-modal-actions"><button class="button button-primary">' . esc_html( $add_label ) . '</button><button type="button" class="button contactpanda-close-company-relation">' . esc_html__( 'Cancel', 'contactpanda' ) . '</button></div></form></div></div>';
 		}
 		echo '</div>';
 	}
@@ -3294,7 +3302,11 @@ final class ContactPanda_Plugin {
 	private static function render_person_tabs( $contact_id, $customer, $contact, $orders, $events, $events_enabled, $broadcasts, $editable ) {
 		$tabs_id = 'contactpanda-person-tabs-' . absint( $contact_id );
 		$notes = self::contact_notes( $contact_id );
-		$activities = ContactPanda_Store::standalone() ? ContactPanda_Store::activities( $contact_id, 0, 'activity' ) : array();
+		$activities = ContactPanda_Store::activities( $contact_id, 0, 'activity' );
+		$partition = self::partition_contact_notes( $notes );
+		$notes = $partition['notes'];
+		$activities = array_merge( $activities, $partition['activities'] );
+		usort( $activities, static function ( $left, $right ) { return strcmp( (string) self::value( $right, array( 'date_created', 'created_at' ) ), (string) self::value( $left, array( 'date_created', 'created_at' ) ) ); } );
 		$broadcast_page_arg = isset( $_GET['broadcast_page'] ) && is_scalar( $_GET['broadcast_page'] ) ? wp_unslash( $_GET['broadcast_page'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination.
 		$show_broadcasts = absint( $broadcast_page_arg ) > 0;
 		echo __( '<section class="contactpanda-card contactpanda-tabs-card" data-tabs><div class="contactpanda-tabs" role="tablist" aria-label="Person data">', 'contactpanda' );
@@ -3827,19 +3839,10 @@ final class ContactPanda_Plugin {
 		return true;
 	}
 
-	private static function log_contact_note( $contact_id, $summary, $content ) {
-		if ( ContactPanda_Store::standalone() ) {
-			return ContactPanda_Store::add_activity( $contact_id, 0, 'note', $summary, $content );
-		}
-		if ( ! class_exists( '\\Groundhogg\\Contact' ) ) {
-			return false;
-		}
-		try {
-			$contact = new \Groundhogg\Contact( $contact_id );
-			return $contact->add_note( wp_kses_post( $content ), 'user', get_current_user_id(), array( 'summary' => sanitize_text_field( $summary ) ) );
-		} catch ( Throwable $e ) {
-			return false;
-		}
+	private static function log_contact_activity( $contact_id, $type, $summary, $content ) {
+		// ContactPanda-generated audit events remain separate from human notes,
+		// including while Groundhogg is the leading contact data source.
+		return ContactPanda_Store::add_activity( $contact_id, 0, sanitize_key( $type ), $summary, $content );
 	}
 
 	public static function handle_add_contact_note() {
@@ -3895,6 +3898,31 @@ final class ContactPanda_Plugin {
 		}
 		usort( $notes, static function ( $left, $right ) { return strcmp( (string) self::value( $right, array( 'date_created', 'created_at' ) ), (string) self::value( $left, array( 'date_created', 'created_at' ) ) ); } );
 		return $notes;
+	}
+
+	/** Move historical automatic Groundhogg notes into the activity timeline. */
+	private static function partition_contact_notes( $notes ) {
+		$result = array( 'notes' => array(), 'activities' => array() );
+		$titles = array( 'Contact address', 'Kontaktadresse', 'WordPress roles changed', 'WordPress-Rollen geändert', 'WordPress user account', 'WordPress-Benutzerkonto' );
+		$content_prefixes = array( 'Contact address updated', 'Kontaktadresse aktualisiert', 'WordPress roles changed', 'WordPress-Rollen geändert', 'WordPress user account', 'WordPress-Benutzerkonto' );
+		foreach ( (array) $notes as $note ) {
+			$title = sanitize_text_field( self::value( $note, array( 'summary', 'title' ), '' ) );
+			$content = trim( wp_strip_all_tags( self::value( $note, array( 'content', 'note' ), '' ) ) );
+			$is_activity = in_array( $title, $titles, true );
+			if ( ! $is_activity ) {
+				foreach ( $content_prefixes as $prefix ) {
+					if ( 0 === strpos( $content, $prefix ) ) { $is_activity = true; break; }
+				}
+			}
+			if ( ! $is_activity ) {
+				$result['notes'][] = $note;
+				continue;
+			}
+			$activity = $note;
+			$activity['activity_type'] = false !== stripos( $title . ' ' . $content, 'role' ) || false !== stripos( $title . ' ' . $content, 'Rollen' ) ? 'user_roles' : ( false !== stripos( $title . ' ' . $content, 'account' ) || false !== stripos( $title . ' ' . $content, 'Benutzerkonto' ) ? 'user_account' : 'address_update' );
+			$result['activities'][] = $activity;
+		}
+		return $result;
 	}
 
 	private static function render_contact_notes( $contact_id, $notes, $standalone = true, $editable = false ) {
@@ -3957,10 +3985,13 @@ final class ContactPanda_Plugin {
 
 	private static function activity_type_label( $type ) {
 		$labels = array(
+			'address_update'   => __( 'Address change', 'contactpanda' ),
 			'consent'         => __( 'Consent', 'contactpanda' ),
 			'form_submission' => __( 'Form submission', 'contactpanda' ),
 			'merge'           => __( 'Merge', 'contactpanda' ),
 			'registration'    => __( 'Registration', 'contactpanda' ),
+			'user_account'    => __( 'User account', 'contactpanda' ),
+			'user_roles'      => __( 'User roles', 'contactpanda' ),
 		);
 		return $labels[ $type ] ?? ucwords( str_replace( '_', ' ', $type ) );
 	}

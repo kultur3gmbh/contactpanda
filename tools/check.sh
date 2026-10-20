@@ -24,10 +24,11 @@ if command -v php >/dev/null 2>&1; then
 	php tests/flow-hooks.php || status=1
 	php tests/release-050.php || status=1
 	php tests/release-060.php || status=1
+	php tests/admin-ui-corrections.php || status=1
 elif command -v python3 >/dev/null 2>&1; then
   echo "PHP CLI is unavailable; running the offline structural fallback."
   python3 tools/check_php_structure.py contactpanda tests || status=1
-	echo "SKIPPED: PHP trash, WooCommerce import and order summary, Groundhogg migration, marketing status icon, updater, vCard, event-adapter, and release contract behavior tests require PHP CLI."
+	echo "SKIPPED: PHP trash, WooCommerce import and order summary, Groundhogg migration, marketing status icon, updater, vCard, event-adapter, release contract, and administrator UI behavior tests require PHP CLI."
 else
   echo "PHP or Python 3 is required for source validation." >&2
   status=1

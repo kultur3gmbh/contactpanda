@@ -938,16 +938,31 @@ final class ContactPanda_Store {
 		global $wpdb;
 		$table = ContactPanda_Schema::table_names()['activities'];
 		$category = in_array( $category, array( 'notes', 'activity' ), true ) ? $category : 'all';
-		$type_clause = '';
-		if ( 'notes' === $category ) {
-			$type_clause = " AND (activity_type = 'note' OR activity_type LIKE 'note\\_%')";
-		} elseif ( 'activity' === $category ) {
-			$type_clause = " AND activity_type <> 'note' AND activity_type NOT LIKE 'note\\_%'";
-		}
 		if ( $contact_id ) {
-			return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE contact_id = %d{$type_clause} ORDER BY occurred_at DESC LIMIT 50", absint( $contact_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name and fixed type clause.
+			$items = (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE contact_id = %d ORDER BY occurred_at DESC LIMIT 100", absint( $contact_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		} else {
+			$items = (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE company_id = %d ORDER BY occurred_at DESC LIMIT 100", absint( $company_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		}
-		return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, activity_type, title AS summary, content, occurred_at AS created_at FROM `{$table}` WHERE company_id = %d{$type_clause} ORDER BY occurred_at DESC LIMIT 50", absint( $company_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name and fixed type clause.
+		if ( 'all' !== $category ) {
+			$items = array_values( array_filter( $items, static function ( $item ) use ( $category ) {
+				$is_note = self::activity_is_note( $item );
+				return 'notes' === $category ? $is_note : ! $is_note;
+			} ) );
+		}
+		return array_slice( $items, 0, 50 );
+	}
+
+	/** Keep historical automatic entries out of Notes even when older builds stored them as note. */
+	private static function activity_is_note( $item ) {
+		$type = sanitize_key( $item['activity_type'] ?? '' );
+		if ( 'note' !== $type && 0 !== strpos( $type, 'note_' ) ) return false;
+		$title = sanitize_text_field( $item['summary'] ?? '' );
+		$legacy_activity_titles = array(
+			'Contact address', 'Kontaktadresse',
+			'WordPress roles changed', 'WordPress-Rollen geändert',
+			'WordPress user account', 'WordPress-Benutzerkonto',
+		);
+		return ! in_array( $title, $legacy_activity_titles, true );
 	}
 
 	public static function link_user( $contact_id, $user_id ) {

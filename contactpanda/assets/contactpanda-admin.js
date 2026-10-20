@@ -56,6 +56,9 @@
 			event.preventDefault();
 			return openPreviewFrame(invoiceLink.dataset.title || tr('invoice', 'Invoice'), invoiceLink.href, '', invoiceLink.href);
 		}
+		if (event.target.classList.contains('contactpanda-company-relation-modal')) {
+			return toggleLocalModal(event.target, false);
+		}
 		var button = event.target.closest('button');
 		if (!button) return;
 		if (button.classList.contains('contactpanda-settings-color-swatch')) {
@@ -109,6 +112,12 @@
 		if (button.classList.contains('contactpanda-cancel-channel')) return closeContactChannel(button.closest('.contactpanda-channel-row'));
 		if (button.classList.contains('contactpanda-save-channel')) return saveContactChannel(button.closest('.contactpanda-channel-row'));
 		if (button.classList.contains('contactpanda-delete-channel')) return deleteContactChannel(button.closest('.contactpanda-channel-row'));
+		if (button.classList.contains('contactpanda-open-company-relation')) {
+			return toggleLocalModal(document.getElementById(button.dataset.modal || ''), true);
+		}
+		if (button.classList.contains('contactpanda-close-company-relation')) {
+			return toggleLocalModal(button.closest('.contactpanda-company-relation-modal'), false);
+		}
 		if (button.classList.contains('contactpanda-edit-address-summary')) {
 			var addressTab = document.querySelector('.contactpanda-tab[aria-controls$="-addresses"]');
 			if (addressTab) {
@@ -129,6 +138,13 @@
 	});
 
 	document.addEventListener('keydown', function (event) {
+		if (event.key === 'Escape') {
+			var companyModal = document.querySelector('.contactpanda-company-relation-modal:not([hidden])');
+			if (companyModal) {
+				toggleLocalModal(companyModal, false);
+				return;
+			}
+		}
 		if (event.key === 'Escape' && event.target.classList.contains('contactpanda-token-input')) {
 			closeTokenSuggestions(event.target);
 			return;
