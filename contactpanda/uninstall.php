@@ -8,13 +8,17 @@ if ( empty( $contactpanda_general_settings['delete_on_uninstall'] ) ) {
 }
 
 require_once __DIR__ . '/includes/class-contactpanda-schema.php';
+require_once __DIR__ . '/includes/class-contactpanda-newsletter-schema.php';
 
 ContactPanda_Schema::drop_all();
+ContactPanda_Newsletter_Schema::drop_all();
 
 delete_option( 'contactpanda_general_settings' );
 delete_option( 'contactpanda_registration_settings' );
 delete_option( 'contactpanda_db_version' );
 delete_option( 'contactpanda_last_migration_report' );
+delete_option( 'contactpanda_license_state' );
+delete_option( 'contactpanda_newsletter_settings' );
 
 global $wpdb;
 $contactpanda_meta_pattern = $wpdb->esc_like( 'contactpanda_' ) . '%';

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.5.0\n"
+"Project-Id-Version: ContactPanda 0.6.0\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-19 20:00+0200\n"
@@ -4685,3 +4685,1518 @@ msgstr "Benutzer"
 
 msgid "WooCommerce is not active."
 msgstr "WooCommerce ist nicht aktiv."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:94
+#, php-format
+msgid "%1$d sent · %2$d opened · %3$d clicked · %4$d unsubscribed"
+msgstr "%1$d gesendet · %2$d geöffnet · %3$d angeklickt · %4$d abgemeldet"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:95
+#, php-format
+msgid "%1$d sent · %2$d queued · %3$d skipped · %4$d failed"
+msgstr "%1$d gesendet · %2$d vorgemerkt · %3$d übersprungen · %4$d fehlgeschlagen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:97 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:99
+#, php-format
+msgid "%1$s at %2$s"
+msgstr "%1$s um %2$s"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:689
+#, php-format
+msgid "%s (copy)"
+msgstr "%s (Kopie)"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:263
+msgid "A subtle divider line is inserted."
+msgstr "Eine dezente Trennlinie wird eingefügt."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:131
+msgid "Accent color"
+msgstr "Akzentfarbe"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:589
+msgid "Add a fallback with a vertical bar, for example {first_name|there}."
+msgstr "Mit einem senkrechten Strich kann ein Ersatztext angegeben werden, zum Beispiel {first_name|Guten Tag}."
+
+#: contactpanda/includes/class-contactpanda-segments.php:104
+msgid "Add a filter to narrow the people list."
+msgstr "Fügen Sie einen Filter hinzu, um die Personenliste einzugrenzen."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:36
+msgid "Add campaign"
+msgstr "Kampagne hinzufügen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:760
+msgid "Add condition"
+msgstr "Bedingung hinzufügen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:593
+msgid "Add content block"
+msgstr "Inhaltsbaustein hinzufügen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:83
+msgid "Add filter"
+msgstr "Filter hinzufügen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:122
+msgid "Address and legal information"
+msgstr "Adresse und rechtliche Angaben"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:107 contactpanda/includes/class-contactpanda-newsletters.php:109
+msgid "Adopt WooCommerce settings"
+msgstr "WooCommerce-Einstellungen übernehmen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:279
+msgid "Alignment"
+msgstr "Ausrichtung"
+
+#: contactpanda/includes/class-contactpanda-segments.php:82 contactpanda/includes/class-contactpanda-segments.php:757
+msgid "all conditions"
+msgstr "alle Bedingungen erfüllen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:108 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:149
+msgid "All eligible contacts"
+msgstr "Alle berechtigten Kontakte"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:73
+msgid "All statuses"
+msgstr "Alle Status"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:259
+msgid "Alternative text"
+msgstr "Alternativtext"
+
+#: contactpanda/includes/class-contactpanda-segments.php:840
+msgid "Amount"
+msgstr "Betrag"
+
+#: contactpanda/includes/class-contactpanda-segments.php:744 contactpanda/includes/class-contactpanda-segments.php:770
+msgid "Any"
+msgstr "Mindestens eine"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:516
+msgid "Archive"
+msgstr "Archivieren"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:270
+msgid "Archive this template?"
+msgstr "Diese Vorlage archivieren?"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:518
+msgid "Archived"
+msgstr "Archiviert"
+
+#: contactpanda/includes/class-contactpanda-segments.php:82 contactpanda/includes/class-contactpanda-segments.php:757
+msgid "at least one condition"
+msgstr "mindestens eine Bedingung erfüllen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:328
+msgid "At least one content item must remain enabled."
+msgstr "Mindestens ein Inhalt muss aktiviert bleiben."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:585
+msgid "Available placeholders"
+msgstr "Verfügbare Platzhalter"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:560 contactpanda/includes/class-contactpanda-newsletters.php:611
+msgid "Back to templates"
+msgstr "Zurück zu den Vorlagen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:131 contactpanda/includes/class-contactpanda-newsletters.php:313
+msgid "Background color"
+msgstr "Hintergrundfarbe"
+
+#: contactpanda/includes/class-contactpanda-segments.php:369
+msgid "Birthday"
+msgstr "Geburtstag"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:276 contactpanda/includes/class-contactpanda-newsletters.php:605
+msgid "Block settings"
+msgstr "Baustein-Einstellungen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:427
+msgid "Booked but not attended"
+msgstr "Gebucht, aber nicht besucht"
+
+#: contactpanda/includes/class-contactpanda-segments.php:840
+msgid "Bookings"
+msgstr "Buchungen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:315
+msgid "Border color"
+msgstr "Rahmenfarbe"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:349
+msgid "Bottom"
+msgstr "Unten"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:354
+msgid "Bottom left"
+msgstr "Unten links"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:353
+msgid "Bottom right"
+msgstr "Unten rechts"
+
+#: contactpanda/includes/class-contactpanda-segments.php:457
+msgid "Bounced"
+msgstr "Unzustellbar"
+
+#: contactpanda/includes/class-contactpanda-segments.php:754
+msgid "Build a clear search from contact behaviour and save it for lists and newsletters."
+msgstr "Erstellen Sie eine übersichtliche Suche aus dem Verhalten Ihrer Kontakte und speichern Sie sie für Listen und Newsletter."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:560
+msgid "Build a reusable email from responsive content blocks."
+msgstr "Erstellen Sie eine wiederverwendbare E-Mail aus responsiven Inhaltsbausteinen."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:255 contactpanda/includes/class-contactpanda-newsletters.php:624
+msgid "Button"
+msgstr "Schaltfläche"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:36 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:147
+msgid "Campaign"
+msgstr "Kampagne"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:36
+msgid "Campaign name"
+msgstr "Kampagnenname"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:200
+msgid "Campaign not found."
+msgstr "Kampagne nicht gefunden."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:26 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:35
+msgid "Campaigns"
+msgstr "Kampagnen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:344
+msgid "Cancelled"
+msgstr "Abgebrochen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:290
+msgid "Category"
+msgstr "Kategorie"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:281
+msgid "Center"
+msgstr "Zentriert"
+
+#: contactpanda/includes/class-contactpanda-segments.php:779
+msgid "Choose a condition"
+msgstr "Bedingung auswählen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:102
+msgid "Choose a field"
+msgstr "Feld auswählen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:271
+msgid "Choose image"
+msgstr "Bild auswählen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:128
+msgid "Choose logo from media library"
+msgstr "Logo aus der Mediathek auswählen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:83
+msgid "Clear filters"
+msgstr "Filter zurücksetzen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:81
+msgid "Close filter"
+msgstr "Filter schließen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:317
+msgid "Columns"
+msgstr "Spalten"
+
+#: contactpanda/includes/class-contactpanda-segments.php:738 contactpanda/includes/class-contactpanda-segments.php:764
+msgid "Combination"
+msgstr "Verknüpfung"
+
+#: contactpanda/includes/class-contactpanda-segments.php:81
+msgid "Combine personal data, addresses, tags, WooCommerce purchases, and events."
+msgstr "Kombinieren Sie Personendaten, Adressen, Tags, WooCommerce-Käufe und Veranstaltungen."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:119
+msgid "Company email address"
+msgstr "Firmen-E-Mail-Adresse"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:123
+msgid "Company register"
+msgstr "Firmenbuch"
+
+#: contactpanda/includes/class-contactpanda-segments.php:106
+msgid "Complete all filters"
+msgstr "Alle Filter vervollständigen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:83
+msgid "Complete the filter"
+msgstr "Filter vervollständigen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:779
+msgid "Condition"
+msgstr "Bedingung"
+
+#: contactpanda/includes/class-contactpanda-segments.php:738 contactpanda/includes/class-contactpanda-segments.php:764
+msgid "Conditions"
+msgstr "Bedingungen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:455
+msgid "Confirmed"
+msgstr "Bestätigt"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:129
+msgid "Consent missing"
+msgstr "Zustimmung fehlt"
+
+#: contactpanda/includes/class-contactpanda-segments.php:754
+msgid "Contact search"
+msgstr "Kontaktsuche"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:153
+msgid "ContactPanda divides the mailing into controlled batches. Actual timing depends on the WordPress cron system and the configured mail service."
+msgstr "ContactPanda teilt die Aussendung in kontrollierte Versandpakete. Die tatsächlichen Zeitabstände hängen vom WordPress-Cron-System und vom eingerichteten Maildienst ab."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:136
+msgid "ContactPanda email layout"
+msgstr "ContactPanda-E-Mail-Vorlage"
+
+#: contactpanda/includes/class-contactpanda-segments.php:420
+msgid "Contains"
+msgstr "Enthält"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:278 contactpanda/includes/class-contactpanda-newsletters.php:341
+msgid "Content"
+msgstr "Inhalt"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:131
+msgid "Content background"
+msgstr "Inhaltshintergrund"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:593
+msgid "Content blocks"
+msgstr "Inhaltsbausteine"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:299
+msgid "Content type"
+msgstr "Inhaltstyp"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:591
+msgid "Content width in pixels"
+msgstr "Inhaltsbreite in Pixeln"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:107
+msgid "Copy the current WooCommerce email colors, sender details, header image, and footer text into the editable ContactPanda fields below. This is a one-time copy and does not switch the selected email layout."
+msgstr "Kopieren Sie die aktuellen WooCommerce-E-Mail-Farben, Absenderdaten, das Kopfbild und den Fußzeilentext in die darunterliegenden bearbeitbaren ContactPanda-Felder. Dies ist eine einmalige Übernahme und ändert nicht die ausgewählte E-Mail-Vorlage."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:345
+msgid "Corner rounding"
+msgstr "Eckenrundung"
+
+#: contactpanda/includes/class-contactpanda-segments.php:105
+msgid "Counting matching people…"
+msgstr "Passende Personen werden gezählt …"
+
+#: contactpanda/includes/class-contactpanda-segments.php:738
+msgid "Create and apply filters directly above the people list. This page is only for managing saved searches."
+msgstr "Erstellen und verwenden Sie Filter direkt oberhalb der Personenliste. Diese Seite dient ausschließlich der Verwaltung gespeicherter Suchen."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:613
+msgid "Create editable copy"
+msgstr "Bearbeitbare Kopie erstellen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:560
+msgid "Create email template"
+msgstr "E-Mail-Vorlage erstellen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:71
+msgid "Create mailing"
+msgstr "Aussendung erstellen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:151
+msgid "Create new search"
+msgstr "Neue Suche erstellen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:499
+msgid "Create reusable, responsive email templates independently of Groundhogg."
+msgstr "Erstellen Sie wiederverwendbare, responsive E-Mail-Vorlagen unabhängig von Groundhogg."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:499
+msgid "Create template"
+msgstr "Vorlage erstellen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:505
+msgid "Create the first email template or change the search."
+msgstr "Erstellen Sie die erste E-Mail-Vorlage oder ändern Sie die Suche."
+
+#: contactpanda/includes/class-contactpanda-segments.php:840 contactpanda/includes/class-contactpanda-segments.php:840 contactpanda/includes/class-contactpanda-segments.php:840
+msgid "Days"
+msgstr "Tage"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:974
+msgid "Dear family"
+msgstr "Liebe Familie"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:974
+msgid "Dear Mr"
+msgstr "Sehr geehrter Herr"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:974
+msgid "Dear Ms"
+msgstr "Sehr geehrte Frau"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:118
+msgid "Default reply-to address"
+msgstr "Standard-Antwortadresse"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:116
+msgid "Default sender name"
+msgstr "Standard-Absendername"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:73 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:153
+msgid "Delivery time"
+msgstr "Versandzeitpunkt"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:342
+msgid "Design"
+msgstr "Gestaltung"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:606 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:154
+msgid "Desktop"
+msgstr "Desktop"
+
+#: contactpanda/includes/class-contactpanda-segments.php:792
+msgid "Did not order within the last days"
+msgstr "Keine Bestellung innerhalb der letzten Tage"
+
+#: contactpanda/includes/class-contactpanda-segments.php:792
+msgid "Did not purchase product"
+msgstr "Produkt nicht gekauft"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:324
+msgid "Displayed content"
+msgstr "Angezeigte Inhalte"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:256 contactpanda/includes/class-contactpanda-newsletters.php:625
+msgid "Divider"
+msgstr "Trennlinie"
+
+#: contactpanda/includes/class-contactpanda-segments.php:420
+msgid "Does not contain"
+msgstr "Enthält nicht"
+
+#: contactpanda/includes/class-contactpanda-segments.php:419
+msgid "Does not equal"
+msgstr "Ist nicht gleich"
+
+#: contactpanda/includes/class-contactpanda-segments.php:423
+msgid "Does not have"
+msgstr "Hat nicht"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:518 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:101 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:344
+msgid "Draft"
+msgstr "Entwurf"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:593
+msgid "Drag a block into the email or double-click it to append it. A single click only selects the block."
+msgstr "Ziehen Sie einen Baustein in die E-Mail oder fügen Sie ihn mit einem Doppelklick an. Ein einfacher Klick wählt ihn nur aus."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:275 contactpanda/includes/class-contactpanda-newsletters.php:604
+msgid "Drag blocks here or double-click a block on the left."
+msgstr "Ziehen Sie Bausteine hierher oder doppelklicken Sie links auf einen Baustein."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:274 contactpanda/includes/class-contactpanda-newsletters.php:513
+msgid "Duplicate"
+msgstr "Duplizieren"
+
+#: contactpanda/includes/class-contactpanda-segments.php:757
+msgid "e.g. Coffee customers without an event booking"
+msgstr "z. B. Kaffeekunden ohne Veranstaltungsbuchung"
+
+#: contactpanda/includes/class-contactpanda-segments.php:84
+msgid "e.g. Customers from Vienna"
+msgstr "z. B. Kunden aus Wien"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:273
+msgid "Edit block"
+msgstr "Baustein bearbeiten"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:560
+msgid "Edit email template"
+msgstr "E-Mail-Vorlage bearbeiten"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:603
+msgid "Edit footer defaults and email style"
+msgstr "Vorgaben für Fußzeile und E-Mail-Stil bearbeiten"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:144
+msgid "Edit newsletter mailing"
+msgstr "Newsletter-Aussendung bearbeiten"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:130 contactpanda/includes/class-contactpanda-newsletters.php:589
+msgid "Email appearance"
+msgstr "E-Mail-Gestaltung"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:590
+msgid "Email background color"
+msgstr "E-Mail-Hintergrundfarbe"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:136
+msgid "Email layout"
+msgstr "E-Mail-Vorlage"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:145
+msgid "Email template"
+msgstr "E-Mail-Vorlage"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:217 contactpanda/includes/class-contactpanda-newsletters.php:218 contactpanda/includes/class-contactpanda-newsletters.php:499
+msgid "Email templates"
+msgstr "E-Mail-Vorlagen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:135
+msgid "Email width in pixels"
+msgstr "E-Mail-Breite in Pixeln"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:153
+msgid "Emails per hour"
+msgstr "E-Mails pro Stunde"
+
+#: contactpanda/includes/class-contactpanda-segments.php:421
+msgid "Ends with"
+msgstr "Endet mit"
+
+#: contactpanda/includes/class-contactpanda-segments.php:419
+msgid "Equals"
+msgstr "Ist gleich"
+
+#: contactpanda/includes/class-contactpanda-segments.php:404 contactpanda/includes/class-contactpanda-segments.php:797
+msgid "Event category"
+msgstr "Veranstaltungskategorie"
+
+#: contactpanda/includes/class-contactpanda-segments.php:406 contactpanda/includes/class-contactpanda-segments.php:797
+msgid "Event within the last days"
+msgstr "Veranstaltung innerhalb der letzten Tage"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:327
+msgid "Excerpt"
+msgstr "Kurztext"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:292
+msgid "Featured products"
+msgstr "Hervorgehobene Produkte"
+
+#: contactpanda/includes/class-contactpanda-segments.php:36 contactpanda/includes/class-contactpanda-segments.php:81
+msgid "Filter contacts"
+msgstr "Kontakte filtern"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:174
+msgid "Font family"
+msgstr "Schriftfamilie"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:312 contactpanda/includes/class-contactpanda-newsletters.php:626
+msgid "Footer"
+msgstr "Fußzeile"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:73
+msgid "From"
+msgstr "Von"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:580
+msgid "Full name"
+msgstr "Vollständiger Name"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:336
+msgid "Full width"
+msgstr "Volle Breite"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:129
+msgid "Globally suppressed"
+msgstr "Global gesperrt"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:612 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:124
+msgid "Groundhogg ID"
+msgstr "Groundhogg-ID"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:35
+msgid "Group related newsletter mailings in campaigns."
+msgstr "Fassen Sie zusammengehörige Newsletter-Aussendungen in Kampagnen zusammen."
+
+#: contactpanda/includes/class-contactpanda-segments.php:423
+msgid "Has"
+msgstr "Hat"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:252 contactpanda/includes/class-contactpanda-newsletters.php:623
+msgid "Heading"
+msgstr "Überschrift"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:316
+msgid "Heading level"
+msgstr "Überschrift level"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:262
+msgid "Height in pixels"
+msgstr "Höhe in Pixel"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:974 contactpanda/includes/class-contactpanda-newsletters.php:974 contactpanda/includes/class-contactpanda-newsletters.php:1120
+msgid "Hello"
+msgstr "Hallo"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:254 contactpanda/includes/class-contactpanda-newsletters.php:325 contactpanda/includes/class-contactpanda-newsletters.php:624
+msgid "Image"
+msgstr "Bild"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:329
+msgid "Image format"
+msgstr "Bildformat"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:258
+msgid "Image URL"
+msgstr "Bild-URL"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:153
+msgid "Immediately after starting"
+msgstr "Sofort nach dem Start"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:519 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:344
+msgid "Imported archive"
+msgstr "Importiertes Archiv"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:125
+msgid "Imported broadcast preview"
+msgstr "Vorschau des importierten Broadcasts"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:201
+msgid "Imported broadcasts are read-only archives."
+msgstr "Importierte Broadcasts sind schreibgeschützte Archive."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:614
+msgid "Imported email preview"
+msgstr "Vorschau der importierten E-Mail"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:123
+msgid "Imported Groundhogg broadcast"
+msgstr "Importierter Groundhogg-Broadcast"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:640
+msgid "Imported originals are read only. Duplicate the template before editing it."
+msgstr "Importierte Originale sind schreibgeschützt. Duplizieren Sie die Vorlage vor der Bearbeitung."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:1089
+msgid "Imprint"
+msgstr "Impressum"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:127
+msgid "Imprint URL"
+msgstr "Impressum-URL"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:310
+msgid "Insert link"
+msgstr "Link einfügen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:129
+msgid "Invalid email address"
+msgstr "Ungültige E-Mail-Adresse"
+
+#: contactpanda/includes/class-contactpanda-segments.php:398
+msgid "Invoice number"
+msgstr "Rechnungsnummer"
+
+#: contactpanda/includes/class-contactpanda-segments.php:423
+msgid "Is"
+msgstr "Ist"
+
+#: contactpanda/includes/class-contactpanda-segments.php:424
+msgid "Is at least"
+msgstr "Ist mindestens"
+
+#: contactpanda/includes/class-contactpanda-segments.php:424
+msgid "Is at most"
+msgstr "Ist höchstens"
+
+#: contactpanda/includes/class-contactpanda-segments.php:422
+msgid "Is empty"
+msgstr "Ist leer"
+
+#: contactpanda/includes/class-contactpanda-segments.php:423
+msgid "Is not"
+msgstr "Ist nicht"
+
+#: contactpanda/includes/class-contactpanda-segments.php:422
+msgid "Is not empty"
+msgstr "Ist nicht leer"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:260
+msgid "Label"
+msgstr "Beschriftung"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:332
+msgid "Landscape (4:3)"
+msgstr "Querformat (4:3)"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:508
+msgid "Last modified"
+msgstr "Zuletzt geändert"
+
+#: contactpanda/includes/class-contactpanda-segments.php:396
+msgid "Last order"
+msgstr "Letzte Bestellung"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:321
+msgid "Latest posts"
+msgstr "Neueste Beiträge"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:289
+msgid "Latest products"
+msgstr "Neueste Produkte"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:280 contactpanda/includes/class-contactpanda-newsletters.php:350
+msgid "Left"
+msgstr "Links"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:346
+msgid "Link all values"
+msgstr "Alle Werte koppeln"
+
+#: contactpanda/includes/class-contactpanda-segments.php:36
+msgid "Load saved search"
+msgstr "Gespeicherte Suche laden"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:306
+msgid "Loading products…"
+msgstr "Produkte werden geladen …"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:128
+msgid "Logo and footer text"
+msgstr "Logo und Fußzeilentext"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:129
+msgid "Mail delivery failed"
+msgstr "E-Mail-Versand fehlgeschlagen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:121
+msgid "Mailing details"
+msgstr "Aussendungsdetails"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:147
+msgid "Mailing name"
+msgstr "Aussendungsname"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:151
+msgid "Mailing settings"
+msgstr "Versandeinstellungen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:344
+msgid "Margin"
+msgstr "Außenabstand"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:265
+msgid "Move down"
+msgstr "Nach unten"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:264
+msgid "Move up"
+msgstr "Nach oben"
+
+#: contactpanda/includes/class-contactpanda-segments.php:84 contactpanda/includes/class-contactpanda-segments.php:757
+msgid "Name of this search"
+msgstr "Name dieser Suche"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:71 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:144
+msgid "Newsletter mailing"
+msgstr "Newsletter-Aussendung"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:73
+msgid "Newsletter mailings"
+msgstr "Newsletter-Aussendungen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:606 contactpanda/includes/class-contactpanda-newsletters.php:606 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:154 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:154
+msgid "Newsletter preview"
+msgstr "Newsletter-Vorschau"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:335
+msgid "Newsletter unsubscribe"
+msgstr "Newsletter-Abmeldung"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:52
+msgid "Newsletters"
+msgstr "Newsletter"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:38 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:110
+msgid "No campaign has been created yet."
+msgstr "Es wurde noch keine Kampagne erstellt."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:1064
+msgid "No events selected."
+msgstr "Nein events auswählened."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:335
+msgid "No further marketing newsletters will be sent to this address."
+msgstr "An diese Adresse werden keine weiteren Marketing-Newsletter gesendet."
+
+#: contactpanda/includes/class-contactpanda-segments.php:114
+msgid "No matching entries"
+msgstr "Nein matching Einträge"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:1053
+msgid "No matching posts were found."
+msgstr "Keine passenden Beiträge gefunden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:305 contactpanda/includes/class-contactpanda-newsletters.php:1023
+msgid "No matching products were found."
+msgstr "Keine passenden Produkte gefunden."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:135
+msgid "No recipients have been prepared yet."
+msgstr "Es wurden noch keine Empfänger vorbereitet."
+
+#: contactpanda/includes/class-contactpanda-segments.php:739
+msgid "No searches have been saved yet."
+msgstr "Es wurden noch keine Suchen gespeichert."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:505
+msgid "No templates found"
+msgstr "Keine Vorlagen gefunden"
+
+#: contactpanda/includes/class-contactpanda-segments.php:426
+msgid "Not within the last days"
+msgstr "Nicht innerhalb der letzten Tage"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:297 contactpanda/includes/class-contactpanda-segments.php:405
+msgid "Number of events"
+msgstr "Anzahl der Veranstaltungen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:797
+msgid "Number of events is at least"
+msgstr "Anzahl der Veranstaltungen ist mindestens"
+
+#: contactpanda/includes/class-contactpanda-segments.php:394
+msgid "Number of orders"
+msgstr "Anzahl der Bestellungen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:792
+msgid "Number of orders is at least"
+msgstr "Anzahl der Bestellungen ist mindestens"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:298
+msgid "Number of posts"
+msgstr "Anzahl der Beiträge"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:296
+msgid "Number of products"
+msgstr "Anzahl der Produkte"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:73
+msgid "Open"
+msgstr "Offen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:738
+msgid "Open people and filters"
+msgstr "Personen und Filter öffnen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:129
+msgid "Optional additional footer text"
+msgstr "Optionaler zusätzlicher Fußzeilentext"
+
+#: contactpanda/includes/class-contactpanda-segments.php:397
+msgid "Order number"
+msgstr "Bestellnummer"
+
+#: contactpanda/includes/class-contactpanda-segments.php:792
+msgid "Order total is at least"
+msgstr "Bestellsumme ist mindestens"
+
+#: contactpanda/includes/class-contactpanda-segments.php:792
+msgid "Ordered within the last days"
+msgstr "Bestellung innerhalb der letzten Tage"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:343
+msgid "Padding"
+msgstr "Innenabstand"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:344
+msgid "Paused"
+msgstr "Pausiert"
+
+#: contactpanda/includes/class-contactpanda-segments.php:82 contactpanda/includes/class-contactpanda-segments.php:757
+msgid "People must match"
+msgstr "Personen müssen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:792
+msgid "Companies must match"
+msgstr "Firmen müssen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:308
+msgid "Percent"
+msgstr "Prozent"
+
+#: contactpanda/includes/class-contactpanda-segments.php:359
+msgid "Personal data"
+msgstr "Personendaten"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:309
+msgid "Pixels"
+msgstr "Pixel"
+
+#: contactpanda/includes/class-contactpanda-segments.php:123
+msgid "Please add at least one complete filter."
+msgstr "Bitte fügen Sie mindestens einen vollständigen Filter hinzu."
+
+#: contactpanda/includes/class-contactpanda-segments.php:135 contactpanda/includes/class-contactpanda-segments.php:863
+msgid "Please enter a name and at least one complete condition."
+msgstr "Bitte geben Sie einen Namen und mindestens eine vollständige Bedingung ein."
+
+#: contactpanda/includes/class-contactpanda-segments.php:110
+msgid "Please enter a name for this search."
+msgstr "Bitte geben Sie einen Namen für diese Suche ein."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:720
+msgid "Please enter a valid recipient and subject."
+msgstr "Bitte geben Sie einen gültigen Empfänger und Betreff ein."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:167
+msgid "Please enter valid sender and reply-to details."
+msgstr "Bitte geben Sie gültige Absender- und Antwortdaten ein."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:160
+msgid "Please select a published email template."
+msgstr "Bitte wählen Sie eine veröffentlichte E-Mail-Vorlage aus."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:306
+msgid "Please select an email template."
+msgstr "Bitte wählen Sie eine E-Mail-Vorlage aus."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:331
+msgid "Portrait (4:5)"
+msgstr "Hochformat (4:5)"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:322
+msgid "Post category"
+msgstr "Beitragskategorie"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:320
+msgid "Post selection"
+msgstr "Beitragsauswahl"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:287 contactpanda/includes/class-contactpanda-newsletters.php:319 contactpanda/includes/class-contactpanda-newsletters.php:626
+msgid "Posts"
+msgstr "Beiträge"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:71
+msgid "Prepare, check and send newsletters through a controlled queue."
+msgstr "Newsletter über eine kontrollierte Warteschlange vorbereiten, prüfen und versenden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:571
+msgid "Preview text"
+msgstr "Vorschautext"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:172
+#, php-format
+msgid "Previously saved: %s"
+msgstr "Bisher gespeichert: %s"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:1086
+msgid "Privacy policy"
+msgstr "Datenschutzerklärung"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:126
+msgid "Privacy policy URL"
+msgstr "URL der Datenschutzerklärung"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:302
+msgid "Producer"
+msgstr "Produzent"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:291
+msgid "Producer / brand"
+msgstr "Produzent / Marke"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:301
+msgid "Producer field"
+msgstr "Produzentenfeld"
+
+#: contactpanda/includes/class-contactpanda-segments.php:392
+msgid "Product"
+msgstr "Produkt"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:300 contactpanda/includes/class-contactpanda-segments.php:393
+msgid "Product category"
+msgstr "Produktkategorie"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:288
+msgid "Product selection"
+msgstr "Produktauswahl"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:285 contactpanda/includes/class-contactpanda-newsletters.php:303 contactpanda/includes/class-contactpanda-newsletters.php:626
+msgid "Products"
+msgstr "Produkte"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:293
+msgid "Products on sale"
+msgstr "Produkte im Angebot"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:611
+msgid "Protected Groundhogg email archive"
+msgstr "Geschütztes Groundhogg-E-Mail-Archiv"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:573
+msgid "Publish"
+msgstr "Veröffentlichen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:518
+msgid "Published"
+msgstr "Veröffentlicht"
+
+#: contactpanda/includes/class-contactpanda-segments.php:792
+msgid "Purchased from product category"
+msgstr "Aus Produktkategorie gekauft"
+
+#: contactpanda/includes/class-contactpanda-segments.php:792
+msgid "Purchased product"
+msgstr "Produkt gekauft"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:344
+msgid "Queued"
+msgstr "In Warteschlange"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:809
+msgid "Read more"
+msgstr "Mehr erfahren"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:130
+msgid "Reason"
+msgstr "Grund"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:130
+msgid "Recipient"
+msgstr "Empfänger"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:130
+msgid "Recipient check"
+msgstr "Empfängerprüfung"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:73 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:78
+msgid "Recipients"
+msgstr "Empfänger"
+
+#: contactpanda/includes/class-contactpanda-segments.php:785
+msgid "Remove condition"
+msgstr "Bedingung entfernen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:103
+msgid "Remove filter"
+msgstr "Filter entfernen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:151
+msgid "Reply-to address"
+msgstr "Antwortadresse"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:282 contactpanda/includes/class-contactpanda-newsletters.php:348
+msgid "Right"
+msgstr "Rechts"
+
+#: contactpanda/includes/class-contactpanda-segments.php:762
+msgid "Save and show matching people"
+msgstr "Speichern und passende Personen anzeigen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:142
+msgid "Save newsletter settings"
+msgstr "Newsletter-Einstellungen speichern"
+
+#: contactpanda/includes/class-contactpanda-segments.php:84 contactpanda/includes/class-contactpanda-segments.php:762
+msgid "Save search"
+msgstr "Suche speichern"
+
+#: contactpanda/includes/class-contactpanda-segments.php:83
+msgid "Save this search"
+msgstr "Diese Suche speichern"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:149 contactpanda/includes/class-contactpanda-segments.php:36
+msgid "Saved search"
+msgstr "Gespeicherte Suche"
+
+#: contactpanda-plus/contactpanda-plus.php:84 contactpanda/includes/class-contactpanda-segments.php:18 contactpanda/includes/class-contactpanda-segments.php:18 contactpanda/includes/class-contactpanda-segments.php:738 contactpanda/includes/class-contactpanda-segments.php:764
+msgid "Saved searches"
+msgstr "Gespeicherte Suchen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:111
+msgid "Saving search…"
+msgstr "Suche wird gespeichert …"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:153
+msgid "Schedule for a date and time"
+msgstr "Für Datum und Uhrzeit planen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:344
+msgid "Scheduled"
+msgstr "Geplant"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:147
+msgid "Search campaigns"
+msgstr "Kampagnen durchsuchen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:863
+msgid "Search could not be saved"
+msgstr "Suche konnte nicht gespeichert werden"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:145
+msgid "Search email templates"
+msgstr "E-Mail-Vorlagen durchsuchen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:112
+msgid "Search events"
+msgstr "Veranstaltungen suchen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:108
+#, php-format
+msgid "Search finds %d people – show now"
+msgstr "Suche findet %d Personen – jetzt anzeigen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:107
+msgid "Search finds 1 person – show now"
+msgstr "Suche findet 1 Person – jetzt anzeigen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:73
+msgid "Search mailing name"
+msgstr "Aussendung suchen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:113
+msgid "Search products"
+msgstr "Suchen products"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:149
+msgid "Search saved searches"
+msgstr "Gespeicherte Suchen durchsuchen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:503 contactpanda/includes/class-contactpanda-newsletters.php:503
+msgid "Search templates"
+msgstr "Vorlagen suchen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:277 contactpanda/includes/class-contactpanda-newsletters.php:605
+msgid "Select a block in the email to edit it."
+msgstr "Wählen Sie einen Baustein in der E-Mail aus, um ihn zu bearbeiten."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:320
+msgid "Select a template and enter valid subject, sender and test recipient details."
+msgstr "Wählen Sie eine Vorlage und geben Sie einen gültigen Betreff sowie gültige Absender- und Testempfängerdaten ein."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:318
+msgid "Select events"
+msgstr "Veranstaltungen auswählen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:284
+msgid "Select from media library"
+msgstr "Aus der Mediathek auswählen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:295 contactpanda/includes/class-contactpanda-newsletters.php:323
+msgid "Select posts manually"
+msgstr "Beiträge manuell auswählen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:294
+msgid "Select products manually"
+msgstr "Produkte manuell auswählen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:573 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:153
+msgid "Send test"
+msgstr "Test senden"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:113
+msgid "Sender and company details"
+msgstr "Absender- und Firmendaten"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:117
+msgid "Sender email address"
+msgstr "Absender-E-Mail-Adresse"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:151
+msgid "Sender name"
+msgstr "Absendername"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:344
+msgid "Sending"
+msgstr "Wird versendet"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:151
+msgid "Sending email address"
+msgstr "Versand-E-Mail-Adresse"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:83
+msgid "Sending in progress"
+msgstr "Versand läuft"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:86
+#, php-format
+msgid "Sending starts on %1$s at %2$s"
+msgstr "Versand beginnt am %1$s um %2$s"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:269
+msgid "Sending test email…"
+msgstr "Test-E-Mail wird gesendet …"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:334
+msgid "Show categories"
+msgstr "Kategorien anzeigen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:744 contactpanda/includes/class-contactpanda-segments.php:770
+msgid "Show people"
+msgstr "Personen anzeigen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:333
+msgid "Show price"
+msgstr "Preis anzeigen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:335
+msgid "Show producer / brand"
+msgstr "Hersteller / Marke anzeigen"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:130
+msgid "Skipped contacts are never sent automatically. If actual consent exists, document the manual override in the person’s Marketing & Consent section and prepare a new campaign."
+msgstr "Übersprungene Kontakte werden niemals automatisch angeschrieben. Liegt eine tatsächliche Zustimmung vor, dokumentieren Sie die manuelle Freigabe im Bereich Marketing & Zustimmung der Person und bereiten Sie eine neue Kampagne vor."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:257 contactpanda/includes/class-contactpanda-newsletters.php:625
+msgid "Spacer"
+msgstr "Abstand"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:330
+msgid "Square (1:1)"
+msgstr "Quadratisch (1:1)"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:81 contactpanda-plus/modules/events/class-contactpanda-plus-events.php:178
+msgid "Start"
+msgstr "Starten"
+
+#: contactpanda/includes/class-contactpanda-segments.php:421
+msgid "Starts with"
+msgstr "Beginnt mit"
+
+#: contactpanda/includes/class-contactpanda-segments.php:380
+msgid "Status and assignment"
+msgstr "Status und Zuordnung"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:508 contactpanda/includes/class-contactpanda-newsletters.php:612 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:73 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:147
+msgid "Subject"
+msgstr "Betreff"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:169
+msgid "System font"
+msgstr "Systemschrift"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:606 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:154
+msgid "Tablet"
+msgstr "Tablet"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:261
+msgid "Target URL"
+msgstr "Ziel-URL"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:569
+msgid "Template name"
+msgstr "Vorlagenname"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:646
+msgid "Template name and subject are required."
+msgstr "Vorlagenname und Betreff sind erforderlich."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:153
+msgid "Test mailing"
+msgstr "Test-Versand"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:573
+msgid "Test recipient"
+msgstr "Testempfänger"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:131 contactpanda/includes/class-contactpanda-newsletters.php:314
+msgid "Text color"
+msgstr "Textfarbe"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:672
+msgid "The email template could not be saved."
+msgstr "Die E-Mail-Vorlage konnte nicht gespeichert werden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:540
+msgid "The email template was not found."
+msgstr "Die E-Mail-Vorlage wurde nicht gefunden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:672
+msgid "The email template was saved."
+msgstr "Die E-Mail-Vorlage wurde gespeichert."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:340
+msgid "The footer is fixed and can be changed under Settings."
+msgstr "Die Fußzeile ist fix und kann unter Einstellungen geändert werden."
+
+#: contactpanda/includes/class-contactpanda-segments.php:109
+msgid "The matching people could not be counted."
+msgstr "Die passenden Personen konnten nicht gezählt werden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:267
+msgid "The preview could not be created."
+msgstr "Die Vorschau konnte nicht erstellt werden."
+
+#: contactpanda/includes/class-contactpanda-segments.php:142
+msgid "The search could not be saved."
+msgstr "Die Suche konnte nicht gespeichert werden."
+
+#: contactpanda/includes/class-contactpanda-segments.php:111 contactpanda/includes/class-contactpanda-segments.php:144
+msgid "The search was saved."
+msgstr "Die Suche wurde gespeichert."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:683
+msgid "The template action could not be completed."
+msgstr "Die Vorlagenaktion konnte nicht abgeschlossen werden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:686
+msgid "The template was archived."
+msgstr "Die Vorlage wurde archiviert."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:698
+msgid "The template was duplicated."
+msgstr "Die Vorlage wurde dupliziert."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:268
+msgid "The test email could not be sent."
+msgstr "Die Test-E-Mail konnte nicht gesendet werden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:737 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:324
+#, php-format
+msgid "The test email was sent to %s."
+msgstr "Die Test-E-Mail wurde an %s gesendet."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:209
+msgid "The WooCommerce email style was copied to ContactPanda."
+msgstr "Der WooCommerce-E-Mail-Stil wurde in ContactPanda übernommen."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:111
+msgid "These details provide the prefilled footer block and the legally required unsubscribe information."
+msgstr "Diese Angaben bilden den vorausgefüllten Fußzeilenblock und die gesetzlich erforderlichen Abmeldeinformationen."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:172
+msgid "This campaign can no longer be edited."
+msgstr "Diese Aussendung kann nicht mehr bearbeitet werden."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:123
+msgid "This completed broadcast is a protected archive. It cannot be started, changed, or sent again."
+msgstr "Dieser abgeschlossene Broadcast ist ein geschütztes Archiv. Er kann weder gestartet noch verändert oder erneut versendet werden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:612
+msgid "This imported original is read only. Duplicate it to create an editable ContactPanda template."
+msgstr "Dieses importierte Original ist schreibgeschützt. Duplizieren Sie es, um eine bearbeitbare ContactPanda-Vorlage zu erstellen."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:291
+msgid "This link is invalid."
+msgstr "Dieser Link ist ungültig."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:329
+msgid "This unsubscribe link is invalid."
+msgstr "Dieser Abmeldelink ist ungültig."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:326
+msgid "Title"
+msgstr "Titel"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:579
+msgid "Title after the name"
+msgstr "Titel nachgestellt"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:576
+msgid "Title before the name"
+msgstr "Titel vorgestellt"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:73
+msgid "To"
+msgstr "Bis"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:347
+msgid "Top"
+msgstr "Oben"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:351
+msgid "Top left"
+msgstr "Oben links"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:352
+msgid "Top right"
+msgstr "Oben rechts"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:355
+msgid "Unit"
+msgstr "Einheit"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:978 contactpanda/includes/class-contactpanda-newsletters.php:978 contactpanda/includes/class-contactpanda-newsletters.php:1121
+msgid "Unsubscribe from newsletter"
+msgstr "Newsletter abbestellen"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:583
+msgid "Unsubscribe link"
+msgstr "Abmeldelink"
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:334
+#, php-format
+msgid "Unsubscribed through campaign %d."
+msgstr "Abmeldung über Kampagne %d."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:573
+msgid "Update"
+msgstr "Aktualisieren"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:337
+msgid "Uppercase text"
+msgstr "Großbuchstaben"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:154
+#, php-format
+msgid "Use color %s"
+msgstr "Farbe %s verwenden"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:138
+msgid "Use the configured WooCommerce email frame with ContactPanda content and unsubscribe protection."
+msgstr "Den eingerichteten WooCommerce-E-Mail-Rahmen mit ContactPanda-Inhalten und Abmeldeschutz verwenden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:136
+msgid "Use the neutral and responsive ContactPanda email frame."
+msgstr "Den neutralen und responsiven E-Mail-Rahmen von ContactPanda verwenden."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:272
+msgid "Use this image"
+msgstr "Dieses Bild verwenden"
+
+#: contactpanda/includes/class-contactpanda-segments.php:103 contactpanda/includes/class-contactpanda-segments.php:785 contactpanda/includes/class-contactpanda-segments.php:812 contactpanda/includes/class-contactpanda-segments.php:844
+msgid "Value"
+msgstr "Wert"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:512 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:78
+msgid "View archive"
+msgstr "Archiv ansehen"
+
+#: contactpanda/includes/class-contactpanda-segments.php:427
+msgid "Was attended"
+msgstr "Was besucht"
+
+#: contactpanda/includes/class-contactpanda-segments.php:427
+msgid "Was booked"
+msgstr "Wurde gebucht"
+
+#: contactpanda/includes/class-contactpanda-segments.php:425
+msgid "Was not purchased"
+msgstr "Wurde nicht gekauft"
+
+#: contactpanda/includes/class-contactpanda-segments.php:425
+msgid "Was purchased"
+msgstr "Wurde gekauft"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:283
+msgid "Width in percent"
+msgstr "Breite in Prozent"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:307
+msgid "Width unit"
+msgstr "Einheit der Breite"
+
+#: contactpanda/includes/class-contactpanda-segments.php:426
+msgid "Within the last days"
+msgstr "Innerhalb der letzten Tage"
+
+#: contactpanda/includes/class-contactpanda-segments.php:391 contactpanda/includes/class-contactpanda-segments.php:791
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:138
+msgid "WooCommerce email layout"
+msgstr "WooCommerce-E-Mail-Vorlage"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:304 contactpanda/includes/class-contactpanda-newsletters.php:743 contactpanda/includes/class-contactpanda-newsletters.php:1019
+msgid "WooCommerce is currently unavailable."
+msgstr "WooCommerce ist derzeit nicht verfügbar."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:231
+msgid "WordPress could not hand the message to the configured mail system."
+msgstr "WordPress konnte die Nachricht nicht an das konfigurierte Mail-System übergeben."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:735
+msgid "WordPress could not hand the test email to the configured mail system."
+msgstr "WordPress konnte die Test-E-Mail nicht an das konfigurierte Mailsystem übergeben."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:324
+msgid "WordPress could not send the test email."
+msgstr "WordPress konnte die Test-E-Mail nicht versenden."
+
+#: contactpanda/includes/class-contactpanda-segments.php:382
+msgid "WordPress role"
+msgstr "WordPress-Rolle"
+
+#: contactpanda/includes/class-contactpanda-segments.php:386
+msgid "WordPress/WooCommerce account available"
+msgstr "WordPress-/WooCommerce-Konto vorhanden"
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:553
+msgid "Write your newsletter text here."
+msgstr "Schreiben Sie hier Ihren Newsletter-Text."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:463 contactpanda/includes/class-contactpanda-newsletters.php:1134
+msgid "You do not have permission to manage email templates."
+msgstr "Sie haben keine Berechtigung, E-Mail-Vorlagen zu verwalten."
+
+#: contactpanda/includes/class-contactpanda-newsletter-campaigns.php:335
+msgid "You have been unsubscribed."
+msgstr "Sie wurden abgemeldet."
+
+#: contactpanda/includes/class-contactpanda-newsletters.php:553
+msgid "Your newsletter heading"
+msgstr "Ihre Newsletter-Überschrift"
+
+msgid "License"
+msgstr "Lizenz"
+
+msgid "The newsletter license has been activated. Newsletter functionality remains available permanently on this installation."
+msgstr "Die Newsletter-Lizenz wurde aktiviert. Die Newsletter-Funktionen bleiben auf dieser Installation dauerhaft verfügbar."
+
+msgid "The license connection has been removed. Features that were already granted remain available."
+msgstr "Die Lizenzverbindung wurde entfernt. Bereits freigeschaltete Funktionen bleiben verfügbar."
+
+msgid "The license could not be activated. Please check the license key and try again."
+msgstr "Die Lizenz konnte nicht aktiviert werden. Bitte prüfen Sie den Lizenzschlüssel und versuchen Sie es erneut."
+
+msgid "The license service could not be reached. No existing feature or license information was changed."
+msgstr "Der Lizenzdienst konnte nicht erreicht werden. Vorhandene Funktionen und Lizenzinformationen wurden nicht verändert."
+
+msgid "ContactPanda license"
+msgstr "ContactPanda-Lizenz"
+
+msgid "A Newsletter license unlocks the complete newsletter module in ContactPanda Basic. Once activated, the module remains fully usable even after the update and support period has ended."
+msgstr "Eine Newsletter-Lizenz schaltet das vollständige Newsletter-Modul in ContactPanda Basic frei. Nach der Aktivierung bleibt das Modul auch nach Ende des Update- und Supportzeitraums vollständig nutzbar."
+
+msgid "Newsletter module"
+msgstr "Newsletter-Modul"
+
+msgid "Permanently enabled"
+msgstr "Dauerhaft freigeschaltet"
+
+msgid "Not enabled"
+msgstr "Nicht freigeschaltet"
+
+msgid "Updates and support"
+msgstr "Updates und Support"
+
+msgid "Expired — the newsletter module remains fully functional"
+msgstr "Abgelaufen – das Newsletter-Modul bleibt vollständig funktionsfähig"
+
+msgid "Updates until"
+msgstr "Updates bis"
+
+msgid "License key"
+msgstr "Lizenzschlüssel"
+
+msgid "Activate or renew license"
+msgstr "Lizenz aktivieren oder verlängern"
+
+msgid "Disconnect license key"
+msgstr "Lizenzschlüssel trennen"
+
+msgid "Disconnecting removes the stored key but does not disable previously granted newsletter functionality."
+msgstr "Beim Trennen wird der gespeicherte Schlüssel entfernt. Bereits freigeschaltete Newsletter-Funktionen bleiben aktiv."
+
+msgid "ContactPanda could not create all required newsletter tables."
+msgstr "ContactPanda konnte nicht alle erforderlichen Newsletter-Tabellen erstellen."
+
+msgid "No matching entries found."
+msgstr "Keine passenden Einträge gefunden."

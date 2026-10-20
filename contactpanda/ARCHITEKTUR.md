@@ -1,10 +1,12 @@
-# ContactPanda – modulare Architektur 0.14.5
+# ContactPanda – modulare Architektur 0.6.0
 
 ## Pakete
 
 `ContactPanda Basic` ist das kostenlose, eigenständig lauffähige Haupt-Plugin. Es enthält Personen, Firmen, Adressen, Tags, Einwilligungen, Registrierung, Aktivitäten, Groundhogg-Kompatibilität und die grundlegende WooCommerce-Kundenansicht. Bestellungen bleiben in WooCommerce; ContactPanda liest sie über die öffentliche CRUD-API und legt keine Bestellkopien an.
 
-`ContactPanda Plus` benötigt Basic und ergänzt abgegrenzte Module wie E-Mail-Vorlagen, Newsletter-Versand, gespeicherte Suchen, Kampagnen und Formularadapter. Die rein lesende Eventanzeige für The Events Calendar/Event Tickets und Amelia gehört seit 0.4.0 zu Basic. Künftige erweiterte Segmente, Berichte und Flows bleiben Plus vorbehalten. Eine Deaktivierung von Plus entfernt weder Daten noch Einstellungen.
+Das Newsletter-Modul liegt seit 0.6.0 technisch in Basic. Es kann entweder durch eine eigenständige Newsletter-Lizenz oder durch ContactPanda Plus dauerhaft freigeschaltet werden. Das Ende des gebuchten Update- und Supportzeitraums deaktiviert weder Newsletter noch gespeicherte Inhalte oder Versandfunktionen; lediglich weitere Updates und Support stehen dann nicht mehr zur Verfügung.
+
+`ContactPanda Plus` benötigt Basic und ergänzt abgegrenzte Module wie Automatisierungen, Formularadapter, Helpdesk, erweiterte Integrationen und Messaging-Gateways. Plus schaltet außerdem das gemeinsame Newsletter-Modul frei. Die rein lesende Eventanzeige für The Events Calendar/Event Tickets und Amelia gehört seit 0.4.0 zu Basic. Eine Deaktivierung von Plus entfernt weder Daten noch Einstellungen.
 
 ```text
 ContactPanda Basic
@@ -13,18 +15,24 @@ ContactPanda Basic
 ├── Registrierung und Mein Konto
 ├── WooCommerce-Basisintegration
 ├── Groundhogg-Kompatibilität und Migration
+├── lizenzierbares Newsletter-Modul
+│   ├── E-Mail-Vorlagen und Newsletter-Versand
+│   ├── gespeicherte Suchen und Kampagnen
+│   └── Versandstatistiken und Sperrlisten
 └── Erweiterungspunkte
     └── ContactPanda Plus
-        ├── E-Mail-Vorlagen und Newsletter-Versand
-        ├── Events und Event Tickets
-        ├── WooCommerce- und Veranstaltungssegmente
-        ├── Amelia (lesend)
-        ├── B2B (geplant)
-        ├── Berichte (geplant)
-        └── Automatisierungen (geplant)
+        ├── Automatisierungen
+        ├── Formularadapter
+        ├── Helpdesk
+        ├── Messaging- und E-Mail-Gateways
+        └── erweiterte Integrationen
 ```
 
 Basic stellt über einen isolierten, rein lesenden Adapter Verfügbarkeit, Teilnehmerzahlen und Veranstaltungslisten bereit. Unterstützt werden The Events Calendar/Event Tickets und Amelia. Sind beide Systeme aktiv, muss eine globale Quelle ausgewählt werden; Ergebnisse werden niemals gemischt. Plus kann dieselben normalisierten Erweiterungspunkte für Segmente verwenden. Zusätzliche Einstellungsbereiche werden über `contactpanda_settings_tabs` und `contactpanda_render_settings_tab_{name}` registriert.
+
+## Lizenz und Newsletter
+
+Eine erfolgreiche Newsletter-Lizenzaktivierung speichert zwei getrennte Zustände: die dauerhafte Funktionsberechtigung und das zeitlich begrenzte Ende von Updates beziehungsweise Support. Ein späterer Lizenzablauf oder das Trennen des gespeicherten Lizenzschlüssels darf die dauerhafte Funktionsberechtigung nicht zurücknehmen. Fehlgeschlagene oder nicht erreichbare Lizenzprüfungen verändern den vorhandenen Zustand nicht. ContactPanda Plus erteilt dieselbe Newsletter-Berechtigung über den öffentlichen Erweiterungspunkt `contactpanda_newsletter_entitled`.
 
 ## E-Mail-Vorlagen
 
@@ -40,7 +48,7 @@ Die Tabelle `cp_activities` bleibt die zentrale, eigenständige Historie. Der n�
 
 Im **Groundhogg-Frontend-Modus** bleibt Groundhogg alleinige Datenquelle für Kontakte, Firmen, Tags, Zustimmungen, Broadcasts, Funnels und Automatisierungen. ContactPanda stellt die Oberfläche bereit; der eigene Newsletter-Editor und -Versand bleiben in diesem Modus deaktiviert.
 
-Im **ContactPanda-Datenbank-Modus** werden neue und bearbeitete Personen, Firmen, Tags, Zustimmungen und Aktivitäten ausschließlich in ContactPanda gespeichert; Groundhogg wird nicht parallel beschrieben. Mit ContactPanda Plus übernimmt ContactPanda in diesem Modus auch E-Mail-Vorlagen, Kampagnen und Versand. WooCommerce-, WordPress-, Rechnungs- und Veranstaltungsdaten bleiben über ihre jeweiligen Systeme verknüpft.
+Im **ContactPanda-Datenbank-Modus** werden neue und bearbeitete Personen, Firmen, Tags, Zustimmungen und Aktivitäten ausschließlich in ContactPanda gespeichert; Groundhogg wird nicht parallel beschrieben. Mit Newsletter-Lizenz oder ContactPanda Plus übernimmt ContactPanda in diesem Modus auch E-Mail-Vorlagen, Kampagnen und Versand. WooCommerce-, WordPress-, Rechnungs- und Veranstaltungsdaten bleiben über ihre jeweiligen Systeme verknüpft.
 
 Das CRM-Schema verwendet die Tabellen `cp_contacts`, `cp_companies`, `cp_company_contacts`, `cp_tags`, `cp_contact_tags`, `cp_consents`, `cp_activities`, `cp_contactmeta` und `cp_companymeta`. Vor jedem Anlegen oder Aktualisieren wird der tatsächliche Tabellen- und Versionsstand geprüft. Ohne Groundhogg werden diese Tabellen bei einer frischen Aktivierung automatisch angelegt und ausgewählt. Ist Groundhogg aktiv, entstehen sie erst nach einer ausdrücklichen Einrichtung oder Migration.
 

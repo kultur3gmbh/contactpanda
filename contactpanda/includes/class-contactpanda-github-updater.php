@@ -25,7 +25,11 @@ final class ContactPanda_GitHub_Updater {
 	}
 
 	private function enabled() {
-		return ! defined( $this->config['enabled'] ) || false !== constant( $this->config['enabled'] );
+		$enabled = ! defined( $this->config['enabled'] ) || false !== constant( $this->config['enabled'] );
+		if ( 'contactpanda' === ( $this->config['slug'] ?? '' ) ) {
+			$enabled = (bool) apply_filters( 'contactpanda_updates_allowed', $enabled );
+		}
+		return $enabled;
 	}
 
 	private function error( $code ) {

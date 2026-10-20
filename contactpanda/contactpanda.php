@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda Basic – User-Friendly CRM for WordPress
  * Description: Free contact and company management for WordPress with WooCommerce, event, Amelia, and optional Groundhogg overviews.
- * Version: 0.5.0
+ * Version: 0.6.0
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,15 +13,17 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.5.0' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.5.0-20261019-1' );
+define( 'CONTACTPANDA_VERSION', '0.6.0' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.6.0-20261020-1' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CONTACTPANDA_URL', plugin_dir_url( __FILE__ ) );
 
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-plugin.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-modules.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-license.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-schema.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-newsletter-schema.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-store.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-trash.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-data-tools.php';
@@ -30,6 +32,9 @@ require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-events.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-github-updater.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-registration.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-my-account.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-newsletters.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-newsletter-campaigns.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-segments.php';
 
 add_action(
 	'plugins_loaded',
@@ -50,11 +55,95 @@ add_action(
 );
 
 add_action( 'plugins_loaded', array( 'ContactPanda_Plugin', 'boot' ), 30 );
+add_action( 'plugins_loaded', array( 'ContactPanda_License', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Trash', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Data_Tools', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Custom_Fields', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Events', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Registration', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_My_Account', 'boot' ), 31 );
+
+/**
+ * The licensed newsletter is a Basic feature. Plus can grant the same public
+ * entitlement through the filter before this late bootstrap runs.
+ */
+function contactpanda_boot_newsletter_module() {
+	$enabled = ContactPanda_License::newsletter_entitled();
+	$existing_newsletter = ContactPanda_Modules::get( 'newsletter' );
+	$existing_segments   = ContactPanda_Modules::get( 'segments' );
+	ContactPanda_Modules::register(
+		'newsletter',
+		array(
+			'name'    => __( 'Newsletter', 'contactpanda' ),
+			'package' => $existing_newsletter ? $existing_newsletter['package'] : 'licensed-basic',
+			'version' => CONTACTPANDA_VERSION,
+			'enabled' => $enabled,
+		)
+	);
+	ContactPanda_Modules::register(
+		'segments',
+		array(
+			'name'    => __( 'Saved searches', 'contactpanda' ),
+			'package' => $existing_segments ? $existing_segments['package'] : 'licensed-basic',
+			'version' => CONTACTPANDA_VERSION,
+			'enabled' => $enabled,
+		)
+	);
+	if ( ! $enabled || ! ContactPanda_Store::standalone() ) {
+		return;
+	}
+	// ContactPanda Plus before 0.6.0 still owns these classes. Let that version
+	// finish its normal boot instead of registering duplicate screens or hooks.
+	if ( class_exists( 'ContactPanda_Newsletters', false ) && defined( 'CONTACTPANDA_PLUS_VERSION' ) && version_compare( CONTACTPANDA_PLUS_VERSION, '0.6.0', '<' ) ) {
+		return;
+	}
+	$result = ContactPanda_Newsletter_Schema::maybe_upgrade();
+	if ( is_wp_error( $result ) ) {
+		add_action(
+			'admin_notices',
+			static function () use ( $result ) {
+				echo '<div class="notice notice-error"><p>' . esc_html( $result->get_error_message() ) . '</p></div>';
+			}
+		);
+		return;
+	}
+	ContactPanda_Basic_Newsletters::boot();
+	ContactPanda_Basic_Newsletter_Campaigns::boot();
+	ContactPanda_Basic_Segments::boot();
+	// Preserve the established public class names for current extensions while
+	// avoiding redeclaration when an older Plus version already supplies them.
+	if ( ! class_exists( 'ContactPanda_Newsletters', false ) ) {
+		class_alias( 'ContactPanda_Basic_Newsletters', 'ContactPanda_Newsletters' );
+	}
+	if ( ! class_exists( 'ContactPanda_Newsletter_Campaigns', false ) ) {
+		class_alias( 'ContactPanda_Basic_Newsletter_Campaigns', 'ContactPanda_Newsletter_Campaigns' );
+	}
+	if ( ! class_exists( 'ContactPanda_Segments', false ) ) {
+		class_alias( 'ContactPanda_Basic_Segments', 'ContactPanda_Segments' );
+	}
+}
+add_action( 'plugins_loaded', 'contactpanda_boot_newsletter_module', 45 );
+
+function contactpanda_newsletter_admin_assets( $hook ) {
+	if ( ! ContactPanda_License::newsletter_entitled() ) {
+		return;
+	}
+	if ( in_array( $hook, array( 'contactpanda_page_contactpanda-campaigns', 'contactpanda_page_contactpanda-settings' ), true ) ) {
+		wp_enqueue_style( 'contactpanda', CONTACTPANDA_URL . 'assets/contactpanda-admin.css', array(), CONTACTPANDA_ASSET_VERSION );
+	}
+	if ( 'contactpanda_page_contactpanda-campaigns' === $hook ) {
+		wp_enqueue_script( 'contactpanda-campaigns', CONTACTPANDA_URL . 'assets/contactpanda-campaigns.js', array(), CONTACTPANDA_ASSET_VERSION, true );
+		wp_localize_script( 'contactpanda-campaigns', 'CONTACTPANDA_CAMPAIGNS', array( 'ajaxUrl' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'contactpanda_newsletter_editor' ), 'noOptions' => __( 'No matching entries found.', 'contactpanda' ), 'pollInterval' => 12000 ) );
+	}
+	if ( 'contactpanda_page_contactpanda-settings' === $hook ) {
+		wp_enqueue_script( 'contactpanda-segments', CONTACTPANDA_URL . 'assets/contactpanda-segments.js', array(), CONTACTPANDA_ASSET_VERSION, true );
+		wp_localize_script( 'contactpanda-segments', 'CONTACTPANDA_SEGMENTS', ContactPanda_Basic_Segments::editor_config() );
+	}
+	if ( in_array( $hook, array( 'toplevel_page_contactpanda', 'contactpanda_page_contactpanda-campaigns' ), true ) ) {
+		wp_enqueue_script( 'contactpanda-inline-search', CONTACTPANDA_URL . 'assets/contactpanda-inline-search.js', array(), CONTACTPANDA_ASSET_VERSION, true );
+		wp_localize_script( 'contactpanda-inline-search', 'CONTACTPANDA_INLINE_SEARCH', ContactPanda_Basic_Segments::inline_config( 'contactpanda_page_contactpanda-campaigns' === $hook ) );
+	}
+}
+add_action( 'admin_enqueue_scripts', 'contactpanda_newsletter_admin_assets', 20 );
 
 register_activation_hook( __FILE__, array( 'ContactPanda_Registration', 'activate' ) );

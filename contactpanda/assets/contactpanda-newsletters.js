@@ -1,0 +1,388 @@
+(function () {
+	'use strict';
+	var config = window.CONTACTPANDA_NEWSLETTER || {i18n: {}};
+	var i18n = config.i18n || {};
+	var productFilters = config.productFilters || {categories: [], producers: [], products: []};
+	var eventFilters = config.eventFilters || [];
+	var postFilters = config.postFilters || {types: []};
+	var productPreviewCache = {};
+	var productPreviewTimers = {};
+	var mediaButton = document.querySelector('.contactpanda-newsletter-media-button');
+	if (mediaButton && window.wp && wp.media) {
+		mediaButton.addEventListener('click', function () {
+			var frame = wp.media({title: i18n.chooseImage, button: {text: i18n.useImage}, multiple: false, library: {type: 'image'}});
+			frame.on('select', function () {
+				var image = frame.state().get('selection').first().toJSON();
+				var form = mediaButton.closest('form');
+				form.querySelector('[name="contactpanda_newsletter_settings[logo_id]"]').value = image.id || 0;
+				form.querySelector('[name="contactpanda_newsletter_settings[logo_url]"]').value = image.url || '';
+				var preview = form.querySelector('.contactpanda-newsletter-logo-preview');
+				if (!preview) {
+					preview = document.createElement('span');
+					preview.className = 'contactpanda-newsletter-logo-preview';
+					mediaButton.parentNode.appendChild(preview);
+				}
+				preview.innerHTML = image.url ? '<img src="' + String(image.url).replace(/"/g, '&quot;') + '" alt="">' : '';
+			});
+			frame.open();
+		});
+	}
+	document.querySelectorAll('.contactpanda-archive-template').forEach(function (archiveForm) {
+		archiveForm.addEventListener('submit', function (event) { if (!window.confirm(i18n.confirmArchive)) event.preventDefault(); });
+	});
+	var form = document.getElementById('contactpanda-newsletter-editor');
+	if (!form) return;
+	var topColor = form.querySelector('[name="email_background"]');
+	if (topColor && (config.themeColors || []).length) {
+		var topPalette = document.createElement('span'); topPalette.className = 'contactpanda-theme-color-palette contactpanda-top-color-palette';
+		(config.themeColors || []).forEach(function (color) { var swatch = document.createElement('button'); swatch.type = 'button'; swatch.title = color; swatch.style.background = color; swatch.addEventListener('click', function () { topColor.value = color; }); topPalette.appendChild(swatch); });
+		topColor.parentNode.appendChild(topPalette);
+	}
+	var container = document.getElementById('contactpanda-newsletter-blocks');
+	var inspector = document.getElementById('contactpanda-block-inspector');
+	var jsonField = document.getElementById('contactpanda-content-json');
+	var emptyMessage = document.getElementById('contactpanda-no-blocks');
+	var blocks = [], selectedId = '', draggedId = '', editorId = 'contactpanda-block-richtext', syncingInline = false, inspectorTab = 'content';
+	try { blocks = JSON.parse(jsonField.value || '[]'); } catch (error) { blocks = []; }
+	if (!Array.isArray(blocks)) blocks = [];
+	function uid() { return 'block-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8); }
+	function label(type) { return i18n[type] || type; }
+	function boxValues(value, defaults) {
+		value = value && typeof value === 'object' ? value : {};
+		return ['top', 'right', 'bottom', 'left'].reduce(function (result, side) { result[side] = Math.max(0, Math.min(200, Number(value[side] !== undefined ? value[side] : defaults[side]) || 0)); return result; }, {});
+	}
+	function radiusValues(value) {
+		value = value && typeof value === 'object' ? value : {};
+		return ['top_left', 'top_right', 'bottom_right', 'bottom_left'].reduce(function (result, corner) { result[corner] = Math.max(0, Math.min(200, Number(value[corner]) || 0)); return result; }, {});
+	}
+	function normalize(block) {
+		block.id = block.id || uid();
+		block.alignment = ['left', 'center', 'right'].indexOf(block.alignment) >= 0 ? block.alignment : 'left';
+		if (['products', 'events', 'posts'].indexOf(block.type) >= 0) block.image_ratio = ['1:1', '4:5', '4:3'].indexOf(block.image_ratio) >= 0 ? block.image_ratio : '1:1';
+		if (block.type === 'image') { block.width_unit = block.width_unit === 'px' ? 'px' : '%'; block.width = Number(block.width || (block.width_unit === 'px' ? 600 : 100)); }
+		if (block.type === 'spacer') block.height = Number(block.height || 24);
+		block.background_color = block.background_color || '';
+		block.padding = boxValues(block.padding, {top: 0, right: 0, bottom: 0, left: 0});
+		block.margin = boxValues(block.margin, {top: 0, right: 0, bottom: 20, left: 0});
+		block.padding_linked = block.padding_linked !== false;
+		block.margin_linked = block.margin_linked !== false;
+		block.border_radius = radiusValues(block.border_radius);
+		block.radius_linked = block.radius_linked !== false;
+		block.radius_unit = block.radius_unit === '%' ? '%' : 'px';
+		if (block.type === 'heading') { block.level = ['h1', 'h2', 'h3', 'h4'].indexOf(block.level) >= 0 ? block.level : 'h2'; block.text_color = block.text_color || ''; }
+		if (block.type === 'button') { block.button_color = block.button_color || ''; block.border_color = block.border_color || ''; block.text_color = block.text_color || ''; block.full_width = !!block.full_width; block.uppercase = !!block.uppercase; }
+		if (block.type === 'products') { block.source = block.source || 'latest'; block.count = Math.max(1, Math.min(6, Number(block.count) || 2)); block.columns = Math.max(1, Math.min(3, Number(block.columns) || 2)); block.product_ids = Array.isArray(block.product_ids) ? block.product_ids : []; block.show_price = block.show_price !== false; block.show_categories = !!block.show_categories; block.show_brands = !!block.show_brands; }
+		if (block.type === 'events') { block.event_ids = Array.isArray(block.event_ids) ? block.event_ids : []; block.count = Math.max(1, Math.min(6, Number(block.count) || 2)); block.columns = Math.max(1, Math.min(3, Number(block.columns) || 2)); }
+		if (block.type === 'posts') {
+			block.post_type = block.post_type || ((postFilters.types || [])[0] || {id: 'post'}).id; var normalizedPostType = selectedPostType(block); block.post_taxonomy = block.post_taxonomy || normalizedPostType.taxonomy || ''; block.source = block.source || 'latest'; block.count = Math.max(1, Math.min(6, Number(block.count) || 2)); block.columns = Math.max(1, Math.min(3, Number(block.columns) || 2)); block.post_ids = Array.isArray(block.post_ids) ? block.post_ids : [];
+			block.show_image = block.show_image !== false; block.show_title = block.show_title !== false; block.show_excerpt = block.show_excerpt !== false;
+			if (!block.show_image && !block.show_title && !block.show_excerpt) block.show_title = true;
+		}
+		return block;
+	}
+	blocks = blocks.map(normalize);
+	function defaultBlock(type) {
+		var block = {id: uid(), type: type, alignment: 'left', padding: {top: 0, right: 0, bottom: 0, left: 0}, margin: {top: 0, right: 0, bottom: 20, left: 0}, padding_linked: true, margin_linked: true, border_radius: {top_left: 0, top_right: 0, bottom_right: 0, bottom_left: 0}, radius_linked: true, radius_unit: 'px'};
+		block.background_color = '';
+		if (type === 'heading') { block.content = i18n.heading; block.level = 'h2'; block.text_color = ''; }
+		if (type === 'text') block.content = '<p>' + i18n.text + '</p>';
+		if (type === 'image') { block.url = ''; block.alt = ''; block.attachment_id = 0; block.width = 100; block.width_unit = '%'; block.alignment = 'center'; }
+		if (type === 'button') { block.label = i18n.buttonLabel; block.url = ''; block.button_color = ''; block.border_color = ''; block.text_color = ''; block.full_width = false; block.uppercase = false; }
+		if (type === 'spacer') block.height = 24;
+		if (type === 'products') { block.source = 'latest'; block.count = 2; block.columns = 2; block.image_ratio = '1:1'; block.category_id = 0; block.producer_taxonomy = ''; block.producer_term_id = 0; block.product_ids = []; block.show_price = true; block.show_categories = false; block.show_brands = false; }
+		if (type === 'events') { block.event_ids = []; block.count = 2; block.columns = 2; block.image_ratio = '1:1'; }
+		if (type === 'posts') { var firstPostType = (postFilters.types || [])[0] || {id: 'post', taxonomy: ''}; block.post_type = firstPostType.id; block.post_taxonomy = firstPostType.taxonomy || ''; block.source = 'latest'; block.count = 2; block.columns = 2; block.image_ratio = '1:1'; block.category_id = 0; block.post_ids = []; block.show_image = true; block.show_title = true; block.show_excerpt = true; }
+		return block;
+	}
+	function sync() { jsonField.value = JSON.stringify(blocks); }
+	function selectedIndex() { return blocks.findIndex(function (block) { return block.id === selectedId; }); }
+	function escapeHtml(value) { var div = document.createElement('div'); div.textContent = value || ''; return div.innerHTML; }
+	function safeRich(value) {
+		var template = document.createElement('template'); template.innerHTML = value || '';
+		template.content.querySelectorAll('script,style,iframe,object,embed').forEach(function (node) { node.remove(); });
+		template.content.querySelectorAll('*').forEach(function (node) { Array.prototype.slice.call(node.attributes).forEach(function (attribute) { if (/^on/i.test(attribute.name)) node.removeAttribute(attribute.name); }); });
+		return template.innerHTML;
+	}
+	function imageRatio(value) { return value === '4:5' ? '4/5' : value === '4:3' ? '4/3' : '1/1'; }
+	function blockStyle(block) {
+		var padding = boxValues(block.padding, {top: 0, right: 0, bottom: 0, left: 0});
+		var margin = boxValues(block.margin, {top: 0, right: 0, bottom: 20, left: 0});
+		var radius = radiusValues(block.border_radius); var unit = block.radius_unit === '%' ? '%' : 'px';
+		return 'text-align:' + block.alignment + ';background:' + escapeHtml(block.background_color || 'transparent') + ';padding:' + padding.top + 'px ' + padding.right + 'px ' + padding.bottom + 'px ' + padding.left + 'px;margin:' + margin.top + 'px ' + margin.right + 'px ' + margin.bottom + 'px ' + margin.left + 'px;border-radius:' + radius.top_left + unit + ' ' + radius.top_right + unit + ' ' + radius.bottom_right + unit + ' ' + radius.bottom_left + unit + ';';
+	}
+	function selectedPostType(block) { return (postFilters.types || []).find(function (type) { return String(type.id) === String(block.post_type); }) || (postFilters.types || [])[0] || {id: 'post', name: 'Posts', taxonomy: '', categories: [], posts: []}; }
+	function productPreview(block) {
+		if (!config.woocommerce) return '<div class="contactpanda-product-placeholder">' + escapeHtml(i18n.productsUnavailable) + '</div>';
+		var products = productPreviewCache[block.id];
+		if (!products) return '<div class="contactpanda-product-placeholder"><span class="spinner is-active"></span>' + escapeHtml(i18n.loadingProducts) + '</div>';
+		if (!products.length) return '<div class="contactpanda-product-placeholder">' + escapeHtml(i18n.noProducts || 'No matching products were found.') + '</div>';
+		return '<div class="contactpanda-product-preview-grid" style="grid-template-columns:repeat(' + Number(block.columns || 2) + ',minmax(0,1fr))">' + products.map(function (product) {
+			var details = []; if (block.show_categories && product.categories) details.push(product.categories); if (block.show_brands && product.brands) details.push(product.brands);
+			return '<div><img src="' + escapeHtml(product.image) + '" alt="" style="aspect-ratio:' + imageRatio(block.image_ratio) + ';object-fit:cover"><strong>' + escapeHtml(product.name) + '</strong>' + (details.length ? '<small>' + escapeHtml(details.join(' · ')) + '</small>' : '') + (block.show_price ? '<span>' + escapeHtml(product.price) + '</span>' : '') + '</div>';
+		}).join('') + '</div>';
+	}
+	function postPreview(block) {
+		var type = selectedPostType(block); var posts = type.posts || [];
+		if (block.source === 'manual') posts = posts.filter(function (post) { return (block.post_ids || []).map(String).indexOf(String(post.id)) >= 0; });
+		if (block.source === 'category' && block.category_id) posts = posts.filter(function (post) { return !post.term_ids || post.term_ids.map(String).indexOf(String(block.category_id)) >= 0; });
+		posts = posts.slice(0, Number(block.count || 2));
+		return '<div class="contactpanda-post-preview-grid" style="grid-template-columns:repeat(' + Number(block.columns || 2) + ',minmax(0,1fr))">' + posts.map(function (post) {
+			return '<div>' + (block.show_image && post.image ? '<img src="' + escapeHtml(post.image) + '" alt="" style="aspect-ratio:' + imageRatio(block.image_ratio) + ';object-fit:cover">' : '') + (block.show_title ? '<strong>' + escapeHtml(post.name) + '</strong>' : '') + (block.show_excerpt ? '<p>' + escapeHtml(post.excerpt) + '</p>' : '') + '</div>';
+		}).join('') + '</div>';
+	}
+	function loadProductPreview(block) {
+		if (!config.woocommerce || block.type !== 'products') return;
+		window.clearTimeout(productPreviewTimers[block.id]);
+		productPreviewTimers[block.id] = window.setTimeout(function () {
+			var data = new FormData(); data.append('action', 'contactpanda_newsletter_products'); data.append('nonce', config.nonce); data.append('block', JSON.stringify(block));
+			fetch(config.ajaxUrl, {method: 'POST', credentials: 'same-origin', body: data}).then(function (response) { return response.json(); }).then(function (result) {
+				productPreviewCache[block.id] = result.success && result.data ? result.data.products || [] : [];
+				renderCanvas();
+			}).catch(function () { productPreviewCache[block.id] = []; renderCanvas(); });
+		}, 250);
+	}
+	function preview(block) {
+		if (block.type === 'heading') { var headingTag = block.level || 'h2'; return '<' + headingTag + ' style="color:' + escapeHtml(block.text_color || 'inherit') + '">' + escapeHtml(block.content || label('heading')) + '</' + headingTag + '>'; }
+		if (block.type === 'text') return '<div class="contactpanda-canvas-text">' + safeRich(block.content || '<p>' + escapeHtml(label('text')) + '</p>') + '</div>';
+		if (block.type === 'image') return block.url ? '<img src="' + escapeHtml(block.url) + '" alt="' + escapeHtml(block.alt) + '" style="width:' + block.width + block.width_unit + ';max-width:100%">' : '<div class="contactpanda-image-placeholder"><span class="dashicons dashicons-format-image"></span>' + label('image') + '</div>';
+		if (block.type === 'button') return '<span class="contactpanda-canvas-button" style="background:' + escapeHtml(block.button_color || '#4253b5') + ';border:1px solid ' + escapeHtml(block.border_color || block.button_color || '#4253b5') + ';color:' + escapeHtml(block.text_color || '#fff') + ';display:' + (block.full_width ? 'block' : 'inline-block') + ';text-transform:' + (block.uppercase ? 'uppercase' : 'none') + '">' + escapeHtml(block.label || i18n.buttonLabel) + '</span>';
+		if (block.type === 'divider') return '<hr>';
+		if (block.type === 'spacer') return '<div class="contactpanda-canvas-spacer" style="height:' + Number(block.height || 24) + 'px"><span>' + Number(block.height || 24) + ' px</span></div>';
+		if (block.type === 'products') return productPreview(block);
+		if (block.type === 'events') return '<div class="contactpanda-event-block-preview" style="grid-template-columns:repeat(' + Number(block.columns || 2) + ',minmax(0,1fr))">' + (block.event_ids || []).slice(0, Number(block.count || 2)).map(function (id) { var item = eventFilters.find(function (event) { return String(event.id) === String(id); }); return item ? '<div>' + (item.image ? '<img src="' + escapeHtml(item.image) + '" alt="" style="aspect-ratio:' + imageRatio(block.image_ratio) + ';object-fit:cover">' : '') + '<strong>' + escapeHtml(item.name) + '</strong></div>' : ''; }).join('') + '</div>';
+		if (block.type === 'posts') return postPreview(block);
+		return '';
+	}
+	function renderCanvas() {
+		container.replaceChildren();
+		var header = document.createElement('div'); header.className = 'contactpanda-canvas-header'; header.innerHTML = config.logoUrl ? '<img src="' + escapeHtml(config.logoUrl) + '" alt="">' : '<span>' + escapeHtml(i18n.heading || 'ContactPanda') + '</span>'; container.appendChild(header);
+		blocks.forEach(function (block, index) {
+			var card = document.createElement('section');
+			card.className = 'contactpanda-newsletter-block' + (block.id === selectedId ? ' is-selected' : '');
+			card.dataset.id = block.id; card.draggable = !(block.id === selectedId && block.type === 'text');
+			var inlineTools = '';
+			if (block.id === selectedId && block.type === 'text') {
+				inlineTools = '<div class="contactpanda-inline-text-toolbar"><button type="button" data-command="bold" title="Bold"><strong>B</strong></button><button type="button" data-command="italic" title="Italic"><em>I</em></button><button type="button" data-command="createLink" title="' + escapeHtml(i18n.insertLink) + '"><span class="dashicons dashicons-admin-links"></span></button><button type="button" data-command="insertUnorderedList" title="List"><span class="dashicons dashicons-editor-ul"></span></button><button type="button" data-command="insertOrderedList" title="Numbered list"><span class="dashicons dashicons-editor-ol"></span></button><button type="button" data-command="justifyLeft"><span class="dashicons dashicons-editor-alignleft"></span></button><button type="button" data-command="justifyCenter"><span class="dashicons dashicons-editor-aligncenter"></span></button><button type="button" data-command="justifyRight"><span class="dashicons dashicons-editor-alignright"></span></button></div>';
+			}
+			if (block.id === selectedId && block.type === 'image') {
+				inlineTools = '<div class="contactpanda-inline-image-toolbar"><div class="contactpanda-inline-align"><button type="button" data-image-align="left"><span class="dashicons dashicons-editor-alignleft"></span></button><button type="button" data-image-align="center"><span class="dashicons dashicons-editor-aligncenter"></span></button><button type="button" data-image-align="right"><span class="dashicons dashicons-editor-alignright"></span></button></div><label><span>' + escapeHtml(i18n.width) + '</span><input type="number" data-image-width min="10" max="760" value="' + Number(block.width) + '"></label><select data-image-unit><option value="%"' + (block.width_unit === '%' ? ' selected' : '') + '>%</option><option value="px"' + (block.width_unit === 'px' ? ' selected' : '') + '>px</option></select></div>';
+			}
+			var editable = block.id === selectedId && block.type === 'text' ? ' contenteditable="true" data-inline-editor="true"' : '';
+			card.innerHTML = inlineTools + '<div class="contactpanda-block-grip"><span class="dashicons dashicons-move"></span></div><div class="contactpanda-block-preview"' + editable + ' style="' + blockStyle(block) + '">' + preview(block) + '</div><div class="contactpanda-block-actions"><button type="button" data-action="duplicate" title="' + escapeHtml(i18n.duplicate) + '"><span class="dashicons dashicons-admin-page"></span></button><button type="button" data-action="remove" title="' + escapeHtml(i18n.remove) + '"><span class="dashicons dashicons-trash"></span></button></div>';
+			var inlineEditor = card.querySelector('[data-inline-editor]');
+			if (inlineEditor) {
+				inlineEditor.addEventListener('input', function () {
+					var rich = inlineEditor.querySelector('.contactpanda-canvas-text'); block.content = rich ? rich.innerHTML : inlineEditor.innerHTML; sync();
+					var instance = window.tinymce && tinymce.get(editorId); var plain = document.getElementById(editorId); syncingInline = true;
+					if (instance && instance.getContent() !== block.content) instance.setContent(block.content);
+					if (plain) plain.value = block.content; syncingInline = false;
+				});
+				card.querySelectorAll('[data-command]').forEach(function (button) {
+					button.addEventListener('mousedown', function (event) { event.preventDefault(); });
+					button.addEventListener('click', function (event) { event.stopPropagation(); inlineEditor.focus(); var value = null; if (button.dataset.command === 'createLink') { value = window.prompt(i18n.targetUrl, 'https://'); if (!value) return; } document.execCommand(button.dataset.command, false, value); inlineEditor.dispatchEvent(new Event('input')); });
+				});
+			}
+			card.querySelectorAll('[data-image-align]').forEach(function (button) { button.addEventListener('click', function (event) { event.stopPropagation(); block.alignment = button.dataset.imageAlign; sync(); renderCanvas(); }); });
+			var imageWidth = card.querySelector('[data-image-width]');
+			if (imageWidth) imageWidth.addEventListener('input', function (event) { event.stopPropagation(); var maximum = block.width_unit === 'px' ? 760 : 100; block.width = Math.max(10, Math.min(maximum, Number(imageWidth.value || 10))); sync(); var image = card.querySelector('.contactpanda-block-preview img'); if (image) image.style.width = block.width + block.width_unit; });
+			var imageUnit = card.querySelector('[data-image-unit]');
+			if (imageUnit) imageUnit.addEventListener('change', function (event) { event.stopPropagation(); block.width_unit = imageUnit.value === 'px' ? 'px' : '%'; block.width = block.width_unit === 'px' ? Math.min(760, Math.max(10, block.width)) : Math.min(100, Math.max(10, block.width)); sync(); renderCanvas(); });
+			card.addEventListener('click', function (event) {
+				var action = event.target.closest('[data-action]');
+				if (action) {
+					if (action.dataset.action === 'remove') { blocks.splice(index, 1); selectedId = blocks[index] ? blocks[index].id : (blocks[index - 1] ? blocks[index - 1].id : ''); }
+					else { var copy = JSON.parse(JSON.stringify(blocks[index])); copy.id = uid(); blocks.splice(index + 1, 0, copy); selectedId = copy.id; }
+					render(); return;
+				}
+				if (event.target.closest('[data-inline-editor], .contactpanda-inline-text-toolbar, .contactpanda-inline-image-toolbar')) return;
+				selectedId = block.id; render();
+			});
+			card.addEventListener('dragstart', function (event) { draggedId = block.id; event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', block.id); card.classList.add('is-dragging'); });
+			card.addEventListener('dragend', function () { draggedId = ''; card.classList.remove('is-dragging'); });
+			card.addEventListener('dragover', function (event) { event.preventDefault(); card.classList.add('is-drop-target'); });
+			card.addEventListener('dragleave', function () { card.classList.remove('is-drop-target'); });
+			card.addEventListener('drop', function (event) {
+				event.preventDefault(); card.classList.remove('is-drop-target');
+				var rectangle = card.getBoundingClientRect();
+				var insertIndex = index + (event.clientY > rectangle.top + rectangle.height / 2 ? 1 : 0);
+				var paletteType = event.dataTransfer.getData('contactpanda/type');
+				if (paletteType) { var added = defaultBlock(paletteType); blocks.splice(insertIndex, 0, added); selectedId = added.id; render(); return; }
+				var source = blocks.findIndex(function (item) { return item.id === draggedId; });
+				if (source < 0) return;
+				var moved = blocks.splice(source, 1)[0];
+				if (source < insertIndex) insertIndex -= 1;
+				blocks.splice(insertIndex, 0, moved); render();
+			});
+			container.appendChild(card);
+			if (block.type === 'products' && !Object.prototype.hasOwnProperty.call(productPreviewCache, block.id)) loadProductPreview(block);
+		});
+		var footer = document.createElement('div'); footer.className = 'contactpanda-canvas-fixed-footer'; footer.innerHTML = safeRich(config.footerHtml || ''); container.appendChild(footer);
+		emptyMessage.hidden = blocks.length > 0; sync();
+	}
+	function field(caption, type, value, callback, options) {
+		var wrapper = document.createElement('label'); wrapper.className = 'contactpanda-inspector-field';
+		var title = document.createElement('span'); title.textContent = caption; wrapper.appendChild(title);
+		var input = document.createElement(type === 'textarea' ? 'textarea' : type === 'select' ? 'select' : 'input');
+		if (type !== 'textarea' && type !== 'select') input.type = type;
+		if (type === 'select') (options || []).forEach(function (option) { var node = document.createElement('option'); node.value = option[0]; node.textContent = option[1]; input.appendChild(node); });
+		input.value = value !== undefined && value !== null ? value : '';
+		input.addEventListener(type === 'select' ? 'change' : 'input', function () { callback(this.value); sync(); renderCanvas(); });
+		wrapper.appendChild(input); return wrapper;
+	}
+	function alignmentField(block, allowFullWidth) {
+		var options = [['left', i18n.left], ['center', i18n.center], ['right', i18n.right]];
+		if (allowFullWidth) options.push(['full', i18n.fullWidth]);
+		return field(i18n.alignment, 'select', allowFullWidth && block.full_width ? 'full' : block.alignment, function (value) {
+			block.full_width = allowFullWidth && value === 'full';
+			if (value !== 'full') block.alignment = value;
+		}, options);
+	}
+	function colorField(caption, value, callback) {
+		var wrapper = field(caption, 'color', value || '#ffffff', callback); wrapper.classList.add('contactpanda-color-field');
+		var input = wrapper.querySelector('input'); var palette = document.createElement('span'); palette.className = 'contactpanda-theme-color-palette';
+		(config.themeColors || []).forEach(function (color) { var swatch = document.createElement('button'); swatch.type = 'button'; swatch.title = color; swatch.style.background = color; swatch.addEventListener('click', function () { input.value = color; callback(color); sync(); renderCanvas(); }); palette.appendChild(swatch); });
+		if (palette.childNodes.length) wrapper.appendChild(palette); return wrapper;
+	}
+	function updateProductBlock(block) { delete productPreviewCache[block.id]; sync(); renderCanvas(); loadProductPreview(block); }
+	function productSelect(caption, value, options, callback, multiple) {
+		var wrapper = document.createElement('label'); wrapper.className = 'contactpanda-inspector-field'; var title = document.createElement('span'); title.textContent = caption; wrapper.appendChild(title);
+		var select = document.createElement('select'); select.multiple = !!multiple; if (multiple) select.size = Math.min(8, Math.max(4, options.length));
+		options.forEach(function (option) { var node = document.createElement('option'); node.value = option[0]; node.textContent = option[1]; node.selected = multiple ? (value || []).map(String).indexOf(String(option[0])) >= 0 : String(value || '') === String(option[0]); select.appendChild(node); });
+		select.addEventListener('change', function () { callback(multiple ? Array.prototype.slice.call(select.selectedOptions).map(function (option) { return Number(option.value); }) : select.value); }); wrapper.appendChild(select); return wrapper;
+	}
+	function pairedFields(first, second) { var row = document.createElement('div'); row.className = 'contactpanda-inspector-pair'; row.appendChild(first); row.appendChild(second); return row; }
+	function linkedBoxFields(caption, block, property, linkedProperty, labels) {
+		var group = document.createElement('fieldset'); group.className = 'contactpanda-inspector-box-values';
+		var legend = document.createElement('legend'); legend.textContent = caption; group.appendChild(legend);
+		var values = block[property];
+		[['top', labels[0]], ['right', labels[1]], ['bottom', labels[2]], ['left', labels[3]]].forEach(function (item) {
+			var node = field(item[1], 'number', values[item[0]], function (value) {
+				var number = Math.max(0, Math.min(200, Number(value) || 0));
+				if (block[linkedProperty]) Object.keys(values).forEach(function (key) { values[key] = number; }); else values[item[0]] = number;
+				sync(); renderCanvas(); if (block[linkedProperty]) renderInspector();
+			});
+			group.appendChild(node);
+		});
+		var linked = document.createElement('label'); linked.className = 'contactpanda-inspector-link-values'; var checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = !!block[linkedProperty]; checkbox.addEventListener('change', function () { block[linkedProperty] = checkbox.checked; sync(); }); linked.appendChild(checkbox); linked.appendChild(document.createTextNode(i18n.linkValues)); group.appendChild(linked);
+		return group;
+	}
+	function radiusFields(block) {
+		var group = document.createElement('fieldset'); group.className = 'contactpanda-inspector-box-values contactpanda-radius-values';
+		var legend = document.createElement('legend'); legend.textContent = i18n.cornerRadius; group.appendChild(legend);
+		var values = block.border_radius;
+		[['top_left', i18n.topLeft], ['top_right', i18n.topRight], ['bottom_right', i18n.bottomRight], ['bottom_left', i18n.bottomLeft]].forEach(function (item) {
+			var key = item[0];
+			group.appendChild(field(item[1], 'number', values[key], function (value) { var number = Math.max(0, Math.min(200, Number(value) || 0)); if (block.radius_linked) Object.keys(values).forEach(function (corner) { values[corner] = number; }); else values[key] = number; sync(); renderCanvas(); if (block.radius_linked) renderInspector(); }));
+		});
+		group.appendChild(field(i18n.unit, 'select', block.radius_unit, function (value) { block.radius_unit = value === '%' ? '%' : 'px'; }, [['px', i18n.pixels], ['%', i18n.percent]]));
+		var linked = document.createElement('label'); linked.className = 'contactpanda-inspector-link-values'; var checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = !!block.radius_linked; checkbox.addEventListener('change', function () { block.radius_linked = checkbox.checked; sync(); }); linked.appendChild(checkbox); linked.appendChild(document.createTextNode(i18n.linkValues)); group.appendChild(linked);
+		return group;
+	}
+	function finishInspector(block, heading) {
+		var contentNodes = []; while (heading.nextSibling) contentNodes.push(heading.nextSibling), inspector.removeChild(heading.nextSibling);
+		var tabs = document.createElement('div'); tabs.className = 'contactpanda-inspector-tabs';
+		[['content', i18n.contentTab], ['design', i18n.designTab]].forEach(function (item) { var button = document.createElement('button'); button.type = 'button'; button.className = 'button' + (inspectorTab === item[0] ? ' is-active' : ''); button.textContent = item[1]; button.addEventListener('click', function () { inspectorTab = item[0]; renderInspector(); }); tabs.appendChild(button); });
+		var contentPane = document.createElement('div'); contentPane.className = 'contactpanda-inspector-pane'; contentPane.hidden = inspectorTab !== 'content'; contentNodes.forEach(function (node) { contentPane.appendChild(node); });
+		var designPane = document.createElement('div'); designPane.className = 'contactpanda-inspector-pane'; designPane.hidden = inspectorTab !== 'design';
+		designPane.appendChild(colorField(i18n.backgroundColor, block.background_color || '#ffffff', function (value) { block.background_color = value; }));
+		designPane.appendChild(linkedBoxFields(i18n.padding, block, 'padding', 'padding_linked', [i18n.top, i18n.rightSide, i18n.bottom, i18n.leftSide]));
+		designPane.appendChild(linkedBoxFields(i18n.margin, block, 'margin', 'margin_linked', [i18n.top, i18n.rightSide, i18n.bottom, i18n.leftSide]));
+		designPane.appendChild(radiusFields(block));
+		inspector.appendChild(tabs); inspector.appendChild(contentPane); inspector.appendChild(designPane);
+	}
+	function postVisibilityOptions(block) {
+		var group = document.createElement('fieldset'); group.className = 'contactpanda-inspector-options';
+		var legend = document.createElement('legend'); legend.textContent = i18n.displayedContent; group.appendChild(legend);
+		var options = [['show_image', i18n.showImage], ['show_title', i18n.showTitle], ['show_excerpt', i18n.showExcerpt]];
+		var active = options.filter(function (option) { return !!block[option[0]]; }).length;
+		options.forEach(function (option) {
+			var labelNode = document.createElement('label'); var input = document.createElement('input'); input.type = 'checkbox'; input.checked = !!block[option[0]]; input.disabled = input.checked && active === 1; input.title = input.disabled ? i18n.atLeastOneContent : '';
+			input.addEventListener('change', function () { block[option[0]] = input.checked; sync(); renderCanvas(); renderInspector(); });
+			labelNode.appendChild(input); labelNode.appendChild(document.createTextNode(option[1])); group.appendChild(labelNode);
+		});
+		return group;
+	}
+	function removeEditor() { if (window.wp && wp.editor && document.getElementById(editorId)) { try { wp.editor.remove(editorId); } catch (ignore) {} } }
+	function renderInspector() {
+		removeEditor(); inspector.replaceChildren(); var index = selectedIndex();
+		if (index < 0) { var note = document.createElement('p'); note.className = 'contactpanda-muted'; note.textContent = i18n.selectBlock; inspector.appendChild(note); return; }
+		var block = blocks[index]; var heading = document.createElement('h3'); heading.textContent = label(block.type); inspector.appendChild(heading);
+		if (block.type === 'heading') { inspector.appendChild(field(i18n.content, 'text', block.content, function (value) { block.content = value; })); inspector.appendChild(field(i18n.headingLevel, 'select', block.level, function (value) { block.level = value; }, [['h1','H1'],['h2','H2'],['h3','H3'],['h4','H4']])); inspector.appendChild(colorField(i18n.textColor, block.text_color || '#39495a', function (value) { block.text_color = value; })); inspector.appendChild(alignmentField(block)); }
+		else if (block.type === 'text') {
+			var editor = document.createElement('textarea'); editor.id = editorId; editor.value = block.content || ''; inspector.appendChild(editor); inspector.appendChild(alignmentField(block));
+			if (window.wp && wp.editor) window.setTimeout(function () {
+				wp.editor.initialize(editorId, {tinymce: {toolbar1: 'bold italic link bullist numlist alignleft aligncenter alignright undo redo', menubar: false}, quicktags: true});
+				var instance = window.tinymce && tinymce.get(editorId);
+				if (instance) instance.on('change keyup undo redo', function () { if (syncingInline) return; block.content = instance.getContent(); sync(); renderCanvas(); });
+				var plain = document.getElementById(editorId); if (plain) plain.addEventListener('input', function () { block.content = plain.value; sync(); renderCanvas(); });
+			}, 0);
+		} else if (block.type === 'image') {
+			var media = document.createElement('button'); media.type = 'button'; media.className = 'button button-secondary contactpanda-open-media'; media.title = i18n.openMedia; media.innerHTML = '<span class="dashicons dashicons-upload"></span>';
+			media.addEventListener('click', function () { var frame = wp.media({title: i18n.chooseImage, button: {text: i18n.useImage}, multiple: false, library: {type: 'image'}}); frame.on('select', function () { var image = frame.state().get('selection').first().toJSON(); block.url = image.url || ''; block.alt = image.alt || image.title || ''; block.attachment_id = image.id || 0; render(); }); frame.open(); });
+			var imageRow = field(i18n.imageUrl, 'url', block.url, function (value) { block.url = value; }); imageRow.classList.add('contactpanda-image-url-row'); imageRow.appendChild(media); inspector.appendChild(imageRow); inspector.appendChild(field(i18n.alternativeText, 'text', block.alt, function (value) { block.alt = value; })); inspector.appendChild(alignmentField(block)); inspector.appendChild(field(i18n.widthUnit, 'select', block.width_unit, function (value) { block.width_unit = value === 'px' ? 'px' : '%'; block.width = block.width_unit === 'px' ? Math.min(760, block.width) : Math.min(100, block.width); }, [['%', i18n.percent], ['px', i18n.pixels]])); inspector.appendChild(field(i18n.width, 'number', block.width, function (value) { var maximum = block.width_unit === 'px' ? 760 : 100; block.width = Math.max(10, Math.min(maximum, Number(value || 100))); }));
+		} else if (block.type === 'button') { inspector.appendChild(field(i18n.buttonLabel, 'text', block.label, function (value) { block.label = value; })); inspector.appendChild(field(i18n.targetUrl, 'url', block.url, function (value) { block.url = value; })); inspector.appendChild(colorField(i18n.backgroundColor, block.button_color || '#4253b5', function (value) { block.button_color = value; })); inspector.appendChild(colorField(i18n.borderColor, block.border_color || '#4253b5', function (value) { block.border_color = value; })); inspector.appendChild(colorField(i18n.textColor, block.text_color || '#ffffff', function (value) { block.text_color = value; })); inspector.appendChild(field(i18n.uppercase, 'select', block.uppercase ? '1' : '0', function (value) { block.uppercase = value === '1'; }, [['0',i18n.no],['1',i18n.yes]])); inspector.appendChild(alignmentField(block, true)); }
+		else if (block.type === 'divider') { var dividerNote = document.createElement('p'); dividerNote.className = 'description'; dividerNote.textContent = i18n.dividerNote; inspector.appendChild(dividerNote); }
+		else if (block.type === 'spacer') inspector.appendChild(field(i18n.spacerHeight, 'number', block.height, function (value) { block.height = Math.max(8, Math.min(120, Number(value || 24))); }));
+		else if (block.type === 'products') {
+			if (!config.woocommerce) { var unavailable = document.createElement('p'); unavailable.className = 'notice notice-warning inline'; unavailable.textContent = i18n.productsUnavailable; inspector.appendChild(unavailable); finishInspector(block, heading); return; }
+			var sources = [['latest', i18n.latestProducts], ['category', i18n.category], ['producer', i18n.producer], ['featured', i18n.featured], ['sale', i18n.onSale], ['manual', i18n.manual]];
+			inspector.appendChild(productSelect(i18n.productSource, block.source, sources, function (value) { block.source = value; updateProductBlock(block); renderInspector(); }));
+			inspector.appendChild(pairedFields(productSelect(i18n.productCount, block.count, [[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']], function (value) { block.count = Number(value); updateProductBlock(block); }), productSelect(i18n.columns, block.columns, [[1,'1'],[2,'2'],[3,'3']], function (value) { block.columns = Number(value); updateProductBlock(block); })));
+			inspector.appendChild(productSelect(i18n.imageRatio, block.image_ratio, [['1:1',i18n.ratioSquare],['4:5',i18n.ratioPortrait],['4:3',i18n.ratioLandscape]], function (value) { block.image_ratio = value; updateProductBlock(block); }));
+			inspector.appendChild(productSelect(i18n.showPrice, block.show_price ? '1' : '0', [['1',i18n.yes],['0',i18n.no]], function (value) { block.show_price = value === '1'; updateProductBlock(block); }));
+			inspector.appendChild(productSelect(i18n.showCategories, block.show_categories ? '1' : '0', [['0',i18n.no],['1',i18n.yes]], function (value) { block.show_categories = value === '1'; updateProductBlock(block); }));
+			inspector.appendChild(productSelect(i18n.showBrands, block.show_brands ? '1' : '0', [['0',i18n.no],['1',i18n.yes]], function (value) { block.show_brands = value === '1'; updateProductBlock(block); }));
+			if (block.source === 'category') {
+				if (!block.category_id && productFilters.categories.length) { block.category_id = Number(productFilters.categories[0].id); updateProductBlock(block); }
+				inspector.appendChild(productSelect(i18n.productCategory, block.category_id, productFilters.categories.map(function (item) { return [item.id, item.name]; }), function (value) { block.category_id = Number(value); updateProductBlock(block); }));
+			}
+			if (block.source === 'producer') {
+				if (!block.producer_taxonomy && productFilters.producers.length) block.producer_taxonomy = productFilters.producers[0].taxonomy;
+				inspector.appendChild(productSelect(i18n.producerType, block.producer_taxonomy, productFilters.producers.map(function (item) { return [item.taxonomy, item.label]; }), function (value) { block.producer_taxonomy = value; block.producer_term_id = 0; updateProductBlock(block); renderInspector(); }));
+				var producer = productFilters.producers.find(function (item) { return item.taxonomy === block.producer_taxonomy; });
+				if (producer && !block.producer_term_id && producer.terms.length) { block.producer_term_id = Number(producer.terms[0].id); updateProductBlock(block); }
+				if (producer) inspector.appendChild(productSelect(i18n.producerValue, block.producer_term_id, producer.terms.map(function (item) { return [item.id, item.name]; }), function (value) { block.producer_term_id = Number(value); updateProductBlock(block); }));
+			}
+			if (block.source === 'manual') inspector.appendChild(productSelect(i18n.manualProducts, block.product_ids, productFilters.products.map(function (item) { return [item.id, item.name]; }), function (values) { block.product_ids = values.slice(0, block.count); updateProductBlock(block); renderInspector(); }, true));
+		} else if (block.type === 'events') {
+			inspector.appendChild(productSelect(i18n.selectEvents, block.event_ids, eventFilters.map(function (item) { return [item.id, item.name]; }), function (values) { block.event_ids = values.slice(0, 6); sync(); renderCanvas(); }, true));
+			inspector.appendChild(pairedFields(productSelect(i18n.eventCount, block.count, [[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']], function (value) { block.count = Number(value); sync(); renderCanvas(); }), productSelect(i18n.columns, block.columns, [[1,'1'],[2,'2'],[3,'3']], function (value) { block.columns = Number(value); sync(); renderCanvas(); })));
+			inspector.appendChild(productSelect(i18n.imageRatio, block.image_ratio, [['1:1',i18n.ratioSquare],['4:5',i18n.ratioPortrait],['4:3',i18n.ratioLandscape]], function (value) { block.image_ratio = value; sync(); renderCanvas(); }));
+		} else if (block.type === 'posts') {
+			var postType = selectedPostType(block);
+			inspector.appendChild(productSelect(i18n.contentType, block.post_type, (postFilters.types || []).map(function (type) { return [type.id, type.name]; }), function (value) { block.post_type = value; var selectedType = selectedPostType(block); block.post_taxonomy = selectedType.taxonomy || ''; block.category_id = 0; block.post_ids = []; if (block.source === 'category' && !(selectedType.categories || []).length) block.source = 'latest'; sync(); render(); }));
+			var postSources = [['latest',i18n.latestPosts],['manual',i18n.manualPostsChoice]]; if ((postType.categories || []).length) postSources.splice(1, 0, ['category',i18n.category]);
+			inspector.appendChild(productSelect(i18n.postSource, block.source, postSources, function (value) { block.source = value; sync(); render(); }));
+			inspector.appendChild(pairedFields(productSelect(i18n.postCount, block.count, [[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']], function (value) { block.count = Number(value); sync(); renderCanvas(); }), productSelect(i18n.columns, block.columns, [[1,'1'],[2,'2'],[3,'3']], function (value) { block.columns = Number(value); sync(); renderCanvas(); })));
+			inspector.appendChild(productSelect(i18n.imageRatio, block.image_ratio, [['1:1',i18n.ratioSquare],['4:5',i18n.ratioPortrait],['4:3',i18n.ratioLandscape]], function (value) { block.image_ratio = value; sync(); renderCanvas(); }));
+			inspector.appendChild(postVisibilityOptions(block));
+			if (block.source === 'category') inspector.appendChild(productSelect(i18n.postCategory, block.category_id, (postType.categories || []).map(function (item) { return [item.id,item.name]; }), function (value) { block.category_id = Number(value); block.post_taxonomy = postType.taxonomy || ''; sync(); renderCanvas(); }));
+			if (block.source === 'manual') inspector.appendChild(productSelect(i18n.manualPosts, block.post_ids, (postType.posts || []).map(function (item) { return [item.id,item.name]; }), function (values) { block.post_ids = values.slice(0, block.count); sync(); renderCanvas(); }, true));
+		}
+		finishInspector(block, heading);
+	}
+	function render() { renderCanvas(); renderInspector(); }
+	document.querySelectorAll('.contactpanda-add-block').forEach(function (button) {
+		button.addEventListener('click', function () { document.querySelectorAll('.contactpanda-add-block').forEach(function (item) { item.classList.remove('is-selected'); }); this.classList.add('is-selected'); });
+		button.addEventListener('dblclick', function () { var block = defaultBlock(this.dataset.type); blocks.push(block); selectedId = block.id; inspectorTab = 'content'; render(); });
+		button.addEventListener('dragstart', function (event) { event.dataTransfer.effectAllowed = 'copy'; event.dataTransfer.setData('contactpanda/type', this.dataset.type); });
+	});
+	container.addEventListener('dragover', function (event) { event.preventDefault(); });
+	container.addEventListener('drop', function (event) { if (event.target.closest('.contactpanda-newsletter-block')) return; var type = event.dataTransfer.getData('contactpanda/type'); if (!type) return; var block = defaultBlock(type); blocks.push(block); selectedId = block.id; render(); });
+	function request(action, extra) {
+		var data = new FormData(); data.append('action', action); data.append('nonce', config.nonce); data.append('content_json', JSON.stringify(blocks));
+		['subject', 'preview_text', 'from_name', 'reply_to', 'email_background', 'accent_color', 'content_background', 'text_color', 'font_family', 'content_width'].forEach(function (name) { data.append(name, form.elements[name] ? form.elements[name].value : ''); });
+		Object.keys(extra || {}).forEach(function (key) { data.append(key, extra[key]); });
+		return fetch(config.ajaxUrl, {method: 'POST', credentials: 'same-origin', body: data}).then(function (response) { return response.json().catch(function () { throw new Error('invalid-response'); }); });
+	}
+	var modal = document.getElementById('contactpanda-newsletter-preview-modal'); var frame = document.getElementById('contactpanda-newsletter-preview-frame');
+	document.getElementById('contactpanda-preview-template').addEventListener('click', function () { request('contactpanda_newsletter_preview').then(function (result) { if (!result.success) throw new Error((result.data && result.data.message) || i18n.previewFailed); frame.srcdoc = result.data.html; modal.hidden = false; document.body.classList.add('contactpanda-modal-open'); }).catch(function () { window.alert(i18n.previewFailed); }); });
+	document.getElementById('contactpanda-close-newsletter-preview').addEventListener('click', function () { modal.hidden = true; document.body.classList.remove('contactpanda-modal-open'); });
+	document.querySelectorAll('[data-preview-width]').forEach(function (button) { button.addEventListener('click', function () { document.querySelectorAll('[data-preview-width]').forEach(function (item) { item.classList.remove('is-active'); }); this.classList.add('is-active'); frame.style.width = this.dataset.previewWidth; }); });
+	document.getElementById('contactpanda-send-test').addEventListener('click', function () {
+		var button = this, message = document.getElementById('contactpanda-test-message'); button.disabled = true; message.className = 'contactpanda-newsletter-message'; message.textContent = i18n.sending;
+		request('contactpanda_newsletter_test', {recipient: document.getElementById('contactpanda-test-email').value}).then(function (result) { if (!result.success) throw new Error((result.data && result.data.message) || i18n.testFailed); message.classList.add('is-success'); message.textContent = result.data.message; }).catch(function (error) { message.classList.add('is-error'); message.textContent = error.message === 'invalid-response' ? i18n.testFailed : error.message; }).finally(function () { button.disabled = false; });
+	});
+	form.addEventListener('submit', function () { var instance = window.tinymce && tinymce.get(editorId), index = selectedIndex(); if (instance && index >= 0 && blocks[index].type === 'text') blocks[index].content = instance.getContent(); sync(); });
+	render();
+}());
