@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.7.0\n"
+"Project-Id-Version: ContactPanda 0.7.2\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-19 20:00+0200\n"
@@ -6318,6 +6318,15 @@ msgstr "Die Lizenzantwort konnte nicht verifiziert werden. Bestehende Lizenzinfo
 
 msgid "The ContactPanda update package could not be verified."
 msgstr "Das ContactPanda-Updatepaket konnte nicht verifiziert werden."
+
+msgid "ContactPanda could not refresh the secure update link. Please try the update again."
+msgstr "ContactPanda konnte den sicheren Aktualisierungslink nicht erneuern. Bitte versuchen Sie die Aktualisierung erneut."
+
+msgid "The secure ContactPanda update package is not available for this installation."
+msgstr "Das sichere ContactPanda-Aktualisierungspaket ist für diese Installation nicht verfügbar."
+
+msgid "The secure ContactPanda update package could not be downloaded. Please try again."
+msgstr "Das sichere ContactPanda-Aktualisierungspaket konnte nicht heruntergeladen werden. Bitte versuchen Sie es erneut."
 
 msgid "Customer account registration requires ContactPanda Plus."
 msgstr "Die Kundenkonto-Registrierung erfordert ContactPanda Plus."

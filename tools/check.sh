@@ -18,6 +18,7 @@ if command -v php >/dev/null 2>&1; then
   php tests/marketing-status-icons.php || status=1
   php tests/github-updater.php || status=1
   php tests/github-updater.php --plus || status=1
+	php tests/licensed-updater.php || status=1
 	php tests/vcard-import.php || status=1
 	php tests/events.php || status=1
 	php tests/events-unavailable.php || status=1

@@ -94,16 +94,28 @@ final class ContactPanda_Licensed_Updater {
 	}
 
 	public function verify_download( $reply, $package, $upgrader, $hook_extra ) {
-		$data = $this->metadata();
-		if ( is_wp_error( $data ) || empty( $data['package'] ) || empty( $data['sha256'] ) || $package !== $data['package'] ) {
+		if ( ! $this->handles_upgrade( $hook_extra ) ) {
 			return $reply;
+		}
+		if ( is_wp_error( $reply ) ) {
+			return $reply;
+		}
+
+		// Update transients can outlive the signed package URL. Always request a
+		// fresh URL at the last possible moment instead of trusting $package.
+		$data = $this->metadata( true );
+		if ( is_wp_error( $data ) ) {
+			return new WP_Error( 'contactpanda_update_metadata', __( 'ContactPanda could not refresh the secure update link. Please try the update again.', 'contactpanda' ) );
+		}
+		if ( empty( $data['available'] ) || empty( $data['package'] ) || empty( $data['sha256'] ) ) {
+			return new WP_Error( 'contactpanda_update_unavailable', __( 'The secure ContactPanda update package is not available for this installation.', 'contactpanda' ) );
 		}
 		if ( ! function_exists( 'download_url' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
-		$file = download_url( $package, 300 );
+		$file = download_url( esc_url_raw( $data['package'] ), 300 );
 		if ( is_wp_error( $file ) ) {
-			return $file;
+			return new WP_Error( 'contactpanda_update_download', __( 'The secure ContactPanda update package could not be downloaded. Please try again.', 'contactpanda' ) );
 		}
 		if ( ! hash_equals( strtolower( $data['sha256'] ), hash_file( 'sha256', $file ) ) ) {
 			wp_delete_file( $file );
@@ -112,7 +124,22 @@ final class ContactPanda_Licensed_Updater {
 		return $file;
 	}
 
-	private function metadata() {
+	private function handles_upgrade( $hook_extra ) {
+		$plugins = array();
+		if ( ! empty( $hook_extra['plugin'] ) ) {
+			$plugins[] = $hook_extra['plugin'];
+		}
+		if ( ! empty( $hook_extra['plugins'] ) ) {
+			$plugins = array_merge( $plugins, (array) $hook_extra['plugins'] );
+		}
+		return in_array( $this->config['plugin'], array_map( 'plugin_basename', $plugins ), true );
+	}
+
+	private function metadata( $refresh = false ) {
+		if ( $refresh ) {
+			delete_site_transient( $this->cache_key() );
+			$this->metadata = null;
+		}
 		if ( null !== $this->metadata ) {
 			return $this->metadata;
 		}
