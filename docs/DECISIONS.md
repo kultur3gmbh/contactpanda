@@ -24,6 +24,13 @@ This document records stable decisions that must survive individual conversation
 - Repeated imports merge by stable identifiers and email addresses as appropriate.
 - Imported historical broadcasts are read-only archives, not editable email templates.
 
+## Forms and newsletter
+
+- Form integrations belong to ContactPanda Basic rather than requiring ContactPanda Plus.
+- In Basic, form integrations initially connect only to the newsletter signup workflow, including the existing consent and double-opt-in rules.
+- ContactPanda Plus extends the same integration points with automations and additional processing targets; it must not duplicate the Basic form connectors.
+- This boundary is scheduled for the next coordinated Basic and Plus update and is not yet implemented.
+
 ## Releases and deployment
 
 - Basic and Plus use the same version number for coordinated releases.
