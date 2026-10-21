@@ -1,4 +1,13 @@
 (function () {
+	document.addEventListener('change', function (event) {
+		if (!event.target.matches('#screen-options-wrap input.hide-column-tog') || !window.CONTACTPANDA_CONFIG || !CONTACTPANDA_CONFIG.screenId) return;
+		var hidden = [];
+		document.querySelectorAll('#screen-options-wrap input.hide-column-tog').forEach(function (box) { if (!box.checked) hidden.push(box.value); });
+		var data = new URLSearchParams();
+		data.set('action', 'contactpanda_save_hidden_columns'); data.set('nonce', CONTACTPANDA_CONFIG.columnsNonce); data.set('screen', CONTACTPANDA_CONFIG.screenId);
+		hidden.forEach(function (column) { data.append('hidden[]', column); });
+		fetch(CONTACTPANDA_CONFIG.ajaxUrl, {method: 'POST', credentials: 'same-origin', headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}, body: data.toString()});
+	});
 	'use strict';
 	var i18n = (window.CONTACTPANDA_CONFIG && CONTACTPANDA_CONFIG.i18n) || {};
 	function tr(key, fallback) { return i18n[key] || fallback; }

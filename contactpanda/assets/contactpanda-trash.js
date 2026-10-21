@@ -18,7 +18,7 @@ document.addEventListener('click', function (event) {
 		form = document.createElement('form');
 		form.method = 'post';
 		form.action = window.ajaxurl ? window.ajaxurl.replace(/admin-ajax\.php.*$/, 'admin-post.php') : 'admin-post.php';
-		[['action', 'contactpanda_record_action'], ['entity', button.dataset.entity], ['_wpnonce', button.dataset.nonce], ['confirmed', '1']].forEach(function (entry) {
+		[['action', 'contactpanda_record_action'], ['entity', button.dataset.entity], ['_wpnonce', button.dataset.nonce], ['confirmed', '1'], ['return_url', window.location.href]].forEach(function (entry) {
 			var field = document.createElement('input'); field.type = 'hidden'; field.name = entry[0]; field.value = entry[1]; form.appendChild(field);
 		});
 		document.body.appendChild(form);

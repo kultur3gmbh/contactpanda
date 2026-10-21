@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.6.5\n"
+"Project-Id-Version: ContactPanda 0.7.0\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-19 20:00+0200\n"
@@ -6747,3 +6747,32 @@ msgstr "Einträge"
 
 msgid "Complete package enabled"
 msgstr "Gesamtpaket aktiviert"
+msgid "Already finally unsubscribed"
+msgstr "Bereits endgültig abgemeldet"
+
+msgid "This email address has already been finally unsubscribed from the newsletter."
+msgstr "Diese E-Mail-Adresse wurde bereits endgültig vom Newsletter abgemeldet."
+
+msgid "Confirm newsletter unsubscribe"
+msgstr "Newsletter-Abmeldung bestätigen"
+
+msgid "Confirm final unsubscribe"
+msgstr "Endgültige Abmeldung bestätigen"
+
+msgid "Do you want to finally unsubscribe %s from the newsletter?"
+msgstr "Möchten Sie %s endgültig vom Newsletter abmelden?"
+
+msgid "Finally unsubscribe"
+msgstr "Endgültig abmelden"
+
+msgid "The unsubscribe confirmation is invalid or expired."
+msgstr "Die Bestätigung der Abmeldung ist ungültig oder abgelaufen."
+
+msgid "Finally unsubscribed"
+msgstr "Endgültig abgemeldet"
+
+msgid "Your email address has been finally unsubscribed from the newsletter."
+msgstr "Ihre E-Mail-Adresse wurde endgültig vom Newsletter abgemeldet."
+
+msgid "Email address %1$s finally unsubscribed through campaign %2$d at %3$s."
+msgstr "Die E-Mail-Adresse %1$s wurde am %3$s über die Aussendung %2$d endgültig abgemeldet."

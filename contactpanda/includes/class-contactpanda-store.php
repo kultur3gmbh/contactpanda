@@ -914,11 +914,12 @@ final class ContactPanda_Store {
 	public static function record_consent( $contact_id, $status, $source, $date, $note = '' ) {
 		global $wpdb;
 		$tables = ContactPanda_Schema::table_names();
-		$occurred = $date . ' 00:00:00';
+		$occurred = preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', (string) $date ) ? $date : ( preg_match( '/^\d{4}-\d{2}-\d{2}$/', (string) $date ) ? $date . ' 00:00:00' : current_time( 'mysql' ) );
 		$wpdb->insert( $tables['consents'], array( 'contact_id' => absint( $contact_id ), 'purpose' => 'marketing', 'status' => sanitize_key( $status ), 'legal_basis' => 'consent', 'source' => sanitize_text_field( $source ), 'proof_text' => $note, 'actor_user_id' => get_current_user_id(), 'occurred_at' => $occurred, 'created_at' => current_time( 'mysql' ) ) );
 		self::set_contact_meta( $contact_id, 'optin_status', 'granted' === $status ? 'confirmed' : 'unsubscribed' );
 		self::set_contact_meta( $contact_id, 'marketing_consent_source', $source );
-		self::set_contact_meta( $contact_id, 'granted' === $status ? 'marketing_consent_date' : 'marketing_consent_revoked_date', $date );
+		self::set_contact_meta( $contact_id, 'granted' === $status ? 'marketing_consent_date' : 'marketing_consent_revoked_date', substr( $occurred, 0, 10 ) );
+		self::set_contact_meta( $contact_id, 'granted' === $status ? 'marketing_consent_at' : 'marketing_consent_revoked_at', $occurred );
 		$result = self::add_activity( $contact_id, 0, 'consent', 'granted' === $status ? __( 'Marketing consent granted manually', 'contactpanda' ) : __( 'Marketing consent revoked manually', 'contactpanda' ), $note );
 		if ( 'granted' === $status ) {
 			$contact = self::contact( $contact_id );

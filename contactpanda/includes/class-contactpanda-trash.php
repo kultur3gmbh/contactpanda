@@ -96,7 +96,12 @@ final class ContactPanda_Trash {
 		if ( ! self::valid_entity( $entity ) || ! in_array( $operation, array( 'trash', 'restore', 'purge' ), true ) || ! $ids || count( $ids ) > 50 || '1' !== ( $_POST['confirmed'] ?? '' ) ) wp_die( esc_html__( 'Select records and explicitly confirm the selected action.', 'contactpanda' ), '', array( 'response' => 400 ) );
 		$changed = 0;
 		foreach ( $ids as $id ) if ( self::change( $entity, $id, $operation, true ) ) $changed++;
-		wp_safe_redirect( add_query_arg( array( 'changed' => $changed, 'failed' => count( $ids ) - $changed ), self::url( $entity, 0, 'trash' !== $operation ) ) );
+		$redirect = self::url( $entity, 0, 'trash' !== $operation );
+		if ( 'trash' === $operation && ! empty( $_POST['return_url'] ) ) {
+			$candidate = wp_validate_redirect( esc_url_raw( wp_unslash( $_POST['return_url'] ) ), '' );
+			if ( $candidate && 0 === strpos( $candidate, admin_url() ) ) $redirect = remove_query_arg( array( 'changed', 'failed' ), $candidate );
+		}
+		wp_safe_redirect( add_query_arg( array( 'changed' => $changed, 'failed' => count( $ids ) - $changed ), $redirect ) );
 		exit;
 	}
 

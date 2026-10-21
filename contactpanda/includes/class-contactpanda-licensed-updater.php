@@ -26,31 +26,51 @@ final class ContactPanda_Licensed_Updater {
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'updates' ) );
 		add_filter( 'plugins_api', array( $this, 'plugin_information' ), 20, 3 );
 		add_filter( 'upgrader_pre_download', array( $this, 'verify_download' ), 10, 4 );
+		add_action( 'upgrader_process_complete', array( $this, 'clear_update_cache' ), 10, 2 );
 	}
 
 	public function updates( $transient ) {
 		if ( ! is_object( $transient ) || empty( $transient->checked ) ) {
 			return $transient;
 		}
+		$plugin = $this->config['plugin'];
+		unset( $transient->response[ $plugin ], $transient->no_update[ $plugin ] );
 		$data = $this->metadata();
-		if ( is_wp_error( $data ) || empty( $data['available'] ) || empty( $data['version'] ) || version_compare( $data['version'], $this->config['version'], '<=' ) ) {
+		$installed = ! empty( $transient->checked[ $plugin ] ) ? sanitize_text_field( $transient->checked[ $plugin ] ) : $this->config['version'];
+		if ( is_wp_error( $data ) || empty( $data['available'] ) || empty( $data['version'] ) || version_compare( $data['version'], $installed, '<=' ) ) {
+			if ( is_array( $data ) && ! empty( $data['version'] ) ) {
+				$transient->no_update[ $plugin ] = $this->item( $data, $installed, '' );
+			}
 			return $transient;
 		}
-		$item = (object) array(
+		$item = $this->item( $data, sanitize_text_field( $data['version'] ), esc_url_raw( $data['package'] ?? '' ) );
+		if ( $item->package ) {
+			$transient->response[ $plugin ] = $item;
+		}
+		return $transient;
+	}
+
+	private function item( array $data, $version, $package ) {
+		return (object) array(
 			'id'           => 'contactpanda-' . $this->config['product'],
 			'slug'         => $this->config['slug'],
 			'plugin'       => $this->config['plugin'],
-			'new_version'  => sanitize_text_field( $data['version'] ),
+			'new_version'  => sanitize_text_field( $version ),
 			'url'          => esc_url_raw( $data['homepage'] ?? 'https://mycontactpanda.com/' ),
-			'package'      => esc_url_raw( $data['package'] ?? '' ),
+			'package'      => $package,
 			'requires'     => sanitize_text_field( $data['requires'] ?? '' ),
 			'requires_php' => sanitize_text_field( $data['requires_php'] ?? '' ),
 			'tested'       => sanitize_text_field( $data['tested'] ?? '' ),
 		);
-		if ( $item->package ) {
-			$transient->response[ $this->config['plugin'] ] = $item;
-		}
-		return $transient;
+	}
+
+	public function clear_update_cache( $upgrader, $options ) {
+		if ( 'plugin' !== ( $options['type'] ?? '' ) ) return;
+		$plugins = isset( $options['plugins'] ) ? (array) $options['plugins'] : array( $options['plugin'] ?? '' );
+		if ( ! in_array( $this->config['plugin'], $plugins, true ) ) return;
+		delete_site_transient( $this->cache_key() );
+		delete_site_transient( 'update_plugins' );
+		$this->metadata = null;
 	}
 
 	public function plugin_information( $result, $action, $args ) {
@@ -96,7 +116,7 @@ final class ContactPanda_Licensed_Updater {
 		if ( null !== $this->metadata ) {
 			return $this->metadata;
 		}
-		$key    = 'contactpanda_update_' . md5( $this->config['product'] . '|' . $this->config['channel'] );
+		$key    = $this->cache_key();
 		$cached = get_site_transient( $key );
 		if ( is_array( $cached ) ) {
 			$this->metadata = $cached;
@@ -107,5 +127,9 @@ final class ContactPanda_Licensed_Updater {
 			set_site_transient( $key, $this->metadata, 10 * MINUTE_IN_SECONDS );
 		}
 		return $this->metadata;
+	}
+
+	private function cache_key() {
+		return 'contactpanda_update_' . md5( $this->config['product'] . '|' . $this->config['channel'] . '|' . $this->config['version'] );
 	}
 }
