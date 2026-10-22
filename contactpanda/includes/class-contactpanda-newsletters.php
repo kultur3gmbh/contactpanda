@@ -297,11 +297,29 @@ final class ContactPanda_Basic_Newsletters {
 					'heading'       => __( 'Heading', 'contactpanda' ),
 					'text'          => __( 'Text', 'contactpanda' ),
 					'image'         => __( 'Image', 'contactpanda' ),
+					'video'         => __( 'Video', 'contactpanda' ),
+					'gallery'       => __( 'Image gallery', 'contactpanda' ),
 					'button'        => __( 'Button', 'contactpanda' ),
 					'divider'       => __( 'Divider', 'contactpanda' ),
 					'spacer'        => __( 'Spacer', 'contactpanda' ),
 					'imageUrl'      => __( 'Image URL', 'contactpanda' ),
 					'alternativeText'=> __( 'Alternative text', 'contactpanda' ),
+					'videoUrl'      => __( 'YouTube, Vimeo, or video URL', 'contactpanda' ),
+					'videoThumbnail'=> __( 'Preview image URL', 'contactpanda' ),
+					'videoTitle'    => __( 'Video title', 'contactpanda' ),
+					'videoButton'   => __( 'Button text', 'contactpanda' ),
+					'choosePreview' => __( 'Choose preview image', 'contactpanda' ),
+					'galleryImages' => __( 'Gallery images', 'contactpanda' ),
+					'chooseGallery' => __( 'Choose up to six images', 'contactpanda' ),
+					'galleryColumns'=> __( 'Columns', 'contactpanda' ),
+					'galleryLayout' => __( 'Gallery layout', 'contactpanda' ),
+					'grid'          => __( 'Grid', 'contactpanda' ),
+					'masonry'       => __( 'Masonry', 'contactpanda' ),
+					'imageFormat'   => __( 'Image format', 'contactpanda' ),
+					'fixedFormat'   => __( 'Fixed format', 'contactpanda' ),
+					'originalFormat'=> __( 'Original proportions', 'contactpanda' ),
+					'galleryEmpty'  => __( 'Choose images for this gallery.', 'contactpanda' ),
+					'galleryLimit'  => __( 'You can select up to six images.', 'contactpanda' ),
 					'buttonLabel'   => __( 'Label', 'contactpanda' ),
 					'targetUrl'     => __( 'Target URL', 'contactpanda' ),
 					'spacerHeight'  => __( 'Height in pixels', 'contactpanda' ),
@@ -658,7 +676,7 @@ final class ContactPanda_Basic_Newsletters {
 		echo '<button type="submit" name="reapply_defaults" value="1" class="button" onclick="return confirm(' . esc_attr( wp_json_encode( __( 'Reapply the global email appearance? Content blocks remain unchanged.', 'contactpanda' ) ) ) . ');">' . esc_html__( 'Reapply global defaults', 'contactpanda' ) . '</button>';
 		echo '</div></aside></section>';
 		echo '<div class="contactpanda-newsletter-editor-layout"><aside class="contactpanda-card contactpanda-newsletter-palette"><h2>' . esc_html__( 'Content blocks', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Drag a block into the email or double-click it to append it. A single click only selects the block.', 'contactpanda' ) . '</p><div class="contactpanda-block-palette" aria-label="' . esc_attr__( 'Add content block', 'contactpanda' ) . '">';
-		$palette = array( 'heading' => 'heading', 'text' => 'text', 'image' => 'format-image', 'button' => 'button', 'divider' => 'minus', 'spacer' => 'image-flip-vertical' );
+		$palette = array( 'heading' => 'heading', 'text' => 'text', 'image' => 'format-image', 'gallery' => 'format-gallery', 'video' => 'video-alt3', 'button' => 'button', 'divider' => 'minus', 'spacer' => 'image-flip-vertical' );
 		if ( class_exists( 'WooCommerce' ) ) {
 			$palette['products'] = 'cart';
 		}
@@ -705,7 +723,7 @@ final class ContactPanda_Basic_Newsletters {
 	private static function block_label( $type ) {
 		$labels = array(
 			'heading' => __( 'Heading', 'contactpanda' ), 'text' => __( 'Text', 'contactpanda' ),
-			'image' => __( 'Image', 'contactpanda' ), 'button' => __( 'Button', 'contactpanda' ),
+			'image' => __( 'Image', 'contactpanda' ), 'gallery' => __( 'Image gallery', 'contactpanda' ), 'video' => __( 'Video', 'contactpanda' ), 'button' => __( 'Button', 'contactpanda' ),
 			'divider' => __( 'Divider', 'contactpanda' ), 'spacer' => __( 'Spacer', 'contactpanda' ),
 			'products' => __( 'Products', 'contactpanda' ), 'events' => __( 'Events', 'contactpanda' ), 'posts' => __( 'Posts', 'contactpanda' ), 'footer' => __( 'Footer', 'contactpanda' ),
 		);
@@ -864,7 +882,7 @@ final class ContactPanda_Basic_Newsletters {
 		$blocks = array();
 		foreach ( is_array( $decoded ) ? $decoded : array() as $block ) {
 			$type = isset( $block['type'] ) ? sanitize_key( $block['type'] ) : '';
-			if ( ! in_array( $type, array( 'heading', 'text', 'image', 'button', 'divider', 'spacer', 'products', 'events', 'posts' ), true ) ) {
+			if ( ! in_array( $type, array( 'heading', 'text', 'image', 'gallery', 'video', 'button', 'divider', 'spacer', 'products', 'events', 'posts' ), true ) ) {
 				continue;
 			}
 			$clean = array(
@@ -896,6 +914,23 @@ final class ContactPanda_Basic_Newsletters {
 				$clean['width_unit'] = isset( $block['width_unit'] ) && 'px' === $block['width_unit'] ? 'px' : '%';
 				$maximum = 'px' === $clean['width_unit'] ? 760 : 100;
 				$clean['width'] = min( $maximum, max( 10, isset( $block['width'] ) ? absint( $block['width'] ) : ( 'px' === $clean['width_unit'] ? 600 : 100 ) ) );
+			} elseif ( 'video' === $type ) {
+				$clean['url'] = isset( $block['url'] ) ? esc_url_raw( $block['url'] ) : '';
+				$clean['thumbnail_url'] = isset( $block['thumbnail_url'] ) ? esc_url_raw( $block['thumbnail_url'] ) : '';
+				$clean['thumbnail_id'] = isset( $block['thumbnail_id'] ) ? absint( $block['thumbnail_id'] ) : 0;
+				$clean['title'] = isset( $block['title'] ) ? sanitize_text_field( $block['title'] ) : '';
+				$clean['button_label'] = isset( $block['button_label'] ) ? sanitize_text_field( $block['button_label'] ) : __( 'Watch video', 'contactpanda' );
+			} elseif ( 'gallery' === $type ) {
+				$clean['columns'] = min( 3, max( 1, absint( $block['columns'] ?? 3 ) ) );
+				$clean['layout'] = isset( $block['layout'] ) && 'masonry' === $block['layout'] ? 'masonry' : 'grid';
+				$clean['image_format'] = isset( $block['image_format'] ) && 'original' === $block['image_format'] ? 'original' : 'fixed';
+				$clean['image_ratio'] = isset( $block['image_ratio'] ) && in_array( $block['image_ratio'], array( '1:1', '4:5', '4:3' ), true ) ? $block['image_ratio'] : '1:1';
+				$clean['images'] = array();
+				foreach ( array_slice( is_array( $block['images'] ?? null ) ? $block['images'] : array(), 0, 6 ) as $image ) {
+					$url = esc_url_raw( $image['url'] ?? '' );
+					if ( ! $url ) continue;
+					$clean['images'][] = array( 'url' => $url, 'attachment_id' => absint( $image['attachment_id'] ?? 0 ), 'alt' => sanitize_text_field( $image['alt'] ?? '' ), 'link' => esc_url_raw( $image['link'] ?? '' ) );
+				}
 			} elseif ( 'button' === $type ) {
 				$clean['label'] = isset( $block['label'] ) ? sanitize_text_field( $block['label'] ) : __( 'Read more', 'contactpanda' );
 				$clean['url'] = isset( $block['url'] ) ? esc_url_raw( $block['url'] ) : '';
@@ -998,6 +1033,32 @@ final class ContactPanda_Basic_Newsletters {
 			} elseif ( 'image' === $type && ! empty( $block['url'] ) ) {
 				$unit = isset( $block['width_unit'] ) && 'px' === $block['width_unit'] ? 'px' : '%';
 				$body .= '<p style="' . esc_attr( $box_style ) . 'text-align:' . esc_attr( $alignment ) . '"><img src="' . esc_url( $block['url'] ) . '" alt="' . esc_attr( $block['alt'] ) . '" style="display:inline-block;width:' . absint( $block['width'] ?? 100 ) . $unit . ';max-width:100%;height:auto;border:0"></p>';
+			} elseif ( 'video' === $type && ! empty( $block['url'] ) ) {
+				$thumbnail = $block['thumbnail_url'] ?? '';
+				if ( ! $thumbnail && preg_match( '~(?:youtu\\.be/|youtube(?:-nocookie)?\\.com/(?:watch\\?v=|embed/|shorts/))([A-Za-z0-9_-]{6,})~', $block['url'], $match ) ) $thumbnail = 'https://i.ytimg.com/vi/' . rawurlencode( $match[1] ) . '/hqdefault.jpg';
+				$label = $block['button_label'] ?: __( 'Watch video', 'contactpanda' );
+				$visual = $thumbnail ? '<span style="display:block;position:relative"><img src="' . esc_url( $thumbnail ) . '" alt="' . esc_attr( $block['title'] ?: $label ) . '" style="display:block;width:100%;max-width:100%;height:auto;border:0"><span style="display:inline-block;margin-top:12px;border-radius:5px;background:' . esc_attr( $base_color ) . ';color:#fff;padding:10px 18px;font:700 15px/1.2 ' . $font . '">▶ ' . esc_html( $label ) . '</span></span>' : '<span style="display:inline-block;border-radius:5px;background:' . esc_attr( $base_color ) . ';color:#fff;padding:12px 20px;font:700 15px/1.2 ' . $font . '">▶ ' . esc_html( $label ) . '</span>';
+				$body .= '<p style="' . esc_attr( $box_style ) . 'text-align:' . esc_attr( $alignment ) . '"><a href="' . esc_url( $block['url'] ) . '" style="display:inline-block;max-width:100%;text-decoration:none">' . $visual . '</a></p>';
+			} elseif ( 'gallery' === $type && ! empty( $block['images'] ) ) {
+				$columns = min( 3, max( 1, absint( $block['columns'] ?? 3 ) ) ); $width = floor( 100 / $columns );
+				$cell_width = max( 120, (int) floor( ( absint( $settings['container_width'] ?? 600 ) - 16 ) / $columns ) );
+				$ratio = array( '4:5' => 1.25, '4:3' => .75, '1:1' => 1 )[ $block['image_ratio'] ?? '1:1' ] ?? 1;
+				$fixed_height = max( 90, (int) round( $cell_width * $ratio ) );
+				$image_html = static function ( $image ) use ( $block, $fixed_height ) {
+					$fixed = 'fixed' === ( $block['image_format'] ?? 'fixed' );
+					$attributes = $fixed ? ' height="' . absint( $fixed_height ) . '"' : '';
+					$style = 'display:block;width:100%;max-width:100%;' . ( $fixed ? 'height:' . absint( $fixed_height ) . 'px;object-fit:cover;' : 'height:auto;' ) . 'border:0';
+					$html = '<img src="' . esc_url( $image['url'] ) . '" alt="' . esc_attr( $image['alt'] ) . '"' . $attributes . ' style="' . esc_attr( $style ) . '">';
+					return ! empty( $image['link'] ) ? '<a href="' . esc_url( $image['link'] ) . '">' . $html . '</a>' : $html;
+				};
+				$body .= '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="' . esc_attr( $box_style ) . '">';
+				if ( 'masonry' === ( $block['layout'] ?? 'grid' ) ) {
+					$column_images = array_fill( 0, $columns, array() ); foreach ( $block['images'] as $index => $image ) $column_images[ $index % $columns ][] = $image;
+					$body .= '<tr>'; foreach ( $column_images as $images ) { $body .= '<td class="contactpanda-gallery-cell" width="' . esc_attr( $width ) . '%" valign="top" style="padding:4px">'; foreach ( $images as $image ) $body .= '<div style="margin:0 0 8px">' . $image_html( $image ) . '</div>'; $body .= '</td>'; } $body .= '</tr>';
+				} else {
+					foreach ( array_chunk( $block['images'], $columns ) as $row ) { $body .= '<tr>'; foreach ( $row as $image ) $body .= '<td class="contactpanda-gallery-cell" width="' . esc_attr( $width ) . '%" valign="top" style="padding:4px">' . $image_html( $image ) . '</td>'; for ( $missing = count( $row ); $missing < $columns; $missing++ ) $body .= '<td width="' . esc_attr( $width ) . '%"></td>'; $body .= '</tr>'; }
+				}
+				$body .= '</table>';
 			} elseif ( 'button' === $type && ! empty( $block['url'] ) ) {
 				$button_color = ! empty( $block['button_color'] ) ? $block['button_color'] : $base_color;
 				$body .= '<p style="' . esc_attr( $box_style ) . 'text-align:' . esc_attr( $alignment ) . '"><a href="' . esc_url( $block['url'] ) . '" style="display:' . ( ! empty( $block['full_width'] ) ? 'block' : 'inline-block' ) . ';box-sizing:border-box;' . ( ! empty( $block['full_width'] ) ? 'width:100%;text-align:center;' : '' ) . 'border:1px solid ' . esc_attr( ! empty( $block['border_color'] ) ? $block['border_color'] : $button_color ) . ';border-radius:5px;background:' . esc_attr( $button_color ) . ';color:' . esc_attr( ! empty( $block['text_color'] ) ? $block['text_color'] : '#ffffff' ) . ';padding:12px 20px;font:700 15px/1.2 ' . $font . ';text-decoration:none;text-transform:' . ( ! empty( $block['uppercase'] ) ? 'uppercase' : 'none' ) . '">' . esc_html( $block['label'] ) . '</a></p>';
@@ -1024,7 +1085,7 @@ final class ContactPanda_Basic_Newsletters {
 			ob_start(); do_action( 'woocommerce_email_header', '', null ); echo wp_kses_post( $body ); echo '<div style="margin-top:28px;padding-top:18px;border-top:1px solid #dfe5eb;text-align:center;color:#6b7785;font:11px/1.5 ' . $font . '">' . wp_kses_post( $footer ) . '</div>'; do_action( 'woocommerce_email_footer', null ); return (string) ob_get_clean();
 		}
 		$logo = $settings['logo_url'] ? '<p style="margin:0 0 24px;text-align:center"><img src="' . esc_url( $settings['logo_url'] ) . '" alt="' . esc_attr( $settings['company_name'] ) . '" style="display:inline-block;max-width:220px;max-height:90px;width:auto;height:auto"></p>' : '';
-		return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>@media only screen and (max-width:600px){.contactpanda-product-cell,.contactpanda-post-cell,.contactpanda-event-cell{display:block!important;width:100%!important;box-sizing:border-box!important}}</style><title></title></head><body style="margin:0;background:' . esc_attr( $settings['background_color'] ) . ';padding:24px"><div style="display:none;max-height:0;overflow:hidden;opacity:0">' . esc_html( $preview_text ) . '</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center"><table role="presentation" width="' . absint( $settings['container_width'] ) . '" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:' . absint( $settings['container_width'] ) . 'px;background:' . esc_attr( $settings['body_color'] ) . ';border-radius:8px"><tr><td style="padding:36px">' . $logo . $body . '</td></tr><tr><td style="padding:18px 36px;border-top:1px solid #dfe5eb;background:#f7f8fa;text-align:center;color:#6b7785;font:11px/1.5 ' . $font . '">' . $footer . '</td></tr></table></td></tr></table></body></html>';
+		return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>@media only screen and (max-width:600px){.contactpanda-product-cell,.contactpanda-post-cell,.contactpanda-event-cell,.contactpanda-gallery-cell{display:block!important;width:100%!important;box-sizing:border-box!important}}</style><title></title></head><body style="margin:0;background:' . esc_attr( $settings['background_color'] ) . ';padding:24px"><div style="display:none;max-height:0;overflow:hidden;opacity:0">' . esc_html( $preview_text ) . '</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td align="center"><table role="presentation" width="' . absint( $settings['container_width'] ) . '" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:' . absint( $settings['container_width'] ) . 'px;background:' . esc_attr( $settings['body_color'] ) . ';border-radius:8px"><tr><td style="padding:36px">' . $logo . $body . '</td></tr><tr><td style="padding:18px 36px;border-top:1px solid #dfe5eb;background:#f7f8fa;text-align:center;color:#6b7785;font:11px/1.5 ' . $font . '">' . $footer . '</td></tr></table></td></tr></table></body></html>';
 	}
 
 	public static function template( $id ) {

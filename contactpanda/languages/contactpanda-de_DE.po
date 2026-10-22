@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.7.2\n"
+"Project-Id-Version: ContactPanda 0.7.3\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-19 20:00+0200\n"
@@ -6785,3 +6785,54 @@ msgstr "Ihre E-Mail-Adresse wurde endgültig vom Newsletter abgemeldet."
 
 msgid "Email address %1$s finally unsubscribed through campaign %2$d at %3$s."
 msgstr "Die E-Mail-Adresse %1$s wurde am %3$s über die Aussendung %2$d endgültig abgemeldet."
+
+msgid "Button text"
+msgstr "Button-Text"
+
+msgid "Choose images for this gallery."
+msgstr "Wählen Sie Bilder für diese Galerie aus."
+
+msgid "Choose preview image"
+msgstr "Vorschaubild auswählen"
+
+msgid "Choose up to six images"
+msgstr "Bis zu sechs Bilder auswählen"
+
+msgid "Fixed format"
+msgstr "Festes Format"
+
+msgid "Gallery images"
+msgstr "Galeriebilder"
+
+msgid "Gallery layout"
+msgstr "Galerie-Layout"
+
+msgid "Grid"
+msgstr "Raster"
+
+msgid "Image gallery"
+msgstr "Bildergalerie"
+
+msgid "Masonry"
+msgstr "Masonry"
+
+msgid "Original proportions"
+msgstr "Originalproportionen"
+
+msgid "Preview image URL"
+msgstr "URL des Vorschaubilds"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Video title"
+msgstr "Videotitel"
+
+msgid "Watch video"
+msgstr "Video ansehen"
+
+msgid "You can select up to six images."
+msgstr "Sie können bis zu sechs Bilder auswählen."
+
+msgid "YouTube, Vimeo, or video URL"
+msgstr "YouTube-, Vimeo- oder Video-URL"
