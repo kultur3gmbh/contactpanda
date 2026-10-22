@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.7.3\n"
+"Project-Id-Version: ContactPanda 0.7.4\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-19 20:00+0200\n"
@@ -12,6 +12,69 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: contactpanda\n"
+
+msgid "Phone button"
+msgstr "Telefon-Button"
+
+msgid "Email button"
+msgstr "E-Mail-Button"
+
+msgid "WhatsApp button"
+msgstr "WhatsApp-Button"
+
+msgid "Desktop columns"
+msgstr "Spalten am Desktop"
+
+msgid "Tablet columns"
+msgstr "Spalten am Tablet"
+
+msgid "Mobile columns"
+msgstr "Spalten am Mobilgerät"
+
+msgid "Caption"
+msgstr "Bildunterschrift"
+
+msgid "Caption text"
+msgstr "Text der Bildunterschrift"
+
+msgid "Caption position"
+msgstr "Position der Bildunterschrift"
+
+msgid "Caption background (hex or rgba)"
+msgstr "Hintergrund der Bildunterschrift (Hex oder RGBA)"
+
+msgid "Font size"
+msgstr "Schriftgröße"
+
+msgid "Font weight"
+msgstr "Schriftstärke"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Semi-bold"
+msgstr "Halbfett"
+
+msgid "Bold"
+msgstr "Fett"
+
+msgid "Show provider logo"
+msgstr "Anbieterlogo anzeigen"
+
+msgid "Provider logo position"
+msgstr "Position des Anbieterlogos"
+
+msgid "Prefilled WhatsApp message"
+msgstr "Vorausgefüllte WhatsApp-Nachricht"
+
+msgid "Drag a block into this column."
+msgstr "Ziehen Sie einen Baustein in diese Spalte."
+
+msgid "Drag any content block from the left into a column. Existing blocks can also be moved between columns."
+msgstr "Ziehen Sie einen beliebigen Inhaltsbaustein von links in eine Spalte. Vorhandene Bausteine können ebenfalls zwischen den Spalten verschoben werden."
+
+msgid "The removed column contains blocks. Remove this column and its content?"
+msgstr "Die entfernte Spalte enthält Bausteine. Diese Spalte und ihren Inhalt entfernen?"
 
 #, php-format
 msgid "%s marketing consent granted"
