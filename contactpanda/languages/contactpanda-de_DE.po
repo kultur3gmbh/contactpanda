@@ -6604,7 +6604,7 @@ msgid "\" data-title=\"Invoice for order #"
 msgstr ""
 
 msgid "\" placeholder=\"Search by name, email, phone, or company\"><button class=\"button\">Search</button>"
-msgstr ""
+msgstr "\" placeholder=\"Nach Name, E-Mail, Telefon oder Firma suchen\"><button class=\"button\">Suchen</button>"
 
 msgid "\" placeholder=\"Search company name\"><button class=\"button\">Search</button>"
 msgstr ""
@@ -6643,13 +6643,13 @@ msgid "\">← Companies overview</a>"
 msgstr ""
 
 msgid "%d matching people"
-msgstr ""
+msgstr "%d passende Personen"
 
 msgid "%s"
-msgstr ""
+msgstr "%s"
 
 msgid "1 matching person"
-msgstr ""
+msgstr "1 passende Person"
 
 msgid "</button><button type=\"button\" class=\"button contactpanda-close-user-account\">Cancel</button></div></div></div>"
 msgstr ""
@@ -6826,7 +6826,7 @@ msgid "<section class=\"contactpanda-card\"><div class=\"contactpanda-toolbar\">
 msgstr ""
 
 msgid "<section class=\"contactpanda-card\"><h2>Billing address</h2>"
-msgstr ""
+msgstr "<section class=\"contactpanda-card\"><h2>Rechnungsadresse</h2>"
 
 msgid "<section class=\"contactpanda-card\"><h2>Orders &amp; invoices <span class=\"contactpanda-count\">"
 msgstr ""
@@ -6856,7 +6856,7 @@ msgid "<th><span class=\"screen-reader-text\">Email confirmation and marketing s
 msgstr ""
 
 msgid "Add new search"
-msgstr ""
+msgstr "Neue Suche hinzufügen"
 
 msgid "Address change"
 msgstr "Adressänderung"
@@ -6871,25 +6871,25 @@ msgid "Audience type"
 msgstr "Art der Empfängerauswahl"
 
 msgid "City contains"
-msgstr ""
+msgstr "Ort enthält"
 
 msgid "Company data"
-msgstr ""
+msgstr "Firmendaten"
 
 msgid "Company name contains"
-msgstr ""
+msgstr "Firmenname enthält"
 
 msgid "Company search"
-msgstr ""
+msgstr "Firmensuche"
 
 msgid "Country is"
-msgstr ""
+msgstr "Land ist"
 
 msgid "Create and manage searches independently from the people and company lists."
-msgstr ""
+msgstr "Erstellen und verwalten Sie Suchen unabhängig von den Personen- und Firmenlisten."
 
 msgid "Current consent and suppression status is always checked again immediately before every message is sent."
-msgstr ""
+msgstr "Der aktuelle Zustimmungs- und Sperrstatus wird unmittelbar vor jedem Versand erneut geprüft."
 
 msgid "Current newsletter logo"
 msgstr "Aktuelles Newsletter-Logo"
@@ -6913,10 +6913,10 @@ msgid "Edit company assignment"
 msgstr "Firmenzuordnung bearbeiten"
 
 msgid "Edit saved search"
-msgstr ""
+msgstr "Gespeicherte Suche bearbeiten"
 
 msgid "Email contains"
-msgstr ""
+msgstr "E-Mail enthält"
 
 msgid "Email defaults"
 msgstr "E-Mail-Standardeinstellungen"
@@ -6940,10 +6940,10 @@ msgid "Optionally remind unconfirmed newsletter subscribers. Reminders stop auto
 msgstr "Nicht bestätigte Newsletter-Anmeldungen können optional erinnert werden. Die Erinnerungen enden automatisch nach der Bestätigung oder dem Ablauf und enthalten keine Werbung."
 
 msgid "People search"
-msgstr ""
+msgstr "Personensuche"
 
 msgid "Phone contains"
-msgstr ""
+msgstr "Telefon enthält"
 
 msgid "Reapply global defaults"
 msgstr "Globale Standardeinstellungen erneut übernehmen"
@@ -6964,10 +6964,10 @@ msgid "Reminder: confirm your newsletter subscription at {site_name}"
 msgstr "Erinnerung: Newsletter-Anmeldung bei {site_name} bestätigen"
 
 msgid "Save and show results"
-msgstr ""
+msgstr "Speichern und Ergebnisse anzeigen"
 
 msgid "Show results"
-msgstr ""
+msgstr "Ergebnisse anzeigen"
 
 msgid "Static – keep the contacts matching when this mailing is saved"
 msgstr "Statisch – die beim Speichern passenden Kontakte beibehalten"
@@ -6985,7 +6985,7 @@ msgid "User roles"
 msgstr "Benutzerrollen"
 
 msgid "View / edit"
-msgstr ""
+msgstr "Ansehen / bearbeiten"
 
 msgid "Email confirmation and marketing status"
 msgstr "E-Mail-Bestätigung und Marketingstatus"

@@ -62,6 +62,17 @@ if ! grep -q "Text Domain: contactpanda$" contactpanda/contactpanda.php; then
   status=1
 fi
 
+for translation_file in \
+  contactpanda/languages/contactpanda-de_DE.po \
+  contactpanda/languages/contactpanda-de_DE.mo \
+  contactpanda/languages/contactpanda-de_DE_formal.po \
+  contactpanda/languages/contactpanda-de_DE_formal.mo; do
+  if [[ ! -f "$translation_file" ]]; then
+    echo "Missing German translation file: $translation_file" >&2
+    status=1
+  fi
+done
+
 if [[ -e contactpanda/includes/class-contactpanda-woocommerce.php || -e contactpanda/assets/contactpanda-checkout.css ]]; then
   echo "WooCommerce cart and checkout presentation belongs to ContactPanda Plus, not Basic." >&2
   status=1
