@@ -304,9 +304,10 @@
 		}, options);
 	}
 	function colorField(caption, value, callback) {
-		var wrapper = field(caption, 'color', value || '#ffffff', callback); wrapper.classList.add('contactpanda-color-field');
-		var input = wrapper.querySelector('input'); var palette = document.createElement('span'); palette.className = 'contactpanda-theme-color-palette';
-		(config.themeColors || []).forEach(function (color) { var swatch = document.createElement('button'); swatch.type = 'button'; swatch.title = color; swatch.style.background = color; swatch.addEventListener('click', function () { input.value = color; callback(color); sync(); renderCanvas(); }); palette.appendChild(swatch); });
+		var wrapper = field(caption, 'color', value || '#ffffff', callback); wrapper.classList.add('contactpanda-color-field', 'contactpanda-email-color-field');
+		var input = wrapper.querySelector('input'); var control = document.createElement('span'); control.className = 'contactpanda-settings-color-control'; var colorValue = document.createElement('code'); colorValue.className = 'contactpanda-settings-color-value'; colorValue.textContent = input.value; input.before(control); control.appendChild(input); control.appendChild(colorValue); input.addEventListener('input', function () { colorValue.textContent = input.value; });
+		var palette = document.createElement('span'); palette.className = 'contactpanda-theme-color-palette';
+		(config.themeColors || []).forEach(function (color) { var swatch = document.createElement('button'); swatch.type = 'button'; swatch.title = color; swatch.setAttribute('aria-label', color); swatch.style.background = color; swatch.addEventListener('click', function () { input.value = color; colorValue.textContent = color; callback(color); sync(); renderCanvas(); }); palette.appendChild(swatch); });
 		if (palette.childNodes.length) wrapper.appendChild(palette); return wrapper;
 	}
 	function updateProductBlock(block) { delete productPreviewCache[block.id]; sync(); renderCanvas(); loadProductPreview(block); }

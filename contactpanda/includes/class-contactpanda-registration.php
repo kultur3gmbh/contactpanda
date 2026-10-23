@@ -834,7 +834,9 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		echo '<p class="description">' . esc_html__( 'ContactPanda can inherit the theme typography, colors, form fields, buttons, borders, and corner radii. Its functional layout remains intact.', 'contactpanda' ) . '</p>';
 		echo '<form method="post" action="options.php">'; settings_fields( 'contactpanda_general' );
 		echo '<div class="contactpanda-style-switch"><label class="contactpanda-style-option"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[theme_styles]" value="0"' . checked( ! $active, true, false ) . '><span><strong>' . esc_html__( 'ContactPanda style', 'contactpanda' ) . '</strong><small>' . esc_html__( 'Use the neutral ContactPanda form and account design.', 'contactpanda' ) . '</small></span></label>';
-		echo '<label class="contactpanda-style-option"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[theme_styles]" value="1"' . checked( $active, true, false ) . '><span><strong>' . esc_html( sprintf( __( '%s theme style', 'contactpanda' ), $name ) ) . '</strong><small>' . esc_html__( 'Inherit compatible typography, colors, fields, buttons, borders, and spacing from the active theme.', 'contactpanda' ) . '</small></span></label></div>';
+		echo '<label class="contactpanda-style-option"><input type="radio" name="' . esc_attr( self::GENERAL_OPTION ) . '[theme_styles]" value="1"' . checked( $active, true, false ) . '><span><strong>' . esc_html( sprintf( __( '%s theme style', 'contactpanda' ), $name ) ) . '</strong><small>' . esc_html__( 'Inherit compatible typography, colors, fields, buttons, borders, and spacing from the active theme.', 'contactpanda' ) . '</small><span class="contactpanda-style-theme-colors" aria-label="' . esc_attr__( 'Detected theme colors', 'contactpanda' ) . '">';
+		if ( class_exists( 'ContactPanda_Basic_Newsletters' ) ) foreach ( ContactPanda_Basic_Newsletters::detected_theme_colors() as $color ) echo '<i title="' . esc_attr( $color ) . '" style="background:' . esc_attr( $color ) . '"></i>';
+		echo '</span></span></label></div>';
 		submit_button( __( 'Save appearance', 'contactpanda' ) ); echo '</form></section>';
 	}
 

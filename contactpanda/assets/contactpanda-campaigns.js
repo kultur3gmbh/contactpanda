@@ -2,6 +2,7 @@
 	'use strict';
 	var config = window.CONTACTPANDA_CAMPAIGNS || {};
 	setupStatusPolling();
+	setupCampaignFilters();
 	var form = document.getElementById('contactpanda-campaign-form');
 	if (!form) return;
 	var editorModal = document.getElementById('contactpanda-mailing-editor-modal');
@@ -17,22 +18,25 @@
 		var toggleText = document.createElement('span'); var toggleIcon = document.createElement('span'); toggleIcon.className = 'dashicons dashicons-arrow-down-alt2'; toggle.appendChild(toggleText); toggle.appendChild(toggleIcon);
 		var panel = document.createElement('div'); panel.className = 'contactpanda-searchable-panel'; panel.hidden = true;
 		var options = document.createElement('div'); options.className = 'contactpanda-searchable-options'; panel.appendChild(search); panel.appendChild(options); select.before(toggle); select.before(panel);
-		var selected = select.options[select.selectedIndex] || select.options[0];
-		function updateToggle() { toggleText.textContent = selected ? selected.text : '—'; }
+		function updateToggle() { var selected = select.options[select.selectedIndex] || select.options[0]; toggleText.textContent = selected ? selected.text : '—'; }
 		function renderOptions() {
 			var query = search.value.trim().toLocaleLowerCase(), found = 0; options.replaceChildren();
 			Array.prototype.forEach.call(select.options, function (option) {
 				if (query && option.text.toLocaleLowerCase().indexOf(query) === -1 && option.value !== select.value) return;
 				var button = document.createElement('button'); button.type = 'button'; button.className = 'contactpanda-searchable-option' + (option.value === select.value ? ' is-selected' : ''); button.textContent = option.text; button.dataset.value = option.value;
-				button.addEventListener('click', function () { select.value = button.dataset.value; selected = option; updateToggle(); search.value = ''; panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); toggle.focus(); }); options.appendChild(button); found += 1;
+				button.addEventListener('click', function () { select.value = button.dataset.value; updateToggle(); select.dispatchEvent(new Event('change', {bubbles:true})); search.value = ''; panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); toggle.focus(); }); options.appendChild(button); found += 1;
 			});
 			if (!found) { var empty = document.createElement('span'); empty.className = 'contactpanda-option-picker-empty'; empty.textContent = config.noOptions || 'No matching entries'; options.appendChild(empty); }
 		}
 		updateToggle();
 		toggle.addEventListener('click', function () { panel.hidden = !panel.hidden; toggle.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true'); if (!panel.hidden) { search.value = ''; renderOptions(); search.focus(); } });
 		search.addEventListener('input', renderOptions);
+		select.addEventListener('change', updateToggle);
 		search.addEventListener('keydown', function (event) { if (event.key === 'Escape') { panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); toggle.focus(); } });
 	});
+	var templateSelect = form.elements.template_id;
+	function copyTemplateSubject() { var option = templateSelect && templateSelect.options[templateSelect.selectedIndex]; if (option && option.dataset.subject && form.elements.subject) form.elements.subject.value = option.dataset.subject; }
+	if (templateSelect) templateSelect.addEventListener('change', copyTemplateSubject);
 	document.addEventListener('click', function (event) { form.querySelectorAll('.contactpanda-searchable-select.is-enhanced').forEach(function (wrapper) { if (wrapper.contains(event.target)) return; var panel = wrapper.querySelector('.contactpanda-searchable-panel'), toggle = wrapper.querySelector('.contactpanda-searchable-toggle'); panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); }); });
 	form.querySelectorAll('[name="send_timing"]').forEach(function (radio) {
 		radio.addEventListener('change', function () { var later = radio.value === 'later' && radio.checked; if (later) { scheduled.hidden = false; scheduled.disabled = false; scheduled.required = true; } else if (radio.checked) { scheduled.hidden = true; scheduled.disabled = true; scheduled.required = false; } });
@@ -40,40 +44,49 @@
 	var customerPanel = form.querySelector('.contactpanda-customer-recipient-search');
 	var consentOverride = form.querySelector('.contactpanda-consent-override');
 	var customerSearch = customerPanel ? customerPanel.querySelector('[name="recipient_search"]') : null;
+	var customerSearchField = customerPanel ? customerPanel.querySelector('.contactpanda-customer-search-field') : null;
 	var customerResults = customerPanel ? customerPanel.querySelector('.contactpanda-customer-search-results') : null;
+	var savedSearchSource = form.querySelector('.contactpanda-saved-search-source');
+	var segmentSelect = form.elements.segment_id;
 	var customerTimer = null;
 	function updateRecipientSource() {
 		var selected = form.querySelector('[name="audience_source"]:checked');
 		if (!customerPanel) return;
-		customerPanel.hidden = !selected || selected.value !== 'registered_customers';
-		if (consentOverride) { consentOverride.hidden = customerPanel.hidden; consentOverride.querySelectorAll('input,select').forEach(function (field) { field.disabled = customerPanel.hidden; }); }
-		if (!customerPanel.hidden) searchCustomers();
+		var source = selected ? selected.value : 'contacts';
+		customerPanel.hidden = false;
+		if (customerSearchField) customerSearchField.hidden = source !== 'registered_customers';
+		if (savedSearchSource) savedSearchSource.hidden = source !== 'contacts';
+		if (consentOverride) { consentOverride.hidden = false; consentOverride.querySelectorAll('input,select').forEach(function (field) { field.disabled = false; }); }
+		searchCustomers();
 	}
 	function searchCustomers() {
-		if (!customerPanel || customerPanel.hidden || !customerResults) return;
-		customerResults.textContent = config.customerSearchLoading || 'Loading…';
-		var data = new FormData(); data.set('action', 'contactpanda_campaign_customer_search'); data.set('nonce', config.nonce || ''); data.set('query', customerSearch ? customerSearch.value : '');
+		if (!customerPanel || !customerResults) return;
+		customerResults.textContent = config.recipientSearchLoading || config.customerSearchLoading || 'Loading…';
+		var selected = form.querySelector('[name="audience_source"]:checked');
+		var data = new FormData(); data.set('action', 'contactpanda_campaign_customer_search'); data.set('nonce', config.nonce || ''); data.set('source', selected ? selected.value : 'contacts'); data.set('segment_id', segmentSelect ? segmentSelect.value : '0'); data.set('query', customerSearch ? customerSearch.value : '');
 		fetch(config.ajaxUrl, {method:'POST', credentials:'same-origin', body:data}).then(function (response) { return response.json(); }).then(function (result) {
-			if (!result.success) throw new Error(result.data && result.data.message || 'Search failed');
+			if (!result.success) throw new Error(result.data && result.data.message || config.recipientSearchFailed || 'Search failed');
 			customerResults.replaceChildren();
-			var summary = document.createElement('p'); summary.className = 'contactpanda-customer-search-summary'; summary.textContent = (config.customerSearchSummary || '%1$d registered customers found; %2$d without documented marketing consent.').replace('%1$d', result.data.total).replace('%2$d', result.data.withoutConsent); customerResults.appendChild(summary);
-			if (!result.data.items.length) { var empty = document.createElement('p'); empty.textContent = config.noCustomers || 'No matching registered customers found.'; customerResults.appendChild(empty); return; }
+			var summary = document.createElement('p'); summary.className = 'contactpanda-customer-search-summary'; summary.textContent = (config.recipientSearchSummary || '%1$d contacts found; %2$d eligible; %3$d with consent; %4$d without consent; %5$d excluded.').replace('%1$d', result.data.total).replace('%2$d', result.data.eligible).replace('%3$d', result.data.withConsent).replace('%4$d', result.data.withoutConsent).replace('%5$d', result.data.excluded); customerResults.appendChild(summary);
+			if (!result.data.items.length) { var empty = document.createElement('p'); empty.textContent = config.noRecipients || config.noCustomers || 'No eligible contacts found.'; customerResults.appendChild(empty); return; }
 			var list = document.createElement('ul'); list.className = 'contactpanda-customer-recipient-list'; result.data.items.forEach(function (item) { var row = document.createElement('li'); var identity = document.createElement('span'); identity.textContent = item.name + ' · ' + item.email; var state = document.createElement('span'); state.className = item.marketable ? 'is-marketable' : 'is-without-consent'; state.textContent = item.marketable ? (config.marketingConsent || 'Marketing consent') : (config.withoutMarketingConsent || 'No documented marketing consent'); row.appendChild(identity); row.appendChild(state); list.appendChild(row); }); customerResults.appendChild(list);
-			if (result.data.truncated) { var truncated = document.createElement('p'); truncated.className = 'description'; truncated.textContent = config.customerSearchTruncated || 'Only the first 200 matches are shown.'; customerResults.appendChild(truncated); }
+			if (result.data.truncated) { var truncated = document.createElement('p'); truncated.className = 'description'; truncated.textContent = config.recipientSearchTruncated || config.customerSearchTruncated || 'Only the first 200 matches are shown.'; customerResults.appendChild(truncated); }
 		}).catch(function (error) { customerResults.textContent = error.message; });
 	}
 	form.querySelectorAll('[name="audience_source"]').forEach(function (radio) { radio.addEventListener('change', updateRecipientSource); });
+	if (segmentSelect) segmentSelect.addEventListener('change', searchCustomers);
 	if (customerSearch) customerSearch.addEventListener('input', function () { window.clearTimeout(customerTimer); customerTimer = window.setTimeout(searchCustomers, 250); });
 	updateRecipientSource();
+	setupCampaignCreation();
 	function request(action, email) {
 		var data = new FormData(); data.set('action', action); data.set('nonce', config.nonce || ''); data.set('template_id', form.elements.template_id.value); data.set('subject', form.elements.subject.value); data.set('from_name', form.elements.from_name.value); data.set('from_email', form.elements.from_email.value); data.set('reply_to', form.elements.reply_to.value); if (email) data.set('email', email);
 		return fetch(config.ajaxUrl, {method:'POST', credentials:'same-origin', body:data}).then(function (response) { return response.json(); });
 	}
 	var modal = document.getElementById('contactpanda-campaign-preview-modal'); var frame = document.getElementById('contactpanda-campaign-preview-frame'); var message = document.getElementById('contactpanda-campaign-message');
-	document.getElementById('contactpanda-campaign-preview').addEventListener('click', function () { request('contactpanda_campaign_preview').then(function (result) { if (!result.success) throw new Error(result.data && result.data.message || 'Preview failed'); frame.srcdoc = result.data.html; modal.hidden = false; }).catch(function (error) { message.textContent = error.message; }); });
+	document.getElementById('contactpanda-campaign-preview').addEventListener('click', function () { request('contactpanda_campaign_preview').then(function (result) { if (!result.success) throw new Error(result.data && result.data.message || config.previewFailed || 'Preview failed'); frame.srcdoc = result.data.html; modal.hidden = false; }).catch(function (error) { message.textContent = error.message; }); });
 	document.getElementById('contactpanda-close-campaign-preview').addEventListener('click', function () { modal.hidden = true; });
 	document.querySelectorAll('[data-campaign-preview-width]').forEach(function (button) { button.addEventListener('click', function () { document.querySelectorAll('[data-campaign-preview-width]').forEach(function (item) { item.classList.remove('is-active'); }); button.classList.add('is-active'); frame.style.width = button.dataset.campaignPreviewWidth; }); });
-	document.getElementById('contactpanda-campaign-test').addEventListener('click', function () { message.textContent = ''; request('contactpanda_campaign_test', document.getElementById('contactpanda-campaign-test-email').value).then(function (result) { if (!result.success) throw new Error(result.data && result.data.message || 'Test failed'); message.textContent = result.data.message; }).catch(function (error) { message.textContent = error.message; }); });
+	document.getElementById('contactpanda-campaign-test').addEventListener('click', function () { message.textContent = ''; request('contactpanda_campaign_test', document.getElementById('contactpanda-campaign-test-email').value).then(function (result) { if (!result.success) throw new Error(result.data && result.data.message || config.testFailed || 'Test failed'); message.textContent = result.data.message; }).catch(function (error) { message.textContent = error.message; }); });
 
 	function setupStatusPolling() {
 		var delay = Math.max(10000, Number(config.pollInterval) || 12000);
@@ -125,5 +138,33 @@
 				.catch(function () { window.setTimeout(poll, Math.max(delay * 2, 30000)); });
 		}
 		if (activeRows().length) window.setTimeout(poll, delay);
+	}
+
+	function setupCampaignFilters() {
+		document.querySelectorAll('.contactpanda-campaign-filter').forEach(function (picker) {
+			var toggle = picker.querySelector('.contactpanda-campaign-filter-toggle'); var panel = picker.querySelector('.contactpanda-campaign-filter-panel'); var search = picker.querySelector('.contactpanda-campaign-filter-search');
+			if (!toggle || !panel) return;
+			toggle.addEventListener('click', function () { panel.hidden = !panel.hidden; toggle.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true'); if (!panel.hidden && search) search.focus(); });
+			if (search) search.addEventListener('input', function () { var query = search.value.trim().toLocaleLowerCase(); panel.querySelectorAll('label').forEach(function (label) { label.hidden = !!query && label.textContent.toLocaleLowerCase().indexOf(query) === -1; }); });
+			document.addEventListener('click', function (event) { if (!picker.contains(event.target)) { panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); } });
+		});
+	}
+
+	function setupCampaignCreation() {
+		var open = form.querySelector('.contactpanda-create-campaign'); var modal = document.getElementById('contactpanda-campaign-create-modal'); var createForm = document.getElementById('contactpanda-campaign-create-form');
+		if (!open || !modal || !createForm) return;
+		var close = modal.querySelector('.contactpanda-close-campaign-create'); var message = modal.querySelector('.contactpanda-campaign-create-message'); var select = form.elements.campaign_group_id;
+		function hide() { modal.hidden = true; document.body.classList.remove('contactpanda-campaign-create-open'); }
+		open.addEventListener('click', function () { modal.hidden = false; document.body.classList.add('contactpanda-campaign-create-open'); createForm.elements.name.focus(); });
+		if (close) close.addEventListener('click', hide);
+		createForm.addEventListener('submit', function (event) {
+			event.preventDefault(); message.textContent = config.campaignCreating || 'Creating…'; var data = new FormData(createForm); data.set('action', 'contactpanda_campaign_group_create'); data.set('nonce', config.nonce || '');
+			fetch(config.ajaxUrl, {method:'POST', credentials:'same-origin', body:data}).then(function (response) { return response.json(); }).then(function (result) {
+				if (!result.success) throw new Error(result.data && result.data.message || config.campaignCreateFailed || 'Creation failed');
+				var option = Array.prototype.find.call(select.options, function (item) { return String(item.value) === String(result.data.id); });
+				if (!option) { option = document.createElement('option'); option.value = result.data.id; option.textContent = result.data.name; select.appendChild(option); }
+				select.value = String(result.data.id); select.dispatchEvent(new Event('change', {bubbles:true})); createForm.reset(); message.textContent = ''; hide();
+			}).catch(function (error) { message.textContent = error.message; });
+		});
 	}
 }());

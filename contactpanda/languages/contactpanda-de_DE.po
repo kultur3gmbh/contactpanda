@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.7.5\n"
+"Project-Id-Version: ContactPanda 0.7.6\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-19 20:00+0200\n"
@@ -6680,7 +6680,7 @@ msgid "Assign company"
 msgstr "Firma zuordnen"
 
 msgid "Audience type"
-msgstr ""
+msgstr "Art der Empfängerauswahl"
 
 msgid "City contains"
 msgstr ""
@@ -6704,7 +6704,7 @@ msgid "Current consent and suppression status is always checked again immediatel
 msgstr ""
 
 msgid "Current newsletter logo"
-msgstr ""
+msgstr "Aktuelles Newsletter-Logo"
 
 msgid "Delete this campaign group? Its mailings and statistics will be retained without a campaign assignment."
 msgstr "Diese Kampagne löschen? Die Aussendungen und Statistiken bleiben ohne Kampagnenzuordnung erhalten."
@@ -6716,10 +6716,10 @@ msgid "Delete this saved search?"
 msgstr "Diese gespeicherte Suche löschen?"
 
 msgid "Double opt-in reminders"
-msgstr ""
+msgstr "Double-Opt-in-Erinnerungen"
 
 msgid "Dynamic – resolve matching contacts when sending starts"
-msgstr ""
+msgstr "Dynamisch – passende Kontakte beim Start der Aussendung ermitteln"
 
 msgid "Edit company assignment"
 msgstr "Firmenzuordnung bearbeiten"
@@ -6731,7 +6731,7 @@ msgid "Email contains"
 msgstr ""
 
 msgid "Email defaults"
-msgstr ""
+msgstr "E-Mail-Standardeinstellungen"
 
 msgid "Execute"
 msgstr "Ausführen"
@@ -6740,16 +6740,16 @@ msgid "From your dashboard you can manage your <a href=\"%1$s\">profile</a>, <a 
 msgstr ""
 
 msgid "Full legal company name (optional)"
-msgstr ""
+msgstr "Vollständiger rechtlicher Firmenname (optional)"
 
 msgid "Mailing progress: %d%%"
-msgstr ""
+msgstr "Fortschritt der Aussendung: %d %%"
 
 msgid "Number of reminders"
-msgstr ""
+msgstr "Anzahl der Erinnerungen"
 
 msgid "Optionally remind unconfirmed newsletter subscribers. Reminders stop automatically after confirmation or expiry and contain no marketing content."
-msgstr ""
+msgstr "Nicht bestätigte Newsletter-Anmeldungen können optional erinnert werden. Die Erinnerungen enden automatisch nach der Bestätigung oder dem Ablauf und enthalten keine Werbung."
 
 msgid "People search"
 msgstr ""
@@ -6758,22 +6758,22 @@ msgid "Phone contains"
 msgstr ""
 
 msgid "Reapply global defaults"
-msgstr ""
+msgstr "Globale Standardeinstellungen erneut übernehmen"
 
 msgid "Reapply the global email appearance? Content blocks remain unchanged."
-msgstr ""
+msgstr "Das globale E-Mail-Erscheinungsbild erneut übernehmen? Die Inhaltsblöcke bleiben unverändert."
 
 msgid "Reminder %d after days"
-msgstr ""
+msgstr "Erinnerung %d nach Tagen"
 
 msgid "Reminder email text"
-msgstr ""
+msgstr "Text der Erinnerungs-E-Mail"
 
 msgid "Reminder subject"
-msgstr ""
+msgstr "Betreff der Erinnerung"
 
 msgid "Reminder: confirm your newsletter subscription at {site_name}"
-msgstr ""
+msgstr "Erinnerung: Newsletter-Anmeldung bei {site_name} bestätigen"
 
 msgid "Save and show results"
 msgstr ""
@@ -6782,16 +6782,16 @@ msgid "Show results"
 msgstr ""
 
 msgid "Static – keep the contacts matching when this mailing is saved"
-msgstr ""
+msgstr "Statisch – die beim Speichern passenden Kontakte beibehalten"
 
 msgid "This template is still used by a newsletter or automation and cannot be archived."
-msgstr ""
+msgstr "Diese Vorlage wird noch in einem Newsletter oder einer Automatisierung verwendet und kann nicht archiviert werden."
 
 msgid "Used in automations"
-msgstr ""
+msgstr "In Automatisierungen verwendet"
 
 msgid "Used in newsletters"
-msgstr ""
+msgstr "In Newslettern verwendet"
 
 msgid "User roles"
 msgstr "Benutzerrollen"
@@ -6988,3 +6988,79 @@ msgstr "Marketing-Zustimmung"
 
 msgid "No documented marketing consent"
 msgstr "Keine dokumentierte Marketing-Zustimmung"
+
+msgid "No eligible contacts found."
+msgstr "Keine versandfähigen Kontakte gefunden."
+
+msgid "Checking recipients…"
+msgstr "Empfänger werden geprüft…"
+
+#, php-format
+msgid "%1$d contacts found; %2$d eligible; %3$d with documented marketing consent; %4$d without documented consent; %5$d permanently excluded."
+msgstr "%1$d Kontakte gefunden; %2$d versandfähig; %3$d mit dokumentierter Marketing-Zustimmung; %4$d ohne dokumentierte Zustimmung; %5$d dauerhaft ausgeschlossen."
+
+msgid "Only the first 200 eligible matches are shown. Refine the search to see further contacts."
+msgstr "Es werden nur die ersten 200 versandfähigen Treffer angezeigt. Verfeinern Sie die Suche, um weitere Kontakte zu sehen."
+
+msgid "Creating campaign…"
+msgstr "Kampagne wird erstellt…"
+
+msgid "Enter a campaign name."
+msgstr "Geben Sie einen Kampagnennamen ein."
+
+msgid "The campaign could not be created."
+msgstr "Die Kampagne konnte nicht erstellt werden."
+
+msgid "Search mailings and campaigns"
+msgstr "Aussendungen und Kampagnen suchen"
+
+msgid "Without campaign"
+msgstr "Ohne Kampagne"
+
+msgid "All contacts"
+msgstr "Alle Kontakte"
+
+msgid "Contacts from the saved search"
+msgstr "Kontakte aus gespeicherter Suche"
+
+msgid "Create new campaign"
+msgstr "Neue Kampagne erstellen"
+
+msgid "Unsubscribed, blocked, complained, undeliverable and suppressed addresses always remain excluded."
+msgstr "Abgemeldete, gesperrte, als Beschwerde markierte, unzustellbare und unterdrückte Adressen bleiben immer ausgeschlossen."
+
+msgid "Ignore missing marketing consent for this mailing"
+msgstr "Fehlende Marketing-Zustimmung bei dieser Aussendung ignorieren"
+
+msgid "This exception does not grant or reactivate consent. Unsubscribed, blocked, complained, undeliverable and suppressed addresses always remain excluded."
+msgstr "Diese Ausnahme erteilt oder reaktiviert keine Zustimmung. Abgemeldete, gesperrte, als Beschwerde markierte, unzustellbare und unterdrückte Adressen bleiben immer ausgeschlossen."
+
+msgid "Create campaign"
+msgstr "Kampagne erstellen"
+
+msgid "Save as draft"
+msgstr "Als Entwurf speichern"
+
+msgid "Email content width"
+msgstr "Inhaltsbreite der E-Mail"
+
+msgid "Detected theme colors"
+msgstr "Erkannte Theme-Farben"
+
+msgid "this email address"
+msgstr "diese E-Mail-Adresse"
+
+msgid "Select saved search"
+msgstr "Gespeicherte Suche auswählen"
+
+msgid "Select a saved search or choose another recipient source."
+msgstr "Wählen Sie eine gespeicherte Suche oder eine andere Empfängerquelle aus."
+
+msgid "The recipients could not be checked."
+msgstr "Die Empfänger konnten nicht geprüft werden."
+
+msgid "The preview could not be created."
+msgstr "Die Vorschau konnte nicht erstellt werden."
+
+msgid "The test email could not be sent."
+msgstr "Die Test-E-Mail konnte nicht gesendet werden."

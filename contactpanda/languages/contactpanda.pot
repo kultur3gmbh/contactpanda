@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.7.5\n"
+"Project-Id-Version: ContactPanda 0.7.6\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-19 20:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -6987,4 +6987,80 @@ msgid "Marketing consent"
 msgstr ""
 
 msgid "No documented marketing consent"
+msgstr ""
+
+msgid "No eligible contacts found."
+msgstr ""
+
+msgid "Checking recipients…"
+msgstr ""
+
+#, php-format
+msgid "%1$d contacts found; %2$d eligible; %3$d with documented marketing consent; %4$d without documented consent; %5$d permanently excluded."
+msgstr ""
+
+msgid "Only the first 200 eligible matches are shown. Refine the search to see further contacts."
+msgstr ""
+
+msgid "Creating campaign…"
+msgstr ""
+
+msgid "Enter a campaign name."
+msgstr ""
+
+msgid "The campaign could not be created."
+msgstr ""
+
+msgid "Search mailings and campaigns"
+msgstr ""
+
+msgid "Without campaign"
+msgstr ""
+
+msgid "All contacts"
+msgstr ""
+
+msgid "Contacts from the saved search"
+msgstr ""
+
+msgid "Create new campaign"
+msgstr ""
+
+msgid "Unsubscribed, blocked, complained, undeliverable and suppressed addresses always remain excluded."
+msgstr ""
+
+msgid "Ignore missing marketing consent for this mailing"
+msgstr ""
+
+msgid "This exception does not grant or reactivate consent. Unsubscribed, blocked, complained, undeliverable and suppressed addresses always remain excluded."
+msgstr ""
+
+msgid "Create campaign"
+msgstr ""
+
+msgid "Save as draft"
+msgstr ""
+
+msgid "Email content width"
+msgstr ""
+
+msgid "Detected theme colors"
+msgstr ""
+
+msgid "this email address"
+msgstr ""
+
+msgid "Select saved search"
+msgstr ""
+
+msgid "Select a saved search or choose another recipient source."
+msgstr ""
+
+msgid "The recipients could not be checked."
+msgstr ""
+
+msgid "The preview could not be created."
+msgstr ""
+
+msgid "The test email could not be sent."
 msgstr ""

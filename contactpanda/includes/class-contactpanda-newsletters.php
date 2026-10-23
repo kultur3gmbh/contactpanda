@@ -445,15 +445,21 @@ final class ContactPanda_Basic_Newsletters {
 		);
 	}
 
-	private static function theme_colors() {
-		$settings = self::settings();
-		$colors = array( $settings['base_color'], $settings['background_color'], $settings['body_color'], $settings['text_color'] );
+	public static function detected_theme_colors() {
+		$colors = array();
 		$sources = array( get_theme_mods(), get_option( 'fusion_options', array() ) );
 		$walk = static function ( $value ) use ( &$colors, &$walk ) {
 			if ( is_array( $value ) ) { foreach ( $value as $item ) $walk( $item ); return; }
 			if ( is_string( $value ) && preg_match_all( '/#[0-9a-fA-F]{6}\b/', $value, $matches ) ) foreach ( $matches[0] as $color ) $colors[] = strtolower( $color );
 		};
 		foreach ( $sources as $source ) $walk( $source );
+		return array_slice( array_values( array_unique( array_filter( array_map( 'sanitize_hex_color', $colors ) ) ) ), 0, 16 );
+	}
+
+	public static function theme_colors() {
+		$settings = self::settings();
+		$colors = array( $settings['base_color'], $settings['background_color'], $settings['body_color'], $settings['text_color'] );
+		$colors = array_merge( $colors, self::detected_theme_colors() );
 		return array_slice( array_values( array_unique( array_filter( array_map( 'sanitize_hex_color', $colors ) ) ) ), 0, 16 );
 	}
 
@@ -674,7 +680,7 @@ final class ContactPanda_Basic_Newsletters {
 		self::editor_field( 'subject', __( 'Email subject', 'contactpanda' ), $template['subject'], 'text', true );
 		self::editor_field( 'preview_text', __( 'Preview text', 'contactpanda' ), $template['preview_text'] );
 		$published = 'published' === ( $template['status'] ?? 'draft' );
-		echo '<div class="contactpanda-newsletter-editor-actions"><div class="contactpanda-newsletter-primary-buttons"><button type="submit" name="template_status" value="draft" class="button">' . esc_html__( 'Save', 'contactpanda' ) . '</button><button type="submit" name="template_status" value="published" class="button button-primary">' . esc_html( $published ? __( 'Update', 'contactpanda' ) : __( 'Publish', 'contactpanda' ) ) . '</button><button type="button" class="button" id="contactpanda-preview-template">' . esc_html__( 'Preview', 'contactpanda' ) . '</button></div><div class="contactpanda-newsletter-test-row"><label><span>' . esc_html__( 'Test recipient', 'contactpanda' ) . '</span><input type="email" id="contactpanda-test-email" value="' . esc_attr( wp_get_current_user()->user_email ) . '"></label><button type="button" class="button" id="contactpanda-send-test">' . esc_html__( 'Send test', 'contactpanda' ) . '</button></div><p id="contactpanda-test-message" class="contactpanda-newsletter-message" aria-live="polite"></p></div>';
+		echo '<div class="contactpanda-newsletter-editor-actions"><div class="contactpanda-newsletter-primary-buttons"><button type="submit" name="template_status" value="draft" class="button">' . esc_html__( 'Save as draft', 'contactpanda' ) . '</button><button type="submit" name="template_status" value="published" class="button button-primary">' . esc_html( $published ? __( 'Update', 'contactpanda' ) : __( 'Publish', 'contactpanda' ) ) . '</button><button type="button" class="button" id="contactpanda-preview-template">' . esc_html__( 'Preview', 'contactpanda' ) . '</button></div><div class="contactpanda-newsletter-test-row"><label><span>' . esc_html__( 'Test recipient', 'contactpanda' ) . '</span><input type="email" id="contactpanda-test-email" value="' . esc_attr( wp_get_current_user()->user_email ) . '"></label><button type="button" class="button" id="contactpanda-send-test">' . esc_html__( 'Send test', 'contactpanda' ) . '</button></div><p id="contactpanda-test-message" class="contactpanda-newsletter-message" aria-live="polite"></p></div>';
 		$placeholder_labels = array(
 			'{salutation}'       => __( 'Salutation', 'contactpanda' ),
 			'{title_prefix}'     => __( 'Title before the name', 'contactpanda' ),
@@ -696,7 +702,7 @@ final class ContactPanda_Basic_Newsletters {
 		self::editor_field( 'content_background', __( 'Content background', 'contactpanda' ), $template['content_background'] ?? self::settings()['body_color'], 'color' );
 		self::editor_field( 'text_color', __( 'Text color', 'contactpanda' ), $template['text_color'] ?? self::settings()['text_color'], 'color' );
 		self::editor_font_field( $template['font_family'] ?? self::settings()['font_family'] );
-		self::editor_field( 'content_width', __( 'Content width in pixels', 'contactpanda' ), $template['content_width'] ?? self::settings()['container_width'], 'number' );
+		self::editor_field( 'content_width', __( 'Email content width', 'contactpanda' ), $template['content_width'] ?? self::settings()['container_width'], 'number' );
 		echo '<button type="submit" name="reapply_defaults" value="1" class="button" onclick="return confirm(' . esc_attr( wp_json_encode( __( 'Reapply the global email appearance? Content blocks remain unchanged.', 'contactpanda' ) ) ) . ');">' . esc_html__( 'Reapply global defaults', 'contactpanda' ) . '</button>';
 		echo '</div></aside></section>';
 		echo '<div class="contactpanda-newsletter-editor-layout"><aside class="contactpanda-card contactpanda-newsletter-palette"><h2>' . esc_html__( 'Content blocks', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Drag a block into the email or double-click it to append it. A single click only selects the block.', 'contactpanda' ) . '</p><div class="contactpanda-block-palette" aria-label="' . esc_attr__( 'Add content block', 'contactpanda' ) . '">';
@@ -724,6 +730,12 @@ final class ContactPanda_Basic_Newsletters {
 	}
 
 	private static function editor_field( $name, $label, $value, $type = 'text', $required = false ) {
+		if ( 'color' === $type ) {
+			echo '<label class="contactpanda-settings-color-field contactpanda-email-color-field"><span>' . esc_html( $label ) . '</span><span class="contactpanda-settings-color-control"><input type="color" name="' . esc_attr( $name ) . '" value="' . esc_attr( $value ) . '"' . ( $required ? ' required' : '' ) . '><code class="contactpanda-settings-color-value">' . esc_html( $value ) . '</code></span><span class="contactpanda-theme-color-palette">';
+			foreach ( self::theme_colors() as $color ) echo '<button type="button" class="contactpanda-settings-color-swatch" data-color="' . esc_attr( $color ) . '" title="' . esc_attr( $color ) . '" aria-label="' . esc_attr( sprintf( __( 'Use color %s', 'contactpanda' ), $color ) ) . '" style="background:' . esc_attr( $color ) . '"></button>';
+			echo '</span></label>';
+			return;
+		}
 		echo '<label><span>' . esc_html( $label ) . '</span><input type="' . esc_attr( $type ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $value ) . '"' . ( $required ? ' required' : '' ) . '></label>';
 	}
 
