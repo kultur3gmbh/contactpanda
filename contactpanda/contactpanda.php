@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda
  * Description: Free contact and company management for WordPress with WooCommerce, event, Amelia, and optional Groundhogg overviews.
- * Version: 0.7.6
+ * Version: 0.7.7
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.7.6' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.7.6-20261023-1' );
+define( 'CONTACTPANDA_VERSION', '0.7.7' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.7.7-20261023-1' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CONTACTPANDA_URL', plugin_dir_url( __FILE__ ) );
@@ -136,8 +136,9 @@ function contactpanda_newsletter_admin_assets( $hook ) {
 		wp_enqueue_style( 'contactpanda', CONTACTPANDA_URL . 'assets/contactpanda-admin.css', array(), CONTACTPANDA_ASSET_VERSION );
 	}
 	if ( 'contactpanda_page_contactpanda-campaigns' === $hook ) {
+		wp_enqueue_style( 'contactpanda-newsletter-campaigns', CONTACTPANDA_URL . 'assets/contactpanda-newsletter-campaigns.css', array( 'contactpanda' ), CONTACTPANDA_ASSET_VERSION );
 		wp_enqueue_script( 'contactpanda-campaigns', CONTACTPANDA_URL . 'assets/contactpanda-campaigns.js', array(), CONTACTPANDA_ASSET_VERSION, true );
-		wp_localize_script( 'contactpanda-campaigns', 'CONTACTPANDA_CAMPAIGNS', array( 'ajaxUrl' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'contactpanda_newsletter_editor' ), 'noOptions' => __( 'No matching entries found.', 'contactpanda' ), 'noRecipients' => __( 'No eligible contacts found.', 'contactpanda' ), 'recipientSearchLoading' => __( 'Checking recipients…', 'contactpanda' ), 'recipientSearchSummary' => __( '%1$d contacts found; %2$d eligible; %3$d with documented marketing consent; %4$d without documented consent; %5$d permanently excluded.', 'contactpanda' ), 'recipientSearchTruncated' => __( 'Only the first 200 eligible matches are shown. Refine the search to see further contacts.', 'contactpanda' ), 'marketingConsent' => __( 'Marketing consent', 'contactpanda' ), 'withoutMarketingConsent' => __( 'No documented marketing consent', 'contactpanda' ), 'campaignCreating' => __( 'Creating campaign…', 'contactpanda' ), 'recipientSearchFailed' => __( 'The recipients could not be checked.', 'contactpanda' ), 'campaignCreateFailed' => __( 'The campaign could not be created.', 'contactpanda' ), 'previewFailed' => __( 'The preview could not be created.', 'contactpanda' ), 'testFailed' => __( 'The test email could not be sent.', 'contactpanda' ), 'pollInterval' => 12000 ) );
+		wp_localize_script( 'contactpanda-campaigns', 'CONTACTPANDA_CAMPAIGNS', array( 'ajaxUrl' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'contactpanda_newsletter_editor' ), 'noOptions' => __( 'No matching entries found.', 'contactpanda' ), 'noRecipients' => __( 'No eligible contacts found.', 'contactpanda' ), 'recipientSearchLoading' => __( 'Checking recipients…', 'contactpanda' ), 'recipientSearchSummary' => __( '%1$d contacts found; %2$d eligible; %3$d with documented marketing consent; %4$d without documented consent; %5$d permanently excluded.', 'contactpanda' ), 'recipientSearchTruncated' => __( 'Only the first 200 eligible matches are shown. Refine the search to see further contacts.', 'contactpanda' ), 'marketingConsent' => __( 'Marketing consent', 'contactpanda' ), 'withoutMarketingConsent' => __( 'No documented marketing consent', 'contactpanda' ), 'campaignCreating' => __( 'Creating campaign…', 'contactpanda' ), 'recipientSearchFailed' => __( 'The recipients could not be checked.', 'contactpanda' ), 'campaignCreateFailed' => __( 'The campaign could not be created.', 'contactpanda' ), 'previewFailed' => __( 'The preview could not be created.', 'contactpanda' ), 'testFailed' => __( 'The test email could not be sent.', 'contactpanda' ), 'sendNow' => __( 'Send now', 'contactpanda' ), 'scheduleDeliveryEmpty' => __( 'Schedule delivery', 'contactpanda' ), 'scheduleDelivery' => __( 'Schedule delivery for %1$s at %2$s', 'contactpanda' ), 'confirmSendNow' => __( 'Send this mailing to %d eligible recipients now?', 'contactpanda' ), 'confirmSchedule' => __( 'Schedule this mailing for %1$s? %2$d eligible recipients will be prepared.', 'contactpanda' ), 'overrideRequired' => __( 'Select a reason and confirm the administrative exception.', 'contactpanda' ), 'pollInterval' => 12000 ) );
 	}
 	if ( 'contactpanda_page_contactpanda-settings' === $hook ) {
 		wp_enqueue_script( 'contactpanda-segments', CONTACTPANDA_URL . 'assets/contactpanda-segments.js', array(), CONTACTPANDA_ASSET_VERSION, true );

@@ -6026,6 +6026,78 @@ msgstr "Die Vorlage wurde dupliziert."
 msgid "The test email could not be sent."
 msgstr "Die Test-E-Mail konnte nicht gesendet werden."
 
+msgid "Back to mailings"
+msgstr "Zurück zu den Aussendungen"
+
+msgid "Choose a valid delivery date and time in the future. The mailing was saved as a draft."
+msgstr "Wählen Sie ein gültiges Versanddatum und eine Uhrzeit in der Zukunft. Die Aussendung wurde als Entwurf gespeichert."
+
+msgid "Personal decision"
+msgstr "Persönliche Entscheidung"
+
+msgid "Existing customer relationship"
+msgstr "Bestehende Kundenbeziehung"
+
+msgid "Contractual information"
+msgstr "Vertragliche Information"
+
+msgid "Service or existing-customer information"
+msgstr "Service- oder Bestandskundeninformation"
+
+msgid "Other reason"
+msgstr "Anderer Grund"
+
+msgid "Immediately"
+msgstr "Sofort"
+
+msgid "Send now"
+msgstr "Sofort versenden"
+
+msgid "Schedule delivery"
+msgstr "Versand planen"
+
+msgid "Schedule delivery for %1$s at %2$s"
+msgstr "Versand am %1$s um %2$s"
+
+msgid "Desktop view"
+msgstr "Desktop-Ansicht"
+
+msgid "Tablet view"
+msgstr "Tablet-Ansicht"
+
+msgid "Mobile view"
+msgstr "Mobilansicht"
+
+msgid "Close preview"
+msgstr "Vorschau schließen"
+
+msgid "Send this mailing to %d eligible recipients now?"
+msgstr "Diese Aussendung jetzt an %d berechtigte Empfänger senden?"
+
+msgid "Schedule this mailing for %1$s? %2$d eligible recipients will be prepared."
+msgstr "Diese Aussendung für %1$s planen? %2$d berechtigte Empfänger werden vorbereitet."
+
+msgid "Please confirm that you want to finally unsubscribe this address from the newsletter."
+msgstr "Bitte bestätigen Sie, dass Sie diese Adresse endgültig vom Newsletter abmelden möchten."
+
+msgid "Newsletter subscriber"
+msgstr "Newsletter-Abonnent"
+
+msgid "Do not unsubscribe"
+msgstr "Nicht abmelden"
+
+msgid "Back to website"
+msgstr "Zurück zur Webseite"
+
+msgid "Personal request"
+msgstr "Persönlicher Wunsch"
+
+msgid "Test address"
+msgstr "Testadresse"
+
+msgid "<label>Source<select class=\"contactpanda-consent-source\"><option value=\"\">Please select</option><option value=\"personally\">In person</option><option value=\"personal_request\">Personal request</option><option value=\"test_address\">Test address</option><option value=\"phone\">By phone</option><option value=\"written\">In writing</option><option value=\"email\">By email</option><option value=\"import\">Documented import</option><option value=\"other\">Other</option></select></label>"
+msgstr "<label>Herkunft<select class=\"contactpanda-consent-source\"><option value=\"\">Bitte auswählen</option><option value=\"personally\">Persönlich</option><option value=\"personal_request\">Persönlicher Wunsch</option><option value=\"test_address\">Testadresse</option><option value=\"phone\">Telefonisch</option><option value=\"written\">Schriftlich</option><option value=\"email\">Per E-Mail</option><option value=\"import\">Dokumentierter Import</option><option value=\"other\">Sonstiges</option></select></label>"
+
 #: contactpanda/includes/class-contactpanda-newsletters.php:737 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:324
 #, php-format
 msgid "The test email was sent to %s."

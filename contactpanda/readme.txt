@@ -2,12 +2,19 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.7.6
+Stable tag: 0.7.7
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a permanently licensed newsletter option, a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
 
 == Changelog ==
+
+= 0.7.7 =
+* Moves newsletter mailing creation and recipient details from modal overlays to dedicated administration pages.
+* Separates saving, immediate delivery, and scheduled delivery with clear labels, recipient-aware confirmations, and lossless in-page validation of administrative exceptions.
+* Replaces mailing preview text controls with consistent square device icons and aligns the add-filter icon.
+* Adds a branded, no-index unsubscribe confirmation with site logo, site name, full subscriber identity, explicit cancellation, and a final confirmation page.
+* Allows confirmed double opt-in and documented administrator actions to restore a voluntary unsubscribe while retaining consent history and never clearing bounce, spam, complaint, or block protections.
 
 = 0.7.6 =
 * Uses the selected email template subject automatically when preparing a newsletter mailing.

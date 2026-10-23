@@ -6026,6 +6026,78 @@ msgstr ""
 msgid "The test email could not be sent."
 msgstr ""
 
+msgid "Back to mailings"
+msgstr ""
+
+msgid "Choose a valid delivery date and time in the future. The mailing was saved as a draft."
+msgstr ""
+
+msgid "Personal decision"
+msgstr ""
+
+msgid "Existing customer relationship"
+msgstr ""
+
+msgid "Contractual information"
+msgstr ""
+
+msgid "Service or existing-customer information"
+msgstr ""
+
+msgid "Other reason"
+msgstr ""
+
+msgid "Immediately"
+msgstr ""
+
+msgid "Send now"
+msgstr ""
+
+msgid "Schedule delivery"
+msgstr ""
+
+msgid "Schedule delivery for %1$s at %2$s"
+msgstr ""
+
+msgid "Desktop view"
+msgstr ""
+
+msgid "Tablet view"
+msgstr ""
+
+msgid "Mobile view"
+msgstr ""
+
+msgid "Close preview"
+msgstr ""
+
+msgid "Send this mailing to %d eligible recipients now?"
+msgstr ""
+
+msgid "Schedule this mailing for %1$s? %2$d eligible recipients will be prepared."
+msgstr ""
+
+msgid "Please confirm that you want to finally unsubscribe this address from the newsletter."
+msgstr ""
+
+msgid "Newsletter subscriber"
+msgstr ""
+
+msgid "Do not unsubscribe"
+msgstr ""
+
+msgid "Back to website"
+msgstr ""
+
+msgid "Personal request"
+msgstr ""
+
+msgid "Test address"
+msgstr ""
+
+msgid "<label>Source<select class=\"contactpanda-consent-source\"><option value=\"\">Please select</option><option value=\"personally\">In person</option><option value=\"personal_request\">Personal request</option><option value=\"test_address\">Test address</option><option value=\"phone\">By phone</option><option value=\"written\">In writing</option><option value=\"email\">By email</option><option value=\"import\">Documented import</option><option value=\"other\">Other</option></select></label>"
+msgstr ""
+
 #: contactpanda/includes/class-contactpanda-newsletters.php:737 contactpanda/includes/class-contactpanda-newsletter-campaigns.php:324
 #, php-format
 msgid "The test email was sent to %s."

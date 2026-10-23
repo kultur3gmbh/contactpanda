@@ -33,6 +33,31 @@ final class ContactPanda_Newsletter_Schema {
 		return self::install();
 	}
 
+	/**
+	 * Remove only a voluntary newsletter unsubscribe suppression.
+	 *
+	 * Delivery, spam, complaint and administrator blocks are deliberately left
+	 * untouched and must never be cleared by an ordinary opt-in.
+	 *
+	 * @param string $email Confirmed email address.
+	 * @return bool Whether an unsubscribe suppression was removed.
+	 */
+	public static function clear_unsubscribe_suppression( $email ) {
+		global $wpdb;
+		$email = strtolower( sanitize_email( $email ) );
+		if ( ! is_email( $email ) ) {
+			return false;
+		}
+		$table = self::table_names()['suppressions'];
+		return (bool) $wpdb->delete(
+			$table,
+			array(
+				'email_hash' => hash( 'sha256', $email ),
+				'reason'     => 'unsubscribed',
+			)
+		);
+	}
+
 	public static function status() {
 		$present = array();
 		foreach ( self::table_names() as $key => $table ) {

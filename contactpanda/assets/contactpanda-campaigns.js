@@ -5,11 +5,31 @@
 	setupCampaignFilters();
 	var form = document.getElementById('contactpanda-campaign-form');
 	if (!form) return;
-	var editorModal = document.getElementById('contactpanda-mailing-editor-modal');
-	if (editorModal && !editorModal.hidden) document.body.classList.add('contactpanda-modal-open');
-	document.querySelectorAll('[data-contactpanda-mailing-open]').forEach(function (button) { button.addEventListener('click', function () { editorModal.hidden = false; document.body.classList.add('contactpanda-modal-open'); }); });
-	document.querySelectorAll('.contactpanda-close-mailing-modal').forEach(function (button) { button.addEventListener('click', function () { editorModal.hidden = true; document.body.classList.remove('contactpanda-modal-open'); }); });
 	var scheduled = form.querySelector('[name="scheduled_at"]');
+	var deliverySubmit = form.querySelector('.contactpanda-delivery-submit');
+	function formattedSchedule() {
+		if (!scheduled || !scheduled.value) return '';
+		var date = new Date(scheduled.value);
+		if (Number.isNaN(date.getTime())) return '';
+		return new Intl.DateTimeFormat(document.documentElement.lang || undefined, {dateStyle:'short', timeStyle:'short'}).format(date);
+	}
+	function scheduledButtonLabel() {
+		if (!scheduled || !scheduled.value) return (config.scheduleDeliveryEmpty || 'Schedule delivery');
+		var date = new Date(scheduled.value);
+		if (Number.isNaN(date.getTime())) return (config.scheduleDeliveryEmpty || 'Schedule delivery');
+		var locale = document.documentElement.lang || undefined;
+		var dateLabel = new Intl.DateTimeFormat(locale, {dateStyle:'short'}).format(date);
+		var timeLabel = new Intl.DateTimeFormat(locale, {timeStyle:'short'}).format(date);
+		return (config.scheduleDelivery || 'Schedule delivery for %1$s at %2$s').replace('%1$s', dateLabel).replace('%2$s', timeLabel);
+	}
+	function updateDeliveryAction() {
+		var later = form.querySelector('[name="send_timing"]:checked'); later = later && later.value === 'later';
+		if (!deliverySubmit) return;
+		deliverySubmit.value = later ? 'schedule' : 'send_now';
+		deliverySubmit.textContent = later
+			? scheduledButtonLabel()
+			: (config.sendNow || 'Send now');
+	}
 	form.querySelectorAll('.contactpanda-searchable-select').forEach(function (wrapper) {
 		var search = wrapper.querySelector('.contactpanda-select-search'), select = wrapper.querySelector('select');
 		if (!search || !select) return;
@@ -39,8 +59,10 @@
 	if (templateSelect) templateSelect.addEventListener('change', copyTemplateSubject);
 	document.addEventListener('click', function (event) { form.querySelectorAll('.contactpanda-searchable-select.is-enhanced').forEach(function (wrapper) { if (wrapper.contains(event.target)) return; var panel = wrapper.querySelector('.contactpanda-searchable-panel'), toggle = wrapper.querySelector('.contactpanda-searchable-toggle'); panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); }); });
 	form.querySelectorAll('[name="send_timing"]').forEach(function (radio) {
-		radio.addEventListener('change', function () { var later = radio.value === 'later' && radio.checked; if (later) { scheduled.hidden = false; scheduled.disabled = false; scheduled.required = true; } else if (radio.checked) { scheduled.hidden = true; scheduled.disabled = true; scheduled.required = false; } });
+		radio.addEventListener('change', function () { var later = radio.value === 'later' && radio.checked; if (later) { scheduled.hidden = false; scheduled.disabled = false; scheduled.required = true; } else if (radio.checked) { scheduled.hidden = true; scheduled.disabled = true; scheduled.required = false; } updateDeliveryAction(); });
 	});
+	if (scheduled) scheduled.addEventListener('change', updateDeliveryAction);
+	updateDeliveryAction();
 	var customerPanel = form.querySelector('.contactpanda-customer-recipient-search');
 	var consentOverride = form.querySelector('.contactpanda-consent-override');
 	var customerSearch = customerPanel ? customerPanel.querySelector('[name="recipient_search"]') : null;
@@ -67,6 +89,7 @@
 		fetch(config.ajaxUrl, {method:'POST', credentials:'same-origin', body:data}).then(function (response) { return response.json(); }).then(function (result) {
 			if (!result.success) throw new Error(result.data && result.data.message || config.recipientSearchFailed || 'Search failed');
 			customerResults.replaceChildren();
+			customerResults.dataset.eligible = String(result.data.eligible || 0);
 			var summary = document.createElement('p'); summary.className = 'contactpanda-customer-search-summary'; summary.textContent = (config.recipientSearchSummary || '%1$d contacts found; %2$d eligible; %3$d with consent; %4$d without consent; %5$d excluded.').replace('%1$d', result.data.total).replace('%2$d', result.data.eligible).replace('%3$d', result.data.withConsent).replace('%4$d', result.data.withoutConsent).replace('%5$d', result.data.excluded); customerResults.appendChild(summary);
 			if (!result.data.items.length) { var empty = document.createElement('p'); empty.textContent = config.noRecipients || config.noCustomers || 'No eligible contacts found.'; customerResults.appendChild(empty); return; }
 			var list = document.createElement('ul'); list.className = 'contactpanda-customer-recipient-list'; result.data.items.forEach(function (item) { var row = document.createElement('li'); var identity = document.createElement('span'); identity.textContent = item.name + ' · ' + item.email; var state = document.createElement('span'); state.className = item.marketable ? 'is-marketable' : 'is-without-consent'; state.textContent = item.marketable ? (config.marketingConsent || 'Marketing consent') : (config.withoutMarketingConsent || 'No documented marketing consent'); row.appendChild(identity); row.appendChild(state); list.appendChild(row); }); customerResults.appendChild(list);
@@ -77,6 +100,27 @@
 	if (segmentSelect) segmentSelect.addEventListener('change', searchCustomers);
 	if (customerSearch) customerSearch.addEventListener('input', function () { window.clearTimeout(customerTimer); customerTimer = window.setTimeout(searchCustomers, 250); });
 	updateRecipientSource();
+	var overrideToggle = consentOverride ? consentOverride.querySelector('[name="ignore_marketing_consent"]') : null;
+	var overrideReason = consentOverride ? consentOverride.querySelector('[name="consent_override_reason"]') : null;
+	var overrideConfirm = consentOverride ? consentOverride.querySelector('[name="consent_override_confirm"]') : null;
+	var overrideError = consentOverride ? consentOverride.querySelector('.contactpanda-consent-override-error') : null;
+	function validateOverride() {
+		if (!overrideToggle || !overrideToggle.checked) { if (overrideError) overrideError.hidden = true; return true; }
+		if (overrideReason && overrideReason.value && overrideConfirm && overrideConfirm.checked) { if (overrideError) overrideError.hidden = true; return true; }
+		if (overrideError) { overrideError.textContent = config.overrideRequired || 'Select a reason and confirm the administrative exception.'; overrideError.hidden = false; }
+		if (overrideReason && !overrideReason.value) overrideReason.focus(); else if (overrideConfirm) overrideConfirm.focus();
+		return false;
+	}
+	form.addEventListener('submit', function (event) {
+		if (!validateOverride()) { event.preventDefault(); return; }
+		var submitter = event.submitter;
+		if (!submitter || submitter.value === 'save') return;
+		var eligible = customerResults ? Number(customerResults.dataset.eligible || 0) : 0;
+		var question = submitter.value === 'schedule'
+			? (config.confirmSchedule || 'Schedule this mailing for %1$s? %2$d eligible recipients will be prepared.').replace('%1$s', formattedSchedule()).replace('%2$d', String(eligible))
+			: (config.confirmSendNow || 'Send this mailing to %d eligible recipients now?').replace('%d', String(eligible));
+		if (!window.confirm(question)) event.preventDefault();
+	});
 	setupCampaignCreation();
 	function request(action, email) {
 		var data = new FormData(); data.set('action', action); data.set('nonce', config.nonce || ''); data.set('template_id', form.elements.template_id.value); data.set('subject', form.elements.subject.value); data.set('from_name', form.elements.from_name.value); data.set('from_email', form.elements.from_email.value); data.set('reply_to', form.elements.reply_to.value); if (email) data.set('email', email);

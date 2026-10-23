@@ -782,6 +782,9 @@ final class ContactPanda_Plugin {
 			$summary = $is_grant ? __( 'Marketing consent granted manually', 'contactpanda' ) : __( 'Marketing consent revoked manually', 'contactpanda' );
 			$content = sprintf( __( '%1$s on %2$s. Source: %3$s. Edited by: %4$s.%5$s', 'contactpanda' ), $summary, $date, $sources[ $source ], $current_user->display_name, $note ? __( ' Note: ', 'contactpanda' ) . $note : '' );
 			ContactPanda_Store::record_consent( $contact_id, $is_grant ? 'granted' : 'revoked', $sources[ $source ], $date, $content );
+			if ( $is_grant && class_exists( 'ContactPanda_Newsletter_Schema' ) ) {
+				ContactPanda_Newsletter_Schema::clear_unsubscribe_suppression( self::value( $current_contact, array( 'email', 'get_email' ) ) );
+			}
 			wp_send_json_success( array( 'status' => $is_grant ? 'confirmed' : 'unsubscribed', 'label' => $is_grant ? __( 'Marketing allowed', 'contactpanda' ) : __( 'Unsubscribed', 'contactpanda' ), 'message' => __( 'Marketing status and log were saved.', 'contactpanda' ) ) );
 		}
 
@@ -811,6 +814,9 @@ final class ContactPanda_Plugin {
 			'groundhogg/add-contact-note',
 			array( 'contact_id' => $contact_id, 'summary' => $summary, 'content' => $content )
 		);
+		if ( $is_grant && class_exists( 'ContactPanda_Newsletter_Schema' ) ) {
+			ContactPanda_Newsletter_Schema::clear_unsubscribe_suppression( self::value( $current_contact, array( 'email', 'get_email' ) ) );
+		}
 
 		wp_send_json_success(
 			array(
@@ -2918,6 +2924,9 @@ final class ContactPanda_Plugin {
 				return new WP_Error( 'contactpanda_optin_save', __( 'The newsletter subscription could not be saved.', 'contactpanda' ) );
 			}
 			ContactPanda_Store::record_consent( $contact_id, 'granted', $source, $date, $proof );
+			if ( class_exists( 'ContactPanda_Newsletter_Schema' ) ) {
+				ContactPanda_Newsletter_Schema::clear_unsubscribe_suppression( $email );
+			}
 			self::update_wordpress_marketing_status( $email, $confirmed_at );
 			return $contact_id;
 		}
@@ -2960,6 +2969,9 @@ final class ContactPanda_Plugin {
 				'content'    => $proof,
 			)
 		);
+		if ( class_exists( 'ContactPanda_Newsletter_Schema' ) ) {
+			ContactPanda_Newsletter_Schema::clear_unsubscribe_suppression( $email );
+		}
 		self::update_wordpress_marketing_status( $email, $confirmed_at );
 		do_action( 'contactpanda_marketing_confirmed', $contact_id, $email );
 		return $contact_id;
@@ -3121,12 +3133,14 @@ final class ContactPanda_Plugin {
 
 	private static function marketing_consent_sources() {
 		return array(
-			'personally' => __( 'In person', 'contactpanda' ),
-			'phone'      => __( 'By phone', 'contactpanda' ),
-			'written'    => __( 'In writing', 'contactpanda' ),
-			'email'      => __( 'By email', 'contactpanda' ),
-			'import'     => __( 'Documented import', 'contactpanda' ),
-			'other'      => __( 'Other', 'contactpanda' ),
+			'personally'       => __( 'In person', 'contactpanda' ),
+			'personal_request' => __( 'Personal request', 'contactpanda' ),
+			'test_address'     => __( 'Test address', 'contactpanda' ),
+			'phone'            => __( 'By phone', 'contactpanda' ),
+			'written'          => __( 'In writing', 'contactpanda' ),
+			'email'            => __( 'By email', 'contactpanda' ),
+			'import'           => __( 'Documented import', 'contactpanda' ),
+			'other'            => __( 'Other', 'contactpanda' ),
 		);
 	}
 
@@ -3616,7 +3630,7 @@ final class ContactPanda_Plugin {
 		echo '<h2 id="contactpanda-consent-title-' . esc_attr( $id ) . __( '">Edit marketing consent</h2>', 'contactpanda' );
 		echo __( '<p>Only change this when consent or withdrawal is actually documented.</p>', 'contactpanda' );
 		echo __( '<label>Decision<select class="contactpanda-consent-decision"><option value="grant">Grant consent</option><option value="revoke">Withdraw consent</option></select></label>', 'contactpanda' );
-		echo __( '<label>Source<select class="contactpanda-consent-source"><option value="">Please select</option><option value="personally">In person</option><option value="phone">By phone</option><option value="written">In writing</option><option value="email">By email</option><option value="import">Documented import</option><option value="other">Other</option></select></label>', 'contactpanda' );
+		echo __( '<label>Source<select class="contactpanda-consent-source"><option value="">Please select</option><option value="personally">In person</option><option value="personal_request">Personal request</option><option value="test_address">Test address</option><option value="phone">By phone</option><option value="written">In writing</option><option value="email">By email</option><option value="import">Documented import</option><option value="other">Other</option></select></label>', 'contactpanda' );
 		echo __( '<label>Date<input type="date" class="contactpanda-consent-date" value="', 'contactpanda' ) . esc_attr( current_time( 'Y-m-d' ) ) . '"></label>';
 		echo __( '<label>Note / evidence<textarea class="contactpanda-consent-note" rows="3" placeholder="Optional evidence note"></textarea></label>', 'contactpanda' );
 		echo __( '<label class="contactpanda-confirm"><input type="checkbox" class="contactpanda-consent-confirmed"> <span>I confirm that explicit consent has been given.</span></label>', 'contactpanda' );
