@@ -21,6 +21,7 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 		add_action( 'wp_ajax_contactpanda_campaign_preview', array( __CLASS__, 'preview_ajax' ) );
 		add_action( 'wp_ajax_contactpanda_campaign_test', array( __CLASS__, 'test_ajax' ) );
 		add_action( 'wp_ajax_contactpanda_campaign_statuses', array( __CLASS__, 'statuses_ajax' ) );
+		add_action( 'wp_ajax_contactpanda_campaign_customer_search', array( __CLASS__, 'customer_search_ajax' ) );
 		add_filter( 'contactpanda_misc_settings_sections', array( __CLASS__, 'misc_sections' ) );
 		add_action( 'contactpanda_render_misc_settings_section_campaigns', array( __CLASS__, 'render_campaign_groups' ) );
 		add_action( 'admin_post_contactpanda_campaign_group', array( __CLASS__, 'campaign_group_action' ) );
@@ -125,7 +126,8 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 			$progress = absint( $campaign['total_recipients'] ) ? min( 100, (int) round( 100 * $processed / absint( $campaign['total_recipients'] ) ) ) : 0;
 			if ( 'completed' === $campaign['status'] ) $progress = 100;
 			$progress_bar = ( ! $imported && 'draft' !== $campaign['status'] ) ? '<span class="contactpanda-mailing-progress" aria-label="' . esc_attr( sprintf( __( 'Mailing progress: %d%%', 'contactpanda' ), $progress ) ) . '"><i style="width:' . esc_attr( $progress ) . '%"></i><small>' . esc_html( $progress ) . '%</small></span>' : '';
-			echo '<tr class="contactpanda-mailing-main-row" data-contactpanda-campaign-id="' . esc_attr( absint( $campaign['id'] ) ) . '" data-contactpanda-campaign-status="' . esc_attr( $campaign['status'] ) . '"><td><strong>' . esc_html( $campaign['name'] ) . '</strong><span class="contactpanda-mailing-row-actions">' . wp_kses_post( $links ) . '</span></td><td>' . esc_html( $campaign['subject'] ?: '—' ) . '</td><td><span>' . esc_html( $campaign['segment_name'] ?: __( 'All eligible contacts', 'contactpanda' ) ) . '</span><small class="contactpanda-recipient-summary">' . esc_html( $recipient_summary ) . '</small>' . $progress_bar . '</td><td><span class="contactpanda-delivery-time">' . esc_html( $delivery_time ) . '</span></td><td data-contactpanda-mailing-delivered>' . esc_html( $delivered . ' · ' . $rate( $delivered, $eligible ) ) . '</td><td data-contactpanda-mailing-opened>' . esc_html( absint( $campaign['opened_count'] ) . ' · ' . $rate( absint( $campaign['opened_count'] ), $delivered ) ) . '</td><td data-contactpanda-mailing-clicked>' . esc_html( absint( $campaign['clicked_count'] ) . ' · ' . $rate( absint( $campaign['clicked_count'] ), $delivered ) ) . '</td><td class="contactpanda-mailing-actions">' . $actions . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$audience_label = 'registered_customers' === ( $campaign['audience_source'] ?? 'contacts' ) ? __( 'Registered customers', 'contactpanda' ) : ( $campaign['segment_name'] ?: __( 'All eligible contacts', 'contactpanda' ) );
+			echo '<tr class="contactpanda-mailing-main-row" data-contactpanda-campaign-id="' . esc_attr( absint( $campaign['id'] ) ) . '" data-contactpanda-campaign-status="' . esc_attr( $campaign['status'] ) . '"><td><strong>' . esc_html( $campaign['name'] ) . '</strong><span class="contactpanda-mailing-row-actions">' . wp_kses_post( $links ) . '</span></td><td>' . esc_html( $campaign['subject'] ?: '—' ) . '</td><td><span>' . esc_html( $audience_label ) . '</span><small class="contactpanda-recipient-summary">' . esc_html( $recipient_summary ) . '</small>' . $progress_bar . '</td><td><span class="contactpanda-delivery-time">' . esc_html( $delivery_time ) . '</span></td><td data-contactpanda-mailing-delivered>' . esc_html( $delivered . ' · ' . $rate( $delivered, $eligible ) ) . '</td><td data-contactpanda-mailing-opened>' . esc_html( absint( $campaign['opened_count'] ) . ' · ' . $rate( absint( $campaign['opened_count'] ), $delivered ) ) . '</td><td data-contactpanda-mailing-clicked>' . esc_html( absint( $campaign['clicked_count'] ) . ' · ' . $rate( absint( $campaign['clicked_count'] ), $delivered ) ) . '</td><td class="contactpanda-mailing-actions">' . $actions . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 		if ( ! $campaigns ) { echo '<tr><td colspan="8">' . esc_html__( 'No campaign has been created yet.', 'contactpanda' ) . '</td></tr>'; }
 		echo '</tbody></table></section>';
@@ -146,7 +148,12 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 			return;
 		}
 		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `{$t['recipients']}` WHERE campaign_id=%d ORDER BY status ASC,email ASC LIMIT 500", $campaign_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$reasons = array( 'consent_missing' => __( 'Consent missing', 'contactpanda' ), 'suppressed' => __( 'Globally suppressed', 'contactpanda' ), 'invalid_email' => __( 'Invalid email address', 'contactpanda' ), 'wp_mail_failed' => __( 'Mail delivery failed', 'contactpanda' ) );
+		$reasons = array( 'consent_missing' => __( 'Consent missing', 'contactpanda' ), 'protected_optout' => __( 'Unsubscribed, blocked or undeliverable', 'contactpanda' ), 'suppressed' => __( 'Globally suppressed', 'contactpanda' ), 'invalid_email' => __( 'Invalid email address', 'contactpanda' ), 'contact_missing' => __( 'Contact no longer exists', 'contactpanda' ), 'customer_missing' => __( 'Customer account no longer exists', 'contactpanda' ), 'wp_mail_failed' => __( 'Mail delivery failed', 'contactpanda' ) );
+		if ( ! empty( $campaign['ignore_marketing_consent'] ) ) {
+			$user = get_userdata( absint( $campaign['consent_override_user_id'] ) );
+			$reason = self::override_reason_label( $campaign['consent_override_reason'] );
+			echo '<div class="notice notice-warning inline"><p><strong>' . esc_html__( 'Marketing consent override', 'contactpanda' ) . ':</strong> ' . esc_html( sprintf( __( '%1$s enabled this exception on %2$s. Reason: %3$s. %4$d recipients without documented consent were included.', 'contactpanda' ), $user ? $user->display_name : __( 'Administrator', 'contactpanda' ), mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $campaign['consent_override_at'] ), $reason, absint( $campaign['consent_override_count'] ) ) ) . '</p></div>';
+		}
 		echo '<h3>' . esc_html__( 'Recipient check', 'contactpanda' ) . '</h3><p>' . esc_html__( 'Skipped contacts are never sent automatically. If actual consent exists, document the manual override in the person’s Marketing & Consent section and prepare a new campaign.', 'contactpanda' ) . '</p><table class="widefat striped"><thead><tr><th>' . esc_html__( 'Recipient', 'contactpanda' ) . '</th><th>' . esc_html__( 'Status', 'contactpanda' ) . '</th><th>' . esc_html__( 'Reason', 'contactpanda' ) . '</th></tr></thead><tbody>';
 		foreach ( $rows as $row ) {
 			$name = trim( $row['first_name'] . ' ' . $row['last_name'] ); $person_url = admin_url( 'admin.php?page=contactpanda&person=' . absint( $row['contact_id'] ) );
@@ -168,7 +175,13 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 		foreach ( $groups as $group ) echo '<option value="' . esc_attr( $group['id'] ) . '"' . selected( absint( $value( 'campaign_group_id' ) ), absint( $group['id'] ), false ) . '>' . esc_html( $group['name'] ) . '</option>';
 		echo '</select></div><div class="contactpanda-searchable-select"><span>' . esc_html__( 'Saved search', 'contactpanda' ) . '</span><input type="search" class="contactpanda-select-search" placeholder="' . esc_attr__( 'Search saved searches', 'contactpanda' ) . '" autocomplete="off"><select name="segment_id"><option value="0">' . esc_html__( 'All eligible contacts', 'contactpanda' ) . '</option>';
 		foreach ( $segments as $segment ) { echo '<option value="' . esc_attr( $segment['id'] ) . '"' . selected( absint( $value( 'segment_id' ) ), absint( $segment['id'] ), false ) . '>' . esc_html( $segment['name'] ) . '</option>'; }
-		echo '</select></div><button type="button" class="button contactpanda-open-inline-search">' . esc_html__( 'Create new search', 'contactpanda' ) . '</button><fieldset class="contactpanda-audience-mode"><legend>' . esc_html__( 'Audience type', 'contactpanda' ) . '</legend><label><input type="radio" name="audience_mode" value="dynamic"' . checked( $value( 'audience_mode', 'dynamic' ), 'dynamic', false ) . '> ' . esc_html__( 'Dynamic – resolve matching contacts when sending starts', 'contactpanda' ) . '</label><label><input type="radio" name="audience_mode" value="static"' . checked( $value( 'audience_mode', 'dynamic' ), 'static', false ) . '> ' . esc_html__( 'Static – keep the contacts matching when this mailing is saved', 'contactpanda' ) . '</label><small>' . esc_html__( 'Current consent and suppression status is always checked again immediately before every message is sent.', 'contactpanda' ) . '</small></fieldset></div><div class="contactpanda-mailing-column contactpanda-mailing-actions-panel"><h3>' . esc_html__( 'Mailing settings', 'contactpanda' ) . '</h3><label><span>' . esc_html__( 'Sender name', 'contactpanda' ) . '</span><input required name="from_name" value="' . esc_attr( $value( 'from_name' ) ?: $newsletter_defaults['from_name'] ) . '"></label><label><span>' . esc_html__( 'Sending email address', 'contactpanda' ) . '</span><input required type="email" name="from_email" value="' . esc_attr( $value( 'from_email' ) ?: $newsletter_defaults['from_email'] ) . '"></label><label><span>' . esc_html__( 'Reply-to address', 'contactpanda' ) . '</span><input required type="email" name="reply_to" value="' . esc_attr( $value( 'reply_to' ) ?: $newsletter_defaults['reply_to'] ) . '"></label><label><span>' . esc_html__( 'Language', 'contactpanda' ) . '</span><select name="language"><option value="de_DE"' . selected( $value( 'language', 'de_DE' ), 'de_DE', false ) . '>Deutsch</option><option value="en_US"' . selected( $value( 'language' ), 'en_US', false ) . '>English</option></select></label>';
+		echo '</select></div><button type="button" class="button contactpanda-open-inline-search">' . esc_html__( 'Create new search', 'contactpanda' ) . '</button>';
+		echo '<fieldset class="contactpanda-audience-source"><legend>' . esc_html__( 'Recipient source', 'contactpanda' ) . '</legend><label><input type="radio" name="audience_source" value="contacts"' . checked( $value( 'audience_source', 'contacts' ), 'contacts', false ) . '> ' . esc_html__( 'Contacts from the saved search', 'contactpanda' ) . '</label><label><input type="radio" name="audience_source" value="registered_customers"' . checked( $value( 'audience_source', 'contacts' ), 'registered_customers', false ) . '> ' . esc_html__( 'Registered customers', 'contactpanda' ) . '</label><div class="contactpanda-customer-recipient-search"' . ( 'registered_customers' === $value( 'audience_source', 'contacts' ) ? '' : ' hidden' ) . '><label><span>' . esc_html__( 'Customer search', 'contactpanda' ) . '</span><input type="search" name="recipient_search" value="' . esc_attr( $value( 'recipient_search' ) ) . '" placeholder="' . esc_attr__( 'Search by name, email address or company', 'contactpanda' ) . '" autocomplete="off"></label><p class="description">' . esc_html__( 'Only contacts linked to a WordPress customer account are included. Unsubscribed, blocked and undeliverable addresses always remain excluded.', 'contactpanda' ) . '</p><div class="contactpanda-customer-search-results" aria-live="polite"></div></div></fieldset>';
+		if ( current_user_can( 'manage_options' ) ) {
+			$override = ! empty( $campaign['ignore_marketing_consent'] );
+			echo '<fieldset class="contactpanda-consent-override"' . ( 'registered_customers' === $value( 'audience_source', 'contacts' ) ? '' : ' hidden' ) . '><legend>' . esc_html__( 'Administrative exception', 'contactpanda' ) . '</legend><label><input type="checkbox" name="ignore_marketing_consent" value="1"' . checked( $override, true, false ) . '> ' . esc_html__( 'Ignore marketing consent for this mailing', 'contactpanda' ) . '</label><div class="notice notice-warning inline"><p>' . esc_html__( 'This exception does not grant or reactivate consent. Unsubscribed, blocked, complained and undeliverable addresses always remain excluded.', 'contactpanda' ) . '</p></div><label><span>' . esc_html__( 'Reason for exception', 'contactpanda' ) . '</span><select name="consent_override_reason"><option value="">—</option><option value="existing_customer"' . selected( $value( 'consent_override_reason' ), 'existing_customer', false ) . '>' . esc_html__( 'Existing-customer information about similar products', 'contactpanda' ) . '</option><option value="necessary_information"' . selected( $value( 'consent_override_reason' ), 'necessary_information', false ) . '>' . esc_html__( 'Non-promotional necessary customer information', 'contactpanda' ) . '</option></select></label><label><input type="checkbox" name="consent_override_confirm" value="1"> ' . esc_html__( 'I understand the warning and confirm this exception for this mailing.', 'contactpanda' ) . '</label></fieldset>';
+		}
+		echo '<fieldset class="contactpanda-audience-mode"><legend>' . esc_html__( 'Audience type', 'contactpanda' ) . '</legend><label><input type="radio" name="audience_mode" value="dynamic"' . checked( $value( 'audience_mode', 'dynamic' ), 'dynamic', false ) . '> ' . esc_html__( 'Dynamic – resolve matching contacts when sending starts', 'contactpanda' ) . '</label><label><input type="radio" name="audience_mode" value="static"' . checked( $value( 'audience_mode', 'dynamic' ), 'static', false ) . '> ' . esc_html__( 'Static – keep the contacts matching when this mailing is saved', 'contactpanda' ) . '</label><small>' . esc_html__( 'Current suppression and protected opt-out status is always checked again immediately before every message is sent.', 'contactpanda' ) . '</small></fieldset></div><div class="contactpanda-mailing-column contactpanda-mailing-actions-panel"><h3>' . esc_html__( 'Mailing settings', 'contactpanda' ) . '</h3><label><span>' . esc_html__( 'Sender name', 'contactpanda' ) . '</span><input required name="from_name" value="' . esc_attr( $value( 'from_name' ) ?: $newsletter_defaults['from_name'] ) . '"></label><label><span>' . esc_html__( 'Sending email address', 'contactpanda' ) . '</span><input required type="email" name="from_email" value="' . esc_attr( $value( 'from_email' ) ?: $newsletter_defaults['from_email'] ) . '"></label><label><span>' . esc_html__( 'Reply-to address', 'contactpanda' ) . '</span><input required type="email" name="reply_to" value="' . esc_attr( $value( 'reply_to' ) ?: $newsletter_defaults['reply_to'] ) . '"></label><label><span>' . esc_html__( 'Language', 'contactpanda' ) . '</span><select name="language"><option value="de_DE"' . selected( $value( 'language', 'de_DE' ), 'de_DE', false ) . '>Deutsch</option><option value="en_US"' . selected( $value( 'language' ), 'en_US', false ) . '>English</option></select></label>';
 		$scheduled = $value( 'scheduled_at' ); $later = ! empty( $scheduled );
 		echo '<fieldset class="contactpanda-campaign-timing"><legend>' . esc_html__( 'Delivery time', 'contactpanda' ) . '</legend><label><input type="radio" name="send_timing" value="now"' . checked( ! $later, true, false ) . '> ' . esc_html__( 'Immediately after starting', 'contactpanda' ) . '</label><label><input type="radio" name="send_timing" value="later"' . checked( $later, true, false ) . '> ' . esc_html__( 'Schedule for a date and time', 'contactpanda' ) . '</label><input type="datetime-local" name="scheduled_at" value="' . esc_attr( $scheduled ? mysql2date( 'Y-m-d\TH:i', $scheduled ) : '' ) . '"' . ( $later ? '' : ' hidden disabled' ) . '></fieldset><label><span>' . esc_html__( 'Emails per hour', 'contactpanda' ) . '</span><input required type="number" name="mails_per_hour" min="1" max="3000" step="1" value="' . esc_attr( absint( $value( 'mails_per_hour', 300 ) ) ?: 300 ) . '"><small>' . esc_html__( 'ContactPanda divides the mailing into controlled batches. Actual timing depends on the WordPress cron system and the configured mail service.', 'contactpanda' ) . '</small></label><div class="contactpanda-test-send"><strong>' . esc_html__( 'Test mailing', 'contactpanda' ) . '</strong><input type="email" id="contactpanda-campaign-test-email" value="' . esc_attr( wp_get_current_user()->user_email ) . '"><button type="button" class="button" id="contactpanda-campaign-test">' . esc_html__( 'Send test', 'contactpanda' ) . '</button></div><button type="button" class="button" id="contactpanda-campaign-preview">' . esc_html__( 'Preview', 'contactpanda' ) . '</button>'; submit_button( __( 'Save', 'contactpanda' ), 'primary', 'submit', false ); echo '<span id="contactpanda-campaign-message" aria-live="polite"></span></div></div></form></section></div>';
 		echo '<div id="contactpanda-campaign-preview-modal" class="contactpanda-consent-modal contactpanda-preview-modal" hidden><div class="contactpanda-preview-panel"><header class="contactpanda-preview-header"><h2>' . esc_html__( 'Newsletter preview', 'contactpanda' ) . '</h2><div class="contactpanda-preview-modes"><button type="button" class="button is-active" data-campaign-preview-width="100%">' . esc_html__( 'Desktop', 'contactpanda' ) . '</button> <button type="button" class="button" data-campaign-preview-width="768px">' . esc_html__( 'Tablet', 'contactpanda' ) . '</button> <button type="button" class="button" data-campaign-preview-width="390px">' . esc_html__( 'Mobile', 'contactpanda' ) . '</button> <button type="button" class="button" id="contactpanda-close-campaign-preview">' . esc_html__( 'Close', 'contactpanda' ) . '</button></div></header><div class="contactpanda-newsletter-preview-stage"><iframe id="contactpanda-campaign-preview-frame" title="' . esc_attr__( 'Newsletter preview', 'contactpanda' ) . '"></iframe></div></div></div>';
@@ -191,7 +204,15 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 		}
 		$scheduled_at = 'later' === sanitize_key( wp_unslash( $_POST['send_timing'] ?? 'now' ) ) ? self::mysql_datetime( $_POST['scheduled_at'] ?? '' ) : null;
 		$audience_mode = 'static' === sanitize_key( wp_unslash( $_POST['audience_mode'] ?? 'dynamic' ) ) ? 'static' : 'dynamic';
-		$data = array( 'name' => sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) ), 'subject' => sanitize_text_field( wp_unslash( $_POST['subject'] ?? '' ) ), 'template_id' => $template_id, 'segment_id' => absint( $_POST['segment_id'] ?? 0 ), 'audience_mode' => $audience_mode, 'audience_resolved_at' => null, 'campaign_group_id' => absint( $_POST['campaign_group_id'] ?? 0 ), 'language' => $language ?: 'de_DE', 'from_name' => $from_name, 'from_email' => $from_email, 'reply_to' => $reply_to, 'mails_per_hour' => min( 3000, max( 1, absint( $_POST['mails_per_hour'] ?? 300 ) ) ), 'status' => 'draft', 'scheduled_at' => $scheduled_at, 'updated_at' => $now );
+		$audience_source = 'registered_customers' === sanitize_key( wp_unslash( $_POST['audience_source'] ?? 'contacts' ) ) ? 'registered_customers' : 'contacts';
+		$ignore_consent = ! empty( $_POST['ignore_marketing_consent'] );
+		$override_reason = sanitize_key( wp_unslash( $_POST['consent_override_reason'] ?? '' ) );
+		if ( $ignore_consent ) {
+			if ( ! current_user_can( 'manage_options' ) ) wp_die( esc_html__( 'Only administrators may ignore marketing consent.', 'contactpanda' ) );
+			if ( 'registered_customers' !== $audience_source ) wp_die( esc_html__( 'The consent exception is available only for registered customers.', 'contactpanda' ) );
+			if ( ! in_array( $override_reason, array( 'existing_customer', 'necessary_information' ), true ) || empty( $_POST['consent_override_confirm'] ) ) wp_die( esc_html__( 'Select a reason and confirm the administrative exception.', 'contactpanda' ) );
+		}
+		$data = array( 'name' => sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) ), 'subject' => sanitize_text_field( wp_unslash( $_POST['subject'] ?? '' ) ), 'template_id' => $template_id, 'segment_id' => absint( $_POST['segment_id'] ?? 0 ), 'audience_mode' => $audience_mode, 'audience_source' => $audience_source, 'recipient_search' => substr( sanitize_text_field( wp_unslash( $_POST['recipient_search'] ?? '' ) ), 0, 190 ), 'audience_resolved_at' => null, 'ignore_marketing_consent' => $ignore_consent ? 1 : 0, 'consent_override_reason' => $ignore_consent ? $override_reason : '', 'consent_override_user_id' => $ignore_consent ? get_current_user_id() : 0, 'consent_override_at' => $ignore_consent ? $now : null, 'consent_override_count' => 0, 'campaign_group_id' => absint( $_POST['campaign_group_id'] ?? 0 ), 'language' => $language ?: 'de_DE', 'from_name' => $from_name, 'from_email' => $from_email, 'reply_to' => $reply_to, 'mails_per_hour' => min( 3000, max( 1, absint( $_POST['mails_per_hour'] ?? 300 ) ) ), 'status' => 'draft', 'scheduled_at' => $scheduled_at, 'updated_at' => $now );
 		if ( $id ) {
 			$existing = self::campaign( $id ); if ( ! $existing || ! in_array( $existing['status'], array( 'draft', 'scheduled', 'paused' ), true ) ) wp_die( esc_html__( 'This campaign can no longer be edited.', 'contactpanda' ) );
 			wp_unschedule_hook( self::CRON_HOOK, array( $id ) ); $wpdb->update( $t['campaigns'], $data, array( 'id' => $id ) );
@@ -211,18 +232,25 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 	private static function prepare_recipients( $campaign_id ) {
 		global $wpdb; $t = ContactPanda_Newsletter_Schema::table_names(); $campaign = self::campaign( $campaign_id ); if ( ! $campaign ) { return; }
 		$contacts = ContactPanda_Plugin::extension_contacts();
-		if ( $campaign['segment_id'] ) { $contacts = ContactPanda_Basic_Segments::filter_contacts( $contacts, $campaign['segment_id'] ); }
+		if ( 'registered_customers' === ( $campaign['audience_source'] ?? 'contacts' ) ) {
+			$contacts = self::registered_customer_contacts( $contacts, (string) ( $campaign['recipient_search'] ?? '' ) );
+		} elseif ( $campaign['segment_id'] ) {
+			$contacts = ContactPanda_Basic_Segments::filter_contacts( $contacts, $campaign['segment_id'] );
+		}
 		$wpdb->delete( $t['recipients'], array( 'campaign_id' => $campaign_id ) ); $counts = array( 'queued' => 0, 'skipped' => 0 );
+		$override_count = 0;
 		foreach ( $contacts as $contact ) {
 			$email = sanitize_email( ContactPanda_Plugin::extension_value( $contact, array( 'email', 'get_email' ) ) ); $contact_id = absint( ContactPanda_Plugin::extension_value( $contact, array( 'id', 'ID' ) ) );
 			$status = 'queued'; $reason = '';
 			if ( ! is_email( $email ) ) { $status = 'skipped'; $reason = 'invalid_email'; }
-			elseif ( ! ContactPanda_Plugin::extension_is_marketable( $contact ) ) { $status = 'skipped'; $reason = 'consent_missing'; }
+			elseif ( self::has_protected_optout_status( $contact ) ) { $status = 'skipped'; $reason = 'protected_optout'; }
 			elseif ( self::is_suppressed( $email ) ) { $status = 'skipped'; $reason = 'suppressed'; }
+			elseif ( ! ContactPanda_Plugin::extension_is_marketable( $contact ) && empty( $campaign['ignore_marketing_consent'] ) ) { $status = 'skipped'; $reason = 'consent_missing'; }
+			elseif ( ! ContactPanda_Plugin::extension_is_marketable( $contact ) ) { $override_count++; }
 			$wpdb->insert( $t['recipients'], array( 'campaign_id' => $campaign_id, 'contact_id' => $contact_id, 'email' => strtolower( $email ), 'first_name' => sanitize_text_field( ContactPanda_Plugin::extension_value( $contact, array( 'first_name' ) ) ), 'last_name' => sanitize_text_field( ContactPanda_Plugin::extension_value( $contact, array( 'last_name' ) ) ), 'status' => $status, 'reason' => $reason, 'created_at' => current_time( 'mysql' ), 'updated_at' => current_time( 'mysql' ) ) );
 			$counts[ $status ]++;
 		}
-		$wpdb->update( $t['campaigns'], array( 'total_recipients' => count( $contacts ), 'queued_count' => $counts['queued'], 'skipped_count' => $counts['skipped'], 'updated_at' => current_time( 'mysql' ) ), array( 'id' => $campaign_id ) );
+		$wpdb->update( $t['campaigns'], array( 'total_recipients' => count( $contacts ), 'queued_count' => $counts['queued'], 'skipped_count' => $counts['skipped'], 'consent_override_count' => $override_count, 'updated_at' => current_time( 'mysql' ) ), array( 'id' => $campaign_id ) );
 	}
 
 	public static function campaign_action() {
@@ -253,8 +281,11 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 		$template = ContactPanda_Basic_Newsletters::template( $campaign['template_id'] ); $settings = ContactPanda_Basic_Newsletters::public_settings();
 		foreach ( $rows as $row ) {
 			$live_contact = ! empty( $row['contact_id'] ) ? ContactPanda_Plugin::extension_contact( absint( $row['contact_id'] ) ) : false;
-			if ( ! $live_contact || ! ContactPanda_Plugin::extension_is_marketable( $live_contact ) ) { self::recipient_result( $row, 'skipped', 'consent_missing', '' ); continue; }
+			if ( ! $live_contact ) { self::recipient_result( $row, 'skipped', 'contact_missing', '' ); continue; }
+			if ( 'registered_customers' === ( $campaign['audience_source'] ?? 'contacts' ) && ! self::is_registered_customer( $live_contact ) ) { self::recipient_result( $row, 'skipped', 'customer_missing', '' ); continue; }
+			if ( self::has_protected_optout_status( $live_contact ) ) { self::recipient_result( $row, 'skipped', 'protected_optout', '' ); continue; }
 			if ( self::is_suppressed( $row['email'] ) ) { self::recipient_result( $row, 'skipped', 'suppressed', '' ); continue; }
+			if ( ! ContactPanda_Plugin::extension_is_marketable( $live_contact ) && empty( $campaign['ignore_marketing_consent'] ) ) { self::recipient_result( $row, 'skipped', 'consent_missing', '' ); continue; }
 			$url = self::unsubscribe_url( $row ); $html = ContactPanda_Basic_Newsletters::render_for_recipient( $template, $row, $url );
 			$html = self::add_tracking( $html, $row );
 			$from_email = sanitize_email( $campaign['from_email'] ?? '' ) ?: sanitize_email( $settings['from_email'] ) ?: sanitize_email( get_option( 'admin_email' ) ); $reply_to = sanitize_email( $campaign['reply_to'] ?? '' ) ?: sanitize_email( $settings['reply_to'] ) ?: $from_email;
@@ -363,6 +394,23 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 		wp_send_json_success( array( 'statuses' => $statuses ) );
 	}
 
+	public static function customer_search_ajax() {
+		self::guard_ajax();
+		$query = substr( sanitize_text_field( wp_unslash( $_POST['query'] ?? '' ) ), 0, 190 );
+		$contacts = self::registered_customer_contacts( ContactPanda_Plugin::extension_contacts(), $query );
+		$items = array(); $without_consent = 0;
+		foreach ( $contacts as $contact ) {
+			if ( ! ContactPanda_Plugin::extension_is_marketable( $contact ) ) $without_consent++;
+		}
+		foreach ( array_slice( $contacts, 0, 200 ) as $contact ) {
+			$email = sanitize_email( ContactPanda_Plugin::extension_value( $contact, array( 'email', 'get_email' ) ) );
+			$name = trim( sanitize_text_field( ContactPanda_Plugin::extension_value( $contact, array( 'first_name' ) ) ) . ' ' . sanitize_text_field( ContactPanda_Plugin::extension_value( $contact, array( 'last_name' ) ) ) );
+			$marketable = ContactPanda_Plugin::extension_is_marketable( $contact );
+			$items[] = array( 'name' => $name ?: $email, 'email' => $email, 'marketable' => $marketable );
+		}
+		wp_send_json_success( array( 'items' => $items, 'total' => count( $contacts ), 'withoutConsent' => $without_consent, 'truncated' => count( $contacts ) > count( $items ) ) );
+	}
+
 	public static function preview_ajax() {
 		self::guard_ajax();
 		$template = ContactPanda_Basic_Newsletters::template( absint( $_POST['template_id'] ?? 0 ) );
@@ -411,6 +459,36 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 	}
 
 	private static function campaign( $id ) { global $wpdb; $table = ContactPanda_Newsletter_Schema::table_names()['campaigns']; return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE id=%d", absint( $id ) ), ARRAY_A ); } // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	private static function is_registered_customer( $contact ) {
+		$user_id = absint( ContactPanda_Plugin::extension_value( $contact, array( 'user_id', 'wp_user_id', 'get_user_id' ) ) );
+		if ( $user_id && get_userdata( $user_id ) ) return true;
+		$email = sanitize_email( ContactPanda_Plugin::extension_value( $contact, array( 'email', 'get_email' ) ) );
+		return $email && (bool) get_user_by( 'email', $email );
+	}
+	private static function registered_customer_contacts( $contacts, $search = '' ) {
+		$query = trim( (string) $search );
+		$query = function_exists( 'mb_strtolower' ) ? mb_strtolower( $query ) : strtolower( $query );
+		$company_map = ContactPanda_Plugin::extension_company_map();
+		return array_values( array_filter( (array) $contacts, static function ( $contact ) use ( $query, $company_map ) {
+			$email = sanitize_email( ContactPanda_Plugin::extension_value( $contact, array( 'email', 'get_email' ) ) );
+			if ( ! is_email( $email ) || ! self::is_registered_customer( $contact ) || self::has_protected_optout_status( $contact ) || self::is_suppressed( $email ) ) return false;
+			if ( '' === $query ) return true;
+			$id = absint( ContactPanda_Plugin::extension_value( $contact, array( 'id', 'ID' ) ) );
+			$companies = array();
+			foreach ( (array) ( $company_map[ $id ] ?? array() ) as $company ) $companies[] = ContactPanda_Plugin::extension_value( $company, array( 'name', 'company_name', 'get_name' ) );
+			$haystack = implode( ' ', array( ContactPanda_Plugin::extension_value( $contact, array( 'first_name' ) ), ContactPanda_Plugin::extension_value( $contact, array( 'last_name' ) ), $email, implode( ' ', $companies ) ) );
+			$haystack = function_exists( 'mb_strtolower' ) ? mb_strtolower( $haystack ) : strtolower( $haystack );
+			return false !== strpos( $haystack, $query );
+		} ) );
+	}
+	private static function has_protected_optout_status( $contact ) {
+		$status = ContactPanda_Plugin::extension_optin_status( $contact );
+		return in_array( $status, array( 3, 6, 7, 8, 9, '3', '6', '7', '8', '9', 'unsubscribed', 'hard_bounce', 'bounced', 'spam', 'complained', 'blocked' ), true );
+	}
+	private static function override_reason_label( $reason ) {
+		$labels = array( 'existing_customer' => __( 'Existing-customer information about similar products', 'contactpanda' ), 'necessary_information' => __( 'Non-promotional necessary customer information', 'contactpanda' ) );
+		return $labels[ $reason ] ?? __( 'Administrative exception', 'contactpanda' );
+	}
 	private static function is_suppressed( $email ) { global $wpdb; $table = ContactPanda_Newsletter_Schema::table_names()['suppressions']; return (bool) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE email_hash=%s", hash( 'sha256', strtolower( $email ) ) ) ); } // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 	private static function token( $row ) { return hash_hmac( 'sha256', absint( $row['id'] ) . '|' . absint( $row['campaign_id'] ), wp_salt( 'auth' ) ); }
 	private static function confirmation_token( $row ) { return hash_hmac( 'sha256', 'confirm|' . absint( $row['id'] ) . '|' . strtolower( sanitize_email( $row['email'] ) ), wp_salt( 'secure_auth' ) ); }

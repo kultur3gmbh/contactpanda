@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.7.4\n"
+"Project-Id-Version: ContactPanda 0.7.5\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-19 20:00+0200\n"
 "PO-Revision-Date: 2026-10-16 09:00+0200\n"
@@ -6898,4 +6898,93 @@ msgid "You can select up to six images."
 msgstr ""
 
 msgid "YouTube, Vimeo, or video URL"
+msgstr ""
+
+msgid "Recipient source"
+msgstr ""
+
+msgid "Contacts from the saved search"
+msgstr ""
+
+msgid "Registered customers"
+msgstr ""
+
+msgid "Customer search"
+msgstr ""
+
+msgid "Search by name, email address or company"
+msgstr ""
+
+msgid "Only contacts linked to a WordPress customer account are included. Unsubscribed, blocked and undeliverable addresses always remain excluded."
+msgstr ""
+
+msgid "Administrative exception"
+msgstr ""
+
+msgid "Ignore marketing consent for this mailing"
+msgstr ""
+
+msgid "This exception does not grant or reactivate consent. Unsubscribed, blocked, complained and undeliverable addresses always remain excluded."
+msgstr ""
+
+msgid "Reason for exception"
+msgstr ""
+
+msgid "Existing-customer information about similar products"
+msgstr ""
+
+msgid "Non-promotional necessary customer information"
+msgstr ""
+
+msgid "I understand the warning and confirm this exception for this mailing."
+msgstr ""
+
+msgid "Current suppression and protected opt-out status is always checked again immediately before every message is sent."
+msgstr ""
+
+msgid "Only administrators may ignore marketing consent."
+msgstr ""
+
+msgid "The consent exception is available only for registered customers."
+msgstr ""
+
+msgid "Select a reason and confirm the administrative exception."
+msgstr ""
+
+msgid "Marketing consent override"
+msgstr ""
+
+#, php-format
+msgid "%1$s enabled this exception on %2$s. Reason: %3$s. %4$d recipients without documented consent were included."
+msgstr ""
+
+msgid "Administrator"
+msgstr ""
+
+msgid "Unsubscribed, blocked or undeliverable"
+msgstr ""
+
+msgid "Contact no longer exists"
+msgstr ""
+
+msgid "Customer account no longer exists"
+msgstr ""
+
+msgid "No matching registered customers found."
+msgstr ""
+
+msgid "Loading registered customers…"
+msgstr ""
+
+#, php-format
+msgid "%1$d registered customers found; %2$d without documented marketing consent."
+msgstr ""
+
+msgid "Only the first 200 matches are shown. Refine the search to see further customers."
+msgstr ""
+
+msgid "Marketing consent"
+msgstr ""
+
+msgid "No documented marketing consent"
 msgstr ""

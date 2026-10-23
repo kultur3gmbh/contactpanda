@@ -37,6 +37,34 @@
 	form.querySelectorAll('[name="send_timing"]').forEach(function (radio) {
 		radio.addEventListener('change', function () { var later = radio.value === 'later' && radio.checked; if (later) { scheduled.hidden = false; scheduled.disabled = false; scheduled.required = true; } else if (radio.checked) { scheduled.hidden = true; scheduled.disabled = true; scheduled.required = false; } });
 	});
+	var customerPanel = form.querySelector('.contactpanda-customer-recipient-search');
+	var consentOverride = form.querySelector('.contactpanda-consent-override');
+	var customerSearch = customerPanel ? customerPanel.querySelector('[name="recipient_search"]') : null;
+	var customerResults = customerPanel ? customerPanel.querySelector('.contactpanda-customer-search-results') : null;
+	var customerTimer = null;
+	function updateRecipientSource() {
+		var selected = form.querySelector('[name="audience_source"]:checked');
+		if (!customerPanel) return;
+		customerPanel.hidden = !selected || selected.value !== 'registered_customers';
+		if (consentOverride) { consentOverride.hidden = customerPanel.hidden; consentOverride.querySelectorAll('input,select').forEach(function (field) { field.disabled = customerPanel.hidden; }); }
+		if (!customerPanel.hidden) searchCustomers();
+	}
+	function searchCustomers() {
+		if (!customerPanel || customerPanel.hidden || !customerResults) return;
+		customerResults.textContent = config.customerSearchLoading || 'Loading…';
+		var data = new FormData(); data.set('action', 'contactpanda_campaign_customer_search'); data.set('nonce', config.nonce || ''); data.set('query', customerSearch ? customerSearch.value : '');
+		fetch(config.ajaxUrl, {method:'POST', credentials:'same-origin', body:data}).then(function (response) { return response.json(); }).then(function (result) {
+			if (!result.success) throw new Error(result.data && result.data.message || 'Search failed');
+			customerResults.replaceChildren();
+			var summary = document.createElement('p'); summary.className = 'contactpanda-customer-search-summary'; summary.textContent = (config.customerSearchSummary || '%1$d registered customers found; %2$d without documented marketing consent.').replace('%1$d', result.data.total).replace('%2$d', result.data.withoutConsent); customerResults.appendChild(summary);
+			if (!result.data.items.length) { var empty = document.createElement('p'); empty.textContent = config.noCustomers || 'No matching registered customers found.'; customerResults.appendChild(empty); return; }
+			var list = document.createElement('ul'); list.className = 'contactpanda-customer-recipient-list'; result.data.items.forEach(function (item) { var row = document.createElement('li'); var identity = document.createElement('span'); identity.textContent = item.name + ' · ' + item.email; var state = document.createElement('span'); state.className = item.marketable ? 'is-marketable' : 'is-without-consent'; state.textContent = item.marketable ? (config.marketingConsent || 'Marketing consent') : (config.withoutMarketingConsent || 'No documented marketing consent'); row.appendChild(identity); row.appendChild(state); list.appendChild(row); }); customerResults.appendChild(list);
+			if (result.data.truncated) { var truncated = document.createElement('p'); truncated.className = 'description'; truncated.textContent = config.customerSearchTruncated || 'Only the first 200 matches are shown.'; customerResults.appendChild(truncated); }
+		}).catch(function (error) { customerResults.textContent = error.message; });
+	}
+	form.querySelectorAll('[name="audience_source"]').forEach(function (radio) { radio.addEventListener('change', updateRecipientSource); });
+	if (customerSearch) customerSearch.addEventListener('input', function () { window.clearTimeout(customerTimer); customerTimer = window.setTimeout(searchCustomers, 250); });
+	updateRecipientSource();
 	function request(action, email) {
 		var data = new FormData(); data.set('action', action); data.set('nonce', config.nonce || ''); data.set('template_id', form.elements.template_id.value); data.set('subject', form.elements.subject.value); data.set('from_name', form.elements.from_name.value); data.set('from_email', form.elements.from_email.value); data.set('reply_to', form.elements.reply_to.value); if (email) data.set('email', email);
 		return fetch(config.ajaxUrl, {method:'POST', credentials:'same-origin', body:data}).then(function (response) { return response.json(); });

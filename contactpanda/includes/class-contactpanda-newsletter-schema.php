@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
  * disconnecting a licence never changes CRM, WooCommerce, or source data.
  */
 final class ContactPanda_Newsletter_Schema {
-	const VERSION = '1.0.0';
+	const VERSION = '1.1.0';
 	const VERSION_OPTION = 'contactpanda_newsletter_db_version';
 
 	public static function table_names() {
@@ -115,7 +115,14 @@ final class ContactPanda_Newsletter_Schema {
 			template_id bigint(20) unsigned NOT NULL,
 			segment_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			audience_mode varchar(12) NOT NULL DEFAULT 'dynamic',
+			audience_source varchar(30) NOT NULL DEFAULT 'contacts',
+			recipient_search varchar(190) NOT NULL DEFAULT '',
 			audience_resolved_at datetime DEFAULT NULL,
+			ignore_marketing_consent tinyint(1) unsigned NOT NULL DEFAULT 0,
+			consent_override_reason varchar(60) NOT NULL DEFAULT '',
+			consent_override_user_id bigint(20) unsigned NOT NULL DEFAULT 0,
+			consent_override_at datetime DEFAULT NULL,
+			consent_override_count int unsigned NOT NULL DEFAULT 0,
 			campaign_group_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			language varchar(12) NOT NULL DEFAULT 'de_DE',
 			subject varchar(255) NOT NULL DEFAULT '',
@@ -211,7 +218,7 @@ final class ContactPanda_Newsletter_Schema {
 			'templates'       => array( 'content_json', 'content_html', 'status' ),
 			'segments'        => array( 'entity_type', 'relation_mode', 'rules_json' ),
 			'campaign_groups' => array( 'name', 'description' ),
-			'campaigns'       => array( 'segment_id', 'audience_mode', 'from_email', 'status' ),
+			'campaigns'       => array( 'segment_id', 'audience_mode', 'audience_source', 'recipient_search', 'ignore_marketing_consent', 'from_email', 'status' ),
 			'recipients'      => array( 'campaign_id', 'email', 'status' ),
 			'suppressions'    => array( 'email_hash', 'reason' ),
 		);

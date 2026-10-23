@@ -38,6 +38,27 @@ foreach ( array( 'cp_newsletter_templates', 'cp_segments', 'cp_newsletter_campai
 	}
 }
 
+foreach ( array( 'audience_source', 'recipient_search', 'ignore_marketing_consent', 'consent_override_reason', 'consent_override_user_id', 'consent_override_at', 'consent_override_count' ) as $contract ) {
+	if ( false === strpos( $schema, $contract ) ) {
+		fwrite( STDERR, "Missing auditable recipient-selection schema contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+foreach ( array( 'registered_customer_contacts', 'has_protected_optout_status', 'Only administrators may ignore marketing consent.', 'consent_override_count' ) as $contract ) {
+	if ( false === strpos( $campaigns, $contract ) ) {
+		fwrite( STDERR, "Missing protected customer-recipient contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+foreach ( array( 'contactpanda-email-caption', 'contactpanda-video-provider-email', 'contactpanda-email-body', 'contactpanda-email-video-button' ) as $contract ) {
+	if ( false === strpos( $newsletter, $contract ) ) {
+		fwrite( STDERR, "Missing responsive email contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
 foreach ( array( 'final class ContactPanda_Basic_Newsletters', 'final class ContactPanda_Basic_Newsletter_Campaigns', 'final class ContactPanda_Basic_Segments' ) as $contract ) {
 	if ( false === strpos( $newsletter . $campaigns . $segments, $contract ) ) {
 		fwrite( STDERR, "Missing shared newsletter class {$contract}.\n" );

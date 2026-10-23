@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.7.4\n"
+"Project-Id-Version: ContactPanda 0.7.5\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-16 09:00+0200\n"
 "PO-Revision-Date: 2026-10-19 20:00+0200\n"
@@ -6899,3 +6899,92 @@ msgstr "Sie können bis zu sechs Bilder auswählen."
 
 msgid "YouTube, Vimeo, or video URL"
 msgstr "YouTube-, Vimeo- oder Video-URL"
+
+msgid "Recipient source"
+msgstr "Empfängerquelle"
+
+msgid "Contacts from the saved search"
+msgstr "Kontakte aus der gespeicherten Suche"
+
+msgid "Registered customers"
+msgstr "Registrierte Kunden"
+
+msgid "Customer search"
+msgstr "Kundensuche"
+
+msgid "Search by name, email address or company"
+msgstr "Nach Name, E-Mail-Adresse oder Firma suchen"
+
+msgid "Only contacts linked to a WordPress customer account are included. Unsubscribed, blocked and undeliverable addresses always remain excluded."
+msgstr "Es werden nur Kontakte mit einem verknüpften WordPress-Kundenkonto einbezogen. Abgemeldete, gesperrte und unzustellbare Adressen bleiben immer ausgeschlossen."
+
+msgid "Administrative exception"
+msgstr "Administrative Ausnahme"
+
+msgid "Ignore marketing consent for this mailing"
+msgstr "Marketing-Zustimmung bei dieser Aussendung nicht berücksichtigen"
+
+msgid "This exception does not grant or reactivate consent. Unsubscribed, blocked, complained and undeliverable addresses always remain excluded."
+msgstr "Diese Ausnahme erteilt oder reaktiviert keine Zustimmung. Abgemeldete, gesperrte, als Beschwerde markierte und unzustellbare Adressen bleiben immer ausgeschlossen."
+
+msgid "Reason for exception"
+msgstr "Grund für die Ausnahme"
+
+msgid "Existing-customer information about similar products"
+msgstr "Bestandskundeninformation zu ähnlichen Produkten"
+
+msgid "Non-promotional necessary customer information"
+msgstr "Nicht werbliche, notwendige Kundeninformation"
+
+msgid "I understand the warning and confirm this exception for this mailing."
+msgstr "Ich habe den Hinweis verstanden und bestätige diese Ausnahme für diese Aussendung."
+
+msgid "Current suppression and protected opt-out status is always checked again immediately before every message is sent."
+msgstr "Sperrlisten und geschützte Abmeldestatus werden unmittelbar vor jeder Nachricht erneut geprüft."
+
+msgid "Only administrators may ignore marketing consent."
+msgstr "Nur Administratoren dürfen die Marketing-Zustimmung unberücksichtigt lassen."
+
+msgid "The consent exception is available only for registered customers."
+msgstr "Die Ausnahme bei der Zustimmung ist nur für registrierte Kunden verfügbar."
+
+msgid "Select a reason and confirm the administrative exception."
+msgstr "Wählen Sie einen Grund und bestätigen Sie die administrative Ausnahme."
+
+msgid "Marketing consent override"
+msgstr "Ausnahme bei der Marketing-Zustimmung"
+
+#, php-format
+msgid "%1$s enabled this exception on %2$s. Reason: %3$s. %4$d recipients without documented consent were included."
+msgstr "%1$s hat diese Ausnahme am %2$s aktiviert. Grund: %3$s. %4$d Empfänger ohne dokumentierte Zustimmung wurden einbezogen."
+
+msgid "Administrator"
+msgstr "Administrator"
+
+msgid "Unsubscribed, blocked or undeliverable"
+msgstr "Abgemeldet, gesperrt oder unzustellbar"
+
+msgid "Contact no longer exists"
+msgstr "Kontakt ist nicht mehr vorhanden"
+
+msgid "Customer account no longer exists"
+msgstr "Kundenkonto ist nicht mehr vorhanden"
+
+msgid "No matching registered customers found."
+msgstr "Keine passenden registrierten Kunden gefunden."
+
+msgid "Loading registered customers…"
+msgstr "Registrierte Kunden werden geladen…"
+
+#, php-format
+msgid "%1$d registered customers found; %2$d without documented marketing consent."
+msgstr "%1$d registrierte Kunden gefunden; %2$d ohne dokumentierte Marketing-Zustimmung."
+
+msgid "Only the first 200 matches are shown. Refine the search to see further customers."
+msgstr "Es werden nur die ersten 200 Treffer angezeigt. Verfeinern Sie die Suche, um weitere Kunden zu sehen."
+
+msgid "Marketing consent"
+msgstr "Marketing-Zustimmung"
+
+msgid "No documented marketing consent"
+msgstr "Keine dokumentierte Marketing-Zustimmung"
