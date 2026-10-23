@@ -2,12 +2,17 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.7.8
+Stable tag: 0.8.0
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a permanently licensed newsletter option, a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
 
 == Changelog ==
+
+= 0.8.0 =
+* Establishes the shared 0.8 extension contract for independently installable Plus, Pro, Business, and future Members products.
+* Keeps people, companies, consent, WooCommerce summaries, and the licensed Basic newsletter as the common non-destructive data foundation.
+* Preserves standalone and Groundhogg data modes while optional products feature-detect the stable ContactPanda extension API.
 
 = 0.7.8 =
 * Adds a compact ContactPanda dashboard with direct totals for people, companies, email templates, mailings, campaigns, saved searches, and blocked email addresses.
