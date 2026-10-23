@@ -38,7 +38,7 @@ foreach ( array( 'cp_newsletter_templates', 'cp_segments', 'cp_newsletter_campai
 	}
 }
 
-foreach ( array( 'audience_source', 'recipient_search', 'ignore_marketing_consent', 'consent_override_reason', 'consent_override_user_id', 'consent_override_at', 'consent_override_count' ) as $contract ) {
+foreach ( array( 'audience_source', 'manual_contact_ids', 'recipient_search', 'ignore_marketing_consent', 'consent_override_reason', 'consent_override_user_id', 'consent_override_at', 'consent_override_count' ) as $contract ) {
 	if ( false === strpos( $schema, $contract ) ) {
 		fwrite( STDERR, "Missing auditable recipient-selection schema contract {$contract}.\n" );
 		exit( 1 );

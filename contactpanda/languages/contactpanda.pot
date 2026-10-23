@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.7.6\n"
+"Project-Id-Version: ContactPanda 0.7.8\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
-"POT-Creation-Date: 2026-10-19 20:00+0200\n"
-"PO-Revision-Date: 2026-10-16 09:00+0200\n"
+"POT-Creation-Date: 2026-10-23 14:30+0200\n"
+"PO-Revision-Date: 2026-10-23 14:30+0200\n"
 "Last-Translator: Kultur3 GmbH\n"
 "Language-Team: German\n"
 "Language: \n"
@@ -6025,6 +6025,122 @@ msgstr ""
 #: contactpanda/includes/class-contactpanda-newsletters.php:268
 msgid "The test email could not be sent."
 msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid "The most important ContactPanda figures at a glance."
+msgstr ""
+
+msgid "Blocked email addresses"
+msgstr ""
+
+msgid "Create new mailing"
+msgstr ""
+
+msgid "Delivered / opened / clicked"
+msgstr ""
+
+msgid "Immediately after start"
+msgstr ""
+
+msgid "%d selected"
+msgstr ""
+
+msgid "No selected people were supplied."
+msgstr ""
+
+msgid "Send newsletter"
+msgstr ""
+
+msgid "Select all %d matching people"
+msgstr ""
+
+msgid "← Back to people overview"
+msgstr ""
+
+msgid "%1$d of %2$d entries"
+msgstr ""
+
+msgid "Create newsletter mailing for selected people"
+msgstr ""
+
+msgid "Blocked by administrator"
+msgstr ""
+
+msgid "Spam report"
+msgstr ""
+
+msgid "Marketing & consent"
+msgstr ""
+
+msgid "Consent date"
+msgstr ""
+
+msgid "Blocking reason"
+msgstr ""
+
+msgid "No permanent block"
+msgstr ""
+
+msgid "Current marketing status: %s. Protected delivery, spam and complaint blocks are never removed by an ordinary consent change."
+msgstr ""
+
+msgid "<p>Only change this when consent, withdrawal or an administrator block is actually documented. Every change is recorded in the audit log.</p>"
+msgstr ""
+
+msgid "Decision"
+msgstr ""
+
+msgid "Grant consent"
+msgstr ""
+
+msgid "Withdraw consent"
+msgstr ""
+
+msgid "Permanently block address"
+msgstr ""
+
+msgid "Remove administrator block"
+msgstr ""
+
+msgid "Administrator override: give a precise reason. Delivery, spam and complaint blocks cannot be removed here."
+msgstr ""
+
+msgid "I confirm this permanent administrator block and have documented the reason."
+msgstr ""
+
+msgid "I confirm this administrator override and understand that the address remains unconfirmed."
+msgstr ""
+
+msgid "Only administrators may block or unblock an email address."
+msgstr ""
+
+msgid "Enter a reason for this administrator override."
+msgstr ""
+
+msgid "A delivery, spam, complaint or unsubscribe protection exists. It cannot be replaced or removed with the administrator block control."
+msgstr ""
+
+msgid "Email address blocked by administrator"
+msgstr ""
+
+msgid "Administrator block removed"
+msgstr ""
+
+msgid "%1$s on %2$s. Source: %3$s. Edited by: %4$s. Reason: %5$s"
+msgstr ""
+
+msgid "Marketing status and audit log were saved."
+msgstr ""
+
+msgid "%d people selected. Protected opt-outs and invalid addresses will still be excluded before sending."
+msgstr ""
+
+msgid "1 selected person from the people list"
+msgid_plural "%d selected people from the people list"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Back to mailings"
 msgstr ""

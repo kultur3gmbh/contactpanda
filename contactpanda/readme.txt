@@ -2,12 +2,20 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.7.7
+Stable tag: 0.7.8
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a permanently licensed newsletter option, a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
 
 == Changelog ==
+
+= 0.7.8 =
+* Adds a compact ContactPanda dashboard with direct totals for people, companies, email templates, mailings, campaigns, saved searches, and blocked email addresses.
+* Keeps filtering, saved searches, quick search, and quick filters together in one clear toolbar and preserves the complete filtered list for person-to-person navigation.
+* Starts a newsletter mailing directly from selected people, including an explicit option to select every matching person across all result pages.
+* Improves the mailing overview with selected-recipient totals, grouped delivered/opened/clicked statistics, and clearer immediate-delivery wording.
+* Condenses Marketing & Consent details and adds audited administrator controls for permanent email blocks without overriding protected bounce, spam, complaint, or unsubscribe states.
+* Moves previous/next navigation directly above the person details and shows the current position within the complete result set.
 
 = 0.7.7 =
 * Moves newsletter mailing creation and recipient details from modal overlays to dedicated administration pages.

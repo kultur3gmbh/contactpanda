@@ -69,7 +69,7 @@ final class ContactPanda_Data_Tools {
 	}
 
 	private static function render_export() {
-		$people_url = admin_url( 'admin.php?page=contactpanda#contactpanda-export' );
+		$people_url = admin_url( 'admin.php?page=contactpanda-people#contactpanda-export' );
 		$companies_url = admin_url( 'admin.php?page=contactpanda-firmen' );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Filtered export', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Open a list, apply the required search and filters, and export exactly that result. This keeps the exported selection visible and verifiable before download.', 'contactpanda' ) . '</p><p><a class="button button-primary" href="' . esc_url( $people_url ) . '">' . esc_html__( 'Filter and export people', 'contactpanda' ) . '</a> <a class="button" href="' . esc_url( $companies_url ) . '">' . esc_html__( 'Open companies', 'contactpanda' ) . '</a></p></section>';
 		$log = array_slice( array_reverse( (array) get_option( 'contactpanda_export_log', array() ) ), 0, 25 );

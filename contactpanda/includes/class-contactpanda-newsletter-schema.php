@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
  * disconnecting a licence never changes CRM, WooCommerce, or source data.
  */
 final class ContactPanda_Newsletter_Schema {
-	const VERSION = '1.1.0';
+	const VERSION = '1.2.0';
 	const VERSION_OPTION = 'contactpanda_newsletter_db_version';
 
 	public static function table_names() {
@@ -49,6 +49,9 @@ final class ContactPanda_Newsletter_Schema {
 			return false;
 		}
 		$table = self::table_names()['suppressions'];
+		if ( ! self::table_exists( $table ) ) {
+			return false;
+		}
 		return (bool) $wpdb->delete(
 			$table,
 			array(
@@ -56,6 +59,35 @@ final class ContactPanda_Newsletter_Schema {
 				'reason'     => 'unsubscribed',
 			)
 		);
+	}
+
+	public static function suppression( $email ) {
+		global $wpdb;
+		$email = strtolower( sanitize_email( $email ) );
+		if ( ! is_email( $email ) ) return false;
+		$table = self::table_names()['suppressions'];
+		if ( ! self::table_exists( $table ) ) return false;
+		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE email_hash=%s", hash( 'sha256', $email ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	}
+
+	public static function set_admin_block( $contact_id, $email, $source = 'administrator' ) {
+		global $wpdb;
+		$email = strtolower( sanitize_email( $email ) );
+		if ( ! is_email( $email ) ) return false;
+		$existing = self::suppression( $email );
+		if ( $existing && 'blocked' !== ( $existing['reason'] ?? '' ) ) return false;
+		$table = self::table_names()['suppressions'];
+		if ( ! self::table_exists( $table ) ) return false;
+		return false !== $wpdb->replace( $table, array( 'contact_id' => absint( $contact_id ), 'email_hash' => hash( 'sha256', $email ), 'reason' => 'blocked', 'source' => sanitize_text_field( $source ), 'created_by' => get_current_user_id(), 'created_at' => current_time( 'mysql' ) ) );
+	}
+
+	public static function clear_admin_block( $email ) {
+		global $wpdb;
+		$email = strtolower( sanitize_email( $email ) );
+		if ( ! is_email( $email ) ) return false;
+		$table = self::table_names()['suppressions'];
+		if ( ! self::table_exists( $table ) ) return false;
+		return (bool) $wpdb->delete( $table, array( 'email_hash' => hash( 'sha256', $email ), 'reason' => 'blocked' ) );
 	}
 
 	public static function status() {
@@ -139,6 +171,7 @@ final class ContactPanda_Newsletter_Schema {
 			name varchar(190) NOT NULL,
 			template_id bigint(20) unsigned NOT NULL,
 			segment_id bigint(20) unsigned NOT NULL DEFAULT 0,
+			manual_contact_ids longtext NULL,
 			audience_mode varchar(12) NOT NULL DEFAULT 'dynamic',
 			audience_source varchar(30) NOT NULL DEFAULT 'contacts',
 			recipient_search varchar(190) NOT NULL DEFAULT '',
@@ -243,7 +276,7 @@ final class ContactPanda_Newsletter_Schema {
 			'templates'       => array( 'content_json', 'content_html', 'status' ),
 			'segments'        => array( 'entity_type', 'relation_mode', 'rules_json' ),
 			'campaign_groups' => array( 'name', 'description' ),
-			'campaigns'       => array( 'segment_id', 'audience_mode', 'audience_source', 'recipient_search', 'ignore_marketing_consent', 'from_email', 'status' ),
+			'campaigns'       => array( 'segment_id', 'manual_contact_ids', 'audience_mode', 'audience_source', 'recipient_search', 'ignore_marketing_consent', 'from_email', 'status' ),
 			'recipients'      => array( 'campaign_id', 'email', 'status' ),
 			'suppressions'    => array( 'email_hash', 'reason' ),
 		);

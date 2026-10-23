@@ -14,7 +14,7 @@ foreach ( array( 'Drop a CSV file here', 'Drop a vCard file here', 'contactpanda
 	}
 }
 
-foreach ( array( 'contactpanda-search-primary', 'contactpanda-search-secondary', 'Search by name, email, phone, or company', "esc_html__( 'Execute', 'contactpanda' )" ) as $contract ) {
+foreach ( array( 'contactpanda-people-search-row', 'contactpanda-search-primary', 'Search by name, email, phone, or company', "esc_html__( 'Execute', 'contactpanda' )" ) as $contract ) {
 	if ( false === strpos( $plugin, $contract ) ) {
 		fwrite( STDERR, "Missing people-list UI contract {$contract}.\n" );
 		exit( 1 );
@@ -66,7 +66,7 @@ foreach ( array( 'contactpanda-open-company-relation', 'contactpanda-close-compa
 	}
 }
 
-foreach ( array( 'contactpanda-file-drop-actions', 'contactpanda-search-primary', 'contactpanda-company-relation-modal', 'contactpanda-table-scroll', 'contactpanda-email-column' ) as $contract ) {
+foreach ( array( 'contactpanda-file-drop-actions', 'contactpanda-people-search-row', 'contactpanda-search-primary', 'contactpanda-company-relation-modal', 'contactpanda-table-scroll', 'contactpanda-email-column' ) as $contract ) {
 	if ( false === strpos( $styles, $contract ) ) {
 		fwrite( STDERR, "Missing administrator style contract {$contract}.\n" );
 		exit( 1 );

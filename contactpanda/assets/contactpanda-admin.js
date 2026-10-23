@@ -85,8 +85,10 @@
 		if (button.classList.contains('contactpanda-open-consent')) return openConsent(button.closest('.contactpanda-marketing'));
 		if (button.classList.contains('contactpanda-close-consent')) return closeConsent(button.closest('.contactpanda-marketing'));
 		if (button.classList.contains('contactpanda-save-consent')) return saveConsent(button.closest('.contactpanda-marketing'));
-		if (button.classList.contains('contactpanda-open-bulk')) return openBulkMarketing();
+		if (button.classList.contains('contactpanda-open-bulk')) return document.getElementById('contactpanda-bulk-action').value === 'newsletter' ? openNewsletterSelection() : openBulkMarketing();
 		if (button.classList.contains('contactpanda-close-bulk')) return closeBulkMarketing();
+		if (button.classList.contains('contactpanda-close-newsletter-selection')) return closeNewsletterSelection();
+		if (button.classList.contains('contactpanda-select-all-matching')) return selectAllMatchingPeople();
 		if (button.classList.contains('contactpanda-save-bulk')) return saveBulkMarketing();
 		if (button.classList.contains('contactpanda-open-export')) return openContactOutput('export');
 		if (button.classList.contains('contactpanda-open-print')) return openContactOutput('print');
@@ -184,9 +186,11 @@
 		if (event.target.classList.contains('contactpanda-new-salutation')) event.target.dataset.autoAssigned = '0';
 		if (event.target.classList.contains('contactpanda-consent-decision')) updateConsentConfirmation(event.target.closest('.contactpanda-marketing'));
 		if (event.target.classList.contains('contactpanda-select-all')) {
+			allMatchingPeopleSelected = false;
 			document.querySelectorAll('.contactpanda-person-select').forEach(function (checkbox) { checkbox.checked = event.target.checked; });
 			updateBulkSelection();
 		}
+		if (event.target.classList.contains('contactpanda-person-select')) allMatchingPeopleSelected = false;
 		if (event.target.classList.contains('contactpanda-person-select') || event.target.id === 'contactpanda-bulk-action') updateBulkSelection();
 	});
 
@@ -524,10 +528,13 @@
 	}
 
 	function updateConsentConfirmation(card) {
-		var revoke = card.querySelector('.contactpanda-consent-decision').value === 'revoke';
-		card.querySelector('.contactpanda-confirm span').textContent = revoke
-			? tr('confirmWithdrawal', 'I confirm that the withdrawal or unsubscribe has actually been documented.')
-			: tr('confirmConsent', 'I confirm that explicit consent has been given.');
+		var decision = card.querySelector('.contactpanda-consent-decision').value;
+		var warning = card.querySelector('.contactpanda-consent-override-warning');
+		if (warning) warning.hidden = decision !== 'block' && decision !== 'unblock';
+		if (decision === 'revoke') card.querySelector('.contactpanda-confirm span').textContent = tr('confirmWithdrawal', 'I confirm that the withdrawal or unsubscribe has actually been documented.');
+		else if (decision === 'block') card.querySelector('.contactpanda-confirm span').textContent = tr('confirmBlock', 'I confirm this permanent administrator block and have documented the reason.');
+		else if (decision === 'unblock') card.querySelector('.contactpanda-confirm span').textContent = tr('confirmUnblock', 'I confirm this administrator override and understand that the address remains unconfirmed.');
+		else card.querySelector('.contactpanda-confirm span').textContent = tr('confirmConsent', 'I confirm that explicit consent has been given.');
 	}
 
 	function saveConsent(card) {
@@ -563,6 +570,19 @@
 		return Array.prototype.slice.call(document.querySelectorAll('.contactpanda-person-select:checked')).map(function (checkbox) { return checkbox.value; });
 	}
 
+	var allMatchingPeopleSelected = false;
+
+	function selectAllMatchingPeople() {
+		var toolbar = document.querySelector('.contactpanda-bulk-toolbar');
+		if (!toolbar) return;
+		allMatchingPeopleSelected = true;
+		var label = toolbar.querySelector('.contactpanda-bulk-selection');
+		var link = toolbar.querySelector('.contactpanda-select-all-matching');
+		if (label) label.textContent = format(tr('peopleSelected', '%d people selected'), Number(toolbar.dataset.total || 0));
+		if (link) link.hidden = true;
+		updateBulkSelection();
+	}
+
 	function updateBulkSelection() {
 		var selected = selectedContactIds();
 		var checkboxes = document.querySelectorAll('.contactpanda-person-select');
@@ -570,12 +590,15 @@
 		var action = document.getElementById('contactpanda-bulk-action');
 		var button = document.querySelector('.contactpanda-open-bulk');
 		var label = document.querySelector('.contactpanda-bulk-selection');
+		var toolbar = document.querySelector('.contactpanda-bulk-toolbar');
+		var allMatching = toolbar ? toolbar.querySelector('.contactpanda-select-all-matching') : null;
 		if (selectAll) {
 			selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
 			selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
 		}
-		if (label) label.textContent = selected.length === 1 ? tr('onePersonSelected', '1 person selected') : format(tr('peopleSelected', '%d people selected'), selected.length);
-		if (button) button.disabled = !selected.length || !action || action.value !== 'marketable';
+		if (label && !allMatchingPeopleSelected) label.textContent = selected.length === 1 ? tr('onePersonSelected', '1 person selected') : format(tr('peopleSelected', '%d people selected'), selected.length);
+		if (allMatching) allMatching.hidden = allMatchingPeopleSelected || !selectAll || !selectAll.checked || !toolbar || Number(toolbar.dataset.total || 0) <= checkboxes.length;
+		if (button) button.disabled = !(selected.length || allMatchingPeopleSelected) || !action || ['marketable', 'newsletter'].indexOf(action.value) === -1 || (action.value === 'marketable' && allMatchingPeopleSelected);
 		var outputModal = document.querySelector('.contactpanda-output-modal');
 		if (outputModal) {
 			var selectedOption = outputModal.querySelector('input[name="scope"][value="selected"]');
@@ -583,6 +606,28 @@
 			if (selectedOption) selectedOption.disabled = !selected.length;
 			if (selectedLabel) selectedLabel.textContent = selected.length === 1 ? tr('onePersonSelected', '1 person selected') : format(tr('peopleSelected', '%d people selected'), selected.length);
 		}
+	}
+
+	function openNewsletterSelection() {
+		var modal = document.querySelector('.contactpanda-newsletter-selection-modal');
+		var toolbar = document.querySelector('.contactpanda-bulk-toolbar');
+		if (!modal || !toolbar || !CONTACTPANDA_CONFIG.campaignUrl) return;
+		var ids = selectedContactIds();
+		var url = new URL(CONTACTPANDA_CONFIG.campaignUrl, window.location.href);
+		if (allMatchingPeopleSelected) url.searchParams.set('people_selection', toolbar.dataset.listToken || '');
+		else url.searchParams.set('contact_ids', ids.join(','));
+		modal.querySelector('.contactpanda-newsletter-selection-frame').src = url.toString();
+		modal.hidden = false;
+		document.body.classList.add('contactpanda-modal-open');
+	}
+
+	function closeNewsletterSelection() {
+		var modal = document.querySelector('.contactpanda-newsletter-selection-modal');
+		if (modal) {
+			modal.hidden = true;
+			modal.querySelector('.contactpanda-newsletter-selection-frame').src = 'about:blank';
+		}
+		document.body.classList.remove('contactpanda-modal-open');
 	}
 
 	function openContactOutput(mode) {

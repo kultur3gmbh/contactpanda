@@ -83,9 +83,16 @@
 	}
 	function searchCustomers() {
 		if (!customerPanel || !customerResults) return;
-		customerResults.textContent = config.recipientSearchLoading || config.customerSearchLoading || 'Loading…';
 		var selected = form.querySelector('[name="audience_source"]:checked');
-		var data = new FormData(); data.set('action', 'contactpanda_campaign_customer_search'); data.set('nonce', config.nonce || ''); data.set('source', selected ? selected.value : 'contacts'); data.set('segment_id', segmentSelect ? segmentSelect.value : '0'); data.set('query', customerSearch ? customerSearch.value : '');
+		var source = selected ? selected.value : 'contacts';
+		if (source === 'manual') {
+			var manualCount = Number(customerResults.dataset.manualCount || 0);
+			customerResults.dataset.eligible = String(manualCount);
+			customerResults.textContent = (config.manualRecipientSummary || '%d people selected. Protected opt-outs and invalid addresses will still be excluded before sending.').replace('%d', String(manualCount));
+			return;
+		}
+		customerResults.textContent = config.recipientSearchLoading || config.customerSearchLoading || 'Loading…';
+		var data = new FormData(); data.set('action', 'contactpanda_campaign_customer_search'); data.set('nonce', config.nonce || ''); data.set('source', source); data.set('segment_id', segmentSelect ? segmentSelect.value : '0'); data.set('query', customerSearch ? customerSearch.value : '');
 		fetch(config.ajaxUrl, {method:'POST', credentials:'same-origin', body:data}).then(function (response) { return response.json(); }).then(function (result) {
 			if (!result.success) throw new Error(result.data && result.data.message || config.recipientSearchFailed || 'Search failed');
 			customerResults.replaceChildren();

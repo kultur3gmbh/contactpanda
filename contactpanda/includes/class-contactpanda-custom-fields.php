@@ -231,7 +231,7 @@ final class ContactPanda_Custom_Fields {
 		}
 		$result = ContactPanda_Plugin::extension_update_custom_meta( $entity, $id, $meta );
 		if ( ! $result ) wp_die( esc_html__( 'The custom fields could not be saved.', 'contactpanda' ), '', array( 'response' => 500 ) );
-		$page = 'companies' === $entity ? 'contactpanda-firmen' : 'contactpanda';
+		$page = 'companies' === $entity ? 'contactpanda-firmen' : 'contactpanda-people';
 		$key = 'companies' === $entity ? 'firma' : 'person';
 		wp_safe_redirect( admin_url( 'admin.php?page=' . $page . '&' . $key . '=' . $id . '&custom_fields_saved=1' ) ); exit;
 	}

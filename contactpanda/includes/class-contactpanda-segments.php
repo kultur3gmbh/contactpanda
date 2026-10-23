@@ -133,7 +133,7 @@ final class ContactPanda_Basic_Segments {
 			'fields' => self::inline_fields(),
 			'operators' => self::operator_labels(),
 			'activeState' => $active_state,
-			'peopleUrl' => admin_url( 'admin.php?page=contactpanda' ),
+			'peopleUrl' => admin_url( 'admin.php?page=contactpanda-people' ),
 			'campaignMode' => (bool) $campaign_mode,
 			'i18n' => array(
 				'chooseField' => __( 'Choose a field', 'contactpanda' ), 'chooseValue' => __( 'Please select', 'contactpanda' ),
@@ -815,7 +815,7 @@ final class ContactPanda_Basic_Segments {
 			$count = count( (array) json_decode( $segment['rules_json'], true ) );
 			$segment_entity = 'companies' === ( $segment['entity_type'] ?? 'contacts' ) ? 'companies' : 'contacts';
 			$edit_url = admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=saved_searches&segment_id=' . absint( $segment['id'] ) . '#contactpanda-search-editor' );
-			$show_url = admin_url( 'admin.php?page=' . ( 'companies' === $segment_entity ? 'contactpanda-firmen' : 'contactpanda' ) . '&segment=' . absint( $segment['id'] ) );
+			$show_url = admin_url( 'admin.php?page=' . ( 'companies' === $segment_entity ? 'contactpanda-firmen' : 'contactpanda-people' ) . '&segment=' . absint( $segment['id'] ) );
 			$delete_url = wp_nonce_url( admin_url( 'admin-post.php?action=contactpanda_delete_segment&segment_id=' . absint( $segment['id'] ) ), 'contactpanda_delete_segment' );
 			echo '<tr><td><strong>' . esc_html( $segment['name'] ) . '</strong></td><td>' . esc_html( 'companies' === $segment_entity ? __( 'Companies', 'contactpanda' ) : __( 'People', 'contactpanda' ) ) . '</td><td>' . esc_html( 'or' === $segment['relation_mode'] ? __( 'Any', 'contactpanda' ) : __( 'All', 'contactpanda' ) ) . '</td><td>' . esc_html( $count ) . '</td><td><a href="' . esc_url( $show_url ) . '">' . esc_html__( 'Show results', 'contactpanda' ) . '</a> · <a href="' . esc_url( $edit_url ) . '">' . esc_html__( 'View / edit', 'contactpanda' ) . '</a> · <a href="' . esc_url( $delete_url ) . '" onclick="return confirm(' . esc_attr( wp_json_encode( __( 'Delete this saved search?', 'contactpanda' ) ) ) . ');">' . esc_html__( 'Delete', 'contactpanda' ) . '</a></td></tr>';
 		}
@@ -931,7 +931,7 @@ final class ContactPanda_Basic_Segments {
 		} else {
 			$data['created_by'] = get_current_user_id(); $data['created_at'] = current_time( 'mysql' ); $wpdb->insert( $table, $data ); $id = (int) $wpdb->insert_id;
 		}
-		$redirect = isset( $_POST['run_search'] ) ? admin_url( 'admin.php?page=' . ( 'companies' === $entity ? 'contactpanda-firmen' : 'contactpanda' ) . '&segment=' . absint( $id ) ) : admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=saved_searches' );
+		$redirect = isset( $_POST['run_search'] ) ? admin_url( 'admin.php?page=' . ( 'companies' === $entity ? 'contactpanda-firmen' : 'contactpanda-people' ) . '&segment=' . absint( $id ) ) : admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=saved_searches' );
 		wp_safe_redirect( $redirect ); exit;
 	}
 

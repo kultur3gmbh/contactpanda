@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.7.6\n"
+"Project-Id-Version: ContactPanda 0.7.8\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
-"POT-Creation-Date: 2026-10-16 09:00+0200\n"
-"PO-Revision-Date: 2026-10-19 20:00+0200\n"
+"POT-Creation-Date: 2026-10-23 14:30+0200\n"
+"PO-Revision-Date: 2026-10-23 14:30+0200\n"
 "Last-Translator: Kultur3 GmbH\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -6025,6 +6025,122 @@ msgstr "Die Vorlage wurde dupliziert."
 #: contactpanda/includes/class-contactpanda-newsletters.php:268
 msgid "The test email could not be sent."
 msgstr "Die Test-E-Mail konnte nicht gesendet werden."
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "The most important ContactPanda figures at a glance."
+msgstr "Die wichtigsten ContactPanda-Zahlen auf einen Blick."
+
+msgid "Blocked email addresses"
+msgstr "Gesperrte E-Mail-Adressen"
+
+msgid "Create new mailing"
+msgstr "Neue Aussendung erstellen"
+
+msgid "Delivered / opened / clicked"
+msgstr "Zugestellt / geöffnet / geklickt"
+
+msgid "Immediately after start"
+msgstr "Sofort nach dem Start"
+
+msgid "%d selected"
+msgstr "%d ausgewählt"
+
+msgid "No selected people were supplied."
+msgstr "Es wurden keine ausgewählten Personen übergeben."
+
+msgid "Send newsletter"
+msgstr "Newsletter versenden"
+
+msgid "Select all %d matching people"
+msgstr "Alle %d passenden Personen auswählen"
+
+msgid "← Back to people overview"
+msgstr "← Zurück zur Personenübersicht"
+
+msgid "%1$d of %2$d entries"
+msgstr "%1$d von %2$d Einträgen"
+
+msgid "Create newsletter mailing for selected people"
+msgstr "Newsletter-Aussendung für ausgewählte Personen erstellen"
+
+msgid "Blocked by administrator"
+msgstr "Durch Administrator gesperrt"
+
+msgid "Spam report"
+msgstr "Spam-Meldung"
+
+msgid "Marketing & consent"
+msgstr "Marketing & Zustimmung"
+
+msgid "Consent date"
+msgstr "Zustimmungsdatum"
+
+msgid "Blocking reason"
+msgstr "Sperrgrund"
+
+msgid "No permanent block"
+msgstr "Keine dauerhafte Sperre"
+
+msgid "Current marketing status: %s. Protected delivery, spam and complaint blocks are never removed by an ordinary consent change."
+msgstr "Aktueller Marketingstatus: %s. Geschützte Zustell-, Spam- und Beschwerdesperren werden durch eine gewöhnliche Zustimmungsänderung niemals aufgehoben."
+
+msgid "<p>Only change this when consent, withdrawal or an administrator block is actually documented. Every change is recorded in the audit log.</p>"
+msgstr "<p>Nur ändern, wenn die Zustimmung, der Widerruf oder eine Administratorsperre tatsächlich dokumentiert ist. Jede Änderung wird im Prüfprotokoll festgehalten.</p>"
+
+msgid "Decision"
+msgstr "Entscheidung"
+
+msgid "Grant consent"
+msgstr "Zustimmung erteilen"
+
+msgid "Withdraw consent"
+msgstr "Zustimmung widerrufen"
+
+msgid "Permanently block address"
+msgstr "Adresse dauerhaft sperren"
+
+msgid "Remove administrator block"
+msgstr "Administratorsperre entfernen"
+
+msgid "Administrator override: give a precise reason. Delivery, spam and complaint blocks cannot be removed here."
+msgstr "Administrative Ausnahme: Bitte einen genauen Grund angeben. Zustell-, Spam- und Beschwerdesperren können hier nicht aufgehoben werden."
+
+msgid "I confirm this permanent administrator block and have documented the reason."
+msgstr "Ich bestätige diese dauerhafte Administratorsperre und habe den Grund dokumentiert."
+
+msgid "I confirm this administrator override and understand that the address remains unconfirmed."
+msgstr "Ich bestätige diese administrative Ausnahme und verstehe, dass die Adresse unbestätigt bleibt."
+
+msgid "Only administrators may block or unblock an email address."
+msgstr "Nur Administratoren dürfen eine E-Mail-Adresse sperren oder entsperren."
+
+msgid "Enter a reason for this administrator override."
+msgstr "Bitte einen Grund für diese administrative Ausnahme angeben."
+
+msgid "A delivery, spam, complaint or unsubscribe protection exists. It cannot be replaced or removed with the administrator block control."
+msgstr "Es besteht eine Zustell-, Spam-, Beschwerde- oder Abmeldesperre. Sie kann mit der Administratorsperre weder ersetzt noch aufgehoben werden."
+
+msgid "Email address blocked by administrator"
+msgstr "E-Mail-Adresse durch Administrator gesperrt"
+
+msgid "Administrator block removed"
+msgstr "Administratorsperre entfernt"
+
+msgid "%1$s on %2$s. Source: %3$s. Edited by: %4$s. Reason: %5$s"
+msgstr "%1$s am %2$s. Herkunft: %3$s. Bearbeitet von: %4$s. Grund: %5$s"
+
+msgid "Marketing status and audit log were saved."
+msgstr "Marketingstatus und Prüfprotokoll wurden gespeichert."
+
+msgid "%d people selected. Protected opt-outs and invalid addresses will still be excluded before sending."
+msgstr "%d Personen ausgewählt. Geschützte Abmeldungen und ungültige Adressen werden vor dem Versand weiterhin ausgeschlossen."
+
+msgid "1 selected person from the people list"
+msgid_plural "%d selected people from the people list"
+msgstr[0] "1 ausgewählte Person aus der Personenliste"
+msgstr[1] "%d ausgewählte Personen aus der Personenliste"
 
 msgid "Back to mailings"
 msgstr "Zurück zu den Aussendungen"
