@@ -7,6 +7,7 @@ function is_wp_error( $value ) { return $value instanceof WP_Error; }
 function __( $value, $domain = '' ) { return $value; }
 function wp_parse_args( $args, $defaults ) { return array_merge( $defaults, $args ); }
 function add_filter() {} function add_action() {}
+function current_user_can() { return true; }
 function sanitize_text_field( $value ) { return (string) $value; }
 function esc_url_raw( $value ) { return (string) $value; }
 function wp_kses_post( $value ) { return (string) $value; }
@@ -36,4 +37,9 @@ $GLOBALS['bytes'] = 'tampered'; $GLOBALS['metadata_queue'] = array( $fresh );
 verify( 'contactpanda_update_checksum' === $plus->verify_download( false, $fresh['package'], null, array( 'plugins' => array( 'contactpanda-plus/contactpanda-plus.php', 'contactpanda-pro/contactpanda-pro.php' ) ) )->get_error_code(), 'Checksum mismatch rejected in bulk update' );
 $plus->clear_update_cache( null, array( 'type' => 'plugin', 'plugin' => 'contactpanda-plus/contactpanda-plus.php' ) );
 verify( in_array( 'update_plugins', $GLOBALS['deleted'], true ), 'WordPress update cache cleared after success' );
+$GLOBALS['cache'] = array(); $GLOBALS['metadata_calls'] = array();
+$GLOBALS['metadata_queue'] = array( array( 'available' => false, 'status' => 'up_to_date' ), array( 'available' => true, 'version' => '1.1.0', 'package' => 'https://example.test/fresh', 'sha256' => hash( 'sha256', 'verified release bytes' ) ) );
+updater( 'business', 'contactpanda-business/contactpanda-business.php' )->updates( (object) array( 'checked' => array( 'contactpanda-business/contactpanda-business.php' => '1.0.0' ) ) );
+updater( 'business', 'contactpanda-business/contactpanda-business.php' )->updates( (object) array( 'checked' => array( 'contactpanda-business/contactpanda-business.php' => '1.0.0' ) ) );
+verify( 2 === count( $GLOBALS['metadata_calls'] ), 'Negative update responses are not cached across requests' );
 echo "Licensed updater stale URL, parallel routing, checksum and cache tests passed.\n";

@@ -508,6 +508,7 @@ final class ContactPanda_License {
 		if ( $had_success ) {
 			$state['last_checked_at'] = current_time( 'mysql', true );
 			update_option( self::OPTION, $state, false );
+			do_action( 'contactpanda_license_state_refreshed' );
 			return true;
 		}
 		return new WP_Error( 'contactpanda_license_network' );

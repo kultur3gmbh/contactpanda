@@ -2,7 +2,7 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.1
+Stable tag: 0.8.3
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a permanently licensed newsletter option, a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
@@ -424,6 +424,8 @@ A user-friendly contact and company CRM for WordPress with a permanently license
 * Die Rechnungsadresse kann auf Wunsch aus der Profiladresse übernommen werden. Eine gesonderte Lieferadresse bleibt verborgen, bis sie ausdrücklich als abweichend markiert wird.
 
 = 0.8.3 =
+* Protected extension update checks no longer retain a negative “no update available” response, so a newly published release can be discovered on the next WordPress refresh.
+* “Check again”, license refreshes, and completed plugin updates now clear both ContactPanda metadata and WordPress' combined plugin-update cache.
 * Der Firmenbereich im Registrierungsformular erscheint zunächst als einfache Zeile „Firmendaten anlegen“ mit großem Plus-/Minus-Symbol und öffnet die Felder erst auf Klick.
 * Die gesonderte Lieferadresse verwendet denselben Aufbau; ohne Öffnen des Bereichs gilt weiterhin die Rechnungsadresse.
 * Die gewünschte Kundenrolle wird als Dropdown angezeigt und weiterhin erst nach Double-Opt-in und administrativer Freigabe zugewiesen.

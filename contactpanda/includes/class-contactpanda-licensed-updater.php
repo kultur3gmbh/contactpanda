@@ -27,6 +27,8 @@ final class ContactPanda_Licensed_Updater {
 		add_filter( 'plugins_api', array( $this, 'plugin_information' ), 20, 3 );
 		add_filter( 'upgrader_pre_download', array( $this, 'verify_download' ), 10, 4 );
 		add_action( 'upgrader_process_complete', array( $this, 'clear_update_cache' ), 10, 2 );
+		add_action( 'contactpanda_license_state_refreshed', array( $this, 'clear_metadata_cache' ) );
+		add_action( 'admin_init', array( $this, 'maybe_clear_forced_check_cache' ), 1 );
 	}
 
 	public function updates( $transient ) {
@@ -68,9 +70,22 @@ final class ContactPanda_Licensed_Updater {
 		if ( 'plugin' !== ( $options['type'] ?? '' ) ) return;
 		$plugins = isset( $options['plugins'] ) ? (array) $options['plugins'] : array( $options['plugin'] ?? '' );
 		if ( ! in_array( $this->config['plugin'], $plugins, true ) ) return;
+		$this->clear_metadata_cache();
+	}
+
+	/** Remove both the product response and WordPress' combined update result. */
+	public function clear_metadata_cache() {
 		delete_site_transient( $this->cache_key() );
 		delete_site_transient( 'update_plugins' );
 		$this->metadata = null;
+	}
+
+	/** Honour WordPress' "Check again" action for protected ContactPanda products. */
+	public function maybe_clear_forced_check_cache() {
+		if ( ! current_user_can( 'update_plugins' ) || empty( $_GET['force-check'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only core update refresh flag.
+			return;
+		}
+		$this->clear_metadata_cache();
 	}
 
 	public function plugin_information( $result, $action, $args ) {
@@ -150,7 +165,9 @@ final class ContactPanda_Licensed_Updater {
 			return $cached;
 		}
 		$this->metadata = ContactPanda_License::product_update( $this->config['product'], $this->config['entitlement'], $this->config['version'], $this->config['channel'] );
-		if ( is_array( $this->metadata ) ) {
+		// Never retain a negative answer. A release may be published a moment later,
+		// and WordPress' next update refresh must then reach the license server.
+		if ( is_array( $this->metadata ) && ! empty( $this->metadata['available'] ) ) {
 			set_site_transient( $key, $this->metadata, 10 * MINUTE_IN_SECONDS );
 		}
 		return $this->metadata;
