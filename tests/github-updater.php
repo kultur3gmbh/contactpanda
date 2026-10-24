@@ -20,7 +20,7 @@ function absint( $value ) { return abs( (int) $value ); }
 function wp_parse_url( $value ) { return parse_url( $value ); }
 function set_site_transient( $key, $value, $ttl ) { $GLOBALS['cache'][ $key ] = $value; }
 function get_site_transient( $key ) { return $GLOBALS['cache'][ $key ] ?? false; }
-function delete_site_transient( $key ) { unset( $GLOBALS['cache'][ $key ] ); }
+function delete_site_transient( $key ) { $GLOBALS['deleted'][] = $key; unset( $GLOBALS['cache'][ $key ] ); }
 function get_site_option( $key, $default = null ) { return $GLOBALS['options'][ $key ] ?? $default; }
 function current_user_can( $cap ) { return true; }
 function wp_doing_cron() { return false; }
@@ -50,7 +50,7 @@ if ( $plus ) $config['token'] = 'CONTACTPANDA_UPDATER_TEST_TOKEN';
 $api = 'https://api.github.com/repos/kultur3gmbh/' . $slug;
 $package = 'fixture bytes, not a published release archive';
 function fixture( $config ) {
-	$GLOBALS['cache'] = array(); $GLOBALS['requests'] = array(); $GLOBALS['queue'] = array(); $GLOBALS['options'] = array(); $GLOBALS['wp_version'] = '6.8'; $GLOBALS['basic_active'] = true; $GLOBALS['basic_version'] = '0.14.0';
+	$GLOBALS['cache'] = array(); $GLOBALS['deleted'] = array(); $GLOBALS['requests'] = array(); $GLOBALS['queue'] = array(); $GLOBALS['options'] = array(); $GLOBALS['wp_version'] = '6.8'; $GLOBALS['basic_active'] = true; $GLOBALS['basic_version'] = '0.14.0';
 	return new ContactPanda_GitHub_Updater( $config );
 }
 function response( $body, $status = 200, $headers = array() ) { return array( 'status' => $status, 'headers' => $headers, 'body' => is_array( $body ) ? json_encode( $body ) : $body ); }
@@ -75,6 +75,13 @@ verify( ! isset( $updater->filter_cached( $foreign )->response[ $config['plugin'
 $GLOBALS['options']['auto_update_plugins'] = array( $config['plugin'] );
 verify( $updater->automatic( true, $offer->response[ $config['plugin'] ] ), 'Explicit WordPress opt-in respected' );
 verify( ! $updater->automatic( false, $offer->response[ $config['plugin'] ] ), 'Respect upstream automatic update veto' );
+$GLOBALS['cache'][ $slug . '_github_release' ] = array( 'version' => 'stale' );
+$GLOBALS['cache']['update_plugins'] = (object) array();
+$_GET['force-check'] = '1';
+$updater->maybe_clear_forced_check_cache();
+unset( $_GET['force-check'] );
+verify( ! isset( $GLOBALS['cache'][ $slug . '_github_release' ], $GLOBALS['cache']['update_plugins'] ), 'Native forced check clears all update caches' );
+verify( in_array( $slug . '_github_release', $GLOBALS['deleted'], true ) && in_array( 'update_plugins', $GLOBALS['deleted'], true ), 'Forced check records both cache invalidations' );
 $GLOBALS['wp_version'] = '6.3'; verify( ! $updater->compatible( $meta ), 'WordPress minimum' ); $GLOBALS['wp_version'] = '6.8';
 $incompatible = $meta; $incompatible['requires_php'] = '999.0'; verify( ! $updater->compatible( $incompatible ), 'PHP minimum' );
 if ( $plus ) {

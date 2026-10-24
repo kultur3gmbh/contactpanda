@@ -22,6 +22,7 @@ final class ContactPanda_GitHub_Updater {
 		add_action( 'admin_notices', array( $this, 'notice' ) );
 		add_action( 'network_admin_notices', array( $this, 'notice' ) );
 		add_action( 'upgrader_process_complete', array( $this, 'clear' ), 10, 2 );
+		add_action( 'admin_init', array( $this, 'maybe_clear_forced_check_cache' ), 1 );
 	}
 
 	private function enabled() {
@@ -250,6 +251,18 @@ final class ContactPanda_GitHub_Updater {
 	}
 
 	public function clear( $upgrader, $extra ) {
-		if ( in_array( $this->config['plugin'], (array) ( $extra['plugins'] ?? array( $extra['plugin'] ?? '' ) ), true ) ) delete_site_transient( $this->cache );
+		if ( in_array( $this->config['plugin'], (array) ( $extra['plugins'] ?? array( $extra['plugin'] ?? '' ) ), true ) ) {
+			delete_site_transient( $this->cache );
+			delete_site_transient( 'update_plugins' );
+		}
+	}
+
+	/** Honour WordPress' native "Check again" action for the public release. */
+	public function maybe_clear_forced_check_cache() {
+		if ( ! current_user_can( 'update_plugins' ) || empty( $_GET['force-check'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only core update refresh flag.
+			return;
+		}
+		delete_site_transient( $this->cache );
+		delete_site_transient( 'update_plugins' );
 	}
 }

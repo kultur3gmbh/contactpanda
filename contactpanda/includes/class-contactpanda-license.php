@@ -154,11 +154,34 @@ final class ContactPanda_License {
 		return (bool) apply_filters( 'contactpanda_newsletter_entitled', $granted, $state );
 	}
 
+	/**
+	 * Check whether durable module grants authorize updates for a product family.
+	 *
+	 * Licenses can grant a complete package or only selected modules. Updating the
+	 * package is required in both cases, otherwise individually licensed modules
+	 * could never receive maintenance releases.
+	 */
+	public static function update_entitlement_matches( $entitlements, $required ) {
+		$required     = sanitize_key( $required );
+		$entitlements = array_values( array_unique( array_filter( array_map( array( __CLASS__, 'normalize_entitlement' ), (array) $entitlements ) ) ) );
+		if ( '' === $required || in_array( 'all', $entitlements, true ) ) {
+			return true;
+		}
+
+		$families = array(
+			'plus'     => array( 'plus', 'customer_registration', 'customer_account', 'automations', 'forms', 'messaging', 'email_delivery', 'sms', 'whatsapp' ),
+			'pro'      => array( 'pro', 'support_desk', 'helpdesk' ),
+			'business' => array( 'business', 'project_management', 'customer_management', 'contract_management', 'subscription_management', 'payment_management', 'software_licensing' ),
+		);
+		$candidates = $families[ $required ] ?? array( $required );
+		return (bool) array_intersect( $candidates, $entitlements );
+	}
+
 	public static function updates_allowed_for( $module ) {
 		$module = sanitize_key( $module );
 		$state  = self::state();
 		foreach ( $state['licenses'] as $license ) {
-			if ( in_array( $license['status'], array( 'blocked', 'disconnected' ), true ) || ( ! in_array( 'all', $license['entitlements'], true ) && ! in_array( $module, $license['entitlements'], true ) ) ) {
+			if ( in_array( $license['status'], array( 'blocked', 'disconnected' ), true ) || ! self::update_entitlement_matches( $license['entitlements'], $module ) ) {
 				continue;
 			}
 			if ( 'expired' !== $license['status'] && ( empty( $license['updates_until'] ) || strtotime( $license['updates_until'] . ' 23:59:59 UTC' ) >= time() ) ) {
@@ -197,7 +220,7 @@ final class ContactPanda_License {
 			if ( empty( $license['activation_id'] ) || empty( $license['activation_token'] ) || in_array( $license['status'], array( 'blocked', 'disconnected', 'expired' ), true ) ) {
 				continue;
 			}
-			if ( ! in_array( 'all', $license['entitlements'], true ) && ! in_array( $entitlement, $license['entitlements'], true ) ) {
+			if ( ! self::update_entitlement_matches( $license['entitlements'], $entitlement ) ) {
 				continue;
 			}
 			if ( $license['updates_until'] && strtotime( $license['updates_until'] . ' 23:59:59 UTC' ) < time() ) {
@@ -444,7 +467,7 @@ final class ContactPanda_License {
 		$state['licenses'][ $id ] = $license;
 		$state['last_checked_at']  = current_time( 'mysql', true );
 		update_option( self::OPTION, $state, false );
-		delete_site_transient( 'contactpanda_github_release' );
+		self::clear_update_caches();
 		self::redirect( 'activated' );
 	}
 
@@ -508,7 +531,7 @@ final class ContactPanda_License {
 		if ( $had_success ) {
 			$state['last_checked_at'] = current_time( 'mysql', true );
 			update_option( self::OPTION, $state, false );
-			do_action( 'contactpanda_license_state_refreshed' );
+			self::clear_update_caches();
 			return true;
 		}
 		return new WP_Error( 'contactpanda_license_network' );
@@ -537,7 +560,15 @@ final class ContactPanda_License {
 		$state['licenses'][ $id ]['activation_token'] = '';
 		$state['licenses'][ $id ]['status']           = 'disconnected';
 		update_option( self::OPTION, $state, false );
+		self::clear_update_caches();
 		self::redirect( 'disconnected' );
+	}
+
+	/** Clear public and protected update results after every license change. */
+	private static function clear_update_caches() {
+		delete_site_transient( 'contactpanda_github_release' );
+		delete_site_transient( 'update_plugins' );
+		do_action( 'contactpanda_license_state_refreshed' );
 	}
 
 	private static function date_value( $value ) {
