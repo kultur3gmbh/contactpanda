@@ -28,6 +28,7 @@ if command -v php >/dev/null 2>&1; then
 	php tests/admin-ui-corrections.php || status=1
 	php tests/release-078.php || status=1
 	php tests/person-detail-extensions.php || status=1
+	php tests/newsletter-form.php || status=1
 elif command -v python3 >/dev/null 2>&1; then
   echo "PHP CLI is unavailable; running the offline structural fallback."
   python3 tools/check_php_structure.py contactpanda tests || status=1

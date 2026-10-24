@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.3\n"
+"Project-Id-Version: ContactPanda 0.8.4\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7252,3 +7252,44 @@ msgstr "Die Vorschau konnte nicht erstellt werden."
 
 msgid "The test email could not be sent."
 msgstr "Die Test-E-Mail konnte nicht gesendet werden."
+msgid "This email address is already registered for the newsletter."
+msgstr "Diese E-Mail-Adresse ist bereits für den Newsletter angemeldet."
+
+msgid "Standard newsletter form"
+msgstr "Standard-Newsletterformular"
+
+msgid "The compact form contains salutation, first name, last name, email address, privacy confirmation, and newsletter consent. ContactPanda Plus can replace it with a reusable full form."
+msgstr "Das kompakte Formular enthält Anrede, Vorname, Nachname, E-Mail-Adresse, Datenschutzbestätigung und Newsletter-Einwilligung. ContactPanda Plus kann es durch ein wiederverwendbares vollständiges Formular ersetzen."
+
+msgid "Privacy confirmation text"
+msgstr "Text der Datenschutzbestätigung"
+
+msgid "Newsletter consent text"
+msgstr "Text der Newsletter-Einwilligung"
+
+msgid "This checkbox is mandatory and records the declared purpose of consent."
+msgstr "Dieses Kontrollkästchen ist verpflichtend und dokumentiert den erklärten Zweck der Einwilligung."
+
+msgid "Submit button label"
+msgstr "Beschriftung der Absende-Schaltfläche"
+
+msgid "Validation error text"
+msgstr "Text bei Validierungsfehlern"
+
+msgid "Shown when required information or consent is missing."
+msgstr "Wird angezeigt, wenn Pflichtangaben oder die Einwilligung fehlen."
+
+msgid "Text for existing subscribers"
+msgstr "Text für bereits angemeldete Abonnenten"
+
+msgid "Shown instead of sending another double opt-in email when valid newsletter consent already exists."
+msgstr "Wird angezeigt, anstatt eine weitere Double-Opt-in-E-Mail zu senden, wenn bereits eine gültige Newsletter-Einwilligung vorliegt."
+
+msgid "Newsletter signup recognized"
+msgstr "Newsletter-Anmeldung erkannt"
+
+msgid "A new signup was submitted, but valid newsletter consent already existed. No further double opt-in email was sent."
+msgstr "Eine neue Anmeldung wurde übermittelt, es lag jedoch bereits eine gültige Newsletter-Einwilligung vor. Es wurde keine weitere Double-Opt-in-E-Mail versendet."
+
+msgid "The separate ContactPanda newsletter signup is not enabled."
+msgstr "Die separate ContactPanda-Newsletter-Anmeldung ist nicht aktiviert."

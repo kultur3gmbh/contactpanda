@@ -2,7 +2,7 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.3
+Stable tag: 0.8.4
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a permanently licensed newsletter option, a free WooCommerce customer overview, optional Groundhogg compatibility, and a stable extension API for ContactPanda Plus.
@@ -411,6 +411,10 @@ A user-friendly contact and company CRM for WordPress with a permanently license
 * Doppelte UID-Felder anderer Erweiterungen und der entbehrliche Dashboard-Text „ÜBERSICHTS-BEREICH“ werden nur in den ContactPanda-Ansichten ausgeblendet.
 
 = 0.8.4 =
+* Das kompakte Newsletterformular enthält nun Anrede, Vorname, Nachname, E-Mail-Adresse, Datenschutzbestätigung und ausdrückliche Newsletter-Einwilligung.
+* Beschriftungen, Einwilligungstext, Schaltfläche sowie Erfolgs- und Fehlermeldungen des Newsletterformulars können in den Einstellungen bearbeitet werden.
+* Bereits wirksam angemeldete Adressen erhalten keine weitere Double-Opt-in-E-Mail; die erneute Anmeldung wird nachvollziehbar protokolliert.
+* ContactPanda Plus kann das kompakte Formular über eine stabile Erweiterungsschnittstelle durch ein veröffentlichtes, wiederverwendbares Formular ersetzen.
 * Der leere Tag-Bereich in der Personendetailansicht wurde korrigiert; Hinweis und Eingabefeld überlagern sich nicht mehr.
 * Die WooCommerce-Seite „Mein Konto“ zeigt Gästen zunächst nur die Anmeldung und öffnet das vollständige ContactPanda-Registrierungsformular erst über „Jetzt registrieren“.
 * Das Kundenmenü beginnt mit Dashboard und „Mein Profil“, gefolgt von Adressen, Zahlungsarten, zusätzlichen Erweiterungsbereichen und Abmelden.

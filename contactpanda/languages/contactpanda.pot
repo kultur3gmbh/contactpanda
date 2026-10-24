@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.3\n"
+"Project-Id-Version: ContactPanda 0.8.4\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7251,4 +7251,45 @@ msgid "The preview could not be created."
 msgstr ""
 
 msgid "The test email could not be sent."
+msgstr ""
+msgid "This email address is already registered for the newsletter."
+msgstr ""
+
+msgid "Standard newsletter form"
+msgstr ""
+
+msgid "The compact form contains salutation, first name, last name, email address, privacy confirmation, and newsletter consent. ContactPanda Plus can replace it with a reusable full form."
+msgstr ""
+
+msgid "Privacy confirmation text"
+msgstr ""
+
+msgid "Newsletter consent text"
+msgstr ""
+
+msgid "This checkbox is mandatory and records the declared purpose of consent."
+msgstr ""
+
+msgid "Submit button label"
+msgstr ""
+
+msgid "Validation error text"
+msgstr ""
+
+msgid "Shown when required information or consent is missing."
+msgstr ""
+
+msgid "Text for existing subscribers"
+msgstr ""
+
+msgid "Shown instead of sending another double opt-in email when valid newsletter consent already exists."
+msgstr ""
+
+msgid "Newsletter signup recognized"
+msgstr ""
+
+msgid "A new signup was submitted, but valid newsletter consent already existed. No further double opt-in email was sent."
+msgstr ""
+
+msgid "The separate ContactPanda newsletter signup is not enabled."
 msgstr ""
