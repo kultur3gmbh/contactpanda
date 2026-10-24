@@ -25,4 +25,3 @@ Run:
 `check.sh` validates PHP and JavaScript syntax and key plugin metadata. `build-release.sh` creates installable ZIP files from committed source files in `dist/`.
 
 See [Cloud setup](docs/CLOUD_SETUP.md), [testing](docs/TESTING.md), and [release process](docs/RELEASES.md) for details.
-
