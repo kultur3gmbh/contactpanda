@@ -3517,6 +3517,16 @@ final class ContactPanda_Plugin {
 
 	private static function render_person_tabs( $contact_id, $customer, $contact, $orders, $events, $events_enabled, $broadcasts, $editable ) {
 		$tabs_id = 'contactpanda-person-tabs-' . absint( $contact_id );
+		$extension_tabs = (array) apply_filters( 'contactpanda_person_detail_tabs', array(), $contact_id, $contact, $editable );
+		$normalized_extension_tabs = array();
+		foreach ( $extension_tabs as $key => $tab ) {
+			$key = sanitize_key( $key );
+			if ( ! $key || ! is_array( $tab ) || empty( $tab['label'] ) ) continue;
+			$normalized_extension_tabs[ $key ] = array(
+				'label' => sanitize_text_field( $tab['label'] ),
+				'count' => isset( $tab['count'] ) ? absint( $tab['count'] ) : null,
+			);
+		}
 		$notes = self::contact_notes( $contact_id );
 		$activities = ContactPanda_Store::activities( $contact_id, 0, 'activity' );
 		$partition = self::partition_contact_notes( $notes );
@@ -3530,6 +3540,11 @@ final class ContactPanda_Plugin {
 		echo '<button type="button" class="contactpanda-tab" id="' . esc_attr( $tabs_id . '-activities-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-activities' ) . '" tabindex="-1">' . esc_html__( 'Activities', 'contactpanda' ) . ' <span class="contactpanda-count">' . esc_html( count( $activities ) ) . '</span></button>';
 		echo '<button type="button" class="contactpanda-tab" id="' . esc_attr( $tabs_id . '-orders-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-orders' ) . '" tabindex="-1">' . esc_html__( 'Orders', 'contactpanda' ) . ' <span class="contactpanda-count">' . esc_html( count( $orders ) ) . '</span></button>';
 		echo '<button type="button" class="contactpanda-tab" id="' . esc_attr( $tabs_id . '-addresses-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-addresses' ) . '" tabindex="-1">' . esc_html__( 'Addresses', 'contactpanda' ) . '</button>';
+		foreach ( $normalized_extension_tabs as $key => $tab ) {
+			echo '<button type="button" class="contactpanda-tab" id="' . esc_attr( $tabs_id . '-' . $key . '-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-' . $key ) . '" tabindex="-1">' . esc_html( $tab['label'] );
+			if ( null !== $tab['count'] ) echo ' <span class="contactpanda-count">' . esc_html( $tab['count'] ) . '</span>';
+			echo '</button>';
+		}
 		if ( $events_enabled ) {
 			echo '<button type="button" class="contactpanda-tab" id="' . esc_attr( $tabs_id . '-events-tab' ) . '" role="tab" aria-selected="false" aria-controls="' . esc_attr( $tabs_id . '-events' ) . __( '" tabindex="-1">Events <span class="contactpanda-count">', 'contactpanda' ) . esc_html( count( $events ) ) . '</span></button>';
 		}
@@ -3544,6 +3559,11 @@ final class ContactPanda_Plugin {
 		echo '</div><div class="contactpanda-tab-panel" id="' . esc_attr( $tabs_id . '-addresses' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-addresses-tab' ) . '" hidden>';
 		self::render_customer_addresses( $contact_id, $customer, $contact, false, $editable );
 		echo '</div>';
+		foreach ( $normalized_extension_tabs as $key => $tab ) {
+			echo '<div class="contactpanda-tab-panel" id="' . esc_attr( $tabs_id . '-' . $key ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-' . $key . '-tab' ) . '" hidden>';
+			do_action( 'contactpanda_render_person_detail_tab_' . $key, $contact_id, $contact, $editable );
+			echo '</div>';
+		}
 		if ( $events_enabled ) {
 			echo '<div class="contactpanda-tab-panel" id="' . esc_attr( $tabs_id . '-events' ) . '" role="tabpanel" aria-labelledby="' . esc_attr( $tabs_id . '-events-tab' ) . '" hidden>';
 			self::render_person_events( $events );

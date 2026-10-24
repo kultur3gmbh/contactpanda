@@ -30,6 +30,8 @@ ContactPanda Basic
 
 Basic stellt über einen isolierten, rein lesenden Adapter Verfügbarkeit, Teilnehmerzahlen und Veranstaltungslisten bereit. Unterstützt werden The Events Calendar/Event Tickets und Amelia. Sind beide Systeme aktiv, muss eine globale Quelle ausgewählt werden; Ergebnisse werden niemals gemischt. Plus kann dieselben normalisierten Erweiterungspunkte für Segmente verwenden. Zusätzliche Einstellungsbereiche werden über `contactpanda_settings_tabs` und `contactpanda_render_settings_tab_{name}` registriert.
 
+Die Personen-Detailansicht ist ebenfalls erweiterbar. Erweiterungen registrieren sichtbare Reiter über `contactpanda_person_detail_tabs` und rendern deren Inhalt über `contactpanda_render_person_detail_tab_{name}`. Basic bleibt dabei ohne Erweiterung unverändert; Plus kann beispielsweise den Reiter „Kunde“ nur für tatsächlich erkannte Kunden ergänzen, und Business kann dort verknüpfte Projekte anzeigen.
+
 ## Lizenz und Newsletter
 
 Eine erfolgreiche Newsletter-Lizenzaktivierung speichert zwei getrennte Zustände: die dauerhafte Funktionsberechtigung und das zeitlich begrenzte Ende von Updates beziehungsweise Support. Ein späterer Lizenzablauf oder das Trennen des gespeicherten Lizenzschlüssels darf die dauerhafte Funktionsberechtigung nicht zurücknehmen. Fehlgeschlagene oder nicht erreichbare Lizenzprüfungen verändern den vorhandenen Zustand nicht. ContactPanda Plus erteilt dieselbe Newsletter-Berechtigung über den öffentlichen Erweiterungspunkt `contactpanda_newsletter_entitled`.
