@@ -5,7 +5,9 @@ $plugin     = file_get_contents( $root . '/contactpanda/includes/class-contactpa
 $store      = file_get_contents( $root . '/contactpanda/includes/class-contactpanda-store.php' );
 $data_tools = file_get_contents( $root . '/contactpanda/includes/class-contactpanda-data-tools.php' );
 $script     = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin.js' );
+$shared_ui  = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin-ui.js' );
 $styles     = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin.css' );
+$bootstrap  = file_get_contents( $root . '/contactpanda/contactpanda.php' );
 
 foreach ( array( 'Drop a CSV file here', 'Drop a vCard file here', 'contactpanda-file-drop-actions' ) as $contract ) {
 	if ( false === strpos( $data_tools, $contract ) ) {
@@ -69,6 +71,20 @@ foreach ( array( 'contactpanda-open-company-relation', 'contactpanda-close-compa
 foreach ( array( 'contactpanda-file-drop-actions', 'contactpanda-people-search-row', 'contactpanda-search-primary', 'contactpanda-company-relation-modal', 'contactpanda-table-scroll', 'contactpanda-email-column' ) as $contract ) {
 	if ( false === strpos( $styles, $contract ) ) {
 		fwrite( STDERR, "Missing administrator style contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+foreach ( array( 'createImagePicker', 'enhanceColorPicker', 'enhanceListActions', 'contactpanda-list-action' ) as $contract ) {
+	if ( false === strpos( $shared_ui, $contract ) ) {
+		fwrite( STDERR, "Missing shared family UI contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+foreach ( array( 'contactpanda-admin-ui', 'wp_enqueue_media', 'CONTACTPANDA_ADMIN_UI' ) as $contract ) {
+	if ( false === strpos( $bootstrap, $contract ) ) {
+		fwrite( STDERR, "Missing shared family UI bootstrap contract {$contract}.\n" );
 		exit( 1 );
 	}
 }

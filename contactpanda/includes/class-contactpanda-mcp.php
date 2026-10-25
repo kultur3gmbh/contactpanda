@@ -32,7 +32,8 @@ final class ContactPanda_MCP {
 	}
 
 	public static function allowed() {
-		return current_user_can( 'manage_options' ) || current_user_can( 'manage_woocommerce' );
+		$allowed = current_user_can( 'manage_options' ) || current_user_can( 'manage_woocommerce' );
+		return (bool) apply_filters( 'contactpanda_mcp_allowed', $allowed, wp_get_current_user() );
 	}
 
 	public static function integration_section( $sections ) {

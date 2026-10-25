@@ -290,7 +290,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 			wp_die( esc_html__( 'You do not have permission to view this page.', 'contactpanda' ) );
 		}
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab navigation.
-		if ( in_array( $tab, array( 'migration', 'duplicates' ), true ) ) { $_GET['other_section'] = $tab; $tab = 'other'; }
+		if ( 'duplicates' === $tab ) { $_GET['other_section'] = $tab; $tab = 'other'; }
 		if ( 'license' === $tab ) { $_GET['general_section'] = 'license'; $tab = 'general'; }
 		$tabs = (array) apply_filters(
 			'contactpanda_settings_tabs',
@@ -364,16 +364,18 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	private static function render_other_settings() {
-		$base_sections = array( 'migration' => __( 'Migration', 'contactpanda' ) );
+		$base_sections = array();
 		if ( ContactPanda_Store::standalone() ) {
 			$base_sections['duplicates'] = __( 'Duplicates', 'contactpanda' );
 		}
 		$base_sections['admin_notices'] = __( 'Admin notices', 'contactpanda' );
 		$sections = (array) apply_filters( 'contactpanda_other_settings_sections', $base_sections );
-		$current = isset( $_GET['other_section'] ) ? sanitize_key( wp_unslash( $_GET['other_section'] ) ) : 'migration'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( ! isset( $sections[ $current ] ) ) $current = 'migration';
+		$section_keys = array_keys( $sections );
+		$default_section = (string) reset( $section_keys );
+		$current = isset( $_GET['other_section'] ) ? sanitize_key( wp_unslash( $_GET['other_section'] ) ) : $default_section; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $sections[ $current ] ) ) $current = $default_section;
 		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs">'; foreach ( $sections as $key => $label ) echo '<a class="nav-tab ' . ( $current === $key ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=' . sanitize_key( $key ) ) ) . '">' . esc_html( $label ) . '</a>'; echo '</nav>';
-		if ( 'migration' === $current ) self::render_migration_settings(); elseif ( 'admin_notices' === $current ) ContactPanda_Data_Tools::render_notice_settings(); else do_action( 'contactpanda_render_other_settings_section_' . $current );
+		if ( 'admin_notices' === $current ) ContactPanda_Data_Tools::render_notice_settings(); else do_action( 'contactpanda_render_other_settings_section_' . $current );
 	}
 
 	private static function render_misc_settings() {
@@ -605,7 +607,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		submit_button( __( 'Save data source', 'contactpanda' ) ); echo '</section></form>';
 	}
 
-	private static function render_migration_settings() {
+	public static function render_migration_settings() {
 		$schema = ContactPanda_Schema::status();
 		$notice = get_transient( 'contactpanda_database_notice_' . get_current_user_id() );
 		if ( $notice ) {
@@ -618,6 +620,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 			self::render_woocommerce_import();
 		}
 		self::render_newsletter_plugin_migration();
+		do_action( 'contactpanda_render_migration_tools' );
 	}
 
 	private static function render_woocommerce_import() {
@@ -984,7 +987,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		);
 		wp_send_json_success(
 			array(
-				'redirect' => admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=migration' ),
+				'redirect' => admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration' ),
 			)
 		);
 	}
@@ -1060,7 +1063,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	private static function database_redirect( $type, $message ) {
 		set_transient( 'contactpanda_database_notice_' . get_current_user_id(), array( 'type' => $type, 'message' => $message ), MINUTE_IN_SECONDS );
-		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=migration' ) ); exit;
+		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration' ) ); exit;
 	}
 
 	private static function render_preserved_integrations() {

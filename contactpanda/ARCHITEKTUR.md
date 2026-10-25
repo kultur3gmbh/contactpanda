@@ -1,4 +1,4 @@
-# ContactPanda – modulare Architektur 0.8.30
+# ContactPanda – modulare Architektur 0.8.40
 
 ## Pakete
 
@@ -6,7 +6,7 @@
 
 Das reduzierte Newsletter-Modul gehört dauerhaft zum kostenlosen ContactPanda. ContactPanda Plus ergänzt den erweiterten Newsletter-Editor, vollständige Formulare, Automatisierungen, Migrationen und Spezialintegrationen. Das Ende eines gebuchten Update- und Supportzeitraums deaktiviert weder bereits freigeschaltete Funktionen noch gespeicherte Inhalte oder Versandfunktionen; lediglich weitere Updates und Support stehen dann nicht mehr zur Verfügung.
 
-`ContactPanda Plus` benötigt ContactPanda und ergänzt abgegrenzte Marketingmodule wie Automatisierungen, den vollständigen visuellen Formular-Builder, erweiterte Newsletter-Funktionen, Events, Migrationen sowie Messaging- beziehungsweise E-Mail-Gateways. Der Support Desk gehört ausschließlich zu ContactPanda Pro; Projekt- und kaufmännische Verwaltung gehören ausschließlich zu ContactPanda Business. Eine Deaktivierung einer Erweiterung entfernt weder Daten noch Einstellungen.
+`ContactPanda Plus` benötigt ContactPanda und ergänzt abgegrenzte Marketingmodule wie Automatisierungen, den vollständigen visuellen Formular-Builder, erweiterte Newsletter-Funktionen, Events, Migrationen sowie Messaging- beziehungsweise E-Mail-Gateways. Pro enthält Plus Complete kommerziell und stellt Kundenverwaltung, Support, Verträge, wiederkehrende Abonnements und Zahlungen, Portalberechtigungen und das gemeinsame fein abgestufte Rechtemodell bereit. Business und Members setzen auf Pro auf: Business ergänzt Projekte und Aufgaben, Members ergänzt Mitgliedschaften und Vereinsverwaltung. Eine Deaktivierung einer Erweiterung entfernt weder Daten noch Einstellungen.
 
 ContactPanda stellt den einzigen MCP-Endpunkt der Produktfamilie bereit. Der Transport, die Authentifizierung und das datensparsame Audit-Protokoll sind kostenlos. Plus, Pro und Business registrieren dort ihre Werkzeuge; deren Aktionen bleiben an die jeweilige Fachlizenz und WordPress-Berechtigung gebunden.
 
@@ -29,14 +29,20 @@ ContactPanda
     │   ├── Messaging- und E-Mail-Gateways
     │   └── erweiterte Integrationen
     ├── ContactPanda Pro
-    │   └── Support Desk und Portal-Erweiterung für Supportanfragen
-    └── ContactPanda Business
-        └── Projekte, Aufgaben und kaufmännische Abläufe
+    │   ├── Kundenverwaltung und Kundengruppen
+    │   ├── Support Desk und Kundenportal
+    │   ├── Verträge und Abonnements
+    │   ├── wiederkehrende Zahlungen
+    │   └── Berechtigungs- und Audit-Unterbau
+    ├── ContactPanda Business
+    │   └── Projekte, Aufgaben, Zeiten, Budgets und Freigaben
+    └── ContactPanda Members
+        └── Mitglieder, Gruppen, Beiträge und Vereinsverwaltung
 ```
 
 ## Daten- und Modulzuständigkeit
 
-Basic ist alleiniger Eigentümer des CRM- und Newsletter-Schemas. Plus verwendet diese bestehenden Tabellen über die öffentlichen Basic-Schnittstellen und legt keine zweite Kopie von Vorlagen, Kampagnen, Empfängern, Sperren oder Versandstatistiken an. Plus besitzt ausschließlich seine Automatisierungs-, Formular-, Zustell- und Nachrichtenstrukturen. Pro und Business besitzen jeweils nur ihre eigenen Support- beziehungsweise Projektdaten.
+Basic ist alleiniger Eigentümer des CRM- und Newsletter-Schemas. Plus verwendet diese bestehenden Tabellen über die öffentlichen Basic-Schnittstellen und legt keine zweite Kopie von Vorlagen, Kampagnen, Empfängern, Sperren oder Versandstatistiken an. Plus besitzt ausschließlich seine Automatisierungs-, Formular-, Zustell- und Nachrichtenstrukturen. Pro besitzt Kunden-, Support-, Vertrags-, Abonnement-, Zahlungs-, Portal-, Berechtigungs- und Audit-Daten. Business und Members referenzieren diesen Pro-Unterbau und führen keine parallelen Kunden-, Rollen-, Vertrags- oder Zahlungsmodelle ein.
 
 Basic ist außerdem Eigentümer des allgemeinen Kunden- und Präferenzportals. Jeder angemeldete WordPress-Benutzer kann darauf zugreifen, unabhängig davon, wie das Konto erstellt wurde und ob WooCommerce oder ein anderes ContactPanda-Paket aktiv ist. Newsletter-, Newsletter-Voranmeldungs- und Seasons-Anmeldungen erzeugen dagegen ausschließlich einen ContactPanda-Kontakt beziehungsweise dessen Abonnements und niemals automatisch ein WordPress-Konto. Ein WordPress-Konto entsteht erst durch eine vom Benutzer ausdrücklich gewählte Kunden- oder sonstige Kontoregistrierung, beispielsweise über WooCommerce. Die öffentliche Erstellung neuer WordPress-Konten und deren Registrierungsregeln bleiben eine vom Portal getrennte Funktion. Vollständige Profildaten werden nur für den angemeldeten Benutzer angezeigt. Die Zuordnung zum ContactPanda-Kontakt erfolgt vorrangig über eine gespeicherte Benutzerverknüpfung und nur ersatzweise über eine eindeutige, normalisierte E-Mail-Adresse; mehrdeutige Treffer werden niemals automatisch zusammengeführt. Reine Newsletter- und Seasons-Empfänger erhalten über einen zweckgebundenen, widerrufbaren und zeitlich begrenzten persönlichen Link ausschließlich Zugriff auf ein reduziertes Präferenzzentrum und müssen dafür kein WordPress-Konto anlegen. Shortcode, serverseitig gerenderter WordPress-Block, WooCommerce-Einbindung und optionale Avada-, Elementor- und Divi-Elemente verwenden denselben Renderer und dieselben serverseitigen Befehle. Die Einbindungen dürfen nur Darstellung und Kontext bestimmen, aber keine eigene Validierungs-, Double-Opt-in-, Tag-, Zustimmungs- oder Speicherlogik besitzen. Die Detailplanung steht in `docs/customer-portal-plan.md`.
 
@@ -46,7 +52,7 @@ Diese Zuständigkeitsgrenze ist absichtlich nicht mit einer Datenverschiebung ve
 
 Basic stellt über einen isolierten, rein lesenden Adapter Verfügbarkeit, Teilnehmerzahlen und Veranstaltungslisten bereit. Unterstützt werden The Events Calendar/Event Tickets und Amelia. Sind beide Systeme aktiv, muss eine globale Quelle ausgewählt werden; Ergebnisse werden niemals gemischt. Plus kann dieselben normalisierten Erweiterungspunkte für Segmente verwenden. Zusätzliche Einstellungsbereiche werden über `contactpanda_settings_tabs` und `contactpanda_render_settings_tab_{name}` registriert.
 
-Die Personen-Detailansicht ist ebenfalls erweiterbar. Erweiterungen registrieren sichtbare Reiter über `contactpanda_person_detail_tabs` und rendern deren Inhalt über `contactpanda_render_person_detail_tab_{name}`. Basic bleibt dabei ohne Erweiterung unverändert; Plus kann beispielsweise den Reiter „Kunde“ nur für tatsächlich erkannte Kunden ergänzen, und Business kann dort verknüpfte Projekte anzeigen.
+Die Personen-Detailansicht ist ebenfalls erweiterbar. Erweiterungen registrieren sichtbare Reiter über `contactpanda_person_detail_tabs` und rendern deren Inhalt über `contactpanda_render_person_detail_tab_{name}`. Basic bleibt dabei ohne Erweiterung unverändert; Pro ergänzt den Reiter „Kunde“ nur für tatsächlich erkannte Kunden, Business kann dort verknüpfte Projekte und Members Mitgliedschaften anzeigen.
 
 ## Lizenz und Newsletter
 
@@ -128,6 +134,14 @@ WooCommerce-Adressen werden nur am verknüpften Kundenkonto gespeichert. Der Sch
 Die Bestellvorschau liest ausschließlich das vorhandene WooCommerce-Bestellobjekt. Für das Rechnungs-PDF wird genau die Adminaktion verwendet, die German Market in der WooCommerce-Bestellliste bereitstellt. Das Plugin erzeugt weder eine neue Rechnung noch eine zweite Downloadberechtigung.
 
 WordPress-Rollen und Kontoverknüpfungen sind nur für Administratoren sichtbar. Mehrfachrollen werden gegen die in WordPress tatsächlich bearbeitbaren Rollen geprüft; die eigene Administratorrolle und die Rolle des letzten Administrators sind vor versehentlichem Entfernen geschützt. Neue Konten erhalten ein starkes Zufallspasswort und optional die WordPress-Einladung. Ein bestehendes Konto wird nur bei identischer E-Mail-Adresse und nach ausdrücklicher Bestätigung verknüpft. Diese Vorgänge ändern keinen Groundhogg-Marketingstatus.
+
+## Globale UI-Konventionen der Produktfamilie
+
+Basic stellt die gemeinsame Admin-Komponente für Basic, Plus, Pro und Business bereit. Farbwähler zeigen links den aktuellen Wert und rechts die erkannten Theme- und Vorlagenfarben. Bildauswahlen öffnen per Klick die WordPress-Mediathek, akzeptieren Bilder per Drag-and-drop und zeigen die aktuelle Auswahl direkt in der Auswahlfläche.
+
+Aktionen in Tabellen, Listen und kompakten Karten werden, sofern ihre Bedeutung durch ein bekanntes Symbol eindeutig ist, als graue quadratische Symbolschaltflächen mit Tooltip und zugänglicher Beschriftung dargestellt. Primäre Arbeitsabläufe wie Speichern, Veröffentlichen, Versenden, Importieren, Suchen, Filtern, Mehrfachaktionen und das Erstellen neuer Datensätze bleiben beschriftet. Diese Texte sind für Tragweite oder Ergebnis der Aktion notwendig und werden nicht allein durch mehrdeutige Symbole ersetzt.
+
+Datenmigrationen befinden sich ausschließlich im Bereich „Import / Export“ im Tab „Migration“. Dort werden nur passende Wege für erkannte Quellsysteme wie Groundhogg, WooCommerce oder The Newsletter Plugin angeboten. Weitere Erweiterungen ergänzen diesen Bereich über `contactpanda_render_migration_tools`; Migrationen werden nicht als Einstellungsseite oder eigener Hauptmenüpunkt dupliziert.
 
 ## Noch zu verifizieren
 

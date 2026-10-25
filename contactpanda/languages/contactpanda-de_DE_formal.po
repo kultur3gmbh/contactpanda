@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.30\n"
+"Project-Id-Version: ContactPanda 0.8.40\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7527,6 +7527,27 @@ msgstr ""
 "{confirmation_link}\n"
 "\n"
 "Der Link ist 24 Stunden gültig."
+
+msgid "Select image"
+msgstr "Bild auswählen"
+
+msgid "Use image"
+msgstr "Bild verwenden"
+
+msgid "Click or drop an image here"
+msgstr "Hier klicken oder ein Bild ablegen"
+
+msgid "Change image"
+msgstr "Bild ändern"
+
+msgid "Remove image"
+msgstr "Bild entfernen"
+
+msgid "Uploading image…"
+msgstr "Bild wird hochgeladen…"
+
+msgid "The image could not be uploaded."
+msgstr "Das Bild konnte nicht hochgeladen werden."
 
 msgid ""
 "Hello {first_name},\n"

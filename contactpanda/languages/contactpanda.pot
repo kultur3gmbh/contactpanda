@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.30\n"
+"Project-Id-Version: ContactPanda 0.8.40\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7350,6 +7350,27 @@ msgid ""
 "%2$s\n"
 "\n"
 "The link is valid for 24 hours."
+msgstr ""
+
+msgid "Select image"
+msgstr ""
+
+msgid "Use image"
+msgstr ""
+
+msgid "Click or drop an image here"
+msgstr ""
+
+msgid "Change image"
+msgstr ""
+
+msgid "Remove image"
+msgstr ""
+
+msgid "Uploading image…"
+msgstr ""
+
+msgid "The image could not be uploaded."
 msgstr ""
 
 msgid "MCP interface"

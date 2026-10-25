@@ -13,6 +13,7 @@ final class ContactPanda_Data_Tools {
 
 	public static function boot() {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 25 );
+		add_action( 'admin_init', array( __CLASS__, 'redirect_legacy_migration_url' ) );
 		add_filter( 'cron_schedules', array( __CLASS__, 'cron_schedules' ) );
 		add_filter( 'contactpanda_settings_tabs', array( __CLASS__, 'settings_tabs' ) );
 		add_action( 'contactpanda_render_other_settings_section_duplicates', array( __CLASS__, 'render_duplicate_settings' ) );
@@ -37,6 +38,17 @@ final class ContactPanda_Data_Tools {
 		add_action( 'contactpanda_central_salutation_sync', array( __CLASS__, 'scheduled_central_sync' ) );
 	}
 
+	/** Preserve old bookmarks while keeping migration out of Settings. */
+	public static function redirect_legacy_migration_url() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
+		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
+		$section = isset( $_GET['other_section'] ) ? sanitize_key( wp_unslash( $_GET['other_section'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
+		if ( 'contactpanda-settings' !== $page || ( 'migration' !== $tab && 'migration' !== $section ) ) return;
+		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration' ) );
+		exit;
+	}
+
 	public static function menu() {
 		add_submenu_page(
 			'contactpanda',
@@ -53,10 +65,11 @@ final class ContactPanda_Data_Tools {
 			wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		}
 		$section = isset( $_GET['transfer_section'] ) ? sanitize_key( wp_unslash( $_GET['transfer_section'] ) ) : 'import'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
-		if ( ! in_array( $section, array( 'import', 'export' ), true ) ) $section = 'import';
+		if ( ! in_array( $section, array( 'import', 'export', 'migration' ), true ) ) $section = 'import';
 		echo '<div class="wrap contactpanda-wrap"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CONTACTPANDA</p><h1>' . esc_html__( 'Import and export', 'contactpanda' ) . '</h1><p>' . esc_html__( 'Move data with previews, filters, and a traceable history.', 'contactpanda' ) . '</p></div></div>';
-		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><a class="nav-tab ' . ( 'import' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=import' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'export' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=export' ) ) . '">' . esc_html__( 'Export', 'contactpanda' ) . '</a></nav>';
+		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><a class="nav-tab ' . ( 'import' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=import' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'export' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=export' ) ) . '">' . esc_html__( 'Export', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'migration' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration' ) ) . '">' . esc_html__( 'Migration', 'contactpanda' ) . '</a></nav>';
 		if ( 'export' === $section ) self::render_export();
+		elseif ( 'migration' === $section ) ContactPanda_Registration::render_migration_settings();
 		else {
 			$entity = isset( $_GET['entity'] ) ? sanitize_key( wp_unslash( $_GET['entity'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only import filter.
 			if ( in_array( $entity, array( 'contacts', 'companies' ), true ) ) {
@@ -97,10 +110,6 @@ final class ContactPanda_Data_Tools {
 		check_admin_referer( $nonce_action );
 	}
 
-	private static function migration_url( $args = array() ) {
-		return add_query_arg( $args, admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=migration' ) );
-	}
-
 	private static function import_url( $return_page = '', $args = array() ) {
 		if ( in_array( $return_page, array( 'contactpanda', 'contactpanda-firmen' ), true ) ) {
 			return add_query_arg( array_merge( array( 'page' => $return_page, 'section' => 'import' ), $args ), admin_url( 'admin.php' ) );
@@ -110,12 +119,6 @@ final class ContactPanda_Data_Tools {
 
 	private static function duplicates_url( $args = array() ) {
 		return add_query_arg( $args, admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=duplicates' ) );
-	}
-
-	private static function redirect_notice( $type, $message, $args = array() ) {
-		set_transient( 'contactpanda_database_notice_' . get_current_user_id(), array( 'type' => $type, 'message' => $message ), MINUTE_IN_SECONDS );
-		wp_safe_redirect( self::migration_url( $args ) );
-		exit;
 	}
 
 	private static function redirect_import_notice( $type, $message, $return_page = '', $args = array() ) {
@@ -171,8 +174,8 @@ final class ContactPanda_Data_Tools {
 		if ( ! current_user_can( 'manage_options' ) || ! $run_id ) wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		check_admin_referer( 'contactpanda_rollback_import_' . $run_id );
 		$result = ContactPanda_Store::rollback_import_run( $run_id );
-		if ( is_wp_error( $result ) ) self::redirect_notice( 'error', $result->get_error_message() );
-		self::redirect_notice( 'success', sprintf( __( 'Import rolled back: %1$d records restored, %2$d new records moved to Trash, %3$d later edits retained as conflicts.', 'contactpanda' ), absint( $result['restored'] ), absint( $result['trashed'] ), absint( $result['conflicts'] ) ) );
+		if ( is_wp_error( $result ) ) self::redirect_import_notice( 'error', $result->get_error_message() );
+		self::redirect_import_notice( 'success', sprintf( __( 'Import rolled back: %1$d records restored, %2$d new records moved to Trash, %3$d later edits retained as conflicts.', 'contactpanda' ), absint( $result['restored'] ), absint( $result['trashed'] ), absint( $result['conflicts'] ) ) );
 	}
 
 	public static function render_duplicate_settings() {

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda
  * Description: Free contact and company management for WordPress with newsletters, WooCommerce, migrations, and optional Groundhogg compatibility.
- * Version: 0.8.30
+ * Version: 0.8.40
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.8.30' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.8.30-20261025-1' );
+define( 'CONTACTPANDA_VERSION', '0.8.40' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.8.40-20261025-1' );
 define( 'CONTACTPANDA_EXTENSION_API_VERSION', '1.0' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
@@ -163,6 +163,37 @@ function contactpanda_boot_newsletter_module() {
 	}
 }
 add_action( 'plugins_loaded', 'contactpanda_boot_newsletter_module', 45 );
+
+/** Load the shared admin controls on every ContactPanda family screen. */
+function contactpanda_admin_ui_assets( $hook ) {
+	if ( false === strpos( (string) $hook, 'contactpanda' ) ) {
+		return;
+	}
+	$theme_colors = array( '#4253b5', '#39495a', '#ffffff', '#f1f4f7' );
+	if ( class_exists( 'ContactPanda_Basic_Newsletters' ) && is_callable( array( 'ContactPanda_Basic_Newsletters', 'theme_colors' ) ) ) {
+		$theme_colors = ContactPanda_Basic_Newsletters::theme_colors();
+	}
+	wp_enqueue_style( 'contactpanda', CONTACTPANDA_URL . 'assets/contactpanda-admin.css', array(), CONTACTPANDA_ASSET_VERSION );
+	wp_enqueue_media();
+	wp_enqueue_script( 'contactpanda-admin-ui', CONTACTPANDA_URL . 'assets/contactpanda-admin-ui.js', array( 'wp-api-fetch' ), CONTACTPANDA_ASSET_VERSION, true );
+	wp_localize_script(
+		'contactpanda-admin-ui',
+		'CONTACTPANDA_ADMIN_UI',
+		array(
+			'themeColors' => array_values( array_unique( array_filter( array_map( 'sanitize_hex_color', (array) $theme_colors ) ) ) ),
+			'i18n'        => array(
+				'chooseImage'  => __( 'Select image', 'contactpanda' ),
+				'useImage'     => __( 'Use image', 'contactpanda' ),
+				'dropImage'    => __( 'Click or drop an image here', 'contactpanda' ),
+				'changeImage'  => __( 'Change image', 'contactpanda' ),
+				'removeImage'  => __( 'Remove image', 'contactpanda' ),
+				'uploading'    => __( 'Uploading image…', 'contactpanda' ),
+				'uploadFailed' => __( 'The image could not be uploaded.', 'contactpanda' ),
+			),
+		)
+	);
+}
+add_action( 'admin_enqueue_scripts', 'contactpanda_admin_ui_assets', 5 );
 
 function contactpanda_newsletter_admin_assets( $hook ) {
 	if ( ! ContactPanda_License::newsletter_entitled() ) {
