@@ -706,11 +706,13 @@ final class ContactPanda_Basic_Newsletters {
 		echo '<button type="submit" name="reapply_defaults" value="1" class="button" onclick="return confirm(' . esc_attr( wp_json_encode( __( 'Reapply the global email appearance? Content blocks remain unchanged.', 'contactpanda' ) ) ) . ');">' . esc_html__( 'Reapply global defaults', 'contactpanda' ) . '</button>';
 		echo '</div></aside></section>';
 		echo '<div class="contactpanda-newsletter-editor-layout"><aside class="contactpanda-card contactpanda-newsletter-palette"><h2>' . esc_html__( 'Content blocks', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Drag a block into the email or double-click it to append it. A single click only selects the block.', 'contactpanda' ) . '</p><div class="contactpanda-block-palette" aria-label="' . esc_attr__( 'Add content block', 'contactpanda' ) . '">';
-		$palette = array( 'heading' => 'heading', 'text' => 'text', 'image' => 'format-image', 'gallery' => 'format-gallery', 'video' => 'video-alt3', 'columns' => 'columns', 'button' => 'button', 'phone_button' => 'phone', 'email_button' => 'email-alt', 'whatsapp_button' => 'format-chat', 'divider' => 'minus', 'spacer' => 'image-flip-vertical' );
-		if ( class_exists( 'WooCommerce' ) ) {
+		$advanced_newsletter = ContactPanda_License::advanced_newsletter_entitled();
+		$palette = array( 'heading' => 'heading', 'text' => 'text', 'image' => 'format-image', 'button' => 'button', 'divider' => 'minus', 'spacer' => 'image-flip-vertical' );
+		if ( $advanced_newsletter ) $palette = array_merge( $palette, array( 'gallery' => 'format-gallery', 'video' => 'video-alt3', 'columns' => 'columns', 'phone_button' => 'phone', 'email_button' => 'email-alt', 'whatsapp_button' => 'format-chat' ) );
+		if ( $advanced_newsletter && class_exists( 'WooCommerce' ) ) {
 			$palette['products'] = 'cart';
 		}
-		if ( apply_filters( 'contactpanda_events_available', false ) ) $palette['events'] = 'calendar-alt';
+		if ( $advanced_newsletter && apply_filters( 'contactpanda_events_available', false ) ) $palette['events'] = 'calendar-alt';
 		$palette['posts'] = 'admin-post';
 		foreach ( $palette as $type => $icon ) {
 			echo '<button type="button" draggable="true" class="contactpanda-add-block" data-type="' . esc_attr( $type ) . '"><span class="dashicons dashicons-' . esc_attr( $icon ) . '"></span><span>' . esc_html( self::block_label( $type ) ) . '</span></button>';

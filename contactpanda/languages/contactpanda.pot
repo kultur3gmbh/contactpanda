@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.20\n"
+"Project-Id-Version: ContactPanda 0.8.30\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7350,6 +7350,60 @@ msgid ""
 "%2$s\n"
 "\n"
 "The link is valid for 24 hours."
+msgstr ""
+
+msgid "MCP interface"
+msgstr ""
+
+msgid "This central interface provides the available ContactPanda tools from ContactPanda and every active family plugin. Paid actions appear only when the corresponding license is active."
+msgstr ""
+
+msgid "MCP endpoint"
+msgstr ""
+
+msgid "Use a dedicated WordPress application password for an authorized administrator or shop manager. Revoke that password to disable access immediately."
+msgstr ""
+
+msgid "Use read tools freely. Creating or sending data requires explicit confirmation and the relevant ContactPanda permission."
+msgstr ""
+
+msgid "Search people in the active ContactPanda data source."
+msgstr ""
+
+msgid "Read one person from the active ContactPanda data source."
+msgstr ""
+
+msgid "Create an unconfirmed person. The confirm argument must be true."
+msgstr ""
+
+msgid "Search companies in the active ContactPanda data source."
+msgstr ""
+
+msgid "List ContactPanda tags."
+msgstr ""
+
+msgid "List ContactPanda email drafts and templates."
+msgstr ""
+
+msgid "Count eligible and excluded newsletter recipients without returning personal data."
+msgstr ""
+
+msgid "Send one explicit newsletter test email. The confirm argument must be true."
+msgstr ""
+
+msgid "Recent MCP activity"
+msgstr ""
+
+msgid "No MCP activity has been recorded yet."
+msgstr ""
+
+msgid "Scheduled delivery is available with Advanced Newsletter or Plus Complete."
+msgstr ""
+
+msgid "Scheduled delivery requires Advanced Newsletter or Plus Complete."
+msgstr ""
+
+msgid "ContactPanda Plus Complete"
 msgstr ""
 
 msgid "Invalid privacy request."

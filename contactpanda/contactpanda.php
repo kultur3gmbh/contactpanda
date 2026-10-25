@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: ContactPanda
- * Description: Free contact and company management for WordPress with WooCommerce, event, Amelia, and optional Groundhogg overviews.
- * Version: 0.8.20
+ * Description: Free contact and company management for WordPress with newsletters, WooCommerce, migrations, and optional Groundhogg compatibility.
+ * Version: 0.8.30
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.8.20' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.8.20-20261025-1' );
+define( 'CONTACTPANDA_VERSION', '0.8.30' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.8.30-20261025-1' );
 define( 'CONTACTPANDA_EXTENSION_API_VERSION', '1.0' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
@@ -39,6 +39,7 @@ require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-my-account.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-newsletters.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-newsletter-campaigns.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-segments.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-mcp.php';
 
 add_action(
 	'plugins_loaded',
@@ -95,10 +96,14 @@ add_action( 'plugins_loaded', array( 'ContactPanda_License', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Trash', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Data_Tools', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Custom_Fields', 'boot' ), 30 );
-add_action( 'plugins_loaded', array( 'ContactPanda_Events', 'boot' ), 30 );
+function contactpanda_boot_events_module() {
+	if ( apply_filters( 'contactpanda_events_enabled', false ) ) ContactPanda_Events::boot();
+}
+add_action( 'plugins_loaded', 'contactpanda_boot_events_module', 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Registration', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Customer_Portal', 'boot' ), 31 );
 add_action( 'plugins_loaded', array( 'ContactPanda_My_Account', 'boot' ), 31 );
+add_action( 'plugins_loaded', array( 'ContactPanda_MCP', 'boot' ), 32 );
 
 /**
  * The reduced newsletter is part of free ContactPanda. Paid capabilities are

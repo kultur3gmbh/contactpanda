@@ -649,7 +649,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	private static function render_newsletter_plugin_migration() {
-		if ( ! self::newsletter_plugin_installed() || ! apply_filters( 'contactpanda_can_migrate_newsletter_plugin', false ) ) return;
+		if ( ! self::newsletter_plugin_installed() || ! apply_filters( 'contactpanda_can_migrate_newsletter_plugin', true ) ) return;
 		$table = self::newsletter_plugin_table();
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Import The Newsletter Plugin data', 'contactpanda' ) . '</h2>';
 		if ( ! defined( 'NEWSLETTER_VERSION' ) && ! class_exists( 'Newsletter' ) ) echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'The Newsletter Plugin is installed but inactive. Existing source tables can still be read without changing them.', 'contactpanda' ) . '</p></div>';
@@ -684,7 +684,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	public static function handle_migrate_newsletter_plugin() {
 		self::guard_database_action( 'contactpanda_migrate_newsletter_plugin' );
-		if ( ! apply_filters( 'contactpanda_can_migrate_newsletter_plugin', false ) ) wp_die( esc_html__( 'The Newsletter Plugin migration is available with ContactPanda Plus.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		if ( ! apply_filters( 'contactpanda_can_migrate_newsletter_plugin', true ) ) wp_die( esc_html__( 'The Newsletter Plugin migration is not available.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		$table = self::newsletter_plugin_table();
 		if ( ! $table || ! ContactPanda_Store::ready() ) {
 			self::database_redirect( 'error', __( 'The newsletter subscriber source or the ContactPanda database is not available.', 'contactpanda' ) );

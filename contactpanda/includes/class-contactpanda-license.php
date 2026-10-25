@@ -339,7 +339,7 @@ final class ContactPanda_License {
 
 		echo '<h3>' . esc_html__( 'Module status', 'contactpanda' ) . '</h3><div class="contactpanda-license-groups">';
 		$groups = array(
-			'plus'     => array( 'label' => __( 'ContactPanda Plus', 'contactpanda' ), 'modules' => array( 'advanced_newsletter', 'forms_editor', 'automations', 'advanced_integrations', 'form_migration' ) ),
+			'plus'     => array( 'label' => __( 'ContactPanda Plus Complete', 'contactpanda' ), 'modules' => array( 'advanced_newsletter', 'forms_editor', 'automations', 'advanced_integrations', 'form_migration' ) ),
 			'pro'      => array( 'label' => __( 'ContactPanda Pro', 'contactpanda' ), 'modules' => array( 'support_desk' ) ),
 			'business' => array( 'label' => __( 'ContactPanda Business', 'contactpanda' ), 'modules' => array( 'project_management', 'customer_management', 'contract_management', 'subscription_management', 'payment_management', 'software_licensing' ) ),
 		);

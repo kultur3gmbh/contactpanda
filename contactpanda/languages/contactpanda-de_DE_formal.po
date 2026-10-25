@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.20\n"
+"Project-Id-Version: ContactPanda 0.8.30\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7357,6 +7357,60 @@ msgstr ""
 "%2$s\n"
 "\n"
 "Der Link ist 24 Stunden gültig."
+
+msgid "MCP interface"
+msgstr "MCP-Schnittstelle"
+
+msgid "This central interface provides the available ContactPanda tools from ContactPanda and every active family plugin. Paid actions appear only when the corresponding license is active."
+msgstr "Diese zentrale Schnittstelle stellt die verfügbaren Werkzeuge von ContactPanda und allen aktiven Familien-Plugins bereit. Kostenpflichtige Aktionen erscheinen nur mit der entsprechenden aktiven Lizenz."
+
+msgid "MCP endpoint"
+msgstr "MCP-Endpunkt"
+
+msgid "Use a dedicated WordPress application password for an authorized administrator or shop manager. Revoke that password to disable access immediately."
+msgstr "Verwenden Sie ein eigenes WordPress-Anwendungspasswort für einen berechtigten Administrator oder Shop-Manager. Durch Widerrufen dieses Passworts wird der Zugriff sofort deaktiviert."
+
+msgid "Use read tools freely. Creating or sending data requires explicit confirmation and the relevant ContactPanda permission."
+msgstr "Lesende Werkzeuge können frei verwendet werden. Das Erstellen oder Versenden von Daten erfordert eine ausdrückliche Bestätigung und die jeweilige ContactPanda-Berechtigung."
+
+msgid "Search people in the active ContactPanda data source."
+msgstr "Personen in der aktiven ContactPanda-Datenquelle suchen."
+
+msgid "Read one person from the active ContactPanda data source."
+msgstr "Eine Person aus der aktiven ContactPanda-Datenquelle lesen."
+
+msgid "Create an unconfirmed person. The confirm argument must be true."
+msgstr "Eine unbestätigte Person anlegen. Das Argument confirm muss true sein."
+
+msgid "Search companies in the active ContactPanda data source."
+msgstr "Firmen in der aktiven ContactPanda-Datenquelle suchen."
+
+msgid "List ContactPanda tags."
+msgstr "ContactPanda-Tags auflisten."
+
+msgid "List ContactPanda email drafts and templates."
+msgstr "ContactPanda-E-Mail-Entwürfe und -Vorlagen auflisten."
+
+msgid "Count eligible and excluded newsletter recipients without returning personal data."
+msgstr "Zulässige und ausgeschlossene Newsletter-Empfänger zählen, ohne personenbezogene Daten zurückzugeben."
+
+msgid "Send one explicit newsletter test email. The confirm argument must be true."
+msgstr "Eine ausdrücklich bestätigte Newsletter-Test-E-Mail versenden. Das Argument confirm muss true sein."
+
+msgid "Recent MCP activity"
+msgstr "Letzte MCP-Aktivitäten"
+
+msgid "No MCP activity has been recorded yet."
+msgstr "Es wurde noch keine MCP-Aktivität protokolliert."
+
+msgid "Scheduled delivery is available with Advanced Newsletter or Plus Complete."
+msgstr "Zeitgesteuerter Versand ist mit Advanced Newsletter oder Plus Complete verfügbar."
+
+msgid "Scheduled delivery requires Advanced Newsletter or Plus Complete."
+msgstr "Zeitgesteuerter Versand erfordert Advanced Newsletter oder Plus Complete."
+
+msgid "ContactPanda Plus Complete"
+msgstr "ContactPanda Plus Komplett"
 
 msgid "Invalid privacy request."
 msgstr "Ungültige Datenschutzanfrage."

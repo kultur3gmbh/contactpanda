@@ -1,4 +1,4 @@
-# ContactPanda – modulare Architektur 0.8.20
+# ContactPanda – modulare Architektur 0.8.30
 
 ## Pakete
 
@@ -6,7 +6,9 @@
 
 Das reduzierte Newsletter-Modul gehört dauerhaft zum kostenlosen ContactPanda. ContactPanda Plus ergänzt den erweiterten Newsletter-Editor, vollständige Formulare, Automatisierungen, Migrationen und Spezialintegrationen. Das Ende eines gebuchten Update- und Supportzeitraums deaktiviert weder bereits freigeschaltete Funktionen noch gespeicherte Inhalte oder Versandfunktionen; lediglich weitere Updates und Support stehen dann nicht mehr zur Verfügung.
 
-`ContactPanda Plus` benötigt ContactPanda und ergänzt abgegrenzte Marketingmodule wie Automatisierungen, den vollständigen visuellen Formular-Builder, erweiterte Newsletter-Funktionen, Migrationen sowie Messaging- beziehungsweise E-Mail-Gateways. Der Support Desk gehört ausschließlich zu ContactPanda Pro; Projekt- und kaufmännische Verwaltung gehören ausschließlich zu ContactPanda Business. Die rein lesende Eventanzeige für The Events Calendar/Event Tickets und Amelia gehört zum kostenlosen ContactPanda. Eine Deaktivierung einer Erweiterung entfernt weder Daten noch Einstellungen.
+`ContactPanda Plus` benötigt ContactPanda und ergänzt abgegrenzte Marketingmodule wie Automatisierungen, den vollständigen visuellen Formular-Builder, erweiterte Newsletter-Funktionen, Events, Migrationen sowie Messaging- beziehungsweise E-Mail-Gateways. Der Support Desk gehört ausschließlich zu ContactPanda Pro; Projekt- und kaufmännische Verwaltung gehören ausschließlich zu ContactPanda Business. Eine Deaktivierung einer Erweiterung entfernt weder Daten noch Einstellungen.
+
+ContactPanda stellt den einzigen MCP-Endpunkt der Produktfamilie bereit. Der Transport, die Authentifizierung und das datensparsame Audit-Protokoll sind kostenlos. Plus, Pro und Business registrieren dort ihre Werkzeuge; deren Aktionen bleiben an die jeweilige Fachlizenz und WordPress-Berechtigung gebunden.
 
 ```text
 ContactPanda
