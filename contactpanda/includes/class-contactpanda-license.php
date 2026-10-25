@@ -303,16 +303,17 @@ final class ContactPanda_License {
 
 		echo '<h3>' . esc_html__( 'Module status', 'contactpanda' ) . '</h3><div class="contactpanda-license-groups">';
 		$groups = array(
-			'core' => array( 'label' => __( 'ContactPanda', 'contactpanda' ), 'modules' => array( 'newsletter' ) ),
-			'plus' => array( 'label' => __( 'ContactPanda Plus', 'contactpanda' ), 'modules' => array( 'automations', 'forms', 'messaging', 'email_delivery' ) ),
-			'pro'  => array( 'label' => __( 'ContactPanda Pro', 'contactpanda' ), 'modules' => array( 'support_desk', 'customer_management', 'membership_management', 'contract_management', 'subscription_management', 'payment_management' ) ),
+			'core'     => array( 'label' => __( 'ContactPanda', 'contactpanda' ), 'modules' => array( 'newsletter' ) ),
+			'plus'     => array( 'label' => __( 'ContactPanda Plus', 'contactpanda' ), 'modules' => array( 'customer_registration', 'customer_account', 'automations', 'forms', 'messaging', 'email_delivery' ) ),
+			'pro'      => array( 'label' => __( 'ContactPanda Pro', 'contactpanda' ), 'modules' => array( 'support_desk' ) ),
+			'business' => array( 'label' => __( 'ContactPanda Business', 'contactpanda' ), 'modules' => array( 'project_management', 'customer_management', 'contract_management', 'subscription_management', 'payment_management', 'software_licensing' ) ),
 		);
 		foreach ( $groups as $group_key => $group ) {
 			$package_enabled = 'core' === $group_key ? false : self::entitled( $group_key );
 			echo '<section class="contactpanda-license-group"><h4>' . esc_html( $group['label'] ) . ( $package_enabled ? ' <span class="contactpanda-status-badge is-positive">' . esc_html__( 'Complete package enabled', 'contactpanda' ) . '</span>' : '' ) . '</h4>';
 			foreach ( $group['modules'] as $module ) {
 				if ( ! isset( $catalog[ $module ] ) ) continue;
-				$enabled = $package_enabled || ( 'plus' === $group_key && self::entitled( 'pro' ) ) || self::entitled( $module );
+				$enabled = $package_enabled || self::entitled( $module );
 				echo '<p><strong>' . esc_html( $catalog[ $module ] ) . '</strong>: ' . esc_html( $enabled ? __( 'Enabled', 'contactpanda' ) : __( 'Not enabled', 'contactpanda' ) ) . '</p>';
 			}
 			echo '</section>';
@@ -362,6 +363,8 @@ final class ContactPanda_License {
 			'php_version'       => PHP_VERSION,
 			'basic_version'     => defined( 'CONTACTPANDA_VERSION' ) ? CONTACTPANDA_VERSION : '',
 			'plus_version'      => defined( 'CONTACTPANDA_PLUS_VERSION' ) ? CONTACTPANDA_PLUS_VERSION : '',
+			'pro_version'       => defined( 'CONTACTPANDA_PRO_VERSION' ) ? CONTACTPANDA_PRO_VERSION : '',
+			'business_version'  => defined( 'CONTACTPANDA_BUSINESS_VERSION' ) ? CONTACTPANDA_BUSINESS_VERSION : '',
 		);
 	}
 

@@ -4,6 +4,7 @@ defined( 'ABSPATH' ) || exit;
 
 /** Shared updater for privately distributed ContactPanda extensions. */
 final class ContactPanda_Licensed_Updater {
+	private static $registered = array();
 	private $config;
 	private $metadata = null;
 
@@ -23,6 +24,12 @@ final class ContactPanda_Licensed_Updater {
 		if ( ! $this->config['product'] || ! $this->config['entitlement'] || ! $this->config['plugin'] ) {
 			return;
 		}
+		$plugin = plugin_basename( $this->config['plugin'] );
+		if ( isset( self::$registered[ $plugin ] ) ) {
+			return;
+		}
+		$this->config['plugin'] = $plugin;
+		self::$registered[ $plugin ] = true;
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'updates' ) );
 		add_filter( 'plugins_api', array( $this, 'plugin_information' ), 20, 3 );
 		add_filter( 'upgrader_pre_download', array( $this, 'verify_download' ), 10, 4 );

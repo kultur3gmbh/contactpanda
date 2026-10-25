@@ -2,17 +2,17 @@
 
 ## Pakete
 
-`ContactPanda` ist das kostenlose, eigenständig lauffähige Haupt-Plugin. Es enthält Personen, Firmen, Adressen, Tags, Einwilligungen, Aktivitäten, Groundhogg-Kompatibilität und die grundlegende WooCommerce-Kundenansicht. Kunden-/Businessregistrierung und vCard-Austausch werden über stabile Kern-Schnittstellen ausschließlich durch Plus aktiviert. Bestellungen bleiben in WooCommerce; ContactPanda liest sie über die öffentliche CRUD-API und legt keine Bestellkopien an.
+`ContactPanda` ist das kostenlose, eigenständig lauffähige Haupt-Plugin. Es enthält Personen, Firmen, Adressen, Tags, Einwilligungen, Aktivitäten, Groundhogg-Kompatibilität und künftig ein WooCommerce-unabhängiges Kunden- und Präferenzportal. Die bestehende WooCommerce-Kundenansicht wird dabei zu einem optionalen Adapter des gemeinsamen Portals. Kunden-/Businessregistrierung und vCard-Austausch werden über stabile Kern-Schnittstellen ausschließlich durch Plus aktiviert. Bestellungen bleiben in WooCommerce; ContactPanda liest sie über die öffentliche CRUD-API und legt keine Bestellkopien an.
 
 Das Newsletter-Modul liegt seit 0.6.0 technisch in Basic. Es kann entweder durch eine eigenständige Newsletter-Lizenz oder durch ContactPanda Plus dauerhaft freigeschaltet werden. Das Ende des gebuchten Update- und Supportzeitraums deaktiviert weder Newsletter noch gespeicherte Inhalte oder Versandfunktionen; lediglich weitere Updates und Support stehen dann nicht mehr zur Verfügung.
 
-`ContactPanda Plus` benötigt Basic und ergänzt abgegrenzte Module wie Automatisierungen, Formularadapter, Helpdesk, erweiterte Integrationen und Messaging-Gateways. Plus schaltet außerdem das gemeinsame Newsletter-Modul frei. Die rein lesende Eventanzeige für The Events Calendar/Event Tickets und Amelia gehört seit 0.4.0 zu Basic. Eine Deaktivierung von Plus entfernt weder Daten noch Einstellungen.
+`ContactPanda Plus` benötigt Basic und ergänzt abgegrenzte Marketingmodule wie Automatisierungen, den vollständigen visuellen Formular-Builder, erweiterte Integrationen und Messaging- beziehungsweise E-Mail-Gateways. Plus schaltet außerdem das gemeinsame Newsletter-Modul frei. Der Support Desk gehört ausschließlich zu ContactPanda Pro; Projekt- und kaufmännische Verwaltung gehören ausschließlich zu ContactPanda Business. Die rein lesende Eventanzeige für The Events Calendar/Event Tickets und Amelia gehört zu Basic. Eine Deaktivierung einer Erweiterung entfernt weder Daten noch Einstellungen.
 
 ```text
 ContactPanda Basic
 ├── Personen und Firmen
 ├── Adressen, Tags und Einwilligungen
-├── Registrierung und Mein Konto
+├── Registrierung sowie unabhängiges Kunden- und Präferenzportal
 ├── WooCommerce-Basisintegration
 ├── Groundhogg-Kompatibilität und Migration
 ├── lizenzierbares Newsletter-Modul
@@ -20,13 +20,26 @@ ContactPanda Basic
 │   ├── gespeicherte Suchen und Kampagnen
 │   └── Versandstatistiken und Sperrlisten
 └── Erweiterungspunkte
-    └── ContactPanda Plus
-        ├── Automatisierungen
-        ├── Formularadapter
-        ├── Helpdesk
-        ├── Messaging- und E-Mail-Gateways
-        └── erweiterte Integrationen
+    ├── ContactPanda Plus
+    │   ├── Automatisierungen
+    │   ├── vollständiger visueller Formular-Builder
+    │   ├── Messaging- und E-Mail-Gateways
+    │   └── erweiterte Integrationen
+    ├── ContactPanda Pro
+    │   └── Support Desk und Portal-Erweiterung für Supportanfragen
+    └── ContactPanda Business
+        └── Projekte, Aufgaben und kaufmännische Abläufe
 ```
+
+## Daten- und Modulzuständigkeit
+
+Basic ist alleiniger Eigentümer des CRM- und Newsletter-Schemas. Plus verwendet diese bestehenden Tabellen über die öffentlichen Basic-Schnittstellen und legt keine zweite Kopie von Vorlagen, Kampagnen, Empfängern, Sperren oder Versandstatistiken an. Plus besitzt ausschließlich seine Automatisierungs-, Formular-, Zustell- und Nachrichtenstrukturen. Pro und Business besitzen jeweils nur ihre eigenen Support- beziehungsweise Projektdaten.
+
+Basic ist außerdem Eigentümer des allgemeinen Kunden- und Präferenzportals. Jeder angemeldete WordPress-Benutzer kann darauf zugreifen, unabhängig davon, wie das Konto erstellt wurde und ob WooCommerce oder ein anderes ContactPanda-Paket aktiv ist. Newsletter-, Newsletter-Voranmeldungs- und Seasons-Anmeldungen erzeugen dagegen ausschließlich einen ContactPanda-Kontakt beziehungsweise dessen Abonnements und niemals automatisch ein WordPress-Konto. Ein WordPress-Konto entsteht erst durch eine vom Benutzer ausdrücklich gewählte Kunden- oder sonstige Kontoregistrierung, beispielsweise über WooCommerce. Die öffentliche Erstellung neuer WordPress-Konten und deren Registrierungsregeln bleiben eine vom Portal getrennte Funktion. Vollständige Profildaten werden nur für den angemeldeten Benutzer angezeigt. Die Zuordnung zum ContactPanda-Kontakt erfolgt vorrangig über eine gespeicherte Benutzerverknüpfung und nur ersatzweise über eine eindeutige, normalisierte E-Mail-Adresse; mehrdeutige Treffer werden niemals automatisch zusammengeführt. Reine Newsletter- und Seasons-Empfänger erhalten über einen zweckgebundenen, widerrufbaren und zeitlich begrenzten persönlichen Link ausschließlich Zugriff auf ein reduziertes Präferenzzentrum und müssen dafür kein WordPress-Konto anlegen. Shortcode, serverseitig gerenderter WordPress-Block, WooCommerce-Einbindung und optionale Avada-, Elementor- und Divi-Elemente verwenden denselben Renderer und dieselben serverseitigen Befehle. Die Einbindungen dürfen nur Darstellung und Kontext bestimmen, aber keine eigene Validierungs-, Double-Opt-in-, Tag-, Zustimmungs- oder Speicherlogik besitzen. Die Detailplanung steht in `docs/customer-portal-plan.md`.
+
+Wählt eine Person ausdrücklich eine Kundenregistrierung, sucht ContactPanda vor der Neuanlage nach einer bereits vorhandenen Person. Nach Bestätigung der Kontoinhaberschaft wird ein eindeutiger Treffer über die verifizierte E-Mail-Adresse mit dem neuen WordPress-/WooCommerce-Konto verknüpft und als Kunde klassifiziert, ohne Kontakt-ID, Herkunft, Tags, Einwilligungen, Abmeldungen, Seasons-Anmeldungen oder Aktivitäten zu ersetzen. Mehrere Treffer oder eine bestehende Verknüpfung zu einem anderen Benutzer werden niemals automatisch zusammengeführt. Die Kundenregistrierung erteilt keine Marketingzustimmung und hebt keine Sperre auf.
+
+Diese Zuständigkeitsgrenze ist absichtlich nicht mit einer Datenverschiebung verbunden. Bestehende Tabellennamen, Datensatz-IDs, Groundhogg-Herkunftsverknüpfungen, Newsletter-Empfänger und Versandhistorien bleiben unverändert. Strukturänderungen werden nur als additive, wiederholbare Migrationen umgesetzt. Das Entfernen oder Umbenennen produktiv verwendeter Spalten oder Tabellen benötigt einen eigenen, zuvor geprüften Migrationsschritt mit Sicherung und Rückfallmöglichkeit.
 
 Basic stellt über einen isolierten, rein lesenden Adapter Verfügbarkeit, Teilnehmerzahlen und Veranstaltungslisten bereit. Unterstützt werden The Events Calendar/Event Tickets und Amelia. Sind beide Systeme aktiv, muss eine globale Quelle ausgewählt werden; Ergebnisse werden niemals gemischt. Plus kann dieselben normalisierten Erweiterungspunkte für Segmente verwenden. Zusätzliche Einstellungsbereiche werden über `contactpanda_settings_tabs` und `contactpanda_render_settings_tab_{name}` registriert.
 
@@ -51,6 +64,12 @@ Die Tabelle `cp_activities` bleibt die zentrale, eigenständige Historie. Der n�
 Im **Groundhogg-Frontend-Modus** bleibt Groundhogg alleinige Datenquelle für Kontakte, Firmen, Tags, Zustimmungen, Broadcasts, Funnels und Automatisierungen. ContactPanda stellt die Oberfläche bereit; der eigene Newsletter-Editor und -Versand bleiben in diesem Modus deaktiviert.
 
 Im **ContactPanda-Datenbank-Modus** werden neue und bearbeitete Personen, Firmen, Tags, Zustimmungen und Aktivitäten ausschließlich in ContactPanda gespeichert; Groundhogg wird nicht parallel beschrieben. Mit Newsletter-Lizenz oder ContactPanda Plus übernimmt ContactPanda in diesem Modus auch E-Mail-Vorlagen, Kampagnen und Versand. WooCommerce-, WordPress-, Rechnungs- und Veranstaltungsdaten bleiben über ihre jeweiligen Systeme verknüpft.
+
+## Gemeinsames Kundenportal und Identitäten
+
+Basic besitzt die einzige providerneutrale Zuordnung zwischen WordPress-Benutzerkonto und ContactPanda-Person sowie den gemeinsamen Portal-Renderer. Das Portal wird als Block oder Shortcode eingebunden und funktioniert ohne WooCommerce. Eine vorhandene WooCommerce-Kontoseite ist nur ein Adapter auf denselben Profil-Renderer. Plus, Pro und Business ergänzen eigene Bereiche ausschließlich über `contactpanda_customer_portal_tabs` und reagieren über dokumentierte Portalereignisse; sie kopieren weder Profil- noch Zustimmungsdaten.
+
+Ein WordPress-Konto entsteht nur durch eine ausdrückliche Konto- oder Kundenregistrierung. Newsletter-, Formular- oder Seasons-Anmeldungen legen allein deshalb kein Konto an. Eine bestehende Person darf einem Konto nur über eine bereits vorhandene Verknüpfung oder nach exakter, geprüfter E-Mail-Übereinstimmung zugeordnet werden; Kontakte werden dabei nicht automatisch zusammengeführt. Profiländerungen verändern niemals stillschweigend Einwilligungen oder Sperrstatus. E-Mail-Änderungen werden erst nach Bestätigung über die neue Adresse wirksam.
 
 Das CRM-Schema verwendet die Tabellen `cp_contacts`, `cp_companies`, `cp_company_contacts`, `cp_tags`, `cp_contact_tags`, `cp_consents`, `cp_activities`, `cp_contactmeta` und `cp_companymeta`. Vor jedem Anlegen oder Aktualisieren wird der tatsächliche Tabellen- und Versionsstand geprüft. Ohne Groundhogg werden diese Tabellen bei einer frischen Aktivierung automatisch angelegt und ausgewählt. Ist Groundhogg aktiv, entstehen sie erst nach einer ausdrücklichen Einrichtung oder Migration.
 
@@ -90,6 +109,8 @@ Ist eine unterstützte Eventquelle aktiv und ausgewählt, erscheint in der Perso
 Der Prototyp besitzt eng begrenzte AJAX-Schreibendpunkte für freigegebene Groundhogg-Firmen- und Kontaktfelder, WooCommerce-Kundenadressen sowie die beiden bestehenden UID-Benutzerfelder. Sie sind durch WooCommerce-Verwaltungsrecht und Nonce geschützt. Firmen- und Kontaktwerte werden ausschließlich über die offiziellen Abilities gespeichert; die UID wird synchron in `billing_vat` und `b2b_uid` geschrieben. Die Massenbearbeitung ist auf höchstens 100 ausdrücklich ausgewählte Kontakte begrenzt, verlangt einen Zustimmungsnachweis und schützt Abmeldungen, unzustellbare Adressen, Spam-, Beschwerde- und Sperrstatus vor einer Reaktivierung. Ohne Groundhogg legt ContactPanda seine CRM-Tabellen bei der Aktivierung automatisch an; mit Groundhogg geschieht dies nur nach ausdrücklicher Einrichtung oder Migration. ContactPanda verändert keine Automatisierungen und generiert keine Rechnungen neu. Historische Rechnungs- und Bestelldaten bleiben schreibgeschützt.
 
 Bei einer Deinstallation bleiben Daten standardmäßig vollständig erhalten. Nur wenn ein Administrator die Löschoption zuvor ausdrücklich aktiviert und bestätigt hat, werden ContactPanda-eigene `cp_`-Tabellen, ContactPanda-Optionen und ContactPanda-Benutzermetadaten entfernt. Groundhogg-, WooCommerce-, German-Market-, B2B-Market-, Event- und Rechnungsdaten sind davon ausgeschlossen.
+
+Die Deaktivierung oder Deinstallation von ContactPanda darf außerdem keine native WordPress-, WooCommerce- oder Kalenderfunktion beeinträchtigen. WordPress-Benutzer, Passwörter, Rollen und auch über eine ContactPanda-unterstützte Registrierung entstandene Kundenkonten bleiben normale WordPress-Konten. WooCommerce-Bestellungen, Adressen, Zahlungsdaten, Downloads, Produkte und Rechnungen sowie Veranstaltungen, Buchungen und Tickets verbleiben vollständig in ihren Ursprungssystemen. ContactPanda verändert deren Darstellung ausschließlich über zur Laufzeit aktive Hooks und Adapter; nach einer Deaktivierung übernehmen automatisch wieder die Standardoberflächen der jeweiligen Systeme. Optionale ContactPanda-Pakete müssen das Fehlen von Basic erkennen und ihre eigenen Funktionen ohne schwerwiegenden Fehler oder Blockade des Ursprungssystems einstellen.
 
 Eine VIES-Prüfung findet nur nach einem ausdrücklichen Klick statt. Für das grüne Häkchen werden ausschließlich ein SHA-256-Prüfwert und der Prüfzeitpunkt gespeichert, keine dritte UID-Kopie. Bei einer Änderung der UID verfällt die Kennzeichnung automatisch.
 

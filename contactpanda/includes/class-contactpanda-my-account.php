@@ -194,26 +194,11 @@ final class ContactPanda_My_Account {
 	}
 
 	public static function profile_form() {
-		$user = wp_get_current_user();
-		$country = get_user_meta( $user->ID, 'contactpanda_profile_country', true );
-		$country = $country ?: 'AT';
-		echo '<section class="contactpanda-account-section contactpanda-profile-section"><h2>' . esc_html__( 'My profile', 'contactpanda' ) . '</h2><form class="contactpanda-account-form contactpanda-account-ajax-form" data-ajax-action="contactpanda_save_account_profile" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_save_profile">';
-		wp_nonce_field( 'contactpanda_save_profile' );
-		echo '<div class="contactpanda-account-grid">';
-		self::account_input( 'first_name', __( 'First name', 'contactpanda' ), $user->first_name, true, 'given-name' );
-		self::account_input( 'last_name', __( 'Last name', 'contactpanda' ), $user->last_name, true, 'family-name' );
-		self::account_input( 'contactpanda_title_prefix', __( 'Prefix title', 'contactpanda' ), get_user_meta( $user->ID, 'contactpanda_title_prefix', true ), false, 'honorific-prefix' );
-		self::account_input( 'contactpanda_title_suffix', __( 'Suffix title', 'contactpanda' ), get_user_meta( $user->ID, 'contactpanda_title_suffix', true ), false, 'honorific-suffix' );
-		echo '<label class="contactpanda-account-field contactpanda-account-field-wide"><span>' . esc_html__( 'Phone', 'contactpanda' ) . '</span>' . self::phone_input( get_user_meta( $user->ID, 'contactpanda_profile_phone', true ) ?: get_user_meta( $user->ID, 'billing_phone', true ) ) . '</label>';
-		self::account_input( 'billing_company', __( 'Company (optional)', 'contactpanda' ), get_user_meta( $user->ID, 'billing_company', true ), false, 'organization', 'contactpanda-account-field-wide' );
-		echo '<div class="contactpanda-account-subheading"><h3>' . esc_html__( 'Profile address', 'contactpanda' ) . '</h3></div>';
-		self::account_input( 'profile_address_1', __( 'Street and house number', 'contactpanda' ), get_user_meta( $user->ID, 'contactpanda_profile_address_1', true ), false, 'address-line1', 'contactpanda-account-field-wide' );
-		self::account_input( 'profile_address_2', __( 'Address line 2', 'contactpanda' ), get_user_meta( $user->ID, 'contactpanda_profile_address_2', true ), false, 'address-line2', 'contactpanda-account-field-wide' );
-		self::account_input( 'profile_postcode', __( 'Postal code', 'contactpanda' ), get_user_meta( $user->ID, 'contactpanda_profile_postcode', true ), false, 'postal-code' );
-		self::account_input( 'profile_city', __( 'City', 'contactpanda' ), get_user_meta( $user->ID, 'contactpanda_profile_city', true ), false, 'address-level2' );
-		self::account_input( 'profile_state', __( 'State / Province', 'contactpanda' ), get_user_meta( $user->ID, 'contactpanda_profile_state', true ), false, 'address-level1' );
-		self::country_input( 'profile_country', __( 'Country', 'contactpanda' ), $country );
-		echo '</div><button type="submit" class="button contactpanda-account-save">' . esc_html__( 'Save profile', 'contactpanda' ) . '</button><div class="contactpanda-account-message" aria-live="polite"></div></form></section>';
+		$identity = ContactPanda_Identity::resolve_user( get_current_user_id(), false );
+		ContactPanda_Customer_Portal::render_profile(
+			$identity,
+			array( 'return_url' => wc_customer_edit_account_url() )
+		);
 	}
 
 	public static function password_form() {

@@ -19,6 +19,7 @@ if command -v php >/dev/null 2>&1; then
   php tests/github-updater.php || status=1
   php tests/github-updater.php --plus || status=1
 	php tests/licensed-updater.php || status=1
+	php tests/family-updaters.php || status=1
 	php tests/license-update-entitlements.php || status=1
 	php tests/vcard-import.php || status=1
 	php tests/events.php || status=1
@@ -30,6 +31,7 @@ if command -v php >/dev/null 2>&1; then
 	php tests/release-078.php || status=1
 	php tests/person-detail-extensions.php || status=1
 	php tests/newsletter-form.php || status=1
+	php tests/customer-portal.php || status=1
 elif command -v python3 >/dev/null 2>&1; then
   echo "PHP CLI is unavailable; running the offline structural fallback."
   python3 tools/check_php_structure.py contactpanda tests || status=1
@@ -80,6 +82,17 @@ if [[ -e contactpanda/includes/class-contactpanda-woocommerce.php || -e contactp
   echo "WooCommerce cart and checkout presentation belongs to ContactPanda Plus, not Basic." >&2
   status=1
 fi
+
+for portal_contract in \
+	"class-contactpanda-identity.php" \
+	"class-contactpanda-customer-portal.php" \
+	"contactpanda_customer_portal_tabs" \
+	"contactpanda_portal_profile_saved"; do
+	if ! grep -Rqs "$portal_contract" contactpanda; then
+		echo "Missing customer portal contract: $portal_contract" >&2
+		status=1
+	fi
+done
 
 if [[ "$status" -ne 0 ]]; then
   exit "$status"

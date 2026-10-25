@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.11\n"
+"Project-Id-Version: ContactPanda 0.8.15\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7292,4 +7292,160 @@ msgid "A new signup was submitted, but valid newsletter consent already existed.
 msgstr ""
 
 msgid "The separate ContactPanda newsletter signup is not enabled."
+msgstr ""
+
+
+msgid "A new newsletter subscription requires a separate double opt-in confirmation."
+msgstr ""
+
+msgid "Changing the email address requires confirmation through the new address. Newsletter consent is not changed by this."
+msgstr ""
+
+msgid "Choose the WordPress page that contains the ContactPanda customer portal block or shortcode. The portal works without WooCommerce."
+msgstr ""
+
+msgid "Communication"
+msgstr ""
+
+msgid "Communication preferences"
+msgstr ""
+
+msgid "Confirm your email address for %s"
+msgstr ""
+
+msgid "ContactPanda customer portal"
+msgstr ""
+
+msgid "Country code"
+msgstr ""
+
+msgid "Customer portal"
+msgstr ""
+
+msgid "Email address %1$s finally unsubscribed through the preference centre at %2$s."
+msgstr ""
+
+msgid "Export and deletion requests use the WordPress privacy workflow and require confirmation by email."
+msgstr ""
+
+msgid "Finally unsubscribe this email address from the newsletter?"
+msgstr ""
+
+msgid ""
+"Hello %1$s,\n"
+"\n"
+"confirm your new email address using this link:\n"
+"%2$s\n"
+"\n"
+"The link is valid for 24 hours."
+msgstr ""
+
+msgid "Invalid privacy request."
+msgstr ""
+
+msgid "Manage your profile, communication preferences, and connected services in one place."
+msgstr ""
+
+msgid "My data"
+msgstr ""
+
+msgid "Newsletter not subscribed"
+msgstr ""
+
+msgid "Newsletter subscribed"
+msgstr ""
+
+msgid "Please confirm the privacy request using the email we have sent you."
+msgstr ""
+
+msgid "Please sign in to manage your data and preferences."
+msgstr ""
+
+msgid "Portal page"
+msgstr ""
+
+msgid "Privacy"
+msgstr ""
+
+msgid "Request data deletion"
+msgstr ""
+
+msgid "Request data export"
+msgstr ""
+
+msgid "Save portal settings"
+msgstr ""
+
+msgid "Select a page"
+msgstr ""
+
+msgid "Sign in"
+msgstr ""
+
+msgid "The ContactPanda person could not be resolved."
+msgstr ""
+
+msgid "The WordPress account could not be found."
+msgstr ""
+
+msgid "The confirmation email could not be sent."
+msgstr ""
+
+msgid "The email address has been finally unsubscribed from the newsletter."
+msgstr ""
+
+msgid "The email confirmation is invalid or expired."
+msgstr ""
+
+msgid "The existing ContactPanda person could not be linked safely."
+msgstr ""
+
+msgid "The selected contact data source is not available."
+msgstr ""
+
+msgid "These details belong to your WordPress account and your linked ContactPanda person."
+msgstr ""
+
+msgid "This email address already belongs to another WordPress account."
+msgstr ""
+
+msgid "This email address is already linked to another WordPress account."
+msgstr ""
+
+msgid "This preference link is invalid or expired."
+msgstr ""
+
+msgid "Your email address has been confirmed and updated."
+msgstr ""
+
+msgid "Your profile was saved. Confirm the message sent to the new email address to complete the email change."
+msgstr ""
+
+msgid ""
+"A new business registration was submitted.\n"
+"\n"
+"Person: %1$s\n"
+"Company: %2$s\n"
+"Email: %3$s\n"
+"Requested role: %4$s\n"
+"\n"
+"Review: %5$s"
+msgstr ""
+
+msgid ""
+"Hello {first_name},\n"
+"\n"
+"please confirm your email address by opening this link:\n"
+"{confirmation_link}\n"
+"\n"
+"The link is valid for 24 hours."
+msgstr ""
+
+msgid ""
+"Hello {first_name},\n"
+"\n"
+"please confirm your newsletter subscription by opening this link:\n"
+"{confirmation_link}\n"
+"\n"
+"The link is valid for 24 hours."
 msgstr ""

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.11\n"
+"Project-Id-Version: ContactPanda 0.8.15\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7293,3 +7293,186 @@ msgstr "Eine neue Anmeldung wurde übermittelt, es lag jedoch bereits eine gült
 
 msgid "The separate ContactPanda newsletter signup is not enabled."
 msgstr "Die separate ContactPanda-Newsletter-Anmeldung ist nicht aktiviert."
+
+
+msgid "A new newsletter subscription requires a separate double opt-in confirmation."
+msgstr "Eine neue Newsletter-Anmeldung erfordert eine separate Double-Opt-in-Bestätigung."
+
+msgid "Changing the email address requires confirmation through the new address. Newsletter consent is not changed by this."
+msgstr "Die Änderung der E-Mail-Adresse muss über die neue Adresse bestätigt werden. Die Newsletter-Einwilligung wird dadurch nicht verändert."
+
+msgid "Choose the WordPress page that contains the ContactPanda customer portal block or shortcode. The portal works without WooCommerce."
+msgstr "Wählen Sie die WordPress-Seite, die den ContactPanda-Kundenportal-Block oder -Shortcode enthält. Das Portal funktioniert ohne WooCommerce."
+
+msgid "Communication"
+msgstr "Kommunikation"
+
+msgid "Communication preferences"
+msgstr "Kommunikationseinstellungen"
+
+msgid "Confirm your email address for %s"
+msgstr "Bestätigen Sie Ihre E-Mail-Adresse für %s"
+
+msgid "ContactPanda customer portal"
+msgstr "ContactPanda-Kundenportal"
+
+msgid "Country code"
+msgstr "Ländercode"
+
+msgid "Customer portal"
+msgstr "Kundenportal"
+
+msgid "Email address %1$s finally unsubscribed through the preference centre at %2$s."
+msgstr "Die E-Mail-Adresse %1$s wurde am %2$s über das Einstellungszentrum endgültig abgemeldet."
+
+msgid "Export and deletion requests use the WordPress privacy workflow and require confirmation by email."
+msgstr "Export- und Löschanfragen verwenden den WordPress-Datenschutzablauf und müssen per E-Mail bestätigt werden."
+
+msgid "Finally unsubscribe this email address from the newsletter?"
+msgstr "Diese E-Mail-Adresse endgültig vom Newsletter abmelden?"
+
+msgid ""
+"Hello %1$s,\n"
+"\n"
+"confirm your new email address using this link:\n"
+"%2$s\n"
+"\n"
+"The link is valid for 24 hours."
+msgstr ""
+"Hallo %1$s,\n"
+"\n"
+"bestätigen Sie Ihre neue E-Mail-Adresse über diesen Link:\n"
+"%2$s\n"
+"\n"
+"Der Link ist 24 Stunden gültig."
+
+msgid "Invalid privacy request."
+msgstr "Ungültige Datenschutzanfrage."
+
+msgid "Manage your profile, communication preferences, and connected services in one place."
+msgstr "Verwalten Sie Ihr Profil, Ihre Kommunikationseinstellungen und verbundene Dienste an einem Ort."
+
+msgid "My data"
+msgstr "Meine Daten"
+
+msgid "Newsletter not subscribed"
+msgstr "Newsletter nicht abonniert"
+
+msgid "Newsletter subscribed"
+msgstr "Newsletter abonniert"
+
+msgid "Please confirm the privacy request using the email we have sent you."
+msgstr "Bitte bestätigen Sie die Datenschutzanfrage über die E-Mail, die wir Ihnen gesendet haben."
+
+msgid "Please sign in to manage your data and preferences."
+msgstr "Bitte melden Sie sich an, um Ihre Daten und Einstellungen zu verwalten."
+
+msgid "Portal page"
+msgstr "Portalseite"
+
+msgid "Privacy"
+msgstr "Datenschutz"
+
+msgid "Request data deletion"
+msgstr "Datenlöschung anfordern"
+
+msgid "Request data export"
+msgstr "Datenexport anfordern"
+
+msgid "Save portal settings"
+msgstr "Portaleinstellungen speichern"
+
+msgid "Select a page"
+msgstr "Seite auswählen"
+
+msgid "Sign in"
+msgstr "Anmelden"
+
+msgid "The ContactPanda person could not be resolved."
+msgstr "Die ContactPanda-Person konnte nicht ermittelt werden."
+
+msgid "The WordPress account could not be found."
+msgstr "Das WordPress-Konto konnte nicht gefunden werden."
+
+msgid "The confirmation email could not be sent."
+msgstr "Die Bestätigungs-E-Mail konnte nicht gesendet werden."
+
+msgid "The email address has been finally unsubscribed from the newsletter."
+msgstr "Die E-Mail-Adresse wurde endgültig vom Newsletter abgemeldet."
+
+msgid "The email confirmation is invalid or expired."
+msgstr "Die E-Mail-Bestätigung ist ungültig oder abgelaufen."
+
+msgid "The existing ContactPanda person could not be linked safely."
+msgstr "Die bestehende ContactPanda-Person konnte nicht sicher verknüpft werden."
+
+msgid "The selected contact data source is not available."
+msgstr "Die ausgewählte Kontaktdatenquelle ist nicht verfügbar."
+
+msgid "These details belong to your WordPress account and your linked ContactPanda person."
+msgstr "Diese Angaben gehören zu Ihrem WordPress-Konto und der verknüpften ContactPanda-Person."
+
+msgid "This email address already belongs to another WordPress account."
+msgstr "Diese E-Mail-Adresse gehört bereits zu einem anderen WordPress-Konto."
+
+msgid "This email address is already linked to another WordPress account."
+msgstr "Diese E-Mail-Adresse ist bereits mit einem anderen WordPress-Konto verknüpft."
+
+msgid "This preference link is invalid or expired."
+msgstr "Dieser Einstellungslink ist ungültig oder abgelaufen."
+
+msgid "Your email address has been confirmed and updated."
+msgstr "Ihre E-Mail-Adresse wurde bestätigt und aktualisiert."
+
+msgid "Your profile was saved. Confirm the message sent to the new email address to complete the email change."
+msgstr "Ihr Profil wurde gespeichert. Bestätigen Sie die Nachricht an die neue E-Mail-Adresse, um die Änderung abzuschließen."
+
+
+msgid ""
+"A new business registration was submitted.\n"
+"\n"
+"Person: %1$s\n"
+"Company: %2$s\n"
+"Email: %3$s\n"
+"Requested role: %4$s\n"
+"\n"
+"Review: %5$s"
+msgstr ""
+"Eine neue Geschäftskundenregistrierung wurde übermittelt.\n"
+"\n"
+"Person: %1$s\n"
+"Firma: %2$s\n"
+"E-Mail: %3$s\n"
+"Gewünschte Rolle: %4$s\n"
+"\n"
+"Prüfen: %5$s"
+
+msgid ""
+"Hello {first_name},\n"
+"\n"
+"please confirm your email address by opening this link:\n"
+"{confirmation_link}\n"
+"\n"
+"The link is valid for 24 hours."
+msgstr ""
+"Hallo {first_name},\n"
+"\n"
+"bitte bestätigen Sie Ihre E-Mail-Adresse über diesen Link:\n"
+"{confirmation_link}\n"
+"\n"
+"Der Link ist 24 Stunden gültig."
+
+msgid ""
+"Hello {first_name},\n"
+"\n"
+"please confirm your newsletter subscription by opening this link:\n"
+"{confirmation_link}\n"
+"\n"
+"The link is valid for 24 hours."
+msgstr ""
+"Hallo {first_name},\n"
+"\n"
+"bitte bestätigen Sie Ihre Newsletter-Anmeldung über diesen Link:\n"
+"{confirmation_link}\n"
+"\n"
+"Der Link ist 24 Stunden gültig."

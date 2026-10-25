@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda
  * Description: Free contact and company management for WordPress with WooCommerce, event, Amelia, and optional Groundhogg overviews.
- * Version: 0.8.11
+ * Version: 0.8.15
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.8.11' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.8.11-20261025-1' );
+define( 'CONTACTPANDA_VERSION', '0.8.15' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.8.15-20261025-1' );
 define( 'CONTACTPANDA_EXTENSION_API_VERSION', '1.0' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
@@ -33,6 +33,8 @@ require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-events.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-github-updater.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-licensed-updater.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-registration.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-identity.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-customer-portal.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-my-account.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-newsletters.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-newsletter-campaigns.php';
@@ -56,6 +58,38 @@ add_action(
 	20
 );
 
+/**
+ * Register every active paid family member through one shared update client.
+ *
+ * Older extension releases may still register themselves. The updater registry
+ * deduplicates those calls, which makes rolling family updates safe regardless
+ * of plugin load order.
+ */
+function contactpanda_register_family_updaters() {
+	$products = array(
+		array( 'constant' => 'CONTACTPANDA_PLUS_FILE', 'version' => 'CONTACTPANDA_PLUS_VERSION', 'product' => 'contactpanda-plus', 'entitlement' => 'plus', 'slug' => 'contactpanda-plus', 'name' => 'ContactPanda Plus' ),
+		array( 'constant' => 'CONTACTPANDA_PRO_FILE', 'version' => 'CONTACTPANDA_PRO_VERSION', 'product' => 'contactpanda-pro', 'entitlement' => 'pro', 'slug' => 'contactpanda-pro', 'name' => 'ContactPanda Pro' ),
+		array( 'constant' => 'CONTACTPANDA_BUSINESS_FILE', 'version' => 'CONTACTPANDA_BUSINESS_VERSION', 'product' => 'contactpanda-business', 'entitlement' => 'business', 'slug' => 'contactpanda-business', 'name' => 'ContactPanda Business' ),
+	);
+	foreach ( $products as $product ) {
+		if ( ! defined( $product['constant'] ) || ! defined( $product['version'] ) ) {
+			continue;
+		}
+		new ContactPanda_Licensed_Updater(
+			array(
+				'product'     => $product['product'],
+				'entitlement' => $product['entitlement'],
+				'plugin'      => plugin_basename( constant( $product['constant'] ) ),
+				'slug'        => $product['slug'],
+				'name'        => $product['name'],
+				'version'     => constant( $product['version'] ),
+				'channel'     => defined( 'CONTACTPANDA_UPDATE_CHANNEL' ) ? CONTACTPANDA_UPDATE_CHANNEL : 'stable',
+			)
+		);
+	}
+}
+add_action( 'plugins_loaded', 'contactpanda_register_family_updaters', 22 );
+
 add_action( 'plugins_loaded', array( 'ContactPanda_Plugin', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_License', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Trash', 'boot' ), 30 );
@@ -63,6 +97,7 @@ add_action( 'plugins_loaded', array( 'ContactPanda_Data_Tools', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Custom_Fields', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Events', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Registration', 'boot' ), 30 );
+add_action( 'plugins_loaded', array( 'ContactPanda_Customer_Portal', 'boot' ), 31 );
 add_action( 'plugins_loaded', array( 'ContactPanda_My_Account', 'boot' ), 31 );
 
 /**
@@ -92,11 +127,6 @@ function contactpanda_boot_newsletter_module() {
 		)
 	);
 	if ( ! $enabled ) {
-		return;
-	}
-	// ContactPanda Plus before 0.6.0 still owns these classes. Let that version
-	// finish its normal boot instead of registering duplicate screens or hooks.
-	if ( class_exists( 'ContactPanda_Newsletters', false ) && defined( 'CONTACTPANDA_PLUS_VERSION' ) && version_compare( CONTACTPANDA_PLUS_VERSION, '0.6.0', '<' ) ) {
 		return;
 	}
 	$result = ContactPanda_Newsletter_Schema::maybe_upgrade();

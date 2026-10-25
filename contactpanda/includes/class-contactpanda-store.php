@@ -60,6 +60,15 @@ final class ContactPanda_Store {
 		return $row ? self::hydrate_contact( $row ) : false;
 	}
 
+	/** Resolve the one active standalone contact explicitly linked to a WordPress user. */
+	public static function contact_by_user_id( $user_id, $include_deleted = false ) {
+		global $wpdb;
+		$table = ContactPanda_Schema::table_names()['contacts'];
+		$state = $include_deleted ? '' : ' AND deleted_at IS NULL';
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM `{$table}` WHERE wp_user_id = %d{$state} ORDER BY id ASC LIMIT 1", absint( $user_id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		return $row ? self::hydrate_contact( $row ) : false;
+	}
+
 	public static function contact_by_meta( $key, $value, $include_deleted = false ) {
 		global $wpdb;
 		$tables = ContactPanda_Schema::table_names();
@@ -969,7 +978,20 @@ final class ContactPanda_Store {
 	public static function link_user( $contact_id, $user_id ) {
 		global $wpdb;
 		$table = ContactPanda_Schema::table_names()['contacts'];
-		return false !== $wpdb->update( $table, array( 'wp_user_id' => absint( $user_id ), 'updated_at' => current_time( 'mysql' ) ), array( 'id' => absint( $contact_id ) ) );
+		$contact_id = absint( $contact_id );
+		$user_id = absint( $user_id );
+		if ( ! $contact_id || ! $user_id ) {
+			return false;
+		}
+		$linked_contact = self::contact_by_user_id( $user_id );
+		if ( $linked_contact && absint( $linked_contact['id'] ) !== $contact_id ) {
+			return false;
+		}
+		$contact = self::contact( $contact_id );
+		if ( ! $contact || ( ! empty( $contact['user_id'] ) && absint( $contact['user_id'] ) !== $user_id ) ) {
+			return false;
+		}
+		return false !== $wpdb->update( $table, array( 'wp_user_id' => $user_id, 'updated_at' => current_time( 'mysql' ) ), array( 'id' => $contact_id ) );
 	}
 
 	public static function sync_registration( $user_id, $data ) {
@@ -1265,7 +1287,8 @@ final class ContactPanda_Store {
 		return $row;
 	}
 
-	private static function contact_meta( $id ) { return self::meta_rows( 'contactmeta', 'contact_id', $id ); }
+	/** Public metadata access for provider-neutral Basic services such as the customer portal. */
+	public static function contact_meta( $id ) { return self::meta_rows( 'contactmeta', 'contact_id', $id ); }
 	private static function company_meta( $id ) { return self::meta_rows( 'companymeta', 'company_id', $id ); }
 	private static function meta_rows( $table_key, $id_key, $id ) {
 		global $wpdb;
@@ -1273,7 +1296,7 @@ final class ContactPanda_Store {
 		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM `{$table}` WHERE {$id_key} = %d", absint( $id ) ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- fixed key and internal table.
 		$meta = array(); foreach ( (array) $rows as $row ) $meta[ $row['meta_key'] ] = maybe_unserialize( $row['meta_value'] ); return $meta;
 	}
-	private static function set_contact_meta( $id, $key, $value ) { return self::set_meta( 'contactmeta', 'contact_id', $id, $key, $value ); }
+	public static function set_contact_meta( $id, $key, $value ) { return self::set_meta( 'contactmeta', 'contact_id', $id, $key, $value ); }
 	private static function set_company_meta( $id, $key, $value ) { return self::set_meta( 'companymeta', 'company_id', $id, $key, $value ); }
 	private static function set_meta( $table_key, $id_key, $id, $key, $value ) {
 		global $wpdb; $table = ContactPanda_Schema::table_names()[ $table_key ]; $key = sanitize_key( $key );
