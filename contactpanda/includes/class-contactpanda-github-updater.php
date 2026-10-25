@@ -23,6 +23,7 @@ final class ContactPanda_GitHub_Updater {
 		add_action( 'network_admin_notices', array( $this, 'notice' ) );
 		add_action( 'upgrader_process_complete', array( $this, 'clear' ), 10, 2 );
 		add_action( 'admin_init', array( $this, 'maybe_clear_forced_check_cache' ), 1 );
+		add_action( 'admin_init', array( $this, 'maybe_refresh_after_upgrade' ), 2 );
 	}
 
 	private function enabled() {
@@ -82,7 +83,10 @@ final class ContactPanda_GitHub_Updater {
 	}
 
 	private function fail( $error ) {
-		set_site_transient( $this->cache, array( 'error' => $error->get_error_code() ), 5 * MINUTE_IN_SECONDS );
+		// A release can become available immediately after a failed check. Keeping
+		// negative responses made freshly published packages invisible until the
+		// transient expired, so failures are deliberately never cached.
+		delete_site_transient( $this->cache );
 		return $error;
 	}
 
@@ -254,7 +258,18 @@ final class ContactPanda_GitHub_Updater {
 		if ( in_array( $this->config['plugin'], (array) ( $extra['plugins'] ?? array( $extra['plugin'] ?? '' ) ), true ) ) {
 			delete_site_transient( $this->cache );
 			delete_site_transient( 'update_plugins' );
+			set_site_transient( 'contactpanda_update_refresh_required', 1, HOUR_IN_SECONDS );
 		}
+	}
+
+	/** Rebuild update data on the next request, when the newly installed code is loaded. */
+	public function maybe_refresh_after_upgrade() {
+		if ( ! current_user_can( 'update_plugins' ) || ! get_site_transient( 'contactpanda_update_refresh_required' ) ) return;
+		delete_site_transient( 'contactpanda_update_refresh_required' );
+		delete_site_transient( $this->cache );
+		delete_site_transient( 'update_plugins' );
+		if ( function_exists( 'wp_clean_plugins_cache' ) ) wp_clean_plugins_cache( true );
+		if ( function_exists( 'wp_update_plugins' ) ) wp_update_plugins();
 	}
 
 	/** Honour WordPress' native "Check again" action for the public release. */
