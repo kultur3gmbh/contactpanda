@@ -1,26 +1,27 @@
-# ContactPanda – modulare Architektur 0.6.0
+# ContactPanda – modulare Architektur 0.8.20
 
 ## Pakete
 
 `ContactPanda` ist das kostenlose, eigenständig lauffähige Haupt-Plugin. Es enthält Personen, Firmen, Adressen, Tags, Einwilligungen, Aktivitäten, Groundhogg-Kompatibilität und künftig ein WooCommerce-unabhängiges Kunden- und Präferenzportal. Die bestehende WooCommerce-Kundenansicht wird dabei zu einem optionalen Adapter des gemeinsamen Portals. Kunden-/Businessregistrierung und vCard-Austausch werden über stabile Kern-Schnittstellen ausschließlich durch Plus aktiviert. Bestellungen bleiben in WooCommerce; ContactPanda liest sie über die öffentliche CRUD-API und legt keine Bestellkopien an.
 
-Das Newsletter-Modul liegt seit 0.6.0 technisch in Basic. Es kann entweder durch eine eigenständige Newsletter-Lizenz oder durch ContactPanda Plus dauerhaft freigeschaltet werden. Das Ende des gebuchten Update- und Supportzeitraums deaktiviert weder Newsletter noch gespeicherte Inhalte oder Versandfunktionen; lediglich weitere Updates und Support stehen dann nicht mehr zur Verfügung.
+Das reduzierte Newsletter-Modul gehört dauerhaft zum kostenlosen ContactPanda. ContactPanda Plus ergänzt den erweiterten Newsletter-Editor, vollständige Formulare, Automatisierungen, Migrationen und Spezialintegrationen. Das Ende eines gebuchten Update- und Supportzeitraums deaktiviert weder bereits freigeschaltete Funktionen noch gespeicherte Inhalte oder Versandfunktionen; lediglich weitere Updates und Support stehen dann nicht mehr zur Verfügung.
 
-`ContactPanda Plus` benötigt Basic und ergänzt abgegrenzte Marketingmodule wie Automatisierungen, den vollständigen visuellen Formular-Builder, erweiterte Integrationen und Messaging- beziehungsweise E-Mail-Gateways. Plus schaltet außerdem das gemeinsame Newsletter-Modul frei. Der Support Desk gehört ausschließlich zu ContactPanda Pro; Projekt- und kaufmännische Verwaltung gehören ausschließlich zu ContactPanda Business. Die rein lesende Eventanzeige für The Events Calendar/Event Tickets und Amelia gehört zu Basic. Eine Deaktivierung einer Erweiterung entfernt weder Daten noch Einstellungen.
+`ContactPanda Plus` benötigt ContactPanda und ergänzt abgegrenzte Marketingmodule wie Automatisierungen, den vollständigen visuellen Formular-Builder, erweiterte Newsletter-Funktionen, Migrationen sowie Messaging- beziehungsweise E-Mail-Gateways. Der Support Desk gehört ausschließlich zu ContactPanda Pro; Projekt- und kaufmännische Verwaltung gehören ausschließlich zu ContactPanda Business. Die rein lesende Eventanzeige für The Events Calendar/Event Tickets und Amelia gehört zum kostenlosen ContactPanda. Eine Deaktivierung einer Erweiterung entfernt weder Daten noch Einstellungen.
 
 ```text
-ContactPanda Basic
+ContactPanda
 ├── Personen und Firmen
 ├── Adressen, Tags und Einwilligungen
 ├── Registrierung sowie unabhängiges Kunden- und Präferenzportal
 ├── WooCommerce-Basisintegration
 ├── Groundhogg-Kompatibilität und Migration
-├── lizenzierbares Newsletter-Modul
-│   ├── E-Mail-Vorlagen und Newsletter-Versand
-│   ├── gespeicherte Suchen und Kampagnen
-│   └── Versandstatistiken und Sperrlisten
+├── reduziertes Newsletter-Modul
+│   ├── einfache E-Mail-Erstellung und Newsletter-Versand
+│   ├── Einwilligungsprüfung und Abmeldung
+│   └── Versandstatus und Sperrlisten
 └── Erweiterungspunkte
     ├── ContactPanda Plus
+    │   ├── erweiterter Newsletter-Editor und Kampagnen
     │   ├── Automatisierungen
     │   ├── vollständiger visueller Formular-Builder
     │   ├── Messaging- und E-Mail-Gateways
@@ -47,7 +48,7 @@ Die Personen-Detailansicht ist ebenfalls erweiterbar. Erweiterungen registrieren
 
 ## Lizenz und Newsletter
 
-Eine erfolgreiche Newsletter-Lizenzaktivierung speichert zwei getrennte Zustände: die dauerhafte Funktionsberechtigung und das zeitlich begrenzte Ende von Updates beziehungsweise Support. Ein späterer Lizenzablauf oder das Trennen des gespeicherten Lizenzschlüssels darf die dauerhafte Funktionsberechtigung nicht zurücknehmen. Fehlgeschlagene oder nicht erreichbare Lizenzprüfungen verändern den vorhandenen Zustand nicht. ContactPanda Plus erteilt dieselbe Newsletter-Berechtigung über den öffentlichen Erweiterungspunkt `contactpanda_newsletter_entitled`.
+Das reduzierte Newsletter-Modul ist ohne Lizenz nutzbar. Erweiterte Newsletter-, Formular-, Automatisierungs-, Integrations- und Migrationsfunktionen werden über kanonische Plus-Berechtigungen gesteuert. Frühere Modulnamen bleiben ausschließlich als Kompatibilitäts-Aliase erhalten. Ein späterer Lizenzablauf oder das Trennen des gespeicherten Lizenzschlüssels darf eine bereits dauerhaft erworbene Funktionsberechtigung nicht zurücknehmen. Fehlgeschlagene oder nicht erreichbare Lizenzprüfungen verändern den vorhandenen Zustand während der definierten Offline-Toleranz nicht.
 
 ## E-Mail-Vorlagen
 

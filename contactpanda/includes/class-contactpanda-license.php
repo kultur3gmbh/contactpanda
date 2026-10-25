@@ -14,7 +14,8 @@ final class ContactPanda_License {
 	const INSTALLATION     = 'contactpanda_installation_id';
 	const PRODUCT          = 'contactpanda-suite';
 	const CHECK_HOOK       = 'contactpanda_license_daily_check';
-	const RESPONSE_VERSION = 1;
+	const RESPONSE_VERSION   = 1;
+	const OFFLINE_GRACE_DAYS = 7;
 
 	public static function boot() {
 		add_filter( 'contactpanda_general_settings_sections', array( __CLASS__, 'settings_section' ), 20 );
@@ -23,6 +24,7 @@ final class ContactPanda_License {
 		add_action( 'admin_post_contactpanda_disconnect_license', array( __CLASS__, 'disconnect' ) );
 		add_action( 'admin_post_contactpanda_check_licenses', array( __CLASS__, 'manual_check' ) );
 		add_action( self::CHECK_HOOK, array( __CLASS__, 'scheduled_check' ) );
+		add_action( 'admin_notices', array( __CLASS__, 'render_offline_notice' ) );
 		if ( ! wp_next_scheduled( self::CHECK_HOOK ) ) {
 			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', self::CHECK_HOOK );
 		}
@@ -39,6 +41,9 @@ final class ContactPanda_License {
 			'licenses'        => array(),
 			'legacy_grants'   => array(),
 			'last_checked_at' => '',
+			'last_successful_check_at' => '',
+			'last_failed_check_at'     => '',
+			'check_failure_since'      => '',
 		);
 	}
 
@@ -51,8 +56,8 @@ final class ContactPanda_License {
 			$state = wp_parse_args( $raw, self::defaults() );
 		} else {
 			$grants = array_values( array_unique( array_filter( array_map( array( __CLASS__, 'normalize_entitlement' ), (array) ( $raw['granted_entitlements'] ?? array() ) ) ) ) );
-			if ( ! empty( $raw['newsletter_granted'] ) && ! in_array( 'newsletter', $grants, true ) ) {
-				$grants[] = 'newsletter';
+			if ( ! empty( $raw['newsletter_granted'] ) && ! in_array( 'advanced_newsletter', $grants, true ) ) {
+				$grants[] = 'advanced_newsletter';
 			}
 			if ( ! empty( $raw['master_granted'] ) && ! in_array( 'all', $grants, true ) ) {
 				$grants[] = 'all';
@@ -86,6 +91,12 @@ final class ContactPanda_License {
 			$state['licenses'][ $id ] = self::normalize_license( $license );
 		}
 		$state['legacy_grants'] = array_values( array_unique( array_filter( array_map( array( __CLASS__, 'normalize_entitlement' ), (array) $state['legacy_grants'] ) ) ) );
+		foreach ( array( 'last_checked_at', 'last_successful_check_at', 'last_failed_check_at', 'check_failure_since' ) as $date_key ) {
+			$state[ $date_key ] = sanitize_text_field( $state[ $date_key ] ?? '' );
+		}
+		if ( ! $state['last_successful_check_at'] && $state['last_checked_at'] ) {
+			$state['last_successful_check_at'] = $state['last_checked_at'];
+		}
 		return $state;
 	}
 
@@ -119,7 +130,20 @@ final class ContactPanda_License {
 	}
 
 	private static function normalize_entitlement( $item ) {
-		return '*' === trim( (string) $item ) ? 'all' : sanitize_key( $item );
+		$item = '*' === trim( (string) $item ) ? 'all' : sanitize_key( $item );
+		$aliases = array(
+			'newsletter' => 'advanced_newsletter',
+			'forms'      => 'forms_editor',
+			'flows'      => 'automations',
+			'integrations' => 'advanced_integrations',
+			'migration'  => 'form_migration',
+		);
+		return $aliases[ $item ] ?? $item;
+	}
+
+	/** Canonical paid features contained in the complete Plus package. */
+	public static function plus_features() {
+		return array( 'advanced_newsletter', 'forms_editor', 'automations', 'advanced_integrations', 'form_migration' );
 	}
 
 	public static function installation_id() {
@@ -144,14 +168,22 @@ final class ContactPanda_License {
 			}
 			$grants = array_merge( $grants, $license['entitlements'] );
 		}
+		$module  = self::normalize_entitlement( $module );
+		$grants  = array_values( array_unique( array_filter( array_map( array( __CLASS__, 'normalize_entitlement' ), $grants ) ) ) );
 		$granted = in_array( 'all', $grants, true ) || in_array( $module, $grants, true );
+		if ( ! $granted && in_array( $module, self::plus_features(), true ) ) {
+			$granted = in_array( 'plus', $grants, true );
+		}
 		return (bool) apply_filters( 'contactpanda_license_entitled', $granted, $module, $state );
 	}
 
+	/** The reduced newsletter is part of free ContactPanda. */
 	public static function newsletter_entitled() {
-		$state   = self::state();
-		$granted = self::entitled( 'newsletter' );
-		return (bool) apply_filters( 'contactpanda_newsletter_entitled', $granted, $state );
+		return (bool) apply_filters( 'contactpanda_newsletter_entitled', true, self::state() );
+	}
+
+	public static function advanced_newsletter_entitled() {
+		return self::entitled( 'advanced_newsletter' );
 	}
 
 	/**
@@ -162,14 +194,14 @@ final class ContactPanda_License {
 	 * could never receive maintenance releases.
 	 */
 	public static function update_entitlement_matches( $entitlements, $required ) {
-		$required     = sanitize_key( $required );
+		$required     = self::normalize_entitlement( $required );
 		$entitlements = array_values( array_unique( array_filter( array_map( array( __CLASS__, 'normalize_entitlement' ), (array) $entitlements ) ) ) );
 		if ( '' === $required || in_array( 'all', $entitlements, true ) ) {
 			return true;
 		}
 
 		$families = array(
-			'plus'     => array( 'plus', 'customer_registration', 'customer_account', 'automations', 'forms', 'messaging', 'email_delivery', 'sms', 'whatsapp' ),
+			'plus'     => array_merge( array( 'plus', 'customer_registration', 'customer_account', 'messaging', 'email_delivery', 'sms', 'whatsapp' ), self::plus_features() ),
 			'pro'      => array( 'pro', 'support_desk', 'helpdesk' ),
 			'business' => array( 'business', 'project_management', 'customer_management', 'contract_management', 'subscription_management', 'payment_management', 'software_licensing' ),
 		);
@@ -262,16 +294,20 @@ final class ContactPanda_License {
 			return;
 		}
 		$state  = self::state();
+		$offline = self::offline_status( $state );
 		$notice = sanitize_key( wp_unslash( $_GET['license_notice'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only result code.
 		if ( $notice && self::status_message( $notice ) ) {
 			$class = in_array( $notice, array( 'activated', 'disconnected', 'checked' ), true ) ? 'notice-success' : 'notice-error';
 			echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p>' . esc_html( self::status_message( $notice ) ) . '</p></div>';
 		}
 
-		$catalog = apply_filters( 'contactpanda_license_modules', array( 'newsletter' => __( 'Newsletter', 'contactpanda' ) ) );
+		$catalog = apply_filters( 'contactpanda_license_modules', array( 'advanced_newsletter' => __( 'Advanced newsletter', 'contactpanda' ) ) );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'ContactPanda licenses', 'contactpanda' ) . '</h2>';
-		echo '<p>' . esc_html__( 'ContactPanda remains free and updateable without a license. Additional licenses can unlock Newsletter, Plus, or selected modules. A normal expiry ends updates and support, but granted modules remain usable.', 'contactpanda' ) . '</p>';
+		echo '<p>' . esc_html__( 'ContactPanda remains free and updateable without a license, including the simple newsletter. Additional licenses unlock advanced newsletter functions, the visual form editor, automations, integrations, migration tools, or the complete Plus package. A normal expiry ends updates and support, but granted modules remain usable.', 'contactpanda' ) . '</p>';
 		echo '<div class="contactpanda-license-status"><p><strong>' . esc_html__( 'ContactPanda license', 'contactpanda' ) . ':</strong> ' . esc_html__( 'Free license active', 'contactpanda' ) . '</p></div>';
+		if ( $offline['failed'] && ! $offline['overdue'] ) {
+			echo '<p class="description">' . esc_html__( 'The license service is temporarily unavailable. Cached permissions remain active and ContactPanda will retry automatically.', 'contactpanda' ) . '</p>';
+		}
 
 		if ( $state['licenses'] ) {
 			echo '<h3>' . esc_html__( 'Activated licenses', 'contactpanda' ) . '</h3>';
@@ -303,13 +339,12 @@ final class ContactPanda_License {
 
 		echo '<h3>' . esc_html__( 'Module status', 'contactpanda' ) . '</h3><div class="contactpanda-license-groups">';
 		$groups = array(
-			'core'     => array( 'label' => __( 'ContactPanda', 'contactpanda' ), 'modules' => array( 'newsletter' ) ),
-			'plus'     => array( 'label' => __( 'ContactPanda Plus', 'contactpanda' ), 'modules' => array( 'customer_registration', 'customer_account', 'automations', 'forms', 'messaging', 'email_delivery' ) ),
+			'plus'     => array( 'label' => __( 'ContactPanda Plus', 'contactpanda' ), 'modules' => array( 'advanced_newsletter', 'forms_editor', 'automations', 'advanced_integrations', 'form_migration' ) ),
 			'pro'      => array( 'label' => __( 'ContactPanda Pro', 'contactpanda' ), 'modules' => array( 'support_desk' ) ),
 			'business' => array( 'label' => __( 'ContactPanda Business', 'contactpanda' ), 'modules' => array( 'project_management', 'customer_management', 'contract_management', 'subscription_management', 'payment_management', 'software_licensing' ) ),
 		);
 		foreach ( $groups as $group_key => $group ) {
-			$package_enabled = 'core' === $group_key ? false : self::entitled( $group_key );
+			$package_enabled = self::entitled( $group_key );
 			echo '<section class="contactpanda-license-group"><h4>' . esc_html( $group['label'] ) . ( $package_enabled ? ' <span class="contactpanda-status-badge is-positive">' . esc_html__( 'Complete package enabled', 'contactpanda' ) . '</span>' : '' ) . '</h4>';
 			foreach ( $group['modules'] as $module ) {
 				if ( ! isset( $catalog[ $module ] ) ) continue;
@@ -468,7 +503,10 @@ final class ContactPanda_License {
 		$state = self::state();
 		$id    = sanitize_text_field( $data['license_id'] ?? $data['activation_id'] );
 		$state['licenses'][ $id ] = $license;
-		$state['last_checked_at']  = current_time( 'mysql', true );
+		$state['last_checked_at']          = current_time( 'mysql', true );
+		$state['last_successful_check_at'] = $state['last_checked_at'];
+		$state['last_failed_check_at']     = '';
+		$state['check_failure_since']      = '';
 		update_option( self::OPTION, $state, false );
 		self::clear_update_caches();
 		self::redirect( 'activated' );
@@ -512,10 +550,12 @@ final class ContactPanda_License {
 	private static function check_all() {
 		$state       = self::state();
 		$had_success = false;
+		$attempted   = false;
 		foreach ( $state['licenses'] as $id => $license ) {
 			if ( empty( $license['activation_id'] ) || empty( $license['activation_token'] ) || 'disconnected' === $license['status'] ) {
 				continue;
 			}
+			$attempted = true;
 			$data = self::request(
 				'check',
 				array(
@@ -526,18 +566,52 @@ final class ContactPanda_License {
 			if ( is_wp_error( $data ) || ! isset( $data['valid'] ) ) {
 				continue;
 			}
+			$had_success = true;
 			if ( ! empty( $data['valid'] ) || 'blocked' === ( $data['status'] ?? '' ) ) {
 				$state['licenses'][ $id ] = self::license_from_response( $data, $license );
-				$had_success = true;
 			}
 		}
-		if ( $had_success ) {
-			$state['last_checked_at'] = current_time( 'mysql', true );
+		if ( $had_success || ! $attempted ) {
+			$state['last_checked_at']            = current_time( 'mysql', true );
+			$state['last_successful_check_at']   = $state['last_checked_at'];
+			$state['last_failed_check_at']       = '';
+			$state['check_failure_since']        = '';
 			update_option( self::OPTION, $state, false );
 			self::clear_update_caches();
 			return true;
 		}
+		$state['last_failed_check_at'] = current_time( 'mysql', true );
+		if ( ! $state['check_failure_since'] ) {
+			$state['check_failure_since'] = $state['last_failed_check_at'];
+		}
+		update_option( self::OPTION, $state, false );
 		return new WP_Error( 'contactpanda_license_network' );
+	}
+
+	private static function offline_status( $state = null ) {
+		$state = is_array( $state ) ? $state : self::state();
+		$since = sanitize_text_field( $state['check_failure_since'] ?? '' );
+		$time  = $since ? strtotime( $since . ' UTC' ) : false;
+		$age   = $time ? max( 0, time() - $time ) : 0;
+		return array(
+			'failed'  => (bool) $time,
+			'overdue' => (bool) $time && $age >= self::OFFLINE_GRACE_DAYS * DAY_IN_SECONDS,
+			'days'    => $time ? (int) floor( $age / DAY_IN_SECONDS ) : 0,
+		);
+	}
+
+	public static function render_offline_notice() {
+		if ( ! current_user_can( self::capability() ) ) {
+			return;
+		}
+		$status = self::offline_status();
+		if ( ! $status['overdue'] ) {
+			return;
+		}
+		echo '<div class="notice notice-warning"><p><strong>' . esc_html__( 'The ContactPanda license service has not been reachable for more than seven days.', 'contactpanda' ) . '</strong> ' . esc_html__( 'Cached permissions remain active and all installed functions continue to work. Automatic checks will continue.', 'contactpanda' ) . '</p>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_check_licenses">';
+		wp_nonce_field( 'contactpanda_check_licenses' );
+		echo '<p><button class="button">' . esc_html__( 'Check licenses now', 'contactpanda' ) . '</button></p></form></div>';
 	}
 
 	public static function disconnect() {

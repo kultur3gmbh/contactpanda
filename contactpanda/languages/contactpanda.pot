@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.15\n"
+"Project-Id-Version: ContactPanda 0.8.20\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -6468,7 +6468,19 @@ msgid "ContactPanda licenses"
 msgstr ""
 
 #: contactpanda/includes/class-contactpanda-license.php
-msgid "ContactPanda remains free and updateable without a license. Additional licenses can unlock Newsletter, Plus, or selected modules. A normal expiry ends updates and support, but granted modules remain usable."
+msgid "ContactPanda remains free and updateable without a license, including the simple newsletter. Additional licenses unlock advanced newsletter functions, the visual form editor, automations, integrations, migration tools, or the complete Plus package. A normal expiry ends updates and support, but granted modules remain usable."
+msgstr ""
+
+msgid "Advanced newsletter"
+msgstr ""
+
+msgid "The license service is temporarily unavailable. Cached permissions remain active and ContactPanda will retry automatically."
+msgstr ""
+
+msgid "The ContactPanda license service has not been reachable for more than seven days."
+msgstr ""
+
+msgid "Cached permissions remain active and all installed functions continue to work. Automatic checks will continue."
 msgstr ""
 
 #: contactpanda/includes/class-contactpanda-license.php

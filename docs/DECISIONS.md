@@ -6,8 +6,17 @@ This document records stable decisions that must survive individual conversation
 
 - Product name: ContactPanda.
 - Developer: Kultur3 GmbH.
-- Basic display positioning: User-Friendly CRM for WordPress.
+- The free WordPress plugin is displayed simply as `ContactPanda`; `Basic` is an internal tier description, not a second product name in the plugin list.
 - Basic and Plus are separate installable plugins maintained in separate repositories.
+
+## Commercial feature model
+
+- ContactPanda is the free foundation. ContactPanda Plus is one installed extension whose capabilities are controlled by durable feature entitlements rather than hard-coded tariff names.
+- Canonical Plus entitlements are `advanced_newsletter`, `forms_editor`, `automations`, `advanced_integrations`, and `form_migration`.
+- A complete `plus` grant includes all five canonical entitlements. Historical `newsletter`, `forms`, `flows`, `integrations`, and `migration` grants are compatibility aliases and must continue to work.
+- Activating the Plus plugin alone does not unlock paid capabilities. A Newsletter license, Forms license, or complete Plus license may all use the same installed Plus package.
+- A normal license expiry never disables an installed capability. It ends updates, support, and new migration or compatibility profiles only. Cached grants remain effective while the license service is unreachable.
+- License checks have a seven-day grace period. From day eight, ContactPanda shows a persistent administrator warning and keeps retrying without interrupting frontend, sending, forms, or automations.
 
 ## Data ownership
 
@@ -29,8 +38,19 @@ This document records stable decisions that must survive individual conversation
 ## Forms and newsletter
 
 - Basic owns the reduced newsletter signup form, including consent and double-opt-in rules.
+- Basic also owns unlimited manually started newsletters, recipient selection, a reduced responsive editor, post content, test delivery, personalization, duplication, list-level summary statistics, unsubscribe and preference handling, and delivery through WordPress or the configured SMTP layer.
+- Basic does not provide scheduled sending, a reusable named template library, detailed analytics, attachments, gallery content, WooCommerce newsletter content, communication buttons, automatic newsletters, or flows.
+- `advanced_newsletter` adds scheduled sending, reusable named templates, attachments, gallery content, WooCommerce content, phone/email/WhatsApp buttons, and detailed analytics. Detailed analytics remain a development task; existing list-level counts are the free summary.
 - ContactPanda Plus owns the full visual form builder and may connect forms to automations and additional processing targets.
+- External form connections and the reduced newsletter signup remain free. `forms_editor` unlocks the visual responsive form builder. `form_migration` adds controlled discovery, compatibility reporting, preview, testing, replacement logging, and rollback. Source forms and submissions are never deleted without explicit confirmation.
+- Newsletter mailings and reusable templates are separate concepts. A free mailing may own an internal content snapshot and may be duplicated; organizing named reusable templates is an advanced feature.
 - Plus uses Basic's public contact and newsletter contracts and must not duplicate the Basic newsletter schema or runtime.
+
+## License upgrades
+
+- Upgrading Newsletter and/or Forms to complete Plus combines the unused time value of eligible licenses, starts a fresh twelve-month Plus term, and does not inherit the old expiry date.
+- The credit formula is `paid license price × remaining days ÷ original term days`. The amount due is the new annual price minus all eligible credits.
+- Price paid, original period, credited amount, target term, provider transaction, and calculation basis must be stored as auditable commercial events on the license server; the WordPress client only consumes the resulting entitlements and dates.
 
 ## Customer portal
 

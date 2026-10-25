@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda
  * Description: Free contact and company management for WordPress with WooCommerce, event, Amelia, and optional Groundhogg overviews.
- * Version: 0.8.15
+ * Version: 0.8.20
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.8.15' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.8.15-20261025-1' );
+define( 'CONTACTPANDA_VERSION', '0.8.20' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.8.20-20261025-1' );
 define( 'CONTACTPANDA_EXTENSION_API_VERSION', '1.0' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
@@ -101,8 +101,8 @@ add_action( 'plugins_loaded', array( 'ContactPanda_Customer_Portal', 'boot' ), 3
 add_action( 'plugins_loaded', array( 'ContactPanda_My_Account', 'boot' ), 31 );
 
 /**
- * The licensed newsletter is a Basic feature. Plus can grant the same public
- * entitlement through the filter before this late bootstrap runs.
+ * The reduced newsletter is part of free ContactPanda. Paid capabilities are
+ * checked at the individual action or editor control that requires them.
  */
 function contactpanda_boot_newsletter_module() {
 	$enabled = ContactPanda_License::newsletter_entitled();
@@ -112,7 +112,7 @@ function contactpanda_boot_newsletter_module() {
 		'newsletter',
 		array(
 			'name'    => __( 'Newsletter', 'contactpanda' ),
-			'package' => $existing_newsletter ? $existing_newsletter['package'] : 'licensed-basic',
+			'package' => $existing_newsletter ? $existing_newsletter['package'] : 'free-core',
 			'version' => CONTACTPANDA_VERSION,
 			'enabled' => $enabled,
 		)
@@ -121,7 +121,7 @@ function contactpanda_boot_newsletter_module() {
 		'segments',
 		array(
 			'name'    => __( 'Saved searches', 'contactpanda' ),
-			'package' => $existing_segments ? $existing_segments['package'] : 'licensed-basic',
+			'package' => $existing_segments ? $existing_segments['package'] : 'free-core',
 			'version' => CONTACTPANDA_VERSION,
 			'enabled' => $enabled,
 		)

@@ -10,14 +10,14 @@ $segments   = file_get_contents( $root . '/contactpanda/includes/class-contactpa
 $updater    = file_get_contents( $root . '/contactpanda/includes/class-contactpanda-github-updater.php' );
 $licensed_updater = file_get_contents( $root . '/contactpanda/includes/class-contactpanda-licensed-updater.php' );
 
-foreach ( array( 'ContactPanda_License::newsletter_entitled', 'contactpanda_boot_newsletter_module', "'licensed-basic'" ) as $contract ) {
+foreach ( array( 'ContactPanda_License::newsletter_entitled', 'ContactPanda_License::advanced_newsletter_entitled', 'contactpanda_boot_newsletter_module', "'free-core'" ) as $contract ) {
 	if ( false === strpos( $main, $contract ) ) {
 		fwrite( STDERR, "Missing Basic newsletter bootstrap contract {$contract}.\n" );
 		exit( 1 );
 	}
 }
 
-foreach ( array( "'licenses'", "'legacy_grants'", 'updates_allowed_for', 'contactpanda_license_daily_check', 'activation_token', 'signature_algorithm', 'canonical_json', 'Previously granted modules remain available' ) as $contract ) {
+foreach ( array( "'licenses'", "'legacy_grants'", 'updates_allowed_for', 'contactpanda_license_daily_check', 'activation_token', 'signature_algorithm', 'canonical_json', 'Previously granted modules remain available', 'OFFLINE_GRACE_DAYS', "'advanced_newsletter'", "'forms_editor'", "'automations'", "'advanced_integrations'", "'form_migration'" ) as $contract ) {
 	if ( false === strpos( $license, $contract ) ) {
 		fwrite( STDERR, "Missing durable license contract {$contract}.\n" );
 		exit( 1 );
