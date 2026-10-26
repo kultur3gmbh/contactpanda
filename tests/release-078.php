@@ -7,7 +7,7 @@ $schema    = file_get_contents( $root . '/contactpanda/includes/class-contactpan
 $script    = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin.js' );
 $styles    = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin.css' );
 
-foreach ( array( 'render_dashboard', 'contactpanda-dashboard-grid', 'contactpanda-people-search-row', 'Select all %d matching people', '%1$d of %2$d entries' ) as $contract ) {
+foreach ( array( 'render_dashboard', 'contactpanda-dashboard-grid', 'contactpanda-dashboard-section', 'contactpanda-dashboard-last-mailing', 'dashboard_duplicate_count', 'contactpanda_dashboard_communication_cards', 'render_dashboard_upgrades', 'contactpanda_dashboard_upgrade_offers', 'contactpanda_product_sales_url', 'register_news_dashboard_widget', 'wp_add_dashboard_widget', 'render_dashboard_news', 'contactpanda_news_feed_url', 'contactpanda_news_url', "array( 'contactpanda-pro', 'contactpanda-business' )", 'CONTACTPANDA_PLUS_VERSION', 'CONTACTPANDA_PRO_VERSION', 'People and companies', 'Newsletter and automations', 'Last mailing', 'ContactPanda News', 'More possibilities for your business', 'contactpanda-people-search-row', 'Select all %d matching people', '%1$d of %2$d entries' ) as $contract ) {
 	if ( false === strpos( $plugin . $styles, $contract ) ) {
 		fwrite( STDERR, "Missing ContactPanda 0.7.8 list or dashboard contract {$contract}.\n" );
 		exit( 1 );

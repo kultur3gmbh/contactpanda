@@ -7,6 +7,7 @@ $data_tools = file_get_contents( $root . '/contactpanda/includes/class-contactpa
 $script     = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin.js' );
 $shared_ui  = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin-ui.js' );
 $styles     = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin.css' );
+$menu_styles = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin-menu.css' );
 $bootstrap  = file_get_contents( $root . '/contactpanda/contactpanda.php' );
 
 foreach ( array( 'Drop a CSV file here', 'Drop a vCard file here', 'contactpanda-file-drop-actions' ) as $contract ) {
@@ -87,6 +88,33 @@ foreach ( array( 'contactpanda-admin-ui', 'wp_enqueue_media', 'CONTACTPANDA_ADMI
 		fwrite( STDERR, "Missing shared family UI bootstrap contract {$contract}.\n" );
 		exit( 1 );
 	}
+}
+
+foreach ( array( 'contactpanda-admin-menu', 'contactpanda-newsletters', 'contactpanda-campaigns', 'contactpanda-flows', 'contactpanda-data-transfer', 'contactpanda-settings', 'contactpanda-trash' ) as $contract ) {
+	if ( false === strpos( $plugin, $contract ) ) {
+		fwrite( STDERR, "Missing ContactPanda menu order contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+$menu_positions = array();
+foreach ( array( 'contactpanda', 'contactpanda-people', 'contactpanda-firmen', 'contactpanda-newsletters', 'contactpanda-campaigns', 'contactpanda-flows', 'contactpanda-data-transfer', 'contactpanda-settings', 'contactpanda-trash' ) as $slug ) {
+	if ( ! preg_match( "/'" . preg_quote( $slug, '/' ) . "'\\s*=>\\s*(\\d+)/", $plugin, $match ) ) {
+		fwrite( STDERR, "Missing ordered ContactPanda submenu entry {$slug}.\n" );
+		exit( 1 );
+	}
+	$menu_positions[] = (int) $match[1];
+}
+$sorted_menu_positions = $menu_positions;
+sort( $sorted_menu_positions );
+if ( $menu_positions !== array_values( array_unique( $menu_positions ) ) || $menu_positions !== $sorted_menu_positions ) {
+	fwrite( STDERR, "The ContactPanda submenu entries are not in the required order.\n" );
+	exit( 1 );
+}
+
+if ( false === strpos( $menu_styles, 'page=contactpanda-data-transfer' ) || false === strpos( $menu_styles, 'border-top' ) ) {
+	fwrite( STDERR, "The ContactPanda submenu administration separator is missing.\n" );
+	exit( 1 );
 }
 
 foreach ( array( 'activity_is_note', 'partition_contact_notes', 'address_update', 'user_account', 'user_roles' ) as $contract ) {

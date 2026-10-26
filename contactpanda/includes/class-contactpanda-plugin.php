@@ -10,6 +10,8 @@ final class ContactPanda_Plugin {
 		add_action( 'admin_menu', array( __CLASS__, 'submenu_order' ), 999 );
 		add_filter( 'custom_menu_order', '__return_true' );
 		add_filter( 'menu_order', array( __CLASS__, 'menu_order' ), 999 );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'menu_assets' ) );
+		add_action( 'wp_dashboard_setup', array( __CLASS__, 'register_news_dashboard_widget' ) );
 		add_filter( 'manage_contactpanda_page_contactpanda-people_columns', array( __CLASS__, 'people_screen_columns' ) );
 		add_filter( 'manage_contactpanda_page_contactpanda-firmen_columns', array( __CLASS__, 'company_screen_columns' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
@@ -159,27 +161,71 @@ final class ContactPanda_Plugin {
 			return;
 		}
 		$priority = array(
-			'contactpanda'             => 5,
-			'contactpanda-people'      => 10,
-			'contactpanda-firmen'      => 20,
-			'contactpanda-data-transfer' => 25,
-			'contactpanda-tags'        => 30,
-			'contactpanda-segments'    => 40,
-			'contactpanda-newsletters' => 50,
-			'contactpanda-campaigns'   => 55,
-			'contactpanda-flows'       => 60,
-			'contactpanda-helpdesk'    => 65,
-			'contactpanda-trash'       => 70,
-			'contactpanda-settings'    => 999,
+			'contactpanda'               => 10,
+			'contactpanda-people'        => 20,
+			'contactpanda-firmen'        => 30,
+			'contactpanda-newsletters'   => 40,
+			'contactpanda-campaigns'     => 50,
+			'contactpanda-forms'         => 55,
+			'contactpanda-flows'         => 60,
+			'contactpanda-tags'          => 70,
+			'contactpanda-segments'      => 71,
+			'contactpanda-data-transfer' => 100,
+			'contactpanda-settings'      => 110,
+			'contactpanda-trash'         => 120,
 		);
+		$indexed = array();
+		foreach ( array_values( $submenu['contactpanda'] ) as $index => $item ) {
+			$indexed[] = array(
+				'index' => $index,
+				'item'  => $item,
+			);
+		}
 		usort(
-			$submenu['contactpanda'],
+			$indexed,
 			static function ( $left, $right ) use ( $priority ) {
-				$left_order  = isset( $priority[ $left[2] ] ) ? $priority[ $left[2] ] : 500;
-				$right_order = isset( $priority[ $right[2] ] ) ? $priority[ $right[2] ] : 500;
+				$left_slug   = isset( $left['item'][2] ) ? (string) $left['item'][2] : '';
+				$right_slug  = isset( $right['item'][2] ) ? (string) $right['item'][2] : '';
+				$left_order  = isset( $priority[ $left_slug ] ) ? $priority[ $left_slug ] : 80;
+				$right_order = isset( $priority[ $right_slug ] ) ? $priority[ $right_slug ] : 80;
+				if ( $left_order === $right_order ) {
+					return $left['index'] <=> $right['index'];
+				}
 				return $left_order <=> $right_order;
 			}
 		);
+		$submenu['contactpanda'] = array_map(
+			static function ( $entry ) {
+				return $entry['item'];
+			},
+			$indexed
+		);
+	}
+
+	/**
+	 * Load the tiny menu-only stylesheet on every administrator screen so the
+	 * functional pages and the administration pages stay visually separated.
+	 */
+	public static function menu_assets( $hook = '' ) {
+		if ( ! current_user_can( self::access_capability() ) ) {
+			return;
+		}
+		wp_enqueue_style( 'contactpanda-admin-menu', CONTACTPANDA_URL . 'assets/contactpanda-admin-menu.css', array(), CONTACTPANDA_ASSET_VERSION );
+		if ( 'index.php' === $hook ) {
+			wp_enqueue_style( 'contactpanda-dashboard-widget', CONTACTPANDA_URL . 'assets/contactpanda-dashboard-widget.css', array(), CONTACTPANDA_ASSET_VERSION );
+		}
+	}
+
+	/** Register ContactPanda news on the regular WordPress dashboard. */
+	public static function register_news_dashboard_widget() {
+		if ( ! current_user_can( self::access_capability() ) ) return;
+		wp_add_dashboard_widget( 'contactpanda-news', __( 'ContactPanda News', 'contactpanda' ), array( __CLASS__, 'render_news_dashboard_widget' ) );
+	}
+
+	/** Render the compact WordPress dashboard news widget. */
+	public static function render_news_dashboard_widget() {
+		echo '<p class="contactpanda-news-intro">' . esc_html__( 'Product news, practical tips, and important information about ContactPanda.', 'contactpanda' ) . '</p>';
+		self::render_news_list( 3, true );
 	}
 
 	private static function access_capability() {
@@ -188,8 +234,9 @@ final class ContactPanda_Plugin {
 
 	/**
 	 * Places ContactPanda directly after Avada in the first admin menu group.
-	 * If Avada is not active, ContactPanda is placed immediately before the
-	 * first separator instead.
+	 * Paid products that own a separate top-level menu remain next to the shared
+	 * ContactPanda menu instead of being mixed into its Basic and Plus pages.
+	 * If Avada is not active, the family starts before the first separator.
 	 *
 	 * @param string[] $menu_order Registered top-level menu slugs.
 	 * @return string[]
@@ -206,6 +253,13 @@ final class ContactPanda_Plugin {
 			return $menu_order;
 		}
 
+		$family_slugs = array();
+		foreach ( array( 'contactpanda-pro', 'contactpanda-business' ) as $family_slug ) {
+			$family_key = array_search( $family_slug, $menu_order, true );
+			if ( false === $family_key ) continue;
+			$family_slugs[] = $family_slug;
+			unset( $menu_order[ $family_key ] );
+		}
 		unset( $menu_order[ $contactpanda_key ] );
 		$menu_order = array_values( $menu_order );
 		$avada_slug = '';
@@ -240,7 +294,7 @@ final class ContactPanda_Plugin {
 			$insert_at     = false !== $separator_key ? $separator_key : 1;
 		}
 
-		array_splice( $menu_order, $insert_at, 0, array( $contactpanda_slug ) );
+		array_splice( $menu_order, $insert_at, 0, array_merge( array( $contactpanda_slug ), $family_slugs ) );
 
 		return $menu_order;
 	}
@@ -1851,27 +1905,246 @@ final class ContactPanda_Plugin {
 			return;
 		}
 
-		$people_count = count( self::extension_contacts() );
-		$cards = array(
-			array( __( 'People', 'contactpanda' ), $people_count, admin_url( 'admin.php?page=contactpanda-people' ), 'groups' ),
+		$contact_cards = array(
+			array( __( 'People', 'contactpanda' ), self::dashboard_people_count(), admin_url( 'admin.php?page=contactpanda-people' ), 'groups' ),
 		);
-		if ( self::companies_available() ) $cards[] = array( __( 'Companies', 'contactpanda' ), count( self::extension_companies() ), admin_url( 'admin.php?page=contactpanda-firmen' ), 'building' );
+		if ( self::companies_available() ) $contact_cards[] = array( __( 'Companies', 'contactpanda' ), self::dashboard_company_count(), admin_url( 'admin.php?page=contactpanda-firmen' ), 'building' );
+		$contact_cards[] = array( __( 'Potential duplicates', 'contactpanda' ), self::dashboard_duplicate_count(), admin_url( 'admin.php?page=contactpanda-settings&tab=other&other_section=duplicates' ), 'admin-page' );
+
+		$communication_cards = array();
+		$last_mailing = false;
 		if ( class_exists( 'ContactPanda_Newsletter_Schema' ) && class_exists( 'ContactPanda_License' ) && ContactPanda_License::newsletter_entitled() ) {
 			global $wpdb;
 			ContactPanda_Newsletter_Schema::maybe_upgrade();
 			$tables = ContactPanda_Newsletter_Schema::table_names();
-			$cards[] = array( __( 'Email templates', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['templates']}`" ), admin_url( 'admin.php?page=contactpanda-newsletters' ), 'email-alt' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$cards[] = array( __( 'Mailings', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['campaigns']}`" ), admin_url( 'admin.php?page=contactpanda-campaigns' ), 'megaphone' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$cards[] = array( __( 'Campaigns', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['campaign_groups']}`" ), admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=campaigns' ), 'category' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$cards[] = array( __( 'Saved searches', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['segments']}`" ), admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=saved_searches' ), 'filter' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$cards[] = array( __( 'Blocked email addresses', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['suppressions']}`" ), admin_url( 'admin.php?page=contactpanda-campaigns' ), 'warning' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$contact_cards[] = array( __( 'Saved searches', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['segments']}`" ), admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=saved_searches' ), 'filter' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$communication_cards[] = array( __( 'Email templates', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['templates']}` WHERE status <> 'archived'" ), admin_url( 'admin.php?page=contactpanda-newsletters' ), 'email-alt' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$communication_cards[] = array( __( 'Mailings', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['campaigns']}`" ), admin_url( 'admin.php?page=contactpanda-campaigns' ), 'megaphone' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$communication_cards[] = array( __( 'Campaigns', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['campaign_groups']}`" ), admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=campaigns' ), 'category' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$communication_cards[] = array( __( 'Blocked email addresses', 'contactpanda' ), (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$tables['suppressions']}`" ), admin_url( 'admin.php?page=contactpanda-campaigns' ), 'warning' ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$last_mailing = $wpdb->get_row( "SELECT * FROM `{$tables['campaigns']}` WHERE started_at IS NOT NULL OR completed_at IS NOT NULL OR status = 'imported' ORDER BY COALESCE(completed_at,started_at,scheduled_at,created_at) DESC LIMIT 1", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name and fixed query.
+		}
+		$communication_cards = apply_filters( 'contactpanda_dashboard_communication_cards', $communication_cards );
+
+		echo '<div class="wrap contactpanda-wrap contactpanda-dashboard"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CRM</p><h1>' . esc_html__( 'Dashboard', 'contactpanda' ) . '</h1><p>' . esc_html__( 'The most important ContactPanda figures at a glance.', 'contactpanda' ) . '</p></div></div>';
+		self::render_dashboard_section( __( 'People and companies', 'contactpanda' ), $contact_cards );
+		if ( $communication_cards ) self::render_dashboard_section( __( 'Newsletter and automations', 'contactpanda' ), $communication_cards );
+		self::render_dashboard_last_mailing( $last_mailing );
+		self::render_dashboard_news();
+		self::render_dashboard_upgrades();
+		echo '</div>';
+	}
+
+	private static function dashboard_people_count() {
+		$result = self::contact_search( '', 1, 0 );
+		if ( isset( $result['total_items'] ) ) {
+			return absint( $result['total_items'] );
+		}
+		return count( self::extension_contacts() );
+	}
+
+	private static function dashboard_company_count() {
+		if ( ContactPanda_Store::standalone() ) {
+			$counts = ContactPanda_Store::counts();
+			return absint( $counts['companies'] ?? 0 );
+		}
+		$result = self::execute_ability(
+			'groundhogg-companies/list-companies',
+			array(
+				'limit'  => 1,
+				'offset' => 0,
+			)
+		);
+		foreach ( array( 'total_items', 'total', 'count' ) as $key ) {
+			if ( is_array( $result ) && isset( $result[ $key ] ) ) return absint( $result[ $key ] );
+		}
+		return count( self::extension_companies() );
+	}
+
+	private static function dashboard_duplicate_count() {
+		if ( ContactPanda_Store::standalone() ) {
+			return count( ContactPanda_Store::duplicate_groups( 5000 ) );
 		}
 
-		echo '<div class="wrap contactpanda-wrap contactpanda-dashboard"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CRM</p><h1>' . esc_html__( 'Dashboard', 'contactpanda' ) . '</h1><p>' . esc_html__( 'The most important ContactPanda figures at a glance.', 'contactpanda' ) . '</p></div></div><div class="contactpanda-dashboard-grid">';
-		foreach ( $cards as $card ) {
-			echo '<a class="contactpanda-dashboard-card" href="' . esc_url( $card[2] ) . '"><span class="dashicons dashicons-' . esc_attr( $card[3] ) . '" aria-hidden="true"></span><strong>' . esc_html( number_format_i18n( $card[1] ) ) . '</strong><span>' . esc_html( $card[0] ) . '</span></a>';
+		$seen = array();
+		$parents = array();
+		$duplicate_ids = array();
+		$find = static function ( $id ) use ( &$parents, &$find ) {
+			if ( ! isset( $parents[ $id ] ) ) $parents[ $id ] = $id;
+			if ( $parents[ $id ] !== $id ) $parents[ $id ] = $find( $parents[ $id ] );
+			return $parents[ $id ];
+		};
+		foreach ( self::extension_contacts() as $index => $contact ) {
+			$id = absint( self::value( $contact, array( 'id', 'ID', 'get_id' ) ) );
+			if ( ! $id ) $id = $index + 1;
+			$keys = array();
+			$email = strtolower( sanitize_email( self::value( $contact, array( 'email', 'get_email' ) ) ) );
+			$phone = preg_replace( '/\D+/', '', (string) self::value( $contact, array( 'phone', 'phone_number', 'mobile', 'get_phone' ) ) );
+			$postcode = strtolower( preg_replace( '/\s+/', '', (string) self::value( $contact, array( 'postcode', 'postal_code', 'zip' ) ) ) );
+			$name = strtolower( remove_accents( trim( self::value( $contact, array( 'first_name', 'get_first_name' ) ) . '|' . self::value( $contact, array( 'last_name', 'get_last_name' ) ) ) ) );
+			if ( $email ) $keys[] = 'e:' . $email;
+			if ( strlen( $phone ) >= 7 ) $keys[] = 'p:' . $phone;
+			if ( '|' !== $name && $postcode ) $keys[] = 'n:' . $name . '|' . $postcode;
+			foreach ( $keys as $key ) {
+				if ( isset( $seen[ $key ] ) ) {
+					$left_root = $find( $seen[ $key ] );
+					$right_root = $find( $id );
+					if ( $left_root !== $right_root ) $parents[ $right_root ] = $left_root;
+					$duplicate_ids[ $seen[ $key ] ] = true;
+					$duplicate_ids[ $id ] = true;
+				} else {
+					$seen[ $key ] = $id;
+				}
+			}
 		}
-		echo '</div></div>';
+		$roots = array();
+		foreach ( array_keys( $duplicate_ids ) as $id ) $roots[ $find( $id ) ] = true;
+		return count( $roots );
+	}
+
+	private static function render_dashboard_section( $title, $cards ) {
+		echo '<section class="contactpanda-card contactpanda-dashboard-section"><h2>' . esc_html( $title ) . '</h2><div class="contactpanda-dashboard-grid">';
+		foreach ( (array) $cards as $card ) {
+			if ( ! is_array( $card ) || count( $card ) < 4 ) continue;
+			echo '<a class="contactpanda-dashboard-card" href="' . esc_url( $card[2] ) . '"><span class="dashicons dashicons-' . esc_attr( $card[3] ) . '" aria-hidden="true"></span><strong>' . esc_html( number_format_i18n( absint( $card[1] ) ) ) . '</strong><span>' . esc_html( $card[0] ) . '</span></a>';
+		}
+		echo '</div></section>';
+	}
+
+	private static function render_dashboard_last_mailing( $mailing ) {
+		echo '<section class="contactpanda-card contactpanda-dashboard-section contactpanda-dashboard-mailing"><h2>' . esc_html__( 'Last mailing', 'contactpanda' ) . '</h2>';
+		if ( ! is_array( $mailing ) ) {
+			echo '<p class="contactpanda-dashboard-empty">' . esc_html__( 'No mailing has been sent yet.', 'contactpanda' ) . '</p></section>';
+			return;
+		}
+		$date = $mailing['completed_at'] ?: ( $mailing['started_at'] ?: ( $mailing['scheduled_at'] ?: $mailing['created_at'] ) );
+		$status_labels = array(
+			'draft'     => __( 'Draft', 'contactpanda' ),
+			'scheduled' => __( 'Scheduled', 'contactpanda' ),
+			'queued'    => __( 'Queued', 'contactpanda' ),
+			'sending'   => __( 'Sending', 'contactpanda' ),
+			'paused'    => __( 'Paused', 'contactpanda' ),
+			'completed' => __( 'Completed', 'contactpanda' ),
+			'cancelled' => __( 'Cancelled', 'contactpanda' ),
+			'imported'  => __( 'Imported', 'contactpanda' ),
+		);
+		$status = $status_labels[ $mailing['status'] ] ?? $mailing['status'];
+		$stats = array(
+			__( 'Recipients', 'contactpanda' )   => absint( $mailing['total_recipients'] ),
+			__( 'Sent', 'contactpanda' )         => absint( $mailing['sent_count'] ),
+			__( 'Opened', 'contactpanda' )       => absint( $mailing['opened_count'] ),
+			__( 'Clicked', 'contactpanda' )      => absint( $mailing['clicked_count'] ),
+			__( 'Unsubscribed', 'contactpanda' ) => absint( $mailing['unsubscribed_count'] ),
+		);
+		echo '<a class="contactpanda-dashboard-last-mailing" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-campaigns&campaign_id=' . absint( $mailing['id'] ) ) ) . '"><header><div><h3>' . esc_html( $mailing['name'] ) . '</h3><p>' . esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $date ) ) . '</p></div><span class="contactpanda-status-badge">' . esc_html( $status ) . '</span></header><div class="contactpanda-dashboard-mailing-stats">';
+		foreach ( $stats as $label => $value ) echo '<span><strong>' . esc_html( number_format_i18n( $value ) ) . '</strong><small>' . esc_html( $label ) . '</small></span>';
+		echo '</div></a></section>';
+	}
+
+	/** Render the central ContactPanda news feed on the product dashboard. */
+	private static function render_dashboard_news() {
+		$news_url = self::news_url();
+		echo '<section class="contactpanda-card contactpanda-dashboard-section contactpanda-dashboard-news"><div class="contactpanda-dashboard-section-heading"><div><p class="contactpanda-eyebrow">' . esc_html__( 'Blog', 'contactpanda' ) . '</p><h2>' . esc_html__( 'ContactPanda News', 'contactpanda' ) . '</h2></div><a class="button" href="' . esc_url( $news_url ) . '" target="_blank" rel="noopener">' . esc_html__( 'View all news', 'contactpanda' ) . '<span class="dashicons dashicons-external" aria-hidden="true"></span></a></div>';
+		self::render_news_list( 4, false );
+		echo '</section>';
+	}
+
+	private static function news_url() {
+		$default = defined( 'CONTACTPANDA_NEWS_URL' ) ? CONTACTPANDA_NEWS_URL : 'https://mycontactpanda.com/';
+		return esc_url_raw( apply_filters( 'contactpanda_news_url', $default ) );
+	}
+
+	private static function news_items( $limit ) {
+		if ( ! function_exists( 'fetch_feed' ) ) require_once ABSPATH . WPINC . '/feed.php';
+		$default = defined( 'CONTACTPANDA_NEWS_FEED_URL' ) ? CONTACTPANDA_NEWS_FEED_URL : 'https://mycontactpanda.com/feed/';
+		$feed_url = esc_url_raw( apply_filters( 'contactpanda_news_feed_url', $default ) );
+		$cache_key = 'contactpanda_news_' . md5( $feed_url );
+		$cached = get_site_transient( $cache_key );
+		if ( is_array( $cached ) ) return array_slice( $cached, 0, max( 1, absint( $limit ) ) );
+		$feed = $feed_url ? fetch_feed( $feed_url ) : new WP_Error( 'contactpanda_news_feed', 'Missing feed URL.' );
+		if ( is_wp_error( $feed ) ) {
+			set_site_transient( $cache_key, array(), 30 * MINUTE_IN_SECONDS );
+			return array();
+		}
+		$items = array();
+		foreach ( (array) $feed->get_items( 0, 8 ) as $item ) {
+			$timestamp = $item->get_date( 'U' );
+			$items[] = array(
+				'title'   => sanitize_text_field( $item->get_title() ),
+				'url'     => esc_url_raw( $item->get_permalink() ?: self::news_url() ),
+				'date'    => $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : '',
+				'excerpt' => wp_trim_words( wp_strip_all_tags( (string) $item->get_description(), true ), 24 ),
+			);
+		}
+		set_site_transient( $cache_key, $items, 6 * HOUR_IN_SECONDS );
+		return array_slice( $items, 0, max( 1, absint( $limit ) ) );
+	}
+
+	private static function render_news_list( $limit, $compact = false ) {
+		$items = self::news_items( $limit );
+		if ( ! $items ) {
+			echo '<p class="contactpanda-news-empty">' . esc_html__( 'No ContactPanda news is currently available.', 'contactpanda' ) . '</p>';
+		} else {
+			echo '<div class="contactpanda-news-list' . ( $compact ? ' is-compact' : '' ) . '">';
+			foreach ( $items as $item ) {
+				echo '<article class="contactpanda-news-item"><h3><a href="' . esc_url( $item['url'] ) . '" target="_blank" rel="noopener">' . esc_html( $item['title'] ) . '</a></h3>';
+				if ( $item['date'] ) echo '<time>' . esc_html( $item['date'] ) . '</time>';
+				if ( ! $compact && $item['excerpt'] ) echo '<p>' . esc_html( $item['excerpt'] ) . '</p>';
+				echo '</article>';
+			}
+			echo '</div>';
+		}
+		if ( $compact ) echo '<p class="contactpanda-news-more"><a href="' . esc_url( self::news_url() ) . '" target="_blank" rel="noopener">' . esc_html__( 'View all ContactPanda news', 'contactpanda' ) . '<span class="dashicons dashicons-external" aria-hidden="true"></span></a></p>';
+	}
+
+	/** Show relevant family upgrades without advertising products already active. */
+	private static function render_dashboard_upgrades() {
+		if ( ! current_user_can( 'manage_options' ) ) return;
+		$offers = array();
+		if ( ! defined( 'CONTACTPANDA_PLUS_VERSION' ) && ! ContactPanda_License::entitled( 'plus' ) ) {
+			$offers[] = array(
+				'product'     => 'plus',
+				'name'        => 'ContactPanda Plus',
+				'description' => __( 'Grow your marketing with advanced newsletters, visual forms, automations, integrations, and assisted migrations.', 'contactpanda' ),
+				'features'    => array(
+					__( 'Advanced newsletter campaigns', 'contactpanda' ),
+					__( 'Visual forms and form migrations', 'contactpanda' ),
+					__( 'Automations and integrations', 'contactpanda' ),
+				),
+				'button'      => __( 'Discover ContactPanda Plus', 'contactpanda' ),
+			);
+		}
+		if ( ! defined( 'CONTACTPANDA_PRO_VERSION' ) && ! ContactPanda_License::entitled( 'pro' ) ) {
+			$offers[] = array(
+				'product'     => 'pro',
+				'name'        => 'ContactPanda Pro',
+				'description' => __( 'Manage professional customer relationships with customer service, commercial workflows, and connected documents.', 'contactpanda' ),
+				'features'    => array(
+					__( 'Customer management and Support Desk', 'contactpanda' ),
+					__( 'Contracts and subscriptions', 'contactpanda' ),
+					__( 'Payments and invoice documents', 'contactpanda' ),
+				),
+				'button'      => __( 'Discover ContactPanda Pro', 'contactpanda' ),
+			);
+		}
+		$offers = apply_filters( 'contactpanda_dashboard_upgrade_offers', $offers );
+		if ( ! $offers ) return;
+
+		echo '<section class="contactpanda-card contactpanda-dashboard-section contactpanda-dashboard-upgrades"><div class="contactpanda-dashboard-upgrade-heading"><div><p class="contactpanda-eyebrow">ContactPanda</p><h2>' . esc_html__( 'More possibilities for your business', 'contactpanda' ) . '</h2></div><p>' . esc_html__( 'Extend ContactPanda when your requirements grow. Your existing contact data remains available.', 'contactpanda' ) . '</p></div><div class="contactpanda-dashboard-upgrade-grid">';
+		foreach ( (array) $offers as $offer ) {
+			if ( ! is_array( $offer ) || empty( $offer['product'] ) || empty( $offer['name'] ) ) continue;
+			$product = sanitize_key( $offer['product'] );
+			$default_url = defined( 'CONTACTPANDA_' . strtoupper( $product ) . '_SALES_URL' ) ? constant( 'CONTACTPANDA_' . strtoupper( $product ) . '_SALES_URL' ) : 'https://mycontactpanda.com/';
+			$url = apply_filters( 'contactpanda_product_sales_url', $default_url, $product, 'dashboard' );
+			echo '<article class="contactpanda-dashboard-upgrade-card is-' . esc_attr( $product ) . '"><h3>' . esc_html( $offer['name'] ) . '</h3><p>' . esc_html( $offer['description'] ?? '' ) . '</p>';
+			if ( ! empty( $offer['features'] ) ) {
+				echo '<ul>';
+				foreach ( (array) $offer['features'] as $feature ) echo '<li><span class="dashicons dashicons-yes-alt" aria-hidden="true"></span>' . esc_html( $feature ) . '</li>';
+				echo '</ul>';
+			}
+			echo '<p class="contactpanda-dashboard-upgrade-action"><a class="button button-primary" href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html( $offer['button'] ?? __( 'Learn more', 'contactpanda' ) ) . '<span class="dashicons dashicons-external" aria-hidden="true"></span></a></p></article>';
+		}
+		echo '</div></section>';
 	}
 
 	private static function render_entity_navigation( $page, $current ) {
@@ -3060,6 +3333,44 @@ final class ContactPanda_Plugin {
 		self::update_wordpress_marketing_status( $email, $confirmed_at );
 		do_action( 'contactpanda_marketing_confirmed', $contact_id, $email );
 		return $contact_id;
+	}
+
+	/**
+	 * Request a separate newsletter double opt-in for an extension.
+	 *
+	 * Extensions must call this only after the visitor explicitly selected the
+	 * general newsletter. Existing confirmed consent is retained without sending
+	 * another confirmation email.
+	 *
+	 * @param string $email      Requested email address.
+	 * @param string $first_name First name supplied with the request.
+	 * @param string $last_name  Last name supplied with the request.
+	 * @param string $redirect   Safe return URL after confirmation.
+	 * @param string $source     Auditable extension source.
+	 * @return true|WP_Error
+	 */
+	public static function extension_request_marketing_optin( $email, $first_name = '', $last_name = '', $redirect = '', $source = 'extension' ) {
+		$email = strtolower( sanitize_email( $email ) );
+		if ( ! is_email( $email ) ) {
+			return new WP_Error( 'contactpanda_optin_invalid', __( 'The newsletter signup could not be processed.', 'contactpanda' ) );
+		}
+
+		$contact = self::extension_contact_by_email( $email );
+		if ( $contact && self::extension_is_marketable( $contact ) ) {
+			return true;
+		}
+
+		if ( ! class_exists( 'ContactPanda_Registration' ) || ! is_callable( array( 'ContactPanda_Registration', 'request_newsletter_optin' ) ) ) {
+			return new WP_Error( 'contactpanda_optin_unavailable', __( 'The newsletter signup is currently unavailable.', 'contactpanda' ) );
+		}
+
+		return ContactPanda_Registration::request_newsletter_optin(
+			$email,
+			sanitize_text_field( $first_name ),
+			sanitize_text_field( $last_name ),
+			wp_validate_redirect( $redirect, home_url( '/' ) ),
+			sanitize_key( $source )
+		);
 	}
 
 	private static function update_wordpress_marketing_status( $email, $confirmed_at ) {

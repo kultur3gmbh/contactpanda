@@ -50,6 +50,7 @@ final class ContactPanda_My_Account {
 			return;
 		}
 		wp_enqueue_style( 'contactpanda-registration', CONTACTPANDA_URL . 'assets/contactpanda-registration.css', array(), CONTACTPANDA_ASSET_VERSION );
+		wp_enqueue_style( 'contactpanda-portal', CONTACTPANDA_URL . 'assets/contactpanda-customer-portal.css', array( 'contactpanda-registration' ), CONTACTPANDA_ASSET_VERSION );
 		wp_enqueue_script( 'contactpanda-registration', CONTACTPANDA_URL . 'assets/contactpanda-registration.js', array(), CONTACTPANDA_ASSET_VERSION, true );
 		wp_localize_script(
 			'contactpanda-registration',
@@ -195,10 +196,12 @@ final class ContactPanda_My_Account {
 
 	public static function profile_form() {
 		$identity = ContactPanda_Identity::resolve_user( get_current_user_id(), false );
+		echo '<div class="contactpanda-portal contactpanda-portal-account" data-contactpanda-portal><div class="contactpanda-portal-panel">';
 		ContactPanda_Customer_Portal::render_profile(
 			$identity,
 			array( 'return_url' => wc_customer_edit_account_url() )
 		);
+		echo '</div></div>';
 	}
 
 	public static function password_form() {

@@ -1,0 +1,11 @@
+#contactpanda-news .inside{margin:0;padding:0 12px 12px}
+#contactpanda-news .contactpanda-news-intro{margin:12px 0;color:#50575e}
+#contactpanda-news .contactpanda-news-list{display:grid;margin:0}
+#contactpanda-news .contactpanda-news-item{padding:11px 0;border-top:1px solid #e2e4e7}
+#contactpanda-news .contactpanda-news-item h3{margin:0 0 3px;font-size:13px;line-height:1.35}
+#contactpanda-news .contactpanda-news-item h3 a{text-decoration:none}
+#contactpanda-news .contactpanda-news-item time{color:#787c82;font-size:11px}
+#contactpanda-news .contactpanda-news-empty{padding:12px;border-radius:6px;background:#f6f7f7;color:#50575e}
+#contactpanda-news .contactpanda-news-more{margin:12px 0 0;text-align:right}
+#contactpanda-news .contactpanda-news-more a{display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-weight:600}
+#contactpanda-news .contactpanda-news-more .dashicons{font-size:16px;width:16px;height:16px}

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.40\n"
+"Project-Id-Version: ContactPanda 0.8.41\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -12,6 +12,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: contactpanda\n"
+
+msgid "The newsletter signup is currently unavailable."
+msgstr ""
 
 msgid "Phone button"
 msgstr ""
@@ -7371,6 +7374,78 @@ msgid "Uploading image…"
 msgstr ""
 
 msgid "The image could not be uploaded."
+msgstr ""
+
+msgid "People and companies"
+msgstr ""
+
+msgid "Potential duplicates"
+msgstr ""
+
+msgid "Newsletter and automations"
+msgstr ""
+
+msgid "Last mailing"
+msgstr ""
+
+msgid "No mailing has been sent yet."
+msgstr ""
+
+msgid "Grow your marketing with advanced newsletters, visual forms, automations, integrations, and assisted migrations."
+msgstr ""
+
+msgid "Advanced newsletter campaigns"
+msgstr ""
+
+msgid "Visual forms and form migrations"
+msgstr ""
+
+msgid "Automations and integrations"
+msgstr ""
+
+msgid "Manage professional customer relationships with customer service, commercial workflows, and connected documents."
+msgstr ""
+
+msgid "Customer management and Support Desk"
+msgstr ""
+
+msgid "Contracts and subscriptions"
+msgstr ""
+
+msgid "Payments and invoice documents"
+msgstr ""
+
+msgid "Discover ContactPanda Plus"
+msgstr ""
+
+msgid "Discover ContactPanda Pro"
+msgstr ""
+
+msgid "More possibilities for your business"
+msgstr ""
+
+msgid "Extend ContactPanda when your requirements grow. Your existing contact data remains available."
+msgstr ""
+
+msgid "Learn more"
+msgstr ""
+
+msgid "ContactPanda News"
+msgstr ""
+
+msgid "Product news, practical tips, and important information about ContactPanda."
+msgstr ""
+
+msgid "Blog"
+msgstr ""
+
+msgid "View all news"
+msgstr ""
+
+msgid "No ContactPanda news is currently available."
+msgstr ""
+
+msgid "View all ContactPanda news"
 msgstr ""
 
 msgid "MCP interface"

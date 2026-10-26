@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.40\n"
+"Project-Id-Version: ContactPanda 0.8.41\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7358,6 +7358,9 @@ msgstr ""
 "\n"
 "Der Link ist 24 Stunden gültig."
 
+msgid "The newsletter signup is currently unavailable."
+msgstr "Die Newsletter-Anmeldung ist derzeit nicht verfügbar."
+
 msgid "MCP interface"
 msgstr "MCP-Schnittstelle"
 
@@ -7548,6 +7551,78 @@ msgstr "Bild wird hochgeladen…"
 
 msgid "The image could not be uploaded."
 msgstr "Das Bild konnte nicht hochgeladen werden."
+
+msgid "People and companies"
+msgstr "Personen und Firmen"
+
+msgid "Potential duplicates"
+msgstr "Zu prüfende Duplikate"
+
+msgid "Newsletter and automations"
+msgstr "Newsletter und Automatisierungen"
+
+msgid "Last mailing"
+msgstr "Letzte Aussendung"
+
+msgid "No mailing has been sent yet."
+msgstr "Es wurde noch keine Aussendung versendet."
+
+msgid "Grow your marketing with advanced newsletters, visual forms, automations, integrations, and assisted migrations."
+msgstr "Erweitern Sie Ihr Marketing mit professionellen Newslettern, visuellen Formularen, Automatisierungen, Integrationen und unterstützten Migrationen."
+
+msgid "Advanced newsletter campaigns"
+msgstr "Erweiterte Newsletter-Kampagnen"
+
+msgid "Visual forms and form migrations"
+msgstr "Visuelle Formulare und Formularmigrationen"
+
+msgid "Automations and integrations"
+msgstr "Automatisierungen und Integrationen"
+
+msgid "Manage professional customer relationships with customer service, commercial workflows, and connected documents."
+msgstr "Verwalten Sie professionelle Kundenbeziehungen mit Kundenservice, kaufmännischen Abläufen und verknüpften Dokumenten."
+
+msgid "Customer management and Support Desk"
+msgstr "Kundenverwaltung und Support Desk"
+
+msgid "Contracts and subscriptions"
+msgstr "Verträge und Abonnements"
+
+msgid "Payments and invoice documents"
+msgstr "Zahlungen und Rechnungsdokumente"
+
+msgid "Discover ContactPanda Plus"
+msgstr "ContactPanda Plus entdecken"
+
+msgid "Discover ContactPanda Pro"
+msgstr "ContactPanda Pro entdecken"
+
+msgid "More possibilities for your business"
+msgstr "Mehr Möglichkeiten für Ihr Unternehmen"
+
+msgid "Extend ContactPanda when your requirements grow. Your existing contact data remains available."
+msgstr "Erweitern Sie ContactPanda, wenn Ihre Anforderungen wachsen. Ihre bestehenden Kontaktdaten bleiben erhalten."
+
+msgid "Learn more"
+msgstr "Mehr erfahren"
+
+msgid "ContactPanda News"
+msgstr "ContactPanda News"
+
+msgid "Product news, practical tips, and important information about ContactPanda."
+msgstr "Produktneuigkeiten, praktische Tipps und wichtige Informationen rund um ContactPanda."
+
+msgid "Blog"
+msgstr "Blog"
+
+msgid "View all news"
+msgstr "Alle Neuigkeiten ansehen"
+
+msgid "No ContactPanda news is currently available."
+msgstr "Derzeit sind keine ContactPanda-Neuigkeiten verfügbar."
+
+msgid "View all ContactPanda news"
+msgstr "Alle ContactPanda-Neuigkeiten ansehen"
 
 msgid ""
 "Hello {first_name},\n"

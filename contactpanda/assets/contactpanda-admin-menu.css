@@ -1,0 +1,5 @@
+#adminmenu .wp-submenu a[href*="page=contactpanda-data-transfer"] {
+	border-top: 1px solid rgba(240, 246, 252, 0.22);
+	margin-top: 6px;
+	padding-top: 9px;
+}

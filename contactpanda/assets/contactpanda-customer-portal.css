@@ -1,1 +1,231 @@
-.contactpanda-portal{--cp-portal-accent:#3d5cf5;--cp-portal-border:#dfe4ec;--cp-portal-muted:#657084;max-width:1080px;margin:2rem auto;color:inherit}.contactpanda-portal *{box-sizing:border-box}.contactpanda-portal-header,.contactpanda-portal-panel{border:1px solid var(--cp-portal-border);border-radius:16px;background:#fff;padding:clamp(1.25rem,3vw,2rem)}.contactpanda-portal-header{display:flex;justify-content:space-between;gap:1rem}.contactpanda-portal-header h1{margin:.15rem 0}.contactpanda-portal-eyebrow{margin:0;color:var(--cp-portal-accent);font-size:.75rem;font-weight:700;letter-spacing:.13em}.contactpanda-portal-tabs{display:flex;gap:.4rem;margin:1rem 0;overflow-x:auto}.contactpanda-portal-tabs a{border:1px solid var(--cp-portal-border);border-radius:10px;padding:.65rem 1rem;background:#f7f8fb;color:inherit;text-decoration:none;white-space:nowrap}.contactpanda-portal-tabs a.is-active{border-color:var(--cp-portal-accent);background:var(--cp-portal-accent);color:#fff}.contactpanda-portal-panel h2{margin-top:0}.contactpanda-portal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.contactpanda-portal-field{display:grid;gap:.35rem}.contactpanda-portal-field-wide{grid-column:1/-1}.contactpanda-portal-field input{width:100%;min-height:44px;border:1px solid #aeb7c4;border-radius:8px;padding:.65rem .8rem}.contactpanda-portal-form .button{margin-top:1rem}.contactpanda-portal-status{display:flex;justify-content:space-between;gap:1rem;border-radius:10px;padding:1rem;margin:1rem 0}.contactpanda-portal-status.is-active{background:#e7f7ed;color:#176d3c}.contactpanda-portal-status.is-inactive{background:#f7eded;color:#923d3d}.contactpanda-portal-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem}.contactpanda-portal-message{border-left:4px solid var(--cp-portal-accent);padding:.75rem 1rem;margin:1rem 0;background:#f4f6ff}.contactpanda-portal-message.is-success{border-color:#198754;background:#edf9f1}.contactpanda-portal-message.is-error{border-color:#b42318;background:#fff1f0}.contactpanda-portal-inline-form{margin-top:1rem}@media(max-width:640px){.contactpanda-portal{margin:1rem 0}.contactpanda-portal-grid{grid-template-columns:1fr}.contactpanda-portal-field-wide{grid-column:auto}.contactpanda-portal-header,.contactpanda-portal-panel{border-radius:10px;padding:1rem}.contactpanda-portal-status{display:grid}}
+.contactpanda-portal {
+	--cp-portal-accent: #3d5cf5;
+	--cp-portal-border: #dfe4ec;
+	--cp-portal-muted: #657084;
+	width: 100%;
+	max-width: 1080px;
+	margin: 2rem auto;
+	color: inherit;
+}
+
+.contactpanda-portal *,
+.contactpanda-portal *::before,
+.contactpanda-portal *::after {
+	box-sizing: border-box;
+}
+
+.contactpanda-portal-header,
+.contactpanda-portal-panel {
+	padding: clamp(1.25rem, 3vw, 2rem);
+	border: 1px solid var(--cp-portal-border);
+	border-radius: 16px;
+	background: #fff;
+}
+
+.contactpanda-portal-header {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.contactpanda-portal-header h1 {
+	margin: .15rem 0;
+}
+
+.contactpanda-portal-eyebrow {
+	margin: 0;
+	color: var(--cp-portal-accent);
+	font-size: .75rem;
+	font-weight: 700;
+	letter-spacing: .13em;
+}
+
+.contactpanda-portal-tabs {
+	display: flex;
+	gap: .4rem;
+	margin: 1rem 0;
+	overflow-x: auto;
+}
+
+.contactpanda-portal-tabs a {
+	padding: .65rem 1rem;
+	border: 1px solid var(--cp-portal-border);
+	border-radius: 10px;
+	background: #f7f8fb;
+	color: inherit;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.contactpanda-portal-tabs a.is-active {
+	border-color: var(--cp-portal-accent);
+	background: var(--cp-portal-accent);
+	color: #fff;
+}
+
+.contactpanda-portal-panel h2 {
+	margin: 0 0 .65rem;
+	font-size: clamp(1.5rem, 2vw, 2rem);
+	line-height: 1.2;
+}
+
+.contactpanda-portal-panel section > h2 + p {
+	max-width: 760px;
+	margin: 0 0 1.5rem;
+	color: var(--cp-portal-muted);
+	font-size: 1rem;
+	line-height: 1.6;
+}
+
+.contactpanda-portal-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem 1.25rem;
+}
+
+.contactpanda-portal-field {
+	display: grid;
+	min-width: 0;
+	gap: .4rem;
+	margin: 0;
+}
+
+.contactpanda-portal-field > span {
+	display: block;
+	color: inherit;
+	font-size: .9rem;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.contactpanda-portal-field em {
+	color: #b42318;
+	font-style: normal;
+}
+
+.contactpanda-portal-field-wide {
+	grid-column: 1 / -1;
+}
+
+.contactpanda-portal-field input {
+	display: block;
+	width: 100%;
+	min-width: 0;
+	min-height: 46px;
+	margin: 0;
+	padding: .65rem .8rem;
+	border: 1px solid #aeb7c4;
+	border-radius: 8px;
+	background: #fff;
+	color: inherit;
+	font: inherit;
+	line-height: 1.35;
+}
+
+.contactpanda-portal-field input:focus {
+	border-color: var(--cp-portal-accent);
+	outline: 2px solid rgba(61, 92, 245, .2);
+	outline-offset: 1px;
+}
+
+.contactpanda-portal-form .description {
+	margin: 1.25rem 0 0;
+	padding: .85rem 1rem;
+	border-radius: 8px;
+	background: #f7f8fb;
+	color: var(--cp-portal-muted);
+	font-size: .9rem;
+	line-height: 1.55;
+}
+
+.contactpanda-portal-form .button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	margin-top: 1rem;
+	padding: .65rem 1.1rem;
+	font: inherit;
+	font-weight: 600;
+}
+
+.contactpanda-portal-status {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	margin: 1rem 0;
+	padding: 1rem;
+	border-radius: 10px;
+}
+
+.contactpanda-portal-status.is-active {
+	background: #e7f7ed;
+	color: #176d3c;
+}
+
+.contactpanda-portal-status.is-inactive {
+	background: #f7eded;
+	color: #923d3d;
+}
+
+.contactpanda-portal-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .75rem;
+	margin-top: 1rem;
+}
+
+.contactpanda-portal-message {
+	margin: 1rem 0;
+	padding: .75rem 1rem;
+	border-left: 4px solid var(--cp-portal-accent);
+	background: #f4f6ff;
+}
+
+.contactpanda-portal-message.is-success {
+	border-color: #198754;
+	background: #edf9f1;
+}
+
+.contactpanda-portal-message.is-error {
+	border-color: #b42318;
+	background: #fff1f0;
+}
+
+.contactpanda-portal-inline-form {
+	margin-top: 1rem;
+}
+
+/* The WooCommerce account endpoint supplies its own page container. */
+.contactpanda-portal-account {
+	max-width: none;
+	margin: 0;
+}
+
+@media (max-width: 640px) {
+	.contactpanda-portal {
+		margin: 1rem 0;
+	}
+
+	.contactpanda-portal-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.contactpanda-portal-field-wide {
+		grid-column: auto;
+	}
+
+	.contactpanda-portal-header,
+	.contactpanda-portal-panel {
+		padding: 1rem;
+		border-radius: 10px;
+	}
+
+	.contactpanda-portal-status {
+		display: grid;
+	}
+
+	.contactpanda-portal-form .button {
+		width: 100%;
+	}
+}
