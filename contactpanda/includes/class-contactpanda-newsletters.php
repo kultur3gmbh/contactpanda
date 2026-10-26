@@ -296,6 +296,8 @@ final class ContactPanda_Basic_Newsletters {
 				'i18n'    => array(
 					'heading'       => __( 'Heading', 'contactpanda' ),
 					'text'          => __( 'Text', 'contactpanda' ),
+					'hero'          => __( 'Hero', 'contactpanda' ),
+					'social'        => __( 'Social media', 'contactpanda' ),
 					'image'         => __( 'Image', 'contactpanda' ),
 					'video'         => __( 'Video', 'contactpanda' ),
 					'gallery'       => __( 'Image gallery', 'contactpanda' ),
@@ -307,6 +309,18 @@ final class ContactPanda_Basic_Newsletters {
 					'divider'       => __( 'Divider', 'contactpanda' ),
 					'spacer'        => __( 'Spacer', 'contactpanda' ),
 					'imageUrl'      => __( 'Image URL', 'contactpanda' ),
+					'heroHeading'   => __( 'Hero heading', 'contactpanda' ),
+					'heroText'      => __( 'Hero text', 'contactpanda' ),
+					'overlayColor'  => __( 'Overlay color', 'contactpanda' ),
+					'overlayOpacity'=> __( 'Overlay opacity', 'contactpanda' ),
+					'socialLabel'   => __( 'Introductory text', 'contactpanda' ),
+					'iconColor'     => __( 'Icon color', 'contactpanda' ),
+					'website'       => __( 'Website', 'contactpanda' ),
+					'facebook'      => __( 'Facebook', 'contactpanda' ),
+					'instagram'     => __( 'Instagram', 'contactpanda' ),
+					'linkedin'      => __( 'LinkedIn', 'contactpanda' ),
+					'youtube'       => __( 'YouTube', 'contactpanda' ),
+					'tiktok'        => __( 'TikTok', 'contactpanda' ),
 					'alternativeText'=> __( 'Alternative text', 'contactpanda' ),
 					'videoUrl'      => __( 'YouTube, Vimeo, or video URL', 'contactpanda' ),
 					'videoThumbnail'=> __( 'Preview image URL', 'contactpanda' ),
@@ -708,7 +722,7 @@ final class ContactPanda_Basic_Newsletters {
 		echo '<div class="contactpanda-newsletter-editor-layout"><aside class="contactpanda-card contactpanda-newsletter-palette"><h2>' . esc_html__( 'Content blocks', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Drag a block into the email or double-click it to append it. A single click only selects the block.', 'contactpanda' ) . '</p><div class="contactpanda-block-palette" aria-label="' . esc_attr__( 'Add content block', 'contactpanda' ) . '">';
 		$advanced_newsletter = ContactPanda_License::advanced_newsletter_entitled();
 		$palette = array( 'heading' => 'heading', 'text' => 'text', 'image' => 'format-image', 'button' => 'button', 'divider' => 'minus', 'spacer' => 'image-flip-vertical' );
-		if ( $advanced_newsletter ) $palette = array_merge( $palette, array( 'gallery' => 'format-gallery', 'video' => 'video-alt3', 'columns' => 'columns', 'phone_button' => 'phone', 'email_button' => 'email-alt', 'whatsapp_button' => 'format-chat' ) );
+		if ( $advanced_newsletter ) $palette = array_merge( $palette, array( 'hero' => 'cover-image', 'social' => 'share', 'gallery' => 'format-gallery', 'video' => 'video-alt3', 'columns' => 'columns', 'phone_button' => 'phone', 'email_button' => 'email-alt', 'whatsapp_button' => 'format-chat' ) );
 		if ( $advanced_newsletter && class_exists( 'WooCommerce' ) ) {
 			$palette['products'] = 'cart';
 		}
@@ -761,6 +775,7 @@ final class ContactPanda_Basic_Newsletters {
 	private static function block_label( $type ) {
 		$labels = array(
 			'heading' => __( 'Heading', 'contactpanda' ), 'text' => __( 'Text', 'contactpanda' ),
+			'hero' => __( 'Hero', 'contactpanda' ), 'social' => __( 'Social media', 'contactpanda' ),
 			'image' => __( 'Image', 'contactpanda' ), 'gallery' => __( 'Image gallery', 'contactpanda' ), 'video' => __( 'Video', 'contactpanda' ), 'button' => __( 'Button', 'contactpanda' ),
 			'columns' => __( 'Columns', 'contactpanda' ), 'phone_button' => __( 'Phone button', 'contactpanda' ), 'email_button' => __( 'Email button', 'contactpanda' ), 'whatsapp_button' => __( 'WhatsApp button', 'contactpanda' ),
 			'divider' => __( 'Divider', 'contactpanda' ), 'spacer' => __( 'Spacer', 'contactpanda' ),
@@ -921,7 +936,7 @@ final class ContactPanda_Basic_Newsletters {
 		$blocks = array();
 		foreach ( is_array( $decoded ) ? $decoded : array() as $block ) {
 			$type = isset( $block['type'] ) ? sanitize_key( $block['type'] ) : '';
-			if ( ! in_array( $type, array( 'heading', 'text', 'image', 'gallery', 'video', 'columns', 'button', 'phone_button', 'email_button', 'whatsapp_button', 'divider', 'spacer', 'products', 'events', 'posts' ), true ) ) {
+			if ( ! in_array( $type, array( 'heading', 'text', 'hero', 'social', 'image', 'gallery', 'video', 'columns', 'button', 'phone_button', 'email_button', 'whatsapp_button', 'divider', 'spacer', 'products', 'events', 'posts' ), true ) ) {
 				continue;
 			}
 			$clean = array(
@@ -945,6 +960,24 @@ final class ContactPanda_Basic_Newsletters {
 				if ( 'heading' === $type ) {
 					$clean['level'] = isset( $block['level'] ) && in_array( strtolower( $block['level'] ), array( 'h1', 'h2', 'h3', 'h4' ), true ) ? strtolower( $block['level'] ) : 'h2';
 					$clean['text_color'] = isset( $block['text_color'] ) && sanitize_hex_color( $block['text_color'] ) ? sanitize_hex_color( $block['text_color'] ) : '';
+				}
+			} elseif ( 'hero' === $type ) {
+				$clean['image_url'] = isset( $block['image_url'] ) ? esc_url_raw( $block['image_url'] ) : '';
+				$clean['image_id'] = absint( $block['image_id'] ?? 0 );
+				$clean['heading'] = sanitize_text_field( $block['heading'] ?? '' );
+				$clean['content'] = wp_kses_post( $block['content'] ?? '' );
+				$clean['button_label'] = sanitize_text_field( $block['button_label'] ?? '' );
+				$clean['button_url'] = esc_url_raw( $block['button_url'] ?? '' );
+				$clean['overlay_color'] = isset( $block['overlay_color'] ) && sanitize_hex_color( $block['overlay_color'] ) ? sanitize_hex_color( $block['overlay_color'] ) : '#182433';
+				$clean['text_color'] = isset( $block['text_color'] ) && sanitize_hex_color( $block['text_color'] ) ? sanitize_hex_color( $block['text_color'] ) : '#ffffff';
+				$clean['overlay_opacity'] = min( 90, max( 0, absint( $block['overlay_opacity'] ?? 45 ) ) );
+			} elseif ( 'social' === $type ) {
+				$clean['label'] = sanitize_text_field( $block['label'] ?? '' );
+				$clean['icon_color'] = isset( $block['icon_color'] ) && sanitize_hex_color( $block['icon_color'] ) ? sanitize_hex_color( $block['icon_color'] ) : '#4253b5';
+				$clean['links'] = array();
+				foreach ( array( 'website', 'facebook', 'instagram', 'linkedin', 'youtube', 'tiktok' ) as $network ) {
+					$url = esc_url_raw( $block['links'][ $network ] ?? '' );
+					if ( $url ) $clean['links'][ $network ] = $url;
 				}
 			} elseif ( 'image' === $type ) {
 				$clean['url'] = isset( $block['url'] ) ? esc_url_raw( $block['url'] ) : '';
@@ -1067,6 +1100,14 @@ final class ContactPanda_Basic_Newsletters {
 		return $fallback;
 	}
 
+	private static function hex_to_rgb( $color ) {
+		$color = ltrim( sanitize_hex_color( $color ) ?: '#182433', '#' );
+		if ( 3 === strlen( $color ) ) {
+			$color = $color[0] . $color[0] . $color[1] . $color[1] . $color[2] . $color[2];
+		}
+		return array( hexdec( substr( $color, 0, 2 ) ), hexdec( substr( $color, 2, 2 ) ), hexdec( substr( $color, 4, 2 ) ) );
+	}
+
 	private static function sanitize_caption_values( $source ) {
 		return array(
 			'caption' => sanitize_text_field( $source['caption'] ?? '' ),
@@ -1125,6 +1166,21 @@ final class ContactPanda_Basic_Newsletters {
 				$body .= '<' . $level . ' style="' . esc_attr( $box_style ) . 'color:' . esc_attr( ! empty( $block['text_color'] ) ? $block['text_color'] : $text_color ) . ';text-align:' . esc_attr( $alignment ) . ';font:700 ' . $size . 'px/1.25 ' . $font . '">' . wp_kses_post( $block['content'] ) . '</' . $level . '>';
 			} elseif ( 'text' === $type ) {
 				$body .= '<div style="' . esc_attr( $box_style ) . 'color:' . esc_attr( $text_color ) . ';text-align:' . esc_attr( $alignment ) . ';font:16px/1.6 ' . $font . '">' . wpautop( wp_kses_post( $block['content'] ) ) . '</div>';
+			} elseif ( 'hero' === $type ) {
+				$hero_color = ! empty( $block['text_color'] ) ? $block['text_color'] : '#ffffff';
+				$overlay = ! empty( $block['overlay_color'] ) ? $block['overlay_color'] : '#182433';
+				$opacity = min( 90, max( 0, absint( $block['overlay_opacity'] ?? 45 ) ) ) / 100;
+				$background = ! empty( $block['image_url'] ) ? 'background-image:linear-gradient(rgba(' . implode( ',', self::hex_to_rgb( $overlay ) ) . ',' . $opacity . '),rgba(' . implode( ',', self::hex_to_rgb( $overlay ) ) . ',' . $opacity . ')),url(' . esc_url( $block['image_url'] ) . ');background-size:cover;background-position:center;' : 'background:' . esc_attr( $overlay ) . ';';
+				$button = ! empty( $block['button_label'] ) && ! empty( $block['button_url'] ) ? '<p style="margin:22px 0 0"><a href="' . esc_url( $block['button_url'] ) . '" style="display:inline-block;border-radius:5px;background:' . esc_attr( $base_color ) . ';color:#fff;padding:12px 20px;font:700 15px/1.2 ' . $font . ';text-decoration:none">' . esc_html( $block['button_label'] ) . '</a></p>' : '';
+				$body .= '<div style="' . esc_attr( $box_style . $background ) . 'box-sizing:border-box;min-height:260px;padding:54px 34px;color:' . esc_attr( $hero_color ) . ';text-align:' . esc_attr( $alignment ) . '"><h2 style="margin:0 0 14px;color:' . esc_attr( $hero_color ) . ';font:700 32px/1.2 ' . $font . '">' . esc_html( $block['heading'] ) . '</h2><div style="font:17px/1.55 ' . $font . '">' . wpautop( wp_kses_post( $block['content'] ) ) . '</div>' . $button . '</div>';
+			} elseif ( 'social' === $type ) {
+				$network_labels = array( 'website' => 'WWW', 'facebook' => 'f', 'instagram' => '◎', 'linkedin' => 'in', 'youtube' => '▶', 'tiktok' => '♪' );
+				$icons = '';
+				foreach ( (array) ( $block['links'] ?? array() ) as $network => $url ) {
+					if ( ! isset( $network_labels[ $network ] ) || ! $url ) continue;
+					$icons .= '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr( ucfirst( $network ) ) . '" style="display:inline-block;min-width:18px;margin:4px;border-radius:999px;background:' . esc_attr( $block['icon_color'] ?? $base_color ) . ';color:#fff;padding:9px;text-align:center;font:700 13px/18px Arial,sans-serif;text-decoration:none">' . esc_html( $network_labels[ $network ] ) . '</a>';
+				}
+				$body .= '<div style="' . esc_attr( $box_style ) . 'text-align:' . esc_attr( $alignment ) . '">' . ( ! empty( $block['label'] ) ? '<p style="margin:0 0 8px;color:' . esc_attr( $text_color ) . ';font:15px/1.4 ' . $font . '">' . esc_html( $block['label'] ) . '</p>' : '' ) . $icons . '</div>';
 			} elseif ( 'image' === $type && ! empty( $block['url'] ) ) {
 				$unit = isset( $block['width_unit'] ) && 'px' === $block['width_unit'] ? 'px' : '%';
 				$body .= '<p style="' . esc_attr( $box_style ) . 'text-align:' . esc_attr( $alignment ) . '"><span style="position:relative;display:inline-block;width:' . absint( $block['width'] ?? 100 ) . $unit . ';max-width:100%"><img src="' . esc_url( $block['url'] ) . '" alt="' . esc_attr( $block['alt'] ) . '" style="display:block;width:100%;max-width:100%;height:auto;border:0">' . self::caption_html( $block, $font ) . '</span></p>';

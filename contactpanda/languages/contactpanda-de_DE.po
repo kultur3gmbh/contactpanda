@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.41\n"
+"Project-Id-Version: ContactPanda 0.8.42\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -12,6 +12,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: contactpanda\n"
+
+msgid "Hero"
+msgstr "Hero"
+
+msgid "Social media"
+msgstr "Soziale Medien"
+
+msgid "Hero heading"
+msgstr "Hero-Überschrift"
+
+msgid "Hero text"
+msgstr "Hero-Text"
+
+msgid "Overlay color"
+msgstr "Überlagerungsfarbe"
+
+msgid "Overlay opacity"
+msgstr "Deckkraft der Überlagerung"
+
+msgid "Introductory text"
+msgstr "Einleitungstext"
+
+msgid "Icon color"
+msgstr "Symbolfarbe"
+
+msgid "Facebook"
+msgstr "Facebook"
+
+msgid "Instagram"
+msgstr "Instagram"
+
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+msgid "YouTube"
+msgstr "YouTube"
+
+msgid "TikTok"
+msgstr "TikTok"
 
 msgid "Phone button"
 msgstr "Telefon-Button"

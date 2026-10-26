@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.41\n"
+"Project-Id-Version: ContactPanda 0.8.42\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -12,6 +12,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: contactpanda\n"
+
+msgid "Hero"
+msgstr ""
+
+msgid "Social media"
+msgstr ""
+
+msgid "Hero heading"
+msgstr ""
+
+msgid "Hero text"
+msgstr ""
+
+msgid "Overlay color"
+msgstr ""
+
+msgid "Overlay opacity"
+msgstr ""
+
+msgid "Introductory text"
+msgstr ""
+
+msgid "Icon color"
+msgstr ""
+
+msgid "Facebook"
+msgstr ""
+
+msgid "Instagram"
+msgstr ""
+
+msgid "LinkedIn"
+msgstr ""
+
+msgid "YouTube"
+msgstr ""
+
+msgid "TikTok"
+msgstr ""
 
 msgid "The newsletter signup is currently unavailable."
 msgstr ""

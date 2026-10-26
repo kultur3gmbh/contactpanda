@@ -422,7 +422,12 @@
 		if (isPhone) editor.appendChild(buildPhoneGroup(valueNode.dataset.value || ''));
 		else editor.appendChild(input);
 		var validateButton = field.dataset.field === 'uid' ? '<button type="button" class="button contactpanda-validate-vat">' + tr('validateVat', 'Validate VAT ID') + '</button>' : '';
-		editor.insertAdjacentHTML('beforeend', '<div class="contactpanda-editor-actions"><button type="button" class="button button-primary contactpanda-save">' + tr('save', 'Save') + '</button>' + validateButton + '<button type="button" class="button contactpanda-cancel">' + tr('cancel', 'Cancel') + '</button></div>');
+		var compactActions = field.classList.contains('contactpanda-list-editable');
+		var saveLabel = tr('save', 'Save');
+		var cancelLabel = tr('cancel', 'Cancel');
+		var saveContent = compactActions ? '<span class="dashicons dashicons-yes" aria-hidden="true"></span><span class="screen-reader-text">' + saveLabel + '</span>' : saveLabel;
+		var cancelContent = compactActions ? '<span class="dashicons dashicons-no-alt" aria-hidden="true"></span><span class="screen-reader-text">' + cancelLabel + '</span>' : cancelLabel;
+		editor.insertAdjacentHTML('beforeend', '<div class="contactpanda-editor-actions"><button type="button" class="button button-primary contactpanda-save" aria-label="' + saveLabel + '">' + saveContent + '</button>' + validateButton + '<button type="button" class="button contactpanda-cancel" aria-label="' + cancelLabel + '">' + cancelContent + '</button></div>');
 		field.querySelector('.contactpanda-field-message').before(editor);
 		(isPhone ? editor.querySelector('.contactpanda-phone-national') : input).focus();
 	}
