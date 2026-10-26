@@ -96,6 +96,17 @@ foreach ( array( '.contactpanda-unified-color-popover', '.contactpanda-unified-c
 		exit( 1 );
 	}
 }
+foreach ( array( 'min-width:280px', 'grid-template-columns:190px 30px 30px', 'repeat(auto-fit,minmax(min(280px,100%),1fr))' ) as $contract ) {
+	if ( false === strpos( $styles, $contract ) ) {
+		fwrite( STDERR, "Missing non-clipping responsive color picker contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+if ( false === strpos( $styles, '.contactpanda-newsletter-inspector{z-index:20;min-width:0;overflow:visible}' ) ) {
+	fwrite( STDERR, "The newsletter inspector must not clip shared color popovers.\n" );
+	exit( 1 );
+}
 
 foreach ( array( 'contactpanda-admin-ui', 'wp_enqueue_media', 'CONTACTPANDA_ADMIN_UI' ) as $contract ) {
 	if ( false === strpos( $bootstrap, $contract ) ) {
