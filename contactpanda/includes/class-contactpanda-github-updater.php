@@ -243,6 +243,7 @@ final class ContactPanda_GitHub_Updater {
 		check_admin_referer( $this->config['slug'] . '_check_updates' );
 		delete_site_transient( $this->cache );
 		delete_site_transient( 'update_plugins' ); // Bypass WordPress's recent-check throttle for this explicit check.
+		do_action( 'contactpanda_clear_family_update_caches' );
 		wp_update_plugins();
 		wp_safe_redirect( self_admin_url( 'plugins.php' ) ); exit;
 	}
@@ -268,6 +269,7 @@ final class ContactPanda_GitHub_Updater {
 		delete_site_transient( 'contactpanda_update_refresh_required' );
 		delete_site_transient( $this->cache );
 		delete_site_transient( 'update_plugins' );
+		do_action( 'contactpanda_clear_family_update_caches' );
 		if ( function_exists( 'wp_clean_plugins_cache' ) ) wp_clean_plugins_cache( true );
 		if ( function_exists( 'wp_update_plugins' ) ) wp_update_plugins();
 	}

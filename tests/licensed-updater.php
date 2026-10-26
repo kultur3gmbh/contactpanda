@@ -6,7 +6,8 @@ class WP_Error { private $code; private $message; public function __construct( $
 function is_wp_error( $value ) { return $value instanceof WP_Error; }
 function __( $value, $domain = '' ) { return $value; }
 function wp_parse_args( $args, $defaults ) { return array_merge( $defaults, $args ); }
-function add_filter() {} function add_action() {}
+function add_filter() {} function add_action( $hook, $callback ) { $GLOBALS['actions'][ $hook ][] = $callback; }
+function do_action( $hook ) { foreach ( $GLOBALS['actions'][ $hook ] ?? array() as $callback ) call_user_func( $callback ); }
 function current_user_can() { return true; }
 function sanitize_text_field( $value ) { return (string) $value; }
 function esc_url_raw( $value ) { return (string) $value; }
@@ -21,7 +22,7 @@ function verify( $condition, $message ) { if ( ! $condition ) throw new RuntimeE
 class ContactPanda_License { public static function product_update( $product, $entitlement, $version, $channel ) { $GLOBALS['metadata_calls'][] = $product; return array_shift( $GLOBALS['metadata_queue'] ); } }
 require __DIR__ . '/../contactpanda/includes/class-contactpanda-licensed-updater.php';
 function updater( $product, $plugin ) { return new ContactPanda_Licensed_Updater( array( 'product' => $product, 'entitlement' => $product, 'plugin' => $plugin, 'slug' => $product, 'name' => $product, 'version' => '1.0.0' ) ); }
-$GLOBALS['cache'] = array(); $GLOBALS['deleted'] = array(); $GLOBALS['downloads'] = array(); $GLOBALS['metadata_calls'] = array();
+$GLOBALS['cache'] = array(); $GLOBALS['deleted'] = array(); $GLOBALS['downloads'] = array(); $GLOBALS['metadata_calls'] = array(); $GLOBALS['actions'] = array();
 $GLOBALS['bytes'] = 'verified release bytes';
 $stale = array( 'available' => true, 'version' => '1.1.0', 'package' => 'https://example.test/expired', 'sha256' => hash( 'sha256', $GLOBALS['bytes'] ) );
 $fresh = $stale; $fresh['package'] = 'https://example.test/fresh';
@@ -37,6 +38,8 @@ $GLOBALS['bytes'] = 'tampered'; $GLOBALS['metadata_queue'] = array( $fresh );
 verify( 'contactpanda_update_checksum' === $plus->verify_download( false, $fresh['package'], null, array( 'plugins' => array( 'contactpanda-plus/contactpanda-plus.php', 'contactpanda-pro/contactpanda-pro.php' ) ) )->get_error_code(), 'Checksum mismatch rejected in bulk update' );
 $plus->clear_update_cache( null, array( 'type' => 'plugin', 'plugin' => 'contactpanda-plus/contactpanda-plus.php' ) );
 verify( in_array( 'update_plugins', $GLOBALS['deleted'], true ), 'WordPress update cache cleared after success' );
+$deleted_product_caches = array_values( array_filter( $GLOBALS['deleted'], static function ( $key ) { return 0 === strpos( $key, 'contactpanda_update_' ) && 'contactpanda_update_refresh_required' !== $key; } ) );
+verify( 2 <= count( array_unique( $deleted_product_caches ) ), 'A family update clears every registered product metadata cache' );
 $GLOBALS['cache'] = array(); $GLOBALS['metadata_calls'] = array();
 $GLOBALS['metadata_queue'] = array( array( 'available' => false, 'status' => 'up_to_date' ), array( 'available' => true, 'version' => '1.1.0', 'package' => 'https://example.test/fresh', 'sha256' => hash( 'sha256', 'verified release bytes' ) ) );
 updater( 'business', 'contactpanda-business/contactpanda-business.php' )->updates( (object) array( 'checked' => array( 'contactpanda-business/contactpanda-business.php' => '1.0.0' ) ) );

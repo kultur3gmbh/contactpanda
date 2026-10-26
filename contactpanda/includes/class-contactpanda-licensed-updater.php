@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) || exit;
 /** Shared updater for privately distributed ContactPanda extensions. */
 final class ContactPanda_Licensed_Updater {
 	private static $registered = array();
+	private static $instances  = array();
 	private $config;
 	private $metadata = null;
 
@@ -30,11 +31,13 @@ final class ContactPanda_Licensed_Updater {
 		}
 		$this->config['plugin'] = $plugin;
 		self::$registered[ $plugin ] = true;
+		self::$instances[ $plugin ]  = $this;
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'updates' ) );
 		add_filter( 'plugins_api', array( $this, 'plugin_information' ), 20, 3 );
 		add_filter( 'upgrader_pre_download', array( $this, 'verify_download' ), 10, 4 );
 		add_action( 'upgrader_process_complete', array( $this, 'clear_update_cache' ), 10, 2 );
 		add_action( 'contactpanda_license_state_refreshed', array( $this, 'clear_metadata_cache' ) );
+		add_action( 'contactpanda_clear_family_update_caches', array( $this, 'clear_metadata_cache' ) );
 		add_action( 'admin_init', array( $this, 'maybe_clear_forced_check_cache' ), 1 );
 		add_action( 'admin_init', array( $this, 'maybe_refresh_after_upgrade' ), 2 );
 	}
@@ -76,9 +79,9 @@ final class ContactPanda_Licensed_Updater {
 
 	public function clear_update_cache( $upgrader, $options ) {
 		if ( 'plugin' !== ( $options['type'] ?? '' ) ) return;
-		$plugins = isset( $options['plugins'] ) ? (array) $options['plugins'] : array( $options['plugin'] ?? '' );
+		$plugins = array_map( 'plugin_basename', isset( $options['plugins'] ) ? (array) $options['plugins'] : array( $options['plugin'] ?? '' ) );
 		if ( ! in_array( $this->config['plugin'], $plugins, true ) ) return;
-		$this->clear_metadata_cache();
+		self::clear_all_metadata_caches();
 		set_site_transient( 'contactpanda_update_refresh_required', 1, HOUR_IN_SECONDS );
 	}
 
@@ -86,9 +89,16 @@ final class ContactPanda_Licensed_Updater {
 	public function maybe_refresh_after_upgrade() {
 		if ( ! current_user_can( 'update_plugins' ) || ! get_site_transient( 'contactpanda_update_refresh_required' ) ) return;
 		delete_site_transient( 'contactpanda_update_refresh_required' );
-		$this->clear_metadata_cache();
+		self::clear_all_metadata_caches();
 		if ( function_exists( 'wp_clean_plugins_cache' ) ) wp_clean_plugins_cache( true );
 		if ( function_exists( 'wp_update_plugins' ) ) wp_update_plugins();
+	}
+
+	/** Clear every registered family updater before WordPress rebuilds one combined result. */
+	private static function clear_all_metadata_caches() {
+		foreach ( self::$instances as $instance ) {
+			$instance->clear_metadata_cache();
+		}
 	}
 
 	/** Remove both the product response and WordPress' combined update result. */
