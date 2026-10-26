@@ -76,9 +76,23 @@ foreach ( array( 'contactpanda-file-drop-actions', 'contactpanda-people-search-r
 	}
 }
 
-foreach ( array( 'createImagePicker', 'enhanceColorPicker', 'enhanceListActions', 'contactpanda-list-action' ) as $contract ) {
+foreach ( array( 'createImagePicker', 'enhanceColorPicker', 'enhanceListActions', 'contactpanda-list-action', 'contactpanda-unified-color-popover', 'contactpanda-unified-color-palette' ) as $contract ) {
 	if ( false === strpos( $shared_ui, $contract ) ) {
 		fwrite( STDERR, "Missing shared family UI contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+foreach ( array( 'contactpanda_sanitize_css_color', 'Theme and template colors', 'Enter a valid HEX, RGB, or RGBA color.' ) as $contract ) {
+	if ( false === strpos( $bootstrap, $contract ) ) {
+		fwrite( STDERR, "Missing shared family color contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
+
+foreach ( array( '.contactpanda-unified-color-popover', '.contactpanda-unified-color-slider.is-hue', '.contactpanda-unified-color-slider.is-alpha' ) as $contract ) {
+	if ( false === strpos( $styles, $contract ) ) {
+		fwrite( STDERR, "Missing shared family color style {$contract}.\n" );
 		exit( 1 );
 	}
 }

@@ -2,12 +2,17 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.45
+Stable tag: 0.8.46
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free, reduced newsletter workflow, a WooCommerce customer overview, optional Groundhogg compatibility, and stable extension APIs for the ContactPanda product family.
 
 == Changelog ==
+
+= 0.8.46 =
+* Replaces scattered color grids with one compact family-wide color picker for newsletters, invoice templates, and Business project colors.
+* Adds accessible hue and transparency controls, theme and template colors behind the globe button, and reliable HEX, RGB, and RGBA persistence.
+* Keeps contacts, consent history, newsletters, WooCommerce orders, standalone mode, and Groundhogg mode unchanged.
 
 = 0.8.45 =
 * Aligns Basic with the independently rendered and lazily loaded Pro Support Desk and the common 0.8.45 family dependency contract.

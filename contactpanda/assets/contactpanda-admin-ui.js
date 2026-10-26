@@ -29,43 +29,72 @@
 		return matches.concat(Array.prototype.slice.call(root.querySelectorAll(selector)));
 	}
 
+	function parseColor(value) {
+		value = String(value || '').trim();
+		var match;
+		if ((match = value.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i))) {
+			var hex = match[1];
+			if (hex.length === 3) hex = hex.split('').map(function (part) { return part + part; }).join('');
+			return {r: parseInt(hex.slice(0, 2), 16), g: parseInt(hex.slice(2, 4), 16), b: parseInt(hex.slice(4, 6), 16), a: 1};
+		}
+		if ((match = value.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*(0|1|0?\.\d+))?\s*\)$/i))) {
+			return {r: Math.min(255, Number(match[1])), g: Math.min(255, Number(match[2])), b: Math.min(255, Number(match[3])), a: match[4] === undefined ? 1 : Math.min(1, Math.max(0, Number(match[4])))};
+		}
+		return null;
+	}
+
+	function colorString(color) {
+		function hex(part) { return Math.round(part).toString(16).padStart(2, '0'); }
+		if (color.a >= 0.999) return '#' + hex(color.r) + hex(color.g) + hex(color.b);
+		return 'rgba(' + Math.round(color.r) + ', ' + Math.round(color.g) + ', ' + Math.round(color.b) + ', ' + Math.round(color.a * 100) / 100 + ')';
+	}
+
+	function rgbToHsv(color) {
+		var r = color.r / 255, g = color.g / 255, b = color.b / 255, max = Math.max(r, g, b), min = Math.min(r, g, b), delta = max - min, hue = 0;
+		if (delta) {
+			if (max === r) hue = ((g - b) / delta) % 6;
+			else if (max === g) hue = (b - r) / delta + 2;
+			else hue = (r - g) / delta + 4;
+			hue *= 60;
+			if (hue < 0) hue += 360;
+		}
+		return {h: hue, s: max ? delta / max : 0, v: max, a: color.a};
+	}
+
+	function hsvToRgb(color) {
+		var chroma = color.v * color.s, section = color.h / 60, x = chroma * (1 - Math.abs(section % 2 - 1)), rgb = [0, 0, 0];
+		if (section < 1) rgb = [chroma, x, 0]; else if (section < 2) rgb = [x, chroma, 0]; else if (section < 3) rgb = [0, chroma, x]; else if (section < 4) rgb = [0, x, chroma]; else if (section < 5) rgb = [x, 0, chroma]; else rgb = [chroma, 0, x];
+		var m = color.v - chroma;
+		return {r: (rgb[0] + m) * 255, g: (rgb[1] + m) * 255, b: (rgb[2] + m) * 255, a: color.a};
+	}
+
 	function uniqueColors(values) {
 		var found = [];
 		(values || []).forEach(function (value) {
 			value = String(value || '').trim();
-			if (/^#[0-9a-f]{6}$/i.test(value) && found.indexOf(value.toLowerCase()) < 0) found.push(value.toLowerCase());
+			var parsed = parseColor(value);
+			if (!parsed) return;
+			value = colorString(parsed).toLowerCase();
+			if (found.indexOf(value) < 0) found.push(value);
 		});
 		return found;
 	}
 
-	function colorPalette(input, field) {
+	function availableColors(field) {
 		var colors = (field.dataset.colors || '').split(',').concat(config.themeColors || []);
 		document.querySelectorAll('.contactpanda-theme-color-palette [data-color]').forEach(function (swatch) { colors.push(swatch.dataset.color); });
-		colors = uniqueColors(colors);
-		if (!colors.length) return;
-		var palette = field.querySelector('.contactpanda-theme-color-palette');
-		if (!palette) {
-			palette = document.createElement('span');
-			palette.className = 'contactpanda-theme-color-palette';
-			field.appendChild(palette);
+		return uniqueColors(colors);
+	}
+
+	function bindPointer(control, callback) {
+		function update(event) {
+			var rect = control.getBoundingClientRect();
+			callback(Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width)), Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height)));
 		}
-		var existing = Array.prototype.map.call(palette.querySelectorAll('[data-color]'), function (node) { return String(node.dataset.color || '').toLowerCase(); });
-		colors.forEach(function (color) {
-			if (existing.indexOf(color) >= 0) return;
-			var swatch = document.createElement('button');
-			swatch.type = 'button';
-			swatch.className = 'contactpanda-settings-color-swatch';
-			swatch.dataset.color = color;
-			swatch.title = color;
-			swatch.setAttribute('aria-label', color);
-			swatch.style.backgroundColor = color;
-			swatch.addEventListener('click', function () {
-				input.value = color;
-				input.dispatchEvent(new Event('input', {bubbles: true}));
-				input.dispatchEvent(new Event('change', {bubbles: true}));
-			});
-			palette.appendChild(swatch);
+		control.addEventListener('pointerdown', function (event) {
+			event.preventDefault(); control.setPointerCapture(event.pointerId); update(event);
 		});
+		control.addEventListener('pointermove', function (event) { if (control.hasPointerCapture(event.pointerId)) update(event); });
 	}
 
 	function enhanceColorPicker(input) {
@@ -83,24 +112,75 @@
 				field.appendChild(input);
 			}
 		}
-		var control = input.closest('.contactpanda-settings-color-control');
-		if (!control) {
-			control = document.createElement('span');
-			control.className = 'contactpanda-settings-color-control';
-			input.parentNode.insertBefore(control, input);
-			control.appendChild(input);
+		var colors = availableColors(field), oldControl = input.closest('.contactpanda-settings-color-control');
+		input.parentNode.removeChild(input);
+		if (oldControl) oldControl.remove();
+		field.querySelectorAll('.contactpanda-theme-color-palette').forEach(function (palette) { palette.remove(); });
+		input.type = 'hidden';
+
+		var picker = document.createElement('span'); picker.className = 'contactpanda-unified-color';
+		var summary = document.createElement('span'); summary.className = 'contactpanda-unified-color-summary';
+		var preview = document.createElement('button'); preview.type = 'button'; preview.className = 'contactpanda-unified-color-preview'; preview.title = i18n.chooseColor || 'Select color'; preview.setAttribute('aria-label', preview.title); preview.innerHTML = '<span></span>';
+		var textInput = document.createElement('input'); textInput.type = 'text'; textInput.className = 'contactpanda-unified-color-text'; textInput.setAttribute('aria-label', i18n.colorValue || 'Color value');
+		var themeButton = document.createElement('button'); themeButton.type = 'button'; themeButton.className = 'contactpanda-unified-color-theme'; themeButton.title = i18n.themeColors || 'Theme and template colors'; themeButton.setAttribute('aria-label', themeButton.title); themeButton.innerHTML = '<span class="dashicons dashicons-admin-site-alt3" aria-hidden="true"></span>';
+		summary.appendChild(preview); summary.appendChild(textInput); summary.appendChild(themeButton); picker.appendChild(input); picker.appendChild(summary);
+
+		var popover = document.createElement('span'); popover.className = 'contactpanda-unified-color-popover'; popover.hidden = true;
+		var square = document.createElement('span'); square.className = 'contactpanda-unified-color-square'; square.tabIndex = 0; square.innerHTML = '<span class="contactpanda-unified-color-square-handle"></span>';
+		var hue = document.createElement('span'); hue.className = 'contactpanda-unified-color-slider is-hue'; hue.tabIndex = 0; hue.innerHTML = '<span></span>';
+		var alpha = document.createElement('span'); alpha.className = 'contactpanda-unified-color-slider is-alpha'; alpha.tabIndex = 0; alpha.innerHTML = '<span></span>';
+		popover.appendChild(square); popover.appendChild(hue); popover.appendChild(alpha); picker.appendChild(popover);
+
+		var palette = document.createElement('span'); palette.className = 'contactpanda-unified-color-palette'; palette.hidden = true;
+		var paletteTitle = document.createElement('strong'); paletteTitle.textContent = i18n.themeColors || 'Theme and template colors'; palette.appendChild(paletteTitle);
+		var paletteGrid = document.createElement('span'); paletteGrid.className = 'contactpanda-unified-color-palette-grid'; palette.appendChild(paletteGrid); picker.appendChild(palette);
+
+		var initial = parseColor(input.dataset.contactpandaColorValue || input.getAttribute('value') || input.value) || {r: 255, g: 255, b: 255, a: 1}, state = rgbToHsv(initial), syncing = false;
+		function closePanels() { popover.hidden = true; palette.hidden = true; picker.classList.remove('is-open'); }
+		function render(updateInput, finalChange) {
+			var rgb = hsvToRgb(state), serialized = colorString(rgb), solid = 'rgb(' + Math.round(rgb.r) + ', ' + Math.round(rgb.g) + ', ' + Math.round(rgb.b) + ')';
+			preview.querySelector('span').style.backgroundColor = serialized; textInput.value = serialized;
+			square.style.backgroundColor = 'hsl(' + Math.round(state.h) + ',100%,50%)';
+			square.querySelector('span').style.left = (state.s * 100) + '%'; square.querySelector('span').style.top = ((1 - state.v) * 100) + '%';
+			hue.querySelector('span').style.top = ((1 - state.h / 360) * 100) + '%';
+			alpha.style.setProperty('--contactpanda-alpha-color', solid); alpha.querySelector('span').style.top = ((1 - state.a) * 100) + '%';
+			input.value = serialized;
+			if (updateInput) {
+				syncing = true; input.dispatchEvent(new Event('input', {bubbles: true})); if (finalChange) input.dispatchEvent(new Event('change', {bubbles: true})); syncing = false;
+			}
 		}
-		var value = control.querySelector('.contactpanda-settings-color-value');
-		if (!value) {
-			value = document.createElement('code');
-			value.className = 'contactpanda-settings-color-value';
-			control.appendChild(value);
-		}
-		function update() { value.textContent = input.value; }
-		input.addEventListener('input', update);
-		input.addEventListener('change', update);
-		update();
-		colorPalette(input, field);
+		function useValue(value, finalChange) { var parsed = parseColor(value); if (!parsed) { textInput.setCustomValidity(i18n.invalidColor || 'Enter a valid HEX, RGB, or RGBA color.'); return false; } textInput.setCustomValidity(''); state = rgbToHsv(parsed); render(true, finalChange); return true; }
+		bindPointer(square, function (x, y) { state.s = x; state.v = 1 - y; render(true, false); });
+		bindPointer(hue, function (x, y) { state.h = (1 - y) * 360; render(true, false); });
+		bindPointer(alpha, function (x, y) { state.a = 1 - y; render(true, false); });
+		[square, hue, alpha].forEach(function (control) { control.addEventListener('pointerup', function () { render(true, true); }); });
+		[square, hue, alpha].forEach(function (control) {
+			control.addEventListener('keydown', function (event) {
+				if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].indexOf(event.key) < 0) return;
+				event.preventDefault();
+				var step = event.shiftKey ? 0.1 : 0.02;
+				if (control === square) {
+					if (event.key === 'ArrowLeft') state.s = Math.max(0, state.s - step);
+					if (event.key === 'ArrowRight') state.s = Math.min(1, state.s + step);
+					if (event.key === 'ArrowUp') state.v = Math.min(1, state.v + step);
+					if (event.key === 'ArrowDown') state.v = Math.max(0, state.v - step);
+				} else if (control === hue) {
+					state.h = (state.h + ((event.key === 'ArrowUp' || event.key === 'ArrowRight') ? 6 : -6) + 360) % 360;
+				} else {
+					state.a = Math.min(1, Math.max(0, state.a + ((event.key === 'ArrowUp' || event.key === 'ArrowRight') ? step : -step)));
+				}
+				render(true, true);
+			});
+		});
+		preview.addEventListener('click', function (event) { event.preventDefault(); var opening = popover.hidden; closePanels(); popover.hidden = !opening; picker.classList.toggle('is-open', opening); });
+		themeButton.addEventListener('click', function (event) { event.preventDefault(); var opening = palette.hidden; closePanels(); palette.hidden = !opening; picker.classList.toggle('is-open', opening); });
+		textInput.addEventListener('change', function () { useValue(textInput.value, true); });
+		textInput.addEventListener('keydown', function (event) { if (event.key === 'Enter') { event.preventDefault(); if (useValue(textInput.value, true)) closePanels(); } });
+		input.addEventListener('input', function () { if (!syncing) { var parsed = parseColor(input.value); if (parsed) { state = rgbToHsv(parsed); render(false, false); } } });
+		colors.forEach(function (color) { var swatch = document.createElement('button'); swatch.type = 'button'; swatch.className = 'contactpanda-unified-color-swatch'; swatch.dataset.color = color; swatch.title = color; swatch.setAttribute('aria-label', color); swatch.style.backgroundColor = color; swatch.addEventListener('click', function (event) { event.preventDefault(); useValue(color, true); closePanels(); }); paletteGrid.appendChild(swatch); });
+		if (!colors.length) themeButton.hidden = true;
+		field.appendChild(picker); render(false, false);
+		var form = input.closest('form'); if (form) form.addEventListener('reset', function () { window.setTimeout(function () { useValue(input.defaultValue || '#ffffff', false); }, 0); });
 	}
 
 	function normaliseImage(item) {
@@ -224,6 +304,20 @@
 	}
 
 	window.ContactPandaAdminUI = {enhance: enhance, enhanceColorPicker: enhanceColorPicker, createImagePicker: createImagePicker, enhanceListActions: enhanceListActions};
+	document.addEventListener('pointerdown', function (event) {
+		document.querySelectorAll('.contactpanda-unified-color.is-open').forEach(function (picker) {
+			if (picker.contains(event.target)) return;
+			picker.classList.remove('is-open');
+			picker.querySelectorAll('.contactpanda-unified-color-popover,.contactpanda-unified-color-palette').forEach(function (panel) { panel.hidden = true; });
+		});
+	});
+	document.addEventListener('keydown', function (event) {
+		if (event.key !== 'Escape') return;
+		document.querySelectorAll('.contactpanda-unified-color.is-open').forEach(function (picker) {
+			picker.classList.remove('is-open');
+			picker.querySelectorAll('.contactpanda-unified-color-popover,.contactpanda-unified-color-palette').forEach(function (panel) { panel.hidden = true; });
+		});
+	});
 	document.addEventListener('DOMContentLoaded', function () {
 		enhance(document);
 		var observer = new MutationObserver(function (records) { records.forEach(function (record) { record.addedNodes.forEach(function (node) { if (node.nodeType === 1) enhance(node); }); }); });

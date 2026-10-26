@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda
  * Description: Free contact and company management for WordPress with newsletters, WooCommerce, migrations, and optional Groundhogg compatibility.
- * Version: 0.8.45
+ * Version: 0.8.46
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,12 +13,39 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.8.45' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.8.45-20261026-1' );
+define( 'CONTACTPANDA_VERSION', '0.8.46' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.8.46-20261026-1' );
 define( 'CONTACTPANDA_EXTENSION_API_VERSION', '1.0' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CONTACTPANDA_URL', plugin_dir_url( __FILE__ ) );
+
+/**
+ * Sanitize a CSS color shared by every ContactPanda family member.
+ *
+ * WordPress' sanitize_hex_color() deliberately rejects transparent colors.
+ * The shared admin picker also supports RGB/RGBA, so paid extensions use this
+ * helper instead of implementing subtly different validators.
+ */
+function contactpanda_sanitize_css_color( $value, $fallback = '' ) {
+	$value = trim( (string) $value );
+	$hex   = sanitize_hex_color( $value );
+	if ( $hex ) {
+		return strtolower( $hex );
+	}
+	if ( ! preg_match( '/^rgba?\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)(?:\s*,\s*(-?(?:\d+(?:\.\d+)?|\.\d+)))?\s*\)$/i', $value, $matches ) ) {
+		return $fallback;
+	}
+	$red   = min( 255, max( 0, (int) round( (float) $matches[1] ) ) );
+	$green = min( 255, max( 0, (int) round( (float) $matches[2] ) ) );
+	$blue  = min( 255, max( 0, (int) round( (float) $matches[3] ) ) );
+	if ( ! isset( $matches[4] ) || '' === $matches[4] ) {
+		return sprintf( 'rgb(%d, %d, %d)', $red, $green, $blue );
+	}
+	$alpha = min( 1, max( 0, (float) $matches[4] ) );
+	$alpha_value = rtrim( rtrim( number_format( $alpha, 2, '.', '' ), '0' ), '.' );
+	return sprintf( 'rgba(%d, %d, %d, %s)', $red, $green, $blue, '' === $alpha_value ? '0' : $alpha_value );
+}
 
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-plugin.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-modules.php';
@@ -182,6 +209,10 @@ function contactpanda_admin_ui_assets( $hook ) {
 		array(
 			'themeColors' => array_values( array_unique( array_filter( array_map( 'sanitize_hex_color', (array) $theme_colors ) ) ) ),
 			'i18n'        => array(
+				'chooseColor'  => __( 'Select color', 'contactpanda' ),
+				'colorValue'   => __( 'Color value', 'contactpanda' ),
+				'themeColors'  => __( 'Theme and template colors', 'contactpanda' ),
+				'invalidColor' => __( 'Enter a valid HEX, RGB, or RGBA color.', 'contactpanda' ),
 				'chooseImage'  => __( 'Select image', 'contactpanda' ),
 				'useImage'     => __( 'Use image', 'contactpanda' ),
 				'dropImage'    => __( 'Click or drop an image here', 'contactpanda' ),

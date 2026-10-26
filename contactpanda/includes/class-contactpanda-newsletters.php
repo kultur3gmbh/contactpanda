@@ -100,7 +100,7 @@ final class ContactPanda_Basic_Newsletters {
 		$output['logo_id'] = isset( $input['logo_id'] ) ? absint( $input['logo_id'] ) : 0;
 		$output['footer_text'] = isset( $input['footer_text'] ) ? wp_kses_post( $input['footer_text'] ) : '';
 		foreach ( array( 'base_color', 'background_color', 'body_color', 'text_color' ) as $key ) {
-			$output[ $key ] = isset( $input[ $key ] ) && sanitize_hex_color( $input[ $key ] ) ? sanitize_hex_color( $input[ $key ] ) : $defaults[ $key ];
+			$output[ $key ] = self::sanitize_css_color( $input[ $key ] ?? '', $defaults[ $key ] );
 		}
 		$output['font_family'] = isset( $input['font_family'] ) ? sanitize_text_field( $input['font_family'] ) : $defaults['font_family'];
 		$output['container_width'] = isset( $input['container_width'] ) ? min( 760, max( 480, absint( $input['container_width'] ) ) ) : $defaults['container_width'];
@@ -193,12 +193,9 @@ final class ContactPanda_Basic_Newsletters {
 	}
 
 	private static function settings_color_field( $key, $label, $settings ) {
-		$value = sanitize_hex_color( $settings[ $key ] ?? '' ) ?: '#ffffff';
-		echo '<label class="contactpanda-settings-color-field"><span>' . esc_html( $label ) . '</span><span class="contactpanda-settings-color-control"><input type="color" name="' . esc_attr( self::OPTION ) . '[' . esc_attr( $key ) . ']" value="' . esc_attr( $value ) . '"><code class="contactpanda-settings-color-value">' . esc_html( $value ) . '</code></span><span class="contactpanda-theme-color-palette">';
-		foreach ( self::theme_colors() as $color ) {
-			echo '<button type="button" class="contactpanda-settings-color-swatch" data-color="' . esc_attr( $color ) . '" title="' . esc_attr( $color ) . '" aria-label="' . esc_attr( sprintf( __( 'Use color %s', 'contactpanda' ), $color ) ) . '" style="background:' . esc_attr( $color ) . '"></button>';
-		}
-		echo '</span></label>';
+		$value = self::sanitize_css_color( $settings[ $key ] ?? '', '#ffffff' );
+		$native_value = sanitize_hex_color( $value ) ?: '#ffffff';
+		echo '<label class="contactpanda-settings-color-field"><span>' . esc_html( $label ) . '</span><input type="color" data-contactpanda-color-value="' . esc_attr( $value ) . '" name="' . esc_attr( self::OPTION ) . '[' . esc_attr( $key ) . ']" value="' . esc_attr( $native_value ) . '"></label>';
 	}
 
 	private static function settings_font_field( $settings ) {
@@ -747,9 +744,9 @@ final class ContactPanda_Basic_Newsletters {
 
 	private static function editor_field( $name, $label, $value, $type = 'text', $required = false ) {
 		if ( 'color' === $type ) {
-			echo '<label class="contactpanda-settings-color-field contactpanda-email-color-field"><span>' . esc_html( $label ) . '</span><span class="contactpanda-settings-color-control"><input type="color" name="' . esc_attr( $name ) . '" value="' . esc_attr( $value ) . '"' . ( $required ? ' required' : '' ) . '><code class="contactpanda-settings-color-value">' . esc_html( $value ) . '</code></span><span class="contactpanda-theme-color-palette">';
-			foreach ( self::theme_colors() as $color ) echo '<button type="button" class="contactpanda-settings-color-swatch" data-color="' . esc_attr( $color ) . '" title="' . esc_attr( $color ) . '" aria-label="' . esc_attr( sprintf( __( 'Use color %s', 'contactpanda' ), $color ) ) . '" style="background:' . esc_attr( $color ) . '"></button>';
-			echo '</span></label>';
+			$value = self::sanitize_css_color( $value, '#ffffff' );
+			$native_value = sanitize_hex_color( $value ) ?: '#ffffff';
+			echo '<label class="contactpanda-settings-color-field contactpanda-email-color-field"><span>' . esc_html( $label ) . '</span><input type="color" data-contactpanda-color-value="' . esc_attr( $value ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $native_value ) . '"' . ( $required ? ' required' : '' ) . '></label>';
 			return;
 		}
 		echo '<label><span>' . esc_html( $label ) . '</span><input type="' . esc_attr( $type ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $value ) . '"' . ( $required ? ' required' : '' ) . '></label>';
@@ -803,10 +800,10 @@ final class ContactPanda_Basic_Newsletters {
 		}
 		$blocks = self::sanitize_blocks( isset( $_POST['content_json'] ) ? wp_unslash( $_POST['content_json'] ) : '[]' );
 		$use_defaults = ! empty( $_POST['reapply_defaults'] ); $global_style = self::settings();
-		$email_background = ! $use_defaults && isset( $_POST['email_background'] ) && sanitize_hex_color( wp_unslash( $_POST['email_background'] ) ) ? sanitize_hex_color( wp_unslash( $_POST['email_background'] ) ) : $global_style['background_color'];
-		$accent_color = $use_defaults ? $global_style['base_color'] : ( sanitize_hex_color( wp_unslash( $_POST['accent_color'] ?? '' ) ) ?: $global_style['base_color'] );
-		$content_background = $use_defaults ? $global_style['body_color'] : ( sanitize_hex_color( wp_unslash( $_POST['content_background'] ?? '' ) ) ?: $global_style['body_color'] );
-		$text_color = $use_defaults ? $global_style['text_color'] : ( sanitize_hex_color( wp_unslash( $_POST['text_color'] ?? '' ) ) ?: $global_style['text_color'] );
+		$email_background = $use_defaults ? $global_style['background_color'] : self::sanitize_css_color( wp_unslash( $_POST['email_background'] ?? '' ), $global_style['background_color'] );
+		$accent_color = $use_defaults ? $global_style['base_color'] : self::sanitize_css_color( wp_unslash( $_POST['accent_color'] ?? '' ), $global_style['base_color'] );
+		$content_background = $use_defaults ? $global_style['body_color'] : self::sanitize_css_color( wp_unslash( $_POST['content_background'] ?? '' ), $global_style['body_color'] );
+		$text_color = $use_defaults ? $global_style['text_color'] : self::sanitize_css_color( wp_unslash( $_POST['text_color'] ?? '' ), $global_style['text_color'] );
 		$font_family = $use_defaults ? $global_style['font_family'] : sanitize_text_field( wp_unslash( $_POST['font_family'] ?? $global_style['font_family'] ) );
 		$content_width = $use_defaults ? absint( $global_style['container_width'] ) : min( 760, max( 480, absint( $_POST['content_width'] ?? $global_style['container_width'] ) ) );
 		$data = array(
@@ -927,8 +924,7 @@ final class ContactPanda_Basic_Newsletters {
 
 	private static function posted_email_style() {
 		$settings = self::settings();
-		$background = isset( $_POST['email_background'] ) ? sanitize_hex_color( wp_unslash( $_POST['email_background'] ) ) : '';
-		return array( 'background_color' => $background ?: $settings['background_color'], 'base_color' => sanitize_hex_color( wp_unslash( $_POST['accent_color'] ?? '' ) ) ?: $settings['base_color'], 'body_color' => sanitize_hex_color( wp_unslash( $_POST['content_background'] ?? '' ) ) ?: $settings['body_color'], 'text_color' => sanitize_hex_color( wp_unslash( $_POST['text_color'] ?? '' ) ) ?: $settings['text_color'], 'font_family' => sanitize_text_field( wp_unslash( $_POST['font_family'] ?? $settings['font_family'] ) ), 'container_width' => min( 760, max( 480, absint( $_POST['content_width'] ?? $settings['container_width'] ) ) ) );
+		return array( 'background_color' => self::sanitize_css_color( wp_unslash( $_POST['email_background'] ?? '' ), $settings['background_color'] ), 'base_color' => self::sanitize_css_color( wp_unslash( $_POST['accent_color'] ?? '' ), $settings['base_color'] ), 'body_color' => self::sanitize_css_color( wp_unslash( $_POST['content_background'] ?? '' ), $settings['body_color'] ), 'text_color' => self::sanitize_css_color( wp_unslash( $_POST['text_color'] ?? '' ), $settings['text_color'] ), 'font_family' => sanitize_text_field( wp_unslash( $_POST['font_family'] ?? $settings['font_family'] ) ), 'container_width' => min( 760, max( 480, absint( $_POST['content_width'] ?? $settings['container_width'] ) ) ) );
 	}
 
 	private static function sanitize_blocks( $json ) {
@@ -943,7 +939,7 @@ final class ContactPanda_Basic_Newsletters {
 				'id'        => isset( $block['id'] ) ? sanitize_key( $block['id'] ) : wp_generate_uuid4(),
 				'type'      => $type,
 				'alignment' => isset( $block['alignment'] ) && in_array( $block['alignment'], array( 'left', 'center', 'right' ), true ) ? $block['alignment'] : 'left',
-				'background_color' => isset( $block['background_color'] ) && sanitize_hex_color( $block['background_color'] ) ? sanitize_hex_color( $block['background_color'] ) : '',
+				'background_color' => self::sanitize_css_color( $block['background_color'] ?? '' ),
 			);
 			$default_padding = array( 'top' => 0, 'right' => 0, 'bottom' => 0, 'left' => 0 );
 			$default_margin = array( 'top' => 0, 'right' => 0, 'bottom' => 20, 'left' => 0 );
@@ -959,7 +955,7 @@ final class ContactPanda_Basic_Newsletters {
 				$clean['content'] = isset( $block['content'] ) ? wp_kses_post( $block['content'] ) : '';
 				if ( 'heading' === $type ) {
 					$clean['level'] = isset( $block['level'] ) && in_array( strtolower( $block['level'] ), array( 'h1', 'h2', 'h3', 'h4' ), true ) ? strtolower( $block['level'] ) : 'h2';
-					$clean['text_color'] = isset( $block['text_color'] ) && sanitize_hex_color( $block['text_color'] ) ? sanitize_hex_color( $block['text_color'] ) : '';
+					$clean['text_color'] = self::sanitize_css_color( $block['text_color'] ?? '' );
 				}
 			} elseif ( 'hero' === $type ) {
 				$clean['image_url'] = isset( $block['image_url'] ) ? esc_url_raw( $block['image_url'] ) : '';
@@ -968,12 +964,12 @@ final class ContactPanda_Basic_Newsletters {
 				$clean['content'] = wp_kses_post( $block['content'] ?? '' );
 				$clean['button_label'] = sanitize_text_field( $block['button_label'] ?? '' );
 				$clean['button_url'] = esc_url_raw( $block['button_url'] ?? '' );
-				$clean['overlay_color'] = isset( $block['overlay_color'] ) && sanitize_hex_color( $block['overlay_color'] ) ? sanitize_hex_color( $block['overlay_color'] ) : '#182433';
-				$clean['text_color'] = isset( $block['text_color'] ) && sanitize_hex_color( $block['text_color'] ) ? sanitize_hex_color( $block['text_color'] ) : '#ffffff';
+				$clean['overlay_color'] = self::sanitize_css_color( $block['overlay_color'] ?? '', '#182433' );
+				$clean['text_color'] = self::sanitize_css_color( $block['text_color'] ?? '', '#ffffff' );
 				$clean['overlay_opacity'] = min( 90, max( 0, absint( $block['overlay_opacity'] ?? 45 ) ) );
 			} elseif ( 'social' === $type ) {
 				$clean['label'] = sanitize_text_field( $block['label'] ?? '' );
-				$clean['icon_color'] = isset( $block['icon_color'] ) && sanitize_hex_color( $block['icon_color'] ) ? sanitize_hex_color( $block['icon_color'] ) : '#4253b5';
+				$clean['icon_color'] = self::sanitize_css_color( $block['icon_color'] ?? '', '#4253b5' );
 				$clean['links'] = array();
 				foreach ( array( 'website', 'facebook', 'instagram', 'linkedin', 'youtube', 'tiktok' ) as $network ) {
 					$url = esc_url_raw( $block['links'][ $network ] ?? '' );
@@ -1020,12 +1016,12 @@ final class ContactPanda_Basic_Newsletters {
 				$clean['label'] = sanitize_text_field( $block['label'] ?? self::block_label( $type ) );
 				$clean['value'] = sanitize_text_field( $block['value'] ?? '' );
 				$clean['message'] = sanitize_textarea_field( $block['message'] ?? '' );
-				foreach ( array( 'button_color', 'text_color' ) as $color ) $clean[ $color ] = isset( $block[ $color ] ) && sanitize_hex_color( $block[ $color ] ) ? sanitize_hex_color( $block[ $color ] ) : '';
+				foreach ( array( 'button_color', 'text_color' ) as $color ) $clean[ $color ] = self::sanitize_css_color( $block[ $color ] ?? '' );
 				$clean['full_width'] = ! empty( $block['full_width'] );
 			} elseif ( 'button' === $type ) {
 				$clean['label'] = isset( $block['label'] ) ? sanitize_text_field( $block['label'] ) : __( 'Read more', 'contactpanda' );
 				$clean['url'] = isset( $block['url'] ) ? esc_url_raw( $block['url'] ) : '';
-				foreach ( array( 'button_color', 'border_color', 'text_color' ) as $color ) $clean[ $color ] = isset( $block[ $color ] ) && sanitize_hex_color( $block[ $color ] ) ? sanitize_hex_color( $block[ $color ] ) : '';
+				foreach ( array( 'button_color', 'border_color', 'text_color' ) as $color ) $clean[ $color ] = self::sanitize_css_color( $block[ $color ] ?? '' );
 				$clean['full_width'] = ! empty( $block['full_width'] );
 				$clean['uppercase'] = ! empty( $block['uppercase'] );
 			} elseif ( 'spacer' === $type ) {
@@ -1093,14 +1089,13 @@ final class ContactPanda_Basic_Newsletters {
 	}
 
 	private static function sanitize_css_color( $value, $fallback = '' ) {
-		$value = trim( (string) $value );
-		$hex = sanitize_hex_color( $value );
-		if ( $hex ) return $hex;
-		if ( preg_match( '/^rgba?\(\s*(?:\d{1,3}\s*,\s*){2}\d{1,3}(?:\s*,\s*(?:0|1|0?\.\d+))?\s*\)$/', $value ) ) return $value;
-		return $fallback;
+		return function_exists( 'contactpanda_sanitize_css_color' ) ? contactpanda_sanitize_css_color( $value, $fallback ) : ( sanitize_hex_color( $value ) ?: $fallback );
 	}
 
 	private static function hex_to_rgb( $color ) {
+		if ( preg_match( '/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/i', (string) $color, $matches ) ) {
+			return array( min( 255, absint( $matches[1] ) ), min( 255, absint( $matches[2] ) ), min( 255, absint( $matches[3] ) ) );
+		}
 		$color = ltrim( sanitize_hex_color( $color ) ?: '#182433', '#' );
 		if ( 3 === strlen( $color ) ) {
 			$color = $color[0] . $color[0] . $color[1] . $color[1] . $color[2] . $color[2];
@@ -1113,7 +1108,7 @@ final class ContactPanda_Basic_Newsletters {
 			'caption' => sanitize_text_field( $source['caption'] ?? '' ),
 			'caption_position' => isset( $source['caption_position'] ) && in_array( $source['caption_position'], array( 'top', 'center', 'bottom' ), true ) ? $source['caption_position'] : 'bottom',
 			'caption_background' => self::sanitize_css_color( $source['caption_background'] ?? '', 'rgba(0,0,0,0.65)' ),
-			'caption_color' => sanitize_hex_color( $source['caption_color'] ?? '' ) ?: '#ffffff',
+			'caption_color' => self::sanitize_css_color( $source['caption_color'] ?? '', '#ffffff' ),
 			'caption_size' => min( 36, max( 10, absint( $source['caption_size'] ?? 14 ) ) ),
 			'caption_weight' => isset( $source['caption_weight'] ) && in_array( (string) $source['caption_weight'], array( '400', '600', '700' ), true ) ? (string) $source['caption_weight'] : '600',
 			'caption_uppercase' => ! empty( $source['caption_uppercase'] ),
@@ -1127,7 +1122,7 @@ final class ContactPanda_Basic_Newsletters {
 		$radius = self::sanitize_box_values( $block['border_radius'] ?? array(), array( 'top_left' => 0, 'top_right' => 0, 'bottom_right' => 0, 'bottom_left' => 0 ) );
 		$unit = isset( $block['radius_unit'] ) && '%' === $block['radius_unit'] ? '%' : 'px';
 		$style = 'box-sizing:border-box;';
-		if ( ! empty( $block['background_color'] ) ) $style .= 'background:' . sanitize_hex_color( $block['background_color'] ) . ';';
+		if ( ! empty( $block['background_color'] ) ) $style .= 'background:' . self::sanitize_css_color( $block['background_color'] ) . ';';
 		$style .= sprintf( 'padding:%dpx %dpx %dpx %dpx;', $padding['top'], $padding['right'], $padding['bottom'], $padding['left'] );
 		$style .= sprintf( 'margin:%dpx %dpx %dpx %dpx;', $margin['top'], $margin['right'], $margin['bottom'], $margin['left'] );
 		$style .= sprintf( 'border-radius:%d%s %d%s %d%s %d%s;', $radius['top_left'], $unit, $radius['top_right'], $unit, $radius['bottom_right'], $unit, $radius['bottom_left'], $unit );
@@ -1139,7 +1134,7 @@ final class ContactPanda_Basic_Newsletters {
 		$position = $source['caption_position'] ?? 'bottom';
 		$position_style = 'top' === $position ? 'top:5px;' : ( 'center' === $position ? 'top:50%;transform:translate(-50%,-50%);' : 'bottom:5px;' );
 		$transform = 'center' === $position ? '' : 'transform:translateX(-50%);';
-		return '<span class="contactpanda-email-caption" style="position:absolute;z-index:2;left:50%;' . esc_attr( $position_style . $transform ) . 'display:inline-block;box-sizing:border-box;max-width:calc(100% - 10px);padding:5px 9px;background:' . self::sanitize_css_color( $source['caption_background'] ?? '', 'rgba(0,0,0,0.65)' ) . ';color:' . ( sanitize_hex_color( $source['caption_color'] ?? '' ) ?: '#ffffff' ) . ';border-radius:' . absint( $source['caption_radius'] ?? 4 ) . 'px;font:' . esc_attr( $source['caption_weight'] ?? '600' ) . ' ' . absint( $source['caption_size'] ?? 14 ) . 'px/1.25 ' . esc_attr( $font ) . ';text-align:center;text-transform:' . ( ! empty( $source['caption_uppercase'] ) ? 'uppercase' : 'none' ) . ';white-space:normal">' . esc_html( $source['caption'] ) . '</span>';
+		return '<span class="contactpanda-email-caption" style="position:absolute;z-index:2;left:50%;' . esc_attr( $position_style . $transform ) . 'display:inline-block;box-sizing:border-box;max-width:calc(100% - 10px);padding:5px 9px;background:' . self::sanitize_css_color( $source['caption_background'] ?? '', 'rgba(0,0,0,0.65)' ) . ';color:' . self::sanitize_css_color( $source['caption_color'] ?? '', '#ffffff' ) . ';border-radius:' . absint( $source['caption_radius'] ?? 4 ) . 'px;font:' . esc_attr( $source['caption_weight'] ?? '600' ) . ' ' . absint( $source['caption_size'] ?? 14 ) . 'px/1.25 ' . esc_attr( $font ) . ';text-align:center;text-transform:' . ( ! empty( $source['caption_uppercase'] ) ? 'uppercase' : 'none' ) . ';white-space:normal">' . esc_html( $source['caption'] ) . '</span>';
 	}
 
 	private static function render_fragment( $blocks, $settings ) {
@@ -1152,8 +1147,8 @@ final class ContactPanda_Basic_Newsletters {
 	private static function render_email( $blocks, $preview_text = '', $overrides = array() ) {
 		$settings = wp_parse_args( (array) $overrides, self::settings() );
 		$font = esc_attr( $settings['font_family'] );
-		$text_color = sanitize_hex_color( $settings['text_color'] ) ?: '#39495a';
-		$base_color = sanitize_hex_color( $settings['base_color'] ) ?: '#4253b5';
+		$text_color = self::sanitize_css_color( $settings['text_color'] ?? '', '#39495a' );
+		$base_color = self::sanitize_css_color( $settings['base_color'] ?? '', '#4253b5' );
 		$body = '';
 		$responsive_css = '';
 		foreach ( $blocks as $block ) {

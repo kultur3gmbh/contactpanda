@@ -32,12 +32,6 @@
 	});
 	var form = document.getElementById('contactpanda-newsletter-editor');
 	if (!form) return;
-	var topColor = form.querySelector('[name="email_background"]');
-	if (topColor && (config.themeColors || []).length) {
-		var topPalette = document.createElement('span'); topPalette.className = 'contactpanda-theme-color-palette contactpanda-top-color-palette';
-		(config.themeColors || []).forEach(function (color) { var swatch = document.createElement('button'); swatch.type = 'button'; swatch.title = color; swatch.style.background = color; swatch.addEventListener('click', function () { topColor.value = color; }); topPalette.appendChild(swatch); });
-		topColor.parentNode.appendChild(topPalette);
-	}
 	var container = document.getElementById('contactpanda-newsletter-blocks');
 	var inspector = document.getElementById('contactpanda-block-inspector');
 	var jsonField = document.getElementById('contactpanda-content-json');
@@ -311,11 +305,14 @@
 		}, options);
 	}
 	function colorField(caption, value, callback) {
-		var wrapper = field(caption, 'color', value || '#ffffff', callback); wrapper.classList.add('contactpanda-color-field', 'contactpanda-email-color-field');
-		var input = wrapper.querySelector('input'); var control = document.createElement('span'); control.className = 'contactpanda-settings-color-control'; var colorValue = document.createElement('code'); colorValue.className = 'contactpanda-settings-color-value'; colorValue.textContent = input.value; input.before(control); control.appendChild(input); control.appendChild(colorValue); input.addEventListener('input', function () { colorValue.textContent = input.value; });
-		var palette = document.createElement('span'); palette.className = 'contactpanda-theme-color-palette';
-		(config.themeColors || []).forEach(function (color) { var swatch = document.createElement('button'); swatch.type = 'button'; swatch.className = 'contactpanda-settings-color-swatch'; swatch.dataset.color = color; swatch.title = color; swatch.setAttribute('aria-label', color); swatch.style.background = color; swatch.addEventListener('click', function () { input.value = color; colorValue.textContent = color; callback(color); sync(); renderCanvas(); }); palette.appendChild(swatch); });
-		if (palette.childNodes.length) wrapper.appendChild(palette); return wrapper;
+		var original = value || '#ffffff';
+		var wrapper = field(caption, 'color', /^#[0-9a-f]{6}$/i.test(original) ? original : '#ffffff', callback);
+		wrapper.classList.add('contactpanda-color-field', 'contactpanda-email-color-field');
+		var input = wrapper.querySelector('input');
+		input.dataset.contactpandaColorValue = original;
+		input.setAttribute('value', original);
+		if (window.ContactPandaAdminUI && ContactPandaAdminUI.enhanceColorPicker) ContactPandaAdminUI.enhanceColorPicker(input);
+		return wrapper;
 	}
 	function imagePickerField(caption, value, attachmentId, callback, options) {
 		var wrapper = document.createElement('div'); wrapper.className = 'contactpanda-inspector-field contactpanda-inspector-image-field';

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.45\n"
+"Project-Id-Version: ContactPanda 0.8.46\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7640,6 +7640,18 @@ msgid ""
 "{confirmation_link}\n"
 "\n"
 "The link is valid for 24 hours."
+msgstr ""
+
+msgid "Select color"
+msgstr ""
+
+msgid "Color value"
+msgstr ""
+
+msgid "Theme and template colors"
+msgstr ""
+
+msgid "Enter a valid HEX, RGB, or RGBA color."
 msgstr ""
 
 msgid ""
