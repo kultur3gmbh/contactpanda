@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.48\n"
+"Project-Id-Version: ContactPanda 0.8.52\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7797,3 +7797,18 @@ msgstr "Senden Sie eine Rückmeldung, ohne technische Details selbst sammeln zu 
 
 msgid "Send feedback"
 msgstr "Rückmeldung senden"
+
+msgid "Button preview"
+msgstr "Schaltflächenvorschau"
+
+msgid "Example button"
+msgstr "Beispielschaltfläche"
+
+msgid "Appearance settings now preview both ContactPanda and active-theme buttons before saving."
+msgstr "Die Darstellungseinstellungen zeigen ContactPanda- und Theme-Schaltflächen jetzt vor dem Speichern als Vorschau."
+
+msgid "Basic, Plus, Pro, and Business use one coordinated family version."
+msgstr "Basic, Plus, Pro und Business verwenden eine gemeinsame Familienversion."
+
+msgid "Protected update metadata is published consistently for every family component."
+msgstr "Geschützte Update-Metadaten werden einheitlich für jede Familienkomponente veröffentlicht."
