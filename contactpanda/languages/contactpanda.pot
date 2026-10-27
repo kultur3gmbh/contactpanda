@@ -7680,3 +7680,93 @@ msgstr ""
 
 msgid "The extension consent could not be synchronized."
 msgstr ""
+
+msgid "Groundhogg flow migration"
+msgstr ""
+
+msgid "Analyze existing Groundhogg funnels before importing them. The analysis is read only. Imported automations are always created as inactive drafts and must be checked before they can be published."
+msgstr ""
+
+msgid "No readable Groundhogg funnels were found."
+msgstr ""
+
+msgid "Flow"
+msgstr ""
+
+msgid "Steps"
+msgstr ""
+
+msgid "Compatibility"
+msgstr ""
+
+msgid "Assessment"
+msgstr ""
+
+msgid "Directly supported"
+msgstr ""
+
+msgid "Review required"
+msgstr ""
+
+msgid "Not yet supported"
+msgstr ""
+
+msgid "Show step analysis"
+msgstr ""
+
+msgid "Create or update draft"
+msgstr ""
+
+msgid "ContactPanda Plus is required to create an automation draft."
+msgstr ""
+
+msgid "Green steps can be translated directly. Yellow steps need your review. Red steps are retained as review notes instead of being activated silently."
+msgstr ""
+
+msgid "ContactPanda Plus is required to import automation drafts."
+msgstr ""
+
+msgid "The Groundhogg flow could not be read again."
+msgstr ""
+
+msgid "The inactive automation draft was created or updated. Review every step before publishing it."
+msgstr ""
+
+msgid "Groundhogg flow #%d"
+msgstr ""
+
+msgid "Overview"
+msgstr ""
+
+msgid "The most important ContactPanda figures at a glance."
+msgstr ""
+
+msgid "Your contacts and communication in one place"
+msgstr ""
+
+msgid "Manage people, companies, consent, newsletters, and connected extensions from a clear shared workspace."
+msgstr ""
+
+msgid "New in this version"
+msgstr ""
+
+msgid "A compact overview places your current figures first."
+msgstr ""
+
+msgid "Groundhogg flows can be analyzed before they are transferred as inactive automation drafts."
+msgstr ""
+
+msgid "Migration reports clearly distinguish direct mappings, review items, and unsupported steps."
+msgstr ""
+
+msgid "Feedback from ContactPanda dashboard"
+msgstr ""
+
+msgid "Have you noticed something?"
+msgstr ""
+
+msgid "Send feedback without having to collect technical details yourself. When Support Desk is available, the current page and version are prepared automatically."
+msgstr ""
+
+msgid "Send feedback"
+msgstr ""

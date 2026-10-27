@@ -33,6 +33,7 @@ final class ContactPanda_Data_Tools {
 		add_action( 'admin_post_contactpanda_central_salutations', array( __CLASS__, 'handle_central_settings' ) );
 		add_action( 'admin_post_contactpanda_sync_central_salutations', array( __CLASS__, 'handle_central_sync' ) );
 		add_action( 'admin_post_contactpanda_admin_notice_settings', array( __CLASS__, 'handle_notice_settings' ) );
+		add_action( 'admin_post_contactpanda_import_groundhogg_flow_draft', array( __CLASS__, 'handle_groundhogg_flow_draft' ) );
 		add_action( 'wp_ajax_contactpanda_dismiss_admin_notice', array( __CLASS__, 'dismiss_admin_notice' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_notice_helper' ), 100 );
 		add_action( 'contactpanda_central_salutation_sync', array( __CLASS__, 'scheduled_central_sync' ) );
@@ -69,7 +70,10 @@ final class ContactPanda_Data_Tools {
 		echo '<div class="wrap contactpanda-wrap"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CONTACTPANDA</p><h1>' . esc_html__( 'Import and export', 'contactpanda' ) . '</h1><p>' . esc_html__( 'Move data with previews, filters, and a traceable history.', 'contactpanda' ) . '</p></div></div>';
 		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><a class="nav-tab ' . ( 'import' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=import' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'export' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=export' ) ) . '">' . esc_html__( 'Export', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'migration' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration' ) ) . '">' . esc_html__( 'Migration', 'contactpanda' ) . '</a></nav>';
 		if ( 'export' === $section ) self::render_export();
-		elseif ( 'migration' === $section ) ContactPanda_Registration::render_migration_settings();
+		elseif ( 'migration' === $section ) {
+			ContactPanda_Registration::render_migration_settings();
+			self::render_groundhogg_flow_migration();
+		}
 		else {
 			$entity = isset( $_GET['entity'] ) ? sanitize_key( wp_unslash( $_GET['entity'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only import filter.
 			if ( in_array( $entity, array( 'contacts', 'companies' ), true ) ) {
@@ -137,6 +141,121 @@ final class ContactPanda_Data_Tools {
 		self::render_csv_import();
 		if ( self::vcard_enabled() ) self::render_vcard_import();
 		self::render_import_history();
+	}
+
+	/**
+	 * Show a read-only compatibility report for Groundhogg funnels.
+	 *
+	 * The source records are never changed. ContactPanda Plus can attach an
+	 * importer through the filter used by handle_groundhogg_flow_draft().
+	 */
+	private static function render_groundhogg_flow_migration() {
+		if ( ! self::groundhogg_available() ) return;
+		$flows = self::groundhogg_flows();
+		$notice = get_transient( 'contactpanda_groundhogg_flow_notice_' . get_current_user_id() );
+		if ( $notice ) delete_transient( 'contactpanda_groundhogg_flow_notice_' . get_current_user_id() );
+		echo '<section id="groundhogg-flows" class="contactpanda-card contactpanda-settings-card contactpanda-groundhogg-flow-migration"><h2>' . esc_html__( 'Groundhogg flow migration', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Analyze existing Groundhogg funnels before importing them. The analysis is read only. Imported automations are always created as inactive drafts and must be checked before they can be published.', 'contactpanda' ) . '</p>';
+		if ( is_array( $notice ) ) echo '<div class="notice notice-' . ( 'success' === ( $notice['type'] ?? '' ) ? 'success' : 'error' ) . ' inline"><p>' . esc_html( $notice['message'] ?? '' ) . '</p></div>';
+		if ( ! $flows ) {
+			echo '<p>' . esc_html__( 'No readable Groundhogg funnels were found.', 'contactpanda' ) . '</p></section>';
+			return;
+		}
+		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Flow', 'contactpanda' ) . '</th><th>' . esc_html__( 'Steps', 'contactpanda' ) . '</th><th>' . esc_html__( 'Compatibility', 'contactpanda' ) . '</th><th>' . esc_html__( 'Assessment', 'contactpanda' ) . '</th><th>' . esc_html__( 'Actions', 'contactpanda' ) . '</th></tr></thead><tbody>';
+		foreach ( $flows as $flow ) {
+			$assessment = self::assess_groundhogg_flow( $flow );
+			$labels = array( 'supported' => __( 'Directly supported', 'contactpanda' ), 'review' => __( 'Review required', 'contactpanda' ), 'unsupported' => __( 'Not yet supported', 'contactpanda' ) );
+			$summary = array();
+			foreach ( $assessment['counts'] as $key => $count ) if ( $count ) $summary[] = sprintf( '%1$d × %2$s', $count, $labels[ $key ] );
+			echo '<tr><td><strong>' . esc_html( $flow['name'] ) . '</strong><br><small>' . esc_html( $flow['source_id'] ) . '</small></td><td>' . esc_html( count( $flow['steps'] ) ) . '</td><td><span class="contactpanda-migration-status is-' . esc_attr( $assessment['status'] ) . '">' . esc_html( $labels[ $assessment['status'] ] ) . '</span></td><td>' . esc_html( implode( ' · ', $summary ) ) . '<details><summary>' . esc_html__( 'Show step analysis', 'contactpanda' ) . '</summary><ol>';
+			foreach ( $assessment['steps'] as $step ) echo '<li><strong>' . esc_html( $step['label'] ) . '</strong> — ' . esc_html( $labels[ $step['status'] ] ) . '</li>';
+			echo '</ol></details></td><td>';
+			if ( has_filter( 'contactpanda_import_groundhogg_flow_draft' ) ) {
+				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_import_groundhogg_flow_draft"><input type="hidden" name="source_id" value="' . esc_attr( $flow['source_id'] ) . '">';
+				wp_nonce_field( 'contactpanda_import_groundhogg_flow_draft_' . $flow['source_id'] );
+				echo '<button class="button">' . esc_html__( 'Create or update draft', 'contactpanda' ) . '</button></form>';
+			} else {
+				echo '<span class="description">' . esc_html__( 'ContactPanda Plus is required to create an automation draft.', 'contactpanda' ) . '</span>';
+			}
+			echo '</td></tr>';
+		}
+		echo '</tbody></table><p class="description">' . esc_html__( 'Green steps can be translated directly. Yellow steps need your review. Red steps are retained as review notes instead of being activated silently.', 'contactpanda' ) . '</p></section>';
+	}
+
+	/** Detect Groundhogg without requiring any optional class during ContactPanda startup. */
+	private static function groundhogg_available() {
+		return defined( 'GROUNDHOGG_VERSION' ) || function_exists( '\\Groundhogg\\get_db' ) || class_exists( '\\Groundhogg\\Contact' );
+	}
+
+	/** Create an inactive Plus draft from one re-read Groundhogg source flow. */
+	public static function handle_groundhogg_flow_draft() {
+		if ( ! current_user_can( 'manage_options' ) ) wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		$source_id = sanitize_text_field( wp_unslash( $_POST['source_id'] ?? '' ) );
+		check_admin_referer( 'contactpanda_import_groundhogg_flow_draft_' . $source_id );
+		$flow = false;
+		foreach ( self::groundhogg_flows() as $candidate ) if ( hash_equals( (string) $candidate['source_id'], $source_id ) ) { $flow = $candidate; break; }
+		$result = $flow ? apply_filters( 'contactpanda_import_groundhogg_flow_draft', new WP_Error( 'contactpanda_plus_required', __( 'ContactPanda Plus is required to import automation drafts.', 'contactpanda' ) ), $flow, self::assess_groundhogg_flow( $flow ) ) : new WP_Error( 'contactpanda_groundhogg_flow_missing', __( 'The Groundhogg flow could not be read again.', 'contactpanda' ) );
+		$notice = is_wp_error( $result ) ? array( 'type' => 'error', 'message' => $result->get_error_message() ) : array( 'type' => 'success', 'message' => __( 'The inactive automation draft was created or updated. Review every step before publishing it.', 'contactpanda' ) );
+		set_transient( 'contactpanda_groundhogg_flow_notice_' . get_current_user_id(), $notice, MINUTE_IN_SECONDS );
+		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration#groundhogg-flows' ) );
+		exit;
+	}
+
+	/** Read Groundhogg funnels through its database API without modifying them. */
+	private static function groundhogg_flows() {
+		if ( ! function_exists( '\\Groundhogg\\get_db' ) ) return array();
+		try {
+			$rows = (array) \Groundhogg\get_db( 'funnels' )->query( array( 'limit' => 1000, 'orderby' => 'ID', 'order' => 'ASC' ) );
+		} catch ( Throwable $error ) {
+			return array();
+		}
+		$flows = array();
+		foreach ( $rows as $row ) {
+			$id = absint( self::groundhogg_value( $row, array( 'ID', 'id', 'get_id' ) ) );
+			if ( ! $id ) continue;
+			$name = sanitize_text_field( self::groundhogg_value( $row, array( 'title', 'name', 'get_title', 'get_name' ) ) );
+			$steps = array();
+			try {
+				$steps = (array) \Groundhogg\get_db( 'steps' )->query( array( 'funnel_id' => $id, 'limit' => 1000, 'orderby' => 'step_order', 'order' => 'ASC' ) );
+			} catch ( Throwable $error ) {
+				$steps = array();
+			}
+			$flows[] = array( 'source_id' => 'groundhogg:funnel:' . $id, 'source_numeric_id' => $id, 'name' => $name ?: sprintf( __( 'Groundhogg flow #%d', 'contactpanda' ), $id ), 'steps' => array_map( array( __CLASS__, 'normalize_groundhogg_step' ), $steps ) );
+		}
+		return $flows;
+	}
+
+	private static function normalize_groundhogg_step( $step ) {
+		$type = sanitize_key( self::groundhogg_value( $step, array( 'step_type', 'type', 'get_step_type', 'get_type' ) ) );
+		$data = self::groundhogg_value( $step, array( 'data', 'meta', 'get_data', 'get_meta' ) );
+		if ( is_string( $data ) ) { $decoded = json_decode( $data, true ); if ( is_array( $decoded ) ) $data = $decoded; }
+		if ( ! is_array( $data ) ) $data = array();
+		$class = is_object( $step ) ? get_class( $step ) : '';
+		$label = sanitize_text_field( self::groundhogg_value( $step, array( 'title', 'name', 'get_title', 'get_name' ) ) );
+		if ( ! $type ) $type = sanitize_key( basename( str_replace( '\\', '/', $class ) ) );
+		return array( 'type' => $type ?: 'unknown', 'label' => $label ?: ucwords( str_replace( array( '-', '_' ), ' ', $type ?: 'unknown' ) ), 'data' => $data );
+	}
+
+	private static function assess_groundhogg_flow( $flow ) {
+		$direct = array( 'wait', 'delay', 'timer', 'apply_tag', 'add_tag', 'remove_tag', 'remove_tag_action', 'send_email', 'email', 'edit_meta', 'update_contact' );
+		$review = array( 'benchmark', 'tag_applied', 'form_filled', 'web_form', 'webhook', 'condition', 'logic', 'date_timer', 'field_changed' );
+		$result = array( 'status' => 'supported', 'counts' => array( 'supported' => 0, 'review' => 0, 'unsupported' => 0 ), 'steps' => array() );
+		foreach ( (array) $flow['steps'] as $step ) {
+			$type = sanitize_key( $step['type'] ?? '' );
+			$status = in_array( $type, $direct, true ) ? 'supported' : ( in_array( $type, $review, true ) ? 'review' : 'unsupported' );
+			$result['counts'][ $status ]++;
+			$result['steps'][] = array( 'label' => $step['label'] ?: $type, 'status' => $status );
+		}
+		if ( $result['counts']['unsupported'] ) $result['status'] = 'unsupported'; elseif ( $result['counts']['review'] ) $result['status'] = 'review';
+		return $result;
+	}
+
+	private static function groundhogg_value( $record, $keys ) {
+		foreach ( $keys as $key ) {
+			if ( is_array( $record ) && array_key_exists( $key, $record ) ) return $record[ $key ];
+			if ( is_object( $record ) && isset( $record->{$key} ) ) return $record->{$key};
+			if ( is_object( $record ) && method_exists( $record, $key ) ) { try { return $record->{$key}(); } catch ( Throwable $error ) { continue; } }
+		}
+		return '';
 	}
 
 	/** Render the same non-destructive import workflow on People or Companies. */

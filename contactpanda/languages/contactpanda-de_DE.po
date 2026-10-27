@@ -7707,3 +7707,93 @@ msgstr "Der Erweiterungs-Tag konnte nicht zugewiesen werden."
 
 msgid "The extension consent could not be synchronized."
 msgstr "Die Einwilligung der Erweiterung konnte nicht synchronisiert werden."
+
+msgid "Groundhogg flow migration"
+msgstr "Groundhogg-Flow-Migration"
+
+msgid "Analyze existing Groundhogg funnels before importing them. The analysis is read only. Imported automations are always created as inactive drafts and must be checked before they can be published."
+msgstr "Analysieren Sie bestehende Groundhogg-Funnels vor der Übernahme. Die Analyse ist schreibgeschützt. Importierte Automatisierungen werden immer als inaktive Entwürfe erstellt und müssen vor der Veröffentlichung geprüft werden."
+
+msgid "No readable Groundhogg funnels were found."
+msgstr "Es wurden keine lesbaren Groundhogg-Funnels gefunden."
+
+msgid "Flow"
+msgstr "Flow"
+
+msgid "Steps"
+msgstr "Schritte"
+
+msgid "Compatibility"
+msgstr "Kompatibilität"
+
+msgid "Assessment"
+msgstr "Bewertung"
+
+msgid "Directly supported"
+msgstr "Direkt unterstützt"
+
+msgid "Review required"
+msgstr "Prüfung erforderlich"
+
+msgid "Not yet supported"
+msgstr "Noch nicht unterstützt"
+
+msgid "Show step analysis"
+msgstr "Schrittanalyse anzeigen"
+
+msgid "Create or update draft"
+msgstr "Entwurf erstellen oder aktualisieren"
+
+msgid "ContactPanda Plus is required to create an automation draft."
+msgstr "ContactPanda Plus wird benötigt, um einen Automatisierungsentwurf zu erstellen."
+
+msgid "Green steps can be translated directly. Yellow steps need your review. Red steps are retained as review notes instead of being activated silently."
+msgstr "Grüne Schritte können direkt übertragen werden. Gelbe Schritte müssen geprüft werden. Rote Schritte bleiben als Prüfhinweise erhalten und werden nicht unbemerkt aktiviert."
+
+msgid "ContactPanda Plus is required to import automation drafts."
+msgstr "ContactPanda Plus wird für den Import von Automatisierungsentwürfen benötigt."
+
+msgid "The Groundhogg flow could not be read again."
+msgstr "Der Groundhogg-Flow konnte nicht erneut gelesen werden."
+
+msgid "The inactive automation draft was created or updated. Review every step before publishing it."
+msgstr "Der inaktive Automatisierungsentwurf wurde erstellt oder aktualisiert. Prüfen Sie jeden Schritt vor der Veröffentlichung."
+
+msgid "Groundhogg flow #%d"
+msgstr "Groundhogg-Flow Nr. %d"
+
+msgid "Overview"
+msgstr "Übersicht"
+
+msgid "The most important ContactPanda figures at a glance."
+msgstr "Die wichtigsten ContactPanda-Zahlen auf einen Blick."
+
+msgid "Your contacts and communication in one place"
+msgstr "Kontakte und Kommunikation an einem Ort"
+
+msgid "Manage people, companies, consent, newsletters, and connected extensions from a clear shared workspace."
+msgstr "Verwalten Sie Personen, Firmen, Einwilligungen, Newsletter und verbundene Erweiterungen in einer übersichtlichen gemeinsamen Arbeitsumgebung."
+
+msgid "New in this version"
+msgstr "Neu in dieser Version"
+
+msgid "A compact overview places your current figures first."
+msgstr "Eine kompakte Übersicht stellt Ihre aktuellen Kennzahlen an die erste Stelle."
+
+msgid "Groundhogg flows can be analyzed before they are transferred as inactive automation drafts."
+msgstr "Groundhogg-Flows können analysiert werden, bevor sie als inaktive Automatisierungsentwürfe übernommen werden."
+
+msgid "Migration reports clearly distinguish direct mappings, review items, and unsupported steps."
+msgstr "Migrationsberichte unterscheiden klar zwischen direkten Zuordnungen, Prüfpunkten und nicht unterstützten Schritten."
+
+msgid "Feedback from ContactPanda dashboard"
+msgstr "Rückmeldung aus dem ContactPanda-Dashboard"
+
+msgid "Have you noticed something?"
+msgstr "Ist Ihnen etwas aufgefallen?"
+
+msgid "Send feedback without having to collect technical details yourself. When Support Desk is available, the current page and version are prepared automatically."
+msgstr "Senden Sie eine Rückmeldung, ohne technische Details selbst sammeln zu müssen. Wenn der Support-Desk verfügbar ist, werden die aktuelle Seite und Version automatisch vorbereitet."
+
+msgid "Send feedback"
+msgstr "Rückmeldung senden"

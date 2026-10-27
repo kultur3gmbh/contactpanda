@@ -1927,31 +1927,33 @@ final class ContactPanda_Plugin {
 		}
 		$communication_cards = apply_filters( 'contactpanda_dashboard_communication_cards', $communication_cards );
 
-		echo '<div class="wrap contactpanda-wrap contactpanda-dashboard"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CRM</p><h1>' . esc_html__( 'Dashboard', 'contactpanda' ) . '</h1><p>' . esc_html__( 'The most important ContactPanda figures at a glance.', 'contactpanda' ) . '</p></div></div>';
+		echo '<div class="wrap contactpanda-wrap contactpanda-dashboard"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CRM</p><h1>' . esc_html__( 'Overview', 'contactpanda' ) . '</h1><p>' . esc_html__( 'The most important ContactPanda figures at a glance.', 'contactpanda' ) . '</p></div></div>';
 		self::render_dashboard_product_visual();
 		self::render_dashboard_section( __( 'People and companies', 'contactpanda' ), $contact_cards );
 		if ( $communication_cards ) self::render_dashboard_section( __( 'Newsletter and automations', 'contactpanda' ), $communication_cards );
 		self::render_dashboard_last_mailing( $last_mailing );
+		self::render_dashboard_release_news();
 		self::render_dashboard_news();
 		self::render_dashboard_upgrades();
 		echo '</div>';
 	}
 
 	/**
-	 * Render the product visual belonging to the highest active ContactPanda
-	 * family package. Extensions can replace the local Basic asset without
-	 * making the dashboard dependent on a remote image.
+	 * Render a compact product introduction. The panda remains a quiet brand
+	 * cue instead of competing with the operational dashboard information.
 	 */
 	private static function render_dashboard_product_visual() {
-		$visual = apply_filters(
-			'contactpanda_dashboard_product_visual',
-			array(
-				'src' => CONTACTPANDA_URL . 'assets/images/contactpanda-basic-dashboard-simple.png',
-				'alt' => __( 'ContactPanda Basic product overview', 'contactpanda' ),
-			)
-		);
+		$visual = apply_filters( 'contactpanda_dashboard_product_visual', array( 'src' => CONTACTPANDA_URL . 'assets/images/contactpanda-admin-icon.png', 'alt' => '' ) );
 		if ( ! is_array( $visual ) || empty( $visual['src'] ) ) return;
-		echo '<section class="contactpanda-card contactpanda-dashboard-product-visual"><img src="' . esc_url( $visual['src'] ) . '" alt="' . esc_attr( $visual['alt'] ?? '' ) . '"></section>';
+		echo '<section class="contactpanda-card contactpanda-dashboard-product-visual"><img src="' . esc_url( $visual['src'] ) . '" alt="' . esc_attr( $visual['alt'] ?? '' ) . '"><div><h2>' . esc_html__( 'Your contacts and communication in one place', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Manage people, companies, consent, newsletters, and connected extensions from a clear shared workspace.', 'contactpanda' ) . '</p></div></section>';
+	}
+
+	/** Explain user-relevant changes and provide a prepared feedback path. */
+	private static function render_dashboard_release_news() {
+		echo '<section class="contactpanda-dashboard-release-grid"><article class="contactpanda-card contactpanda-dashboard-release"><p class="contactpanda-eyebrow">' . esc_html__( 'New in this version', 'contactpanda' ) . '</p><h2>' . esc_html( CONTACTPANDA_VERSION ) . '</h2><ul><li>' . esc_html__( 'A compact overview places your current figures first.', 'contactpanda' ) . '</li><li>' . esc_html__( 'Groundhogg flows can be analyzed before they are transferred as inactive automation drafts.', 'contactpanda' ) . '</li><li>' . esc_html__( 'Migration reports clearly distinguish direct mappings, review items, and unsupported steps.', 'contactpanda' ) . '</li></ul></article>';
+		$feedback_url = add_query_arg( array( 'page' => 'contactpanda-pro-support', 'new' => 1, 'source' => 'contactpanda-dashboard', 'subject' => __( 'Feedback from ContactPanda dashboard', 'contactpanda' ) ), admin_url( 'admin.php' ) );
+		if ( ! defined( 'CONTACTPANDA_PRO_VERSION' ) ) $feedback_url = apply_filters( 'contactpanda_feedback_url', 'https://mycontactpanda.com/' );
+		echo '<article class="contactpanda-card contactpanda-dashboard-feedback"><span class="dashicons dashicons-format-chat" aria-hidden="true"></span><div><h2>' . esc_html__( 'Have you noticed something?', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Send feedback without having to collect technical details yourself. When Support Desk is available, the current page and version are prepared automatically.', 'contactpanda' ) . '</p><a class="button" href="' . esc_url( $feedback_url ) . '">' . esc_html__( 'Send feedback', 'contactpanda' ) . '</a></div></article></section>';
 	}
 
 	private static function dashboard_people_count() {
