@@ -186,18 +186,16 @@ final class ContactPanda_Licensed_Updater {
 		if ( null !== $this->metadata ) {
 			return $this->metadata;
 		}
-		$key    = $this->cache_key();
-		$cached = get_site_transient( $key );
-		if ( is_array( $cached ) ) {
-			$this->metadata = $cached;
-			return $cached;
-		}
+
+		/*
+		 * WordPress already caches the combined plugin update result in the
+		 * update_plugins site transient. A second persistent cache here caused
+		 * an explicit "Check again" request to keep returning the previous
+		 * protected family release for up to ten minutes. Keep metadata only for
+		 * the current request so a rebuilt WordPress update list always reaches
+		 * the license server immediately.
+		 */
 		$this->metadata = ContactPanda_License::product_update( $this->config['product'], $this->config['entitlement'], $this->config['version'], $this->config['channel'] );
-		// Never retain a negative answer. A release may be published a moment later,
-		// and WordPress' next update refresh must then reach the license server.
-		if ( is_array( $this->metadata ) && ! empty( $this->metadata['available'] ) ) {
-			set_site_transient( $key, $this->metadata, 10 * MINUTE_IN_SECONDS );
-		}
 		return $this->metadata;
 	}
 
