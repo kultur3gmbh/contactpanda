@@ -17,7 +17,7 @@ msgstr "Anteil für Variante B (%)"
 msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
 msgstr "Platzhalter wie {campaign_name}, {campaign_id} und {subject_variant} werden für jeden Versand einzeln aufgelöst."
 
-"Project-Id-Version: ContactPanda 0.8.57\n"
+"Project-Id-Version: ContactPanda 0.8.58\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7901,3 +7901,59 @@ msgstr "FluentCRM-Import abgeschlossen: %1$d neue Kontakte, %2$d aktualisierte K
 
 msgid "Log out"
 msgstr "Abmelden"
+msgid "Company details"
+msgstr "Firmendaten"
+
+msgid "Company details saved."
+msgstr "Die Firmendaten wurden gespeichert."
+
+msgid "Maintain identity, contact, tax, bank, and branding details once. ContactPanda extensions use this shared source for documents, messages, and customer-facing pages."
+msgstr "Pflegen Sie Identitäts-, Kontakt-, Steuer-, Bank- und Markendaten zentral. ContactPanda-Erweiterungen verwenden diese gemeinsame Quelle für Dokumente, Nachrichten und kundenorientierte Seiten."
+
+msgid "Identity and address"
+msgstr "Identität und Anschrift"
+
+msgid "Company name"
+msgstr "Firmenname"
+
+msgid "Legal form"
+msgstr "Rechtsform"
+
+msgid "Management"
+msgstr "Geschäftsführung"
+
+msgid "Company register"
+msgstr "Firmenbuch"
+
+msgid "Contact and tax details"
+msgstr "Kontakt- und Steuerdaten"
+
+msgid "Tax number or VAT ID"
+msgstr "Steuernummer oder UID-Nummer"
+
+msgid "Payments and documents"
+msgstr "Zahlungen und Dokumente"
+
+msgid "Bank name"
+msgstr "Bankname"
+
+msgid "Default payment term in days"
+msgstr "Standard-Zahlungsziel in Tagen"
+
+msgid "Alternative logo"
+msgstr "Alternatives Logo"
+
+msgid "Stamp image"
+msgstr "Stempelbild"
+
+msgid "Signature image"
+msgstr "Unterschriftsbild"
+
+msgid "Legal footer"
+msgstr "Rechtliche Fußzeile"
+
+msgid "Available WooCommerce store values are used only as initial suggestions. Saving here never changes WooCommerce settings."
+msgstr "Vorhandene WooCommerce-Shopdaten werden nur als erste Vorschläge verwendet. Das Speichern hier ändert niemals WooCommerce-Einstellungen."
+
+msgid "Save company details"
+msgstr "Firmendaten speichern"

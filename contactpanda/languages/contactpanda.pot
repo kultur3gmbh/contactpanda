@@ -17,7 +17,7 @@ msgstr ""
 msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
 msgstr ""
 
-"Project-Id-Version: ContactPanda 0.8.57\n"
+"Project-Id-Version: ContactPanda 0.8.58\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7873,4 +7873,60 @@ msgid "FluentCRM import completed: %1$d new contacts, %2$d updated contacts, %3$
 msgstr ""
 
 msgid "Log out"
+msgstr ""
+msgid "Company details"
+msgstr ""
+
+msgid "Company details saved."
+msgstr ""
+
+msgid "Maintain identity, contact, tax, bank, and branding details once. ContactPanda extensions use this shared source for documents, messages, and customer-facing pages."
+msgstr ""
+
+msgid "Identity and address"
+msgstr ""
+
+msgid "Company name"
+msgstr ""
+
+msgid "Legal form"
+msgstr ""
+
+msgid "Management"
+msgstr ""
+
+msgid "Company register"
+msgstr ""
+
+msgid "Contact and tax details"
+msgstr ""
+
+msgid "Tax number or VAT ID"
+msgstr ""
+
+msgid "Payments and documents"
+msgstr ""
+
+msgid "Bank name"
+msgstr ""
+
+msgid "Default payment term in days"
+msgstr ""
+
+msgid "Alternative logo"
+msgstr ""
+
+msgid "Stamp image"
+msgstr ""
+
+msgid "Signature image"
+msgstr ""
+
+msgid "Legal footer"
+msgstr ""
+
+msgid "Available WooCommerce store values are used only as initial suggestions. Saving here never changes WooCommerce settings."
+msgstr ""
+
+msgid "Save company details"
 msgstr ""
