@@ -141,7 +141,7 @@ Basic stellt die gemeinsame Admin-Komponente für Basic, Plus, Pro und Business 
 
 Aktionen in Tabellen, Listen und kompakten Karten werden, sofern ihre Bedeutung durch ein bekanntes Symbol eindeutig ist, als graue quadratische Symbolschaltflächen mit Tooltip und zugänglicher Beschriftung dargestellt. Primäre Arbeitsabläufe wie Speichern, Veröffentlichen, Versenden, Importieren, Suchen, Filtern, Mehrfachaktionen und das Erstellen neuer Datensätze bleiben beschriftet. Diese Texte sind für Tragweite oder Ergebnis der Aktion notwendig und werden nicht allein durch mehrdeutige Symbole ersetzt.
 
-Datenmigrationen befinden sich ausschließlich im Bereich „Import / Export“ im Tab „Migration“. Dort werden nur passende Wege für erkannte Quellsysteme wie Groundhogg, WooCommerce oder The Newsletter Plugin angeboten. Weitere Erweiterungen ergänzen diesen Bereich über `contactpanda_render_migration_tools`; Migrationen werden nicht als Einstellungsseite oder eigener Hauptmenüpunkt dupliziert.
+Datenmigrationen besitzen einen eigenen Hauptmenüpunkt „Migration“, getrennt vom gewöhnlichen Datei-Import und -Export. Dort erscheinen nur Tabs für tatsächlich installierte Quellsysteme wie Groundhogg, FluentCRM, WooCommerce oder The Newsletter Plugin. Alle Adapter verwenden dieselbe geschützte, nicht destruktive Vorschau-, Zuordnungs- und Protokollbasis. Weitere Erweiterungen ergänzen diesen Bereich über `contactpanda_migration_sources`, `contactpanda_render_migration_source_{source}` und den kompatibel erhaltenen Hook `contactpanda_render_migration_tools`.
 
 ## Noch zu verifizieren
 

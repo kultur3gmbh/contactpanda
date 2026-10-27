@@ -7815,3 +7815,69 @@ msgstr "Geschützte Update-Metadaten werden einheitlich für jede Familienkompon
 
 msgid "Move data from supported systems into ContactPanda with previews and without changing the source records."
 msgstr "Übernehmen Sie Daten aus unterstützten Systemen mit Vorschau in ContactPanda, ohne die Quelldaten zu verändern."
+
+msgid "Migration sources"
+msgstr "Migrationsquellen"
+
+msgid "No supported source system is currently installed. A matching migration tab appears automatically when a supported plugin is detected."
+msgstr "Derzeit ist kein unterstütztes Quellsystem installiert. Sobald ein unterstütztes Plugin erkannt wird, erscheint automatisch der passende Migrationstab."
+
+msgid "Contacts, companies, tags, email templates, completed broadcasts, and automation drafts can be analyzed and migrated without changing Groundhogg."
+msgstr "Kontakte, Firmen, Tags, E-Mail-Vorlagen, abgeschlossene Aussendungen und Automatisierungsentwürfe können analysiert und übernommen werden, ohne Groundhogg zu verändern."
+
+msgid "Contacts and their marketing state can be migrated now. Additional FluentCRM content can be supplied by an installed ContactPanda extension."
+msgstr "Kontakte und ihr Marketingstatus können jetzt übernommen werden. Weitere FluentCRM-Inhalte können durch eine installierte ContactPanda-Erweiterung ergänzt werden."
+
+msgid "Subscribers are migrated by email address. ContactPanda Plus can additionally preserve historical mailings and available statistics as read-only archives."
+msgstr "Abonnenten werden anhand ihrer E-Mail-Adresse übernommen. ContactPanda Plus kann zusätzlich historische Aussendungen und verfügbare Statistiken als schreibgeschützte Archive erhalten."
+
+msgid "Customer profiles can be merged into ContactPanda. Orders, invoices, prices, and all WooCommerce source records remain unchanged."
+msgstr "Kundenprofile können in ContactPanda zusammengeführt werden. Bestellungen, Rechnungen, Preise und alle WooCommerce-Quelldatensätze bleiben unverändert."
+
+msgid "Imports are started only after an explicit confirmation. Source systems remain unchanged, and existing ContactPanda contacts are matched by stable source identifiers and email addresses before new records are created."
+msgstr "Importe werden erst nach einer ausdrücklichen Bestätigung gestartet. Quellsysteme bleiben unverändert, und bestehende ContactPanda-Kontakte werden anhand stabiler Quellkennungen und E-Mail-Adressen abgeglichen, bevor neue Datensätze entstehen."
+
+msgid "Select an installed source system above. Each source has its own preview, migration report, and repeatable import process while using the same protected ContactPanda migration foundation."
+msgstr "Wählen Sie oben ein installiertes Quellsystem aus. Jede Quelle besitzt eine eigene Vorschau, einen Migrationsbericht und einen wiederholbaren Importablauf auf derselben geschützten ContactPanda-Migrationsbasis."
+
+msgid "WooCommerce is installed but inactive. Activate it before starting this migration."
+msgstr "WooCommerce ist installiert, aber inaktiv. Aktivieren Sie es, bevor Sie diese Migration starten."
+
+msgid "WooCommerce customer migration is available after the ContactPanda database has been selected as the leading data source."
+msgstr "Die Migration von WooCommerce-Kunden ist verfügbar, nachdem die ContactPanda-Datenbank als führende Datenquelle ausgewählt wurde."
+
+msgid "Import FluentCRM data"
+msgstr "FluentCRM-Daten importieren"
+
+msgid "Create the ContactPanda database before importing FluentCRM contacts."
+msgstr "Erstellen Sie die ContactPanda-Datenbank, bevor Sie FluentCRM-Kontakte importieren."
+
+msgid "No compatible FluentCRM subscriber table was detected. Nothing will be changed."
+msgstr "Es wurde keine kompatible FluentCRM-Abonnententabelle erkannt. Es wird nichts verändert."
+
+msgid "Contacts are matched first by their FluentCRM source ID and then by email address. Existing unsubscribe, bounce, and complaint states always take precedence. The FluentCRM database remains unchanged."
+msgstr "Kontakte werden zuerst anhand ihrer FluentCRM-Quell-ID und danach anhand der E-Mail-Adresse abgeglichen. Bestehende Abmelde-, Bounce- und Beschwerdestatus haben immer Vorrang. Die FluentCRM-Datenbank bleibt unverändert."
+
+msgid "%1$d contacts found: %2$d new, %3$d already present, and %4$d without a usable email address. No data has been changed yet."
+msgstr "%1$d Kontakte gefunden: %2$d neu, %3$d bereits vorhanden und %4$d ohne verwendbare E-Mail-Adresse. Es wurden noch keine Daten verändert."
+
+msgid "%1$d new, %2$d updated, %3$d skipped, %4$d errors. Completed: %5$s"
+msgstr "%1$d neu, %2$d aktualisiert, %3$d übersprungen, %4$d Fehler. Abgeschlossen: %5$s"
+
+msgid "Additional email templates, campaigns, and automations are imported only by compatible ContactPanda extensions and are never activated silently."
+msgstr "Weitere E-Mail-Vorlagen, Kampagnen und Automatisierungen werden nur durch kompatible ContactPanda-Erweiterungen importiert und niemals stillschweigend aktiviert."
+
+msgid "The FluentCRM subscriber source or the ContactPanda database is not available."
+msgstr "Die FluentCRM-Abonnentenquelle oder die ContactPanda-Datenbank ist nicht verfügbar."
+
+msgid "The detected FluentCRM table does not contain compatible ID and email fields."
+msgstr "Die erkannte FluentCRM-Tabelle enthält keine kompatiblen ID- und E-Mail-Felder."
+
+msgid "Imported FluentCRM subscription."
+msgstr "FluentCRM-Anmeldung importiert."
+
+msgid "The FluentCRM import preview is ready. No source or ContactPanda data has been changed."
+msgstr "Die Vorschau des FluentCRM-Imports ist bereit. Es wurden keine Quell- oder ContactPanda-Daten verändert."
+
+msgid "FluentCRM import completed: %1$d new contacts, %2$d updated contacts, %3$d skipped."
+msgstr "FluentCRM-Import abgeschlossen: %1$d neue Kontakte, %2$d aktualisierte Kontakte, %3$d übersprungen."

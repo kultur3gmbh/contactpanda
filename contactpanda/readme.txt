@@ -2,12 +2,17 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.53
+Stable tag: 0.8.54
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free, reduced newsletter workflow, a WooCommerce customer overview, optional Groundhogg compatibility, and stable extension APIs for the ContactPanda product family.
 
 == Changelog ==
+
+= 0.8.54 =
+* Adds a dedicated Migration area with source tabs shown only for detected systems.
+* Adds a non-destructive FluentCRM contact preview and migration foundation with stable source identifiers.
+* Keeps Import / Export separate and provides extension points for additional migration adapters.
 
 = 0.8.53 =
 * Separates Migration from Import / Export and preserves non-destructive migration previews.

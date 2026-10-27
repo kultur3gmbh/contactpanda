@@ -96,9 +96,23 @@ final class ContactPanda_Data_Tools {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		}
+		$sources = ContactPanda_Registration::migration_sources();
+		$sources = array_filter( $sources, static function ( $source ) { return ! isset( $source['installed'] ) || ! empty( $source['installed'] ); } );
+		$source = isset( $_GET['migration_source'] ) ? sanitize_key( wp_unslash( $_GET['migration_source'] ) ) : 'overview'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
+		if ( 'overview' !== $source && ! isset( $sources[ $source ] ) ) $source = 'overview';
 		echo '<div class="wrap contactpanda-wrap"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CONTACTPANDA</p><h1>' . esc_html__( 'Migration', 'contactpanda' ) . '</h1><p>' . esc_html__( 'Move data from supported systems into ContactPanda with previews and without changing the source records.', 'contactpanda' ) . '</p></div></div>';
-		ContactPanda_Registration::render_migration_settings();
-		self::render_groundhogg_flow_migration();
+		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs contactpanda-migration-tabs" aria-label="' . esc_attr__( 'Migration sources', 'contactpanda' ) . '">';
+		echo '<a class="nav-tab ' . ( 'overview' === $source ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-migration' ) ) . '">' . esc_html__( 'Overview', 'contactpanda' ) . '</a>';
+		foreach ( $sources as $key => $definition ) {
+			$key = sanitize_key( $key );
+			if ( ! $key || empty( $definition['label'] ) ) continue;
+			$url = add_query_arg( 'migration_source', $key, admin_url( 'admin.php?page=contactpanda-migration' ) );
+			echo '<a class="nav-tab ' . ( $key === $source ? 'nav-tab-active' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $definition['label'] ) . '</a>';
+		}
+		echo '</nav>';
+		if ( ! $sources && 'overview' === $source ) echo '<div class="notice notice-info inline"><p>' . esc_html__( 'No supported source system is currently installed. A matching migration tab appears automatically when a supported plugin is detected.', 'contactpanda' ) . '</p></div>';
+		ContactPanda_Registration::render_migration_settings( $source );
+		if ( 'groundhogg' === $source ) self::render_groundhogg_flow_migration();
 		echo '</div>';
 	}
 
@@ -213,7 +227,7 @@ final class ContactPanda_Data_Tools {
 		$result = $flow ? apply_filters( 'contactpanda_import_groundhogg_flow_draft', new WP_Error( 'contactpanda_plus_required', __( 'ContactPanda Plus is required to import automation drafts.', 'contactpanda' ) ), $flow, self::assess_groundhogg_flow( $flow ) ) : new WP_Error( 'contactpanda_groundhogg_flow_missing', __( 'The Groundhogg flow could not be read again.', 'contactpanda' ) );
 		$notice = is_wp_error( $result ) ? array( 'type' => 'error', 'message' => $result->get_error_message() ) : array( 'type' => 'success', 'message' => __( 'The inactive automation draft was created or updated. Review every step before publishing it.', 'contactpanda' ) );
 		set_transient( 'contactpanda_groundhogg_flow_notice_' . get_current_user_id(), $notice, MINUTE_IN_SECONDS );
-		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration#groundhogg-flows' ) );
+		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-migration&migration_source=groundhogg#groundhogg-flows' ) );
 		exit;
 	}
 

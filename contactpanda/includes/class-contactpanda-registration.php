@@ -47,6 +47,7 @@ final class ContactPanda_Registration {
 		add_action( 'admin_post_contactpanda_export_salutations', array( __CLASS__, 'export_salutations' ) );
 		add_action( 'admin_post_contactpanda_import_woocommerce', array( __CLASS__, 'handle_import_woocommerce' ) );
 		add_action( 'admin_post_contactpanda_migrate_newsletter_plugin', array( __CLASS__, 'handle_migrate_newsletter_plugin' ) );
+		add_action( 'admin_post_contactpanda_migrate_fluentcrm', array( __CLASS__, 'handle_migrate_fluentcrm' ) );
 		add_action( 'admin_post_contactpanda_toggle_automatic_updates', array( __CLASS__, 'handle_automatic_updates' ) );
 		add_action( 'wp_ajax_contactpanda_migration_progress', array( __CLASS__, 'migration_progress_ajax' ) );
 		add_action( 'contactpanda_groundhogg_migration_progress', array( __CLASS__, 'store_migration_progress' ) );
@@ -607,23 +608,99 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		submit_button( __( 'Save data source', 'contactpanda' ) ); echo '</section></form>';
 	}
 
-	public static function render_migration_settings() {
+	/**
+	 * Return source systems that are actually installed on this site.
+	 *
+	 * Extensions may add adapters through contactpanda_migration_sources. A
+	 * source definition needs a label and may provide an active state and a
+	 * short description. Only installed sources become navigation tabs.
+	 */
+	public static function migration_sources() {
+		$sources = array();
+		if ( self::plugin_installed( array( 'groundhogg' ) ) || self::groundhogg_active() ) {
+			$sources['groundhogg'] = array(
+				'label'       => 'Groundhogg',
+				'active'      => self::groundhogg_active(),
+				'description' => __( 'Contacts, companies, tags, email templates, completed broadcasts, and automation drafts can be analyzed and migrated without changing Groundhogg.', 'contactpanda' ),
+			);
+		}
+		if ( self::fluentcrm_installed() ) {
+			$sources['fluentcrm'] = array(
+				'label'       => 'FluentCRM',
+				'active'      => defined( 'FLUENTCRM' ) || defined( 'FLUENTCRM_PLUGIN_VERSION' ) || class_exists( '\\FluentCrm\\App\\App' ),
+				'description' => __( 'Contacts and their marketing state can be migrated now. Additional FluentCRM content can be supplied by an installed ContactPanda extension.', 'contactpanda' ),
+			);
+		}
+		if ( self::newsletter_plugin_installed() ) {
+			$sources['newsletter_plugin'] = array(
+				'label'       => __( 'The Newsletter Plugin', 'contactpanda' ),
+				'active'      => defined( 'NEWSLETTER_VERSION' ) || class_exists( 'Newsletter' ),
+				'description' => __( 'Subscribers are migrated by email address. ContactPanda Plus can additionally preserve historical mailings and available statistics as read-only archives.', 'contactpanda' ),
+			);
+		}
+		if ( self::plugin_installed( array( 'woocommerce', 'woo commerce' ) ) || class_exists( 'WooCommerce' ) ) {
+			$sources['woocommerce'] = array(
+				'label'       => 'WooCommerce',
+				'active'      => class_exists( 'WooCommerce' ),
+				'description' => __( 'Customer profiles can be merged into ContactPanda. Orders, invoices, prices, and all WooCommerce source records remain unchanged.', 'contactpanda' ),
+			);
+		}
+		return (array) apply_filters( 'contactpanda_migration_sources', $sources );
+	}
+
+	private static function plugin_installed( $needles ) {
+		if ( ! function_exists( 'get_plugins' ) ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		foreach ( (array) get_plugins() as $file => $plugin ) {
+			$haystack = strtolower( (string) $file . ' ' . ( $plugin['Name'] ?? '' ) . ' ' . ( $plugin['TextDomain'] ?? '' ) );
+			foreach ( (array) $needles as $needle ) if ( false !== strpos( $haystack, strtolower( (string) $needle ) ) ) return true;
+		}
+		return false;
+	}
+
+	public static function render_migration_settings( $source = 'overview' ) {
 		$schema = ContactPanda_Schema::status();
 		$notice = get_transient( 'contactpanda_database_notice_' . get_current_user_id() );
 		if ( $notice ) {
 			delete_transient( 'contactpanda_database_notice_' . get_current_user_id() );
 			echo '<div class="notice notice-' . ( 'success' === $notice['type'] ? 'success' : 'error' ) . ' is-dismissible"><p>' . esc_html( $notice['message'] ) . '</p></div>';
 		}
-		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Migration center', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Imports are started only after an explicit confirmation. Source systems remain unchanged, and existing ContactPanda contacts are matched by email address before new records are created.', 'contactpanda' ) . '</p></section>';
-		self::render_database_tools( $schema );
-		if ( class_exists( 'WooCommerce' ) && ContactPanda_Store::standalone() ) {
+		$source = sanitize_key( $source );
+		if ( 'overview' === $source ) {
+			echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Migration center', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Imports are started only after an explicit confirmation. Source systems remain unchanged, and existing ContactPanda contacts are matched by stable source identifiers and email addresses before new records are created.', 'contactpanda' ) . '</p><p>' . esc_html__( 'Select an installed source system above. Each source has its own preview, migration report, and repeatable import process while using the same protected ContactPanda migration foundation.', 'contactpanda' ) . '</p></section>';
+			self::render_database_tools( $schema, false, true );
+			return;
+		}
+		if ( 'groundhogg' === $source ) {
+			self::render_source_intro( self::migration_sources()['groundhogg'] ?? array() );
+			self::render_database_tools( $schema, true, false );
+		} elseif ( 'fluentcrm' === $source ) {
+			self::render_source_intro( self::migration_sources()['fluentcrm'] ?? array() );
+			self::render_fluentcrm_migration();
+		} elseif ( 'newsletter_plugin' === $source ) {
+			self::render_source_intro( self::migration_sources()['newsletter_plugin'] ?? array() );
+			self::render_newsletter_plugin_migration();
+		} elseif ( 'woocommerce' === $source ) {
+			self::render_source_intro( self::migration_sources()['woocommerce'] ?? array() );
 			self::render_woocommerce_import();
 		}
-		self::render_newsletter_plugin_migration();
-		do_action( 'contactpanda_render_migration_tools' );
+		do_action( 'contactpanda_render_migration_source_' . $source, $source );
+		do_action( 'contactpanda_render_migration_tools', $source );
+	}
+
+	private static function render_source_intro( $source ) {
+		if ( empty( $source ) ) return;
+		echo '<section class="contactpanda-card contactpanda-settings-card contactpanda-migration-source-intro"><div class="contactpanda-migration-source-heading"><div><h2>' . esc_html( $source['label'] ?? '' ) . '</h2><p>' . esc_html( $source['description'] ?? '' ) . '</p></div><span class="contactpanda-status-badge ' . ( ! empty( $source['active'] ) ? 'is-positive' : 'is-negative' ) . '">' . ( ! empty( $source['active'] ) ? esc_html__( 'Active', 'contactpanda' ) : esc_html__( 'Installed, inactive', 'contactpanda' ) ) . '</span></div></section>';
 	}
 
 	private static function render_woocommerce_import() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			echo '<section class="contactpanda-card contactpanda-settings-card"><p>' . esc_html__( 'WooCommerce is installed but inactive. Activate it before starting this migration.', 'contactpanda' ) . '</p></section>';
+			return;
+		}
+		if ( ! ContactPanda_Store::standalone() ) {
+			echo '<section class="contactpanda-card contactpanda-settings-card"><p>' . esc_html__( 'WooCommerce customer migration is available after the ContactPanda database has been selected as the leading data source.', 'contactpanda' ) . '</p></section>';
+			return;
+		}
 		$preview = get_transient( 'contactpanda_woocommerce_import_' . get_current_user_id() );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Import WooCommerce customers', 'contactpanda' ) . '</h2><p>' . esc_html__( 'ContactPanda can merge customer profiles from WooCommerce into the ContactPanda database using the email address as the unique key. Orders, invoices, prices, and WooCommerce data remain unchanged.', 'contactpanda' ) . '</p>';
 		if ( $preview ) {
@@ -642,13 +719,52 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		return $found === $table ? $table : '';
 	}
 
-	private static function newsletter_plugin_installed() {
+	public static function newsletter_plugin_installed() {
 		if ( defined( 'NEWSLETTER_VERSION' ) || class_exists( 'Newsletter' ) ) return true;
 		if ( ! function_exists( 'get_plugins' ) ) require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		foreach ( (array) get_plugins() as $file => $plugin ) {
 			if ( 0 === strpos( $file, 'newsletter/' ) || 'newsletter' === sanitize_key( $plugin['TextDomain'] ?? '' ) ) return true;
 		}
 		return false;
+	}
+
+	public static function fluentcrm_installed() {
+		return defined( 'FLUENTCRM' ) || defined( 'FLUENTCRM_PLUGIN_VERSION' ) || class_exists( '\\FluentCrm\\App\\App' ) || self::plugin_installed( array( 'fluent-crm', 'fluentcrm', 'fluent crm' ) );
+	}
+
+	private static function fluentcrm_table() {
+		global $wpdb;
+		$table = $wpdb->prefix . 'fc_subscribers';
+		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) );
+		return $found === $table ? $table : '';
+	}
+
+	private static function render_fluentcrm_migration() {
+		$table = self::fluentcrm_table();
+		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'Import FluentCRM data', 'contactpanda' ) . '</h2>';
+		if ( ! ContactPanda_Store::ready() ) {
+			echo '<p>' . esc_html__( 'Create the ContactPanda database before importing FluentCRM contacts.', 'contactpanda' ) . '</p></section>';
+			return;
+		}
+		if ( ! $table ) {
+			echo '<p>' . esc_html__( 'No compatible FluentCRM subscriber table was detected. Nothing will be changed.', 'contactpanda' ) . '</p></section>';
+			return;
+		}
+		$preview = (array) get_transient( 'contactpanda_fluentcrm_preview_' . get_current_user_id() );
+		$report = (array) get_option( 'contactpanda_last_fluentcrm_migration_report', array() );
+		echo '<p>' . esc_html__( 'Contacts are matched first by their FluentCRM source ID and then by email address. Existing unsubscribe, bounce, and complaint states always take precedence. The FluentCRM database remains unchanged.', 'contactpanda' ) . '</p>';
+		if ( $preview ) echo '<div class="contactpanda-migration-report"><h3>' . esc_html__( 'Import preview', 'contactpanda' ) . '</h3><p>' . esc_html( sprintf( __( '%1$d contacts found: %2$d new, %3$d already present, and %4$d without a usable email address. No data has been changed yet.', 'contactpanda' ), absint( $preview['found'] ?? 0 ), absint( $preview['new'] ?? 0 ), absint( $preview['updated'] ?? 0 ), absint( $preview['skipped'] ?? 0 ) ) ) . '</p></div>';
+		if ( $report ) echo '<p><strong>' . esc_html__( 'Last import:', 'contactpanda' ) . '</strong> ' . esc_html( sprintf( __( '%1$d new, %2$d updated, %3$d skipped, %4$d errors. Completed: %5$s', 'contactpanda' ), absint( $report['new'] ?? 0 ), absint( $report['updated'] ?? 0 ), absint( $report['skipped'] ?? 0 ), absint( $report['errors'] ?? 0 ), sanitize_text_field( $report['completed_at'] ?? '' ) ) ) . '</p>';
+		echo '<div class="contactpanda-database-actions">';
+		self::fluentcrm_import_form( 'preview', __( 'Preview import', 'contactpanda' ), 'button-secondary' );
+		if ( $preview ) self::fluentcrm_import_form( 'run', __( 'Import and merge now', 'contactpanda' ), 'button-primary' );
+		echo '<p class="description">' . esc_html__( 'Additional email templates, campaigns, and automations are imported only by compatible ContactPanda extensions and are never activated silently.', 'contactpanda' ) . '</p></div></section>';
+	}
+
+	private static function fluentcrm_import_form( $mode, $label, $class ) {
+		echo '<form class="contactpanda-inline-action-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_migrate_fluentcrm"><input type="hidden" name="mode" value="' . esc_attr( $mode ) . '"><input type="hidden" name="migration_source" value="fluentcrm">';
+		wp_nonce_field( 'contactpanda_migrate_fluentcrm' );
+		echo '<button type="submit" class="button ' . esc_attr( $class ) . '">' . esc_html( $label ) . '</button></form>';
 	}
 
 	private static function render_newsletter_plugin_migration() {
@@ -680,7 +796,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	private static function newsletter_import_form( $mode, $label, $class ) {
-		echo '<form class="contactpanda-inline-action-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_migrate_newsletter_plugin"><input type="hidden" name="mode" value="' . esc_attr( $mode ) . '">';
+		echo '<form class="contactpanda-inline-action-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_migrate_newsletter_plugin"><input type="hidden" name="mode" value="' . esc_attr( $mode ) . '"><input type="hidden" name="migration_source" value="newsletter_plugin">';
 		wp_nonce_field( 'contactpanda_migrate_newsletter_plugin' );
 		echo '<button type="submit" class="button ' . esc_attr( $class ) . '">' . esc_html( $label ) . '</button></form>';
 	}
@@ -745,6 +861,89 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		delete_transient( 'contactpanda_newsletter_plugin_preview_' . get_current_user_id() );
 		update_option( 'contactpanda_last_newsletter_plugin_migration_report', $report, false );
 		self::database_redirect( 'success', sprintf( __( 'Newsletter subscriber import completed: %1$d new contacts, %2$d updated contacts, %3$d skipped.', 'contactpanda' ), $report['new'], $report['updated'], $report['skipped'] ) );
+	}
+
+	/** Preview or import FluentCRM contacts without modifying the source tables. */
+	public static function handle_migrate_fluentcrm() {
+		self::guard_database_action( 'contactpanda_migrate_fluentcrm' );
+		$table = self::fluentcrm_table();
+		if ( ! $table || ! ContactPanda_Store::ready() ) {
+			self::database_redirect( 'error', __( 'The FluentCRM subscriber source or the ContactPanda database is not available.', 'contactpanda' ), 'fluentcrm' );
+		}
+		global $wpdb;
+		$columns = (array) $wpdb->get_col( "SHOW COLUMNS FROM `{$table}`", 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- verified WordPress-prefixed plugin table.
+		$allow = array( 'id', 'user_id', 'prefix', 'first_name', 'last_name', 'email', 'phone', 'status', 'address_line_1', 'address_line_2', 'postal_code', 'city', 'state', 'country', 'created_at', 'updated_at' );
+		$wanted = array_values( array_intersect( $allow, $columns ) );
+		if ( ! in_array( 'id', $wanted, true ) || ! in_array( 'email', $wanted, true ) ) {
+			self::database_redirect( 'error', __( 'The detected FluentCRM table does not contain compatible ID and email fields.', 'contactpanda' ), 'fluentcrm' );
+		}
+		$quoted = '`' . implode( '`,`', $wanted ) . '`';
+		$rows = (array) $wpdb->get_results( "SELECT {$quoted} FROM `{$table}` ORDER BY `id` ASC", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- columns are allow-listed above.
+		$preview_only = 'preview' === sanitize_key( wp_unslash( $_POST['mode'] ?? 'run' ) );
+		$report = array( 'found' => count( $rows ), 'new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0, 'completed_at' => current_time( 'mysql' ) );
+		$status_map = array(
+			'subscribed'   => 'confirmed',
+			'confirmed'    => 'confirmed',
+			'pending'      => 'unconfirmed',
+			'unconfirmed'  => 'unconfirmed',
+			'unsubscribed' => 'unsubscribed',
+			'bounced'      => 'bounced',
+			'complained'   => 'spam',
+			'spam'         => 'spam',
+		);
+		foreach ( $rows as $row ) {
+			$email = sanitize_email( $row['email'] ?? '' );
+			$source_id = absint( $row['id'] ?? 0 );
+			if ( ! $source_id || ! is_email( $email ) ) { ++$report['skipped']; continue; }
+			$contact = ContactPanda_Store::contact_by_meta( 'fluentcrm_subscriber_id', $source_id, true );
+			if ( ! $contact ) $contact = ContactPanda_Store::contact_by_email( $email, true );
+			$incoming = $status_map[ sanitize_key( $row['status'] ?? '' ) ] ?? 'unconfirmed';
+			$data = array(
+				'email'        => $email,
+				'first_name'   => sanitize_text_field( $row['first_name'] ?? '' ),
+				'last_name'    => sanitize_text_field( $row['last_name'] ?? '' ),
+				'user_id'      => absint( $row['user_id'] ?? 0 ),
+				'source'       => 'fluentcrm',
+				'optin_status' => $incoming,
+				'meta'         => array(
+					'fluentcrm_subscriber_id' => $source_id,
+					'fluentcrm_status'        => sanitize_key( $row['status'] ?? '' ),
+					'anrede'                  => sanitize_text_field( $row['prefix'] ?? '' ),
+					'primary_phone'           => sanitize_text_field( $row['phone'] ?? '' ),
+					'address_1'               => sanitize_text_field( $row['address_line_1'] ?? '' ),
+					'address_2'               => sanitize_text_field( $row['address_line_2'] ?? '' ),
+					'postcode'                 => sanitize_text_field( $row['postal_code'] ?? '' ),
+					'city'                     => sanitize_text_field( $row['city'] ?? '' ),
+					'state'                    => sanitize_text_field( $row['state'] ?? '' ),
+					'country'                  => strtoupper( sanitize_text_field( $row['country'] ?? '' ) ),
+				),
+			);
+			if ( $contact ) {
+				++$report['updated'];
+				if ( $preview_only ) continue;
+				$current = sanitize_key( $contact['optin_status'] ?? ( $contact['meta']['optin_status'] ?? '' ) );
+				if ( in_array( $current, array( 'unsubscribed', 'bounced', 'spam' ), true ) || ( 'confirmed' === $current && 'unconfirmed' === $incoming ) ) $data['optin_status'] = $current;
+				$data['first_name'] = $contact['first_name'] ?: $data['first_name'];
+				$data['last_name'] = $contact['last_name'] ?: $data['last_name'];
+				foreach ( $data['meta'] as $key => $value ) if ( '' === (string) $value && isset( $contact['meta'][ $key ] ) ) unset( $data['meta'][ $key ] );
+				ContactPanda_Store::update_contact( $contact['id'], $data );
+				if ( 'confirmed' === $data['optin_status'] && 'confirmed' !== $current ) ContactPanda_Store::record_consent( $contact['id'], 'granted', 'fluentcrm_import', self::valid_import_date( $row['created_at'] ?? '' ), __( 'Imported FluentCRM subscription.', 'contactpanda' ) );
+				continue;
+			}
+			++$report['new'];
+			if ( $preview_only ) continue;
+			$id = ContactPanda_Store::create_contact( $data );
+			if ( is_wp_error( $id ) || ! $id ) { --$report['new']; ++$report['errors']; continue; }
+			if ( 'confirmed' === $incoming ) ContactPanda_Store::record_consent( $id, 'granted', 'fluentcrm_import', self::valid_import_date( $row['created_at'] ?? '' ), __( 'Imported FluentCRM subscription.', 'contactpanda' ) );
+		}
+		$report = (array) apply_filters( 'contactpanda_fluentcrm_migration_report', $report, $preview_only, $table );
+		if ( $preview_only ) {
+			set_transient( 'contactpanda_fluentcrm_preview_' . get_current_user_id(), $report, HOUR_IN_SECONDS );
+			self::database_redirect( 'success', __( 'The FluentCRM import preview is ready. No source or ContactPanda data has been changed.', 'contactpanda' ), 'fluentcrm' );
+		}
+		delete_transient( 'contactpanda_fluentcrm_preview_' . get_current_user_id() );
+		update_option( 'contactpanda_last_fluentcrm_migration_report', $report, false );
+		self::database_redirect( 'success', sprintf( __( 'FluentCRM import completed: %1$d new contacts, %2$d updated contacts, %3$d skipped.', 'contactpanda' ), $report['new'], $report['updated'], $report['skipped'] ), 'fluentcrm' );
 	}
 
 	private static function valid_import_date( $value ) {
@@ -835,7 +1034,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	}
 
 	private static function woocommerce_import_form( $mode, $label, $class ) {
-		echo '<form class="contactpanda-inline-action-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_import_woocommerce"><input type="hidden" name="mode" value="' . esc_attr( $mode ) . '">';
+		echo '<form class="contactpanda-inline-action-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_import_woocommerce"><input type="hidden" name="mode" value="' . esc_attr( $mode ) . '"><input type="hidden" name="migration_source" value="woocommerce">';
 		wp_nonce_field( 'contactpanda_import_woocommerce' );
 		echo '<button type="submit" class="button ' . esc_attr( $class ) . '">' . esc_html( $label ) . '</button></form>';
 	}
@@ -891,7 +1090,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		exit;
 	}
 
-	private static function render_database_tools( $schema ) {
+	private static function render_database_tools( $schema, $show_groundhogg = true, $show_reset = true ) {
 		$counts = ContactPanda_Store::counts();
 		$report = (array) get_option( 'contactpanda_last_migration_report', array() );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'ContactPanda database', 'contactpanda' ) . '</h2>';
@@ -901,13 +1100,13 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		} else {
 			echo '<div class="contactpanda-database-counts"><span><strong>' . esc_html( $counts['contacts'] ) . '</strong>' . esc_html__( 'Contacts', 'contactpanda' ) . '</span><span><strong>' . esc_html( $counts['companies'] ) . '</strong>' . esc_html__( 'Companies', 'contactpanda' ) . '</span><span><strong>' . esc_html( $counts['tags'] ) . '</strong>' . esc_html__( 'Tags', 'contactpanda' ) . '</span><span><strong>' . esc_html( $counts['activities'] ) . '</strong>' . esc_html__( 'Activities', 'contactpanda' ) . '</span></div>';
 			echo '<div class="contactpanda-database-actions">';
-			if ( self::groundhogg_active() ) {
+			if ( $show_groundhogg && self::groundhogg_active() ) {
 				self::admin_action_form( 'contactpanda_migrate_groundhogg', __( 'Migrate data from Groundhogg', 'contactpanda' ), 'button-primary', __( 'Groundhogg remains read only. Contacts, companies, tags, and—with ContactPanda Plus—mail templates and completed broadcasts are imported without duplicates.', 'contactpanda' ) );
 				echo '<div class="contactpanda-migration-progress" hidden aria-live="polite"><strong>' . esc_html__( 'Preparing migration…', 'contactpanda' ) . '</strong><progress value="0" max="100"></progress><span>0%</span><small></small></div>';
 			}
-			self::admin_action_form( 'contactpanda_reset_standalone', __( 'Reset ContactPanda data', 'contactpanda' ), 'button-secondary contactpanda-reset-test-data', __( 'Deletes ContactPanda CRM records and imported Groundhogg newsletter archives. ContactPanda-created newsletter drafts, Groundhogg, WordPress, WooCommerce, invoices, and events remain untouched.', 'contactpanda' ), true );
+			if ( $show_reset ) self::admin_action_form( 'contactpanda_reset_standalone', __( 'Reset ContactPanda data', 'contactpanda' ), 'button-secondary contactpanda-reset-test-data', __( 'Deletes ContactPanda CRM records and imported Groundhogg newsletter archives. ContactPanda-created newsletter drafts, Groundhogg, WordPress, WooCommerce, invoices, and events remain untouched.', 'contactpanda' ), true );
 			echo '</div>';
-			if ( $report ) {
+			if ( $show_groundhogg && $report ) {
 				echo '<div class="contactpanda-migration-report"><h3>' . esc_html__( 'Last migration', 'contactpanda' ) . '</h3><p>' . esc_html( sprintf( __( '%1$d contacts, %2$d companies, %3$d tags, %4$d tag assignments, %5$d skipped, %6$d errors. Completed: %7$s', 'contactpanda' ), absint( $report['contacts'] ?? 0 ), absint( $report['companies'] ?? 0 ), absint( $report['tags'] ?? 0 ), absint( $report['assignments'] ?? 0 ), absint( $report['skipped'] ?? 0 ), absint( $report['errors'] ?? 0 ), sanitize_text_field( $report['completed_at'] ?? '' ) ) ) . '</p>';
 				if ( isset( $report['source_contacts'] ) ) {
 					echo '<p>' . esc_html( sprintf( __( 'Groundhogg contact comparison: %1$d found in the source, %2$d imported or updated.', 'contactpanda' ), absint( $report['source_contacts'] ), absint( $report['contacts'] ?? 0 ) ) ) . '</p>';
@@ -943,6 +1142,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	private static function admin_action_form( $action, $label, $class = '', $description = '', $danger = false ) {
 		echo '<form class="contactpanda-inline-action-form' . ( $danger ? ' contactpanda-reset-form' : '' ) . ( 'contactpanda_migrate_groundhogg' === $action ? ' contactpanda-groundhogg-migration-form' : '' ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="' . esc_attr( $action ) . '">';
+		if ( 'contactpanda_migrate_groundhogg' === $action ) echo '<input type="hidden" name="migration_source" value="groundhogg">';
 		wp_nonce_field( $action );
 		if ( $danger ) echo '<input type="hidden" name="confirm_reset" value="1">';
 		echo '<button type="' . ( $danger ? 'button' : 'submit' ) . '" class="button ' . esc_attr( $class ) . '"' . ( $danger ? ' data-contactpanda-reset-open' : '' ) . '>' . esc_html( $label ) . '</button>';
@@ -987,7 +1187,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		);
 		wp_send_json_success(
 			array(
-				'redirect' => admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration' ),
+				'redirect' => admin_url( 'admin.php?page=contactpanda-migration&migration_source=groundhogg' ),
 			)
 		);
 	}
@@ -1061,9 +1261,12 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		check_admin_referer( $action );
 	}
 
-	private static function database_redirect( $type, $message ) {
+	private static function database_redirect( $type, $message, $source = '' ) {
 		set_transient( 'contactpanda_database_notice_' . get_current_user_id(), array( 'type' => $type, 'message' => $message ), MINUTE_IN_SECONDS );
-		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration' ) ); exit;
+		$source = sanitize_key( $source ?: wp_unslash( $_POST['migration_source'] ?? '' ) );
+		$url = admin_url( 'admin.php?page=contactpanda-migration' );
+		if ( $source ) $url = add_query_arg( 'migration_source', $source, $url );
+		wp_safe_redirect( $url ); exit;
 	}
 
 	private static function render_preserved_integrations() {
