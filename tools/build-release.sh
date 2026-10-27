@@ -9,6 +9,11 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! git diff --quiet -- . || ! git diff --cached --quiet -- .; then
+  echo "Commit all tracked changes before building a release." >&2
+  exit 1
+fi
+
 if ! command -v zip >/dev/null 2>&1; then
   echo "The zip command is required." >&2
   exit 1
@@ -27,6 +32,11 @@ mkdir -p dist
 basic_zip="dist/contactpanda-basic-${basic_version}.zip"
 git archive --format=zip --prefix=contactpanda/ HEAD:contactpanda > "$basic_zip"
 unzip -tq "$basic_zip" >/dev/null
+archive_version="$(unzip -p "$basic_zip" contactpanda/contactpanda.php | awk -F': ' '/^ \* Version:/{print $2; exit}')"
+if [[ "$archive_version" != "$basic_version" ]]; then
+  echo "Release ZIP version mismatch: expected $basic_version, found $archive_version." >&2
+  exit 1
+fi
 
 if command -v shasum >/dev/null 2>&1; then
   basic_sha256="$(shasum -a 256 "$basic_zip" | awk '{print $1}')"
