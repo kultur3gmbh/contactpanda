@@ -14,11 +14,14 @@ final class ContactPanda_My_Account {
 
 		add_filter( 'pre_option_woocommerce_enable_myaccount_registration', array( __CLASS__, 'hide_native_registration' ) );
 		add_action( 'woocommerce_after_customer_login_form', array( __CLASS__, 'registration_disclosure' ) );
-		add_filter( 'woocommerce_account_menu_items', array( __CLASS__, 'account_menu' ), 90 );
+		// Run after optional extensions so the final customer navigation can be
+		// de-duplicated and ordered in one place.
+		add_filter( 'woocommerce_account_menu_items', array( __CLASS__, 'account_menu' ), 999 );
 		add_filter( 'woocommerce_endpoint_edit-account_title', array( __CLASS__, 'profile_title' ) );
 		add_filter( 'woocommerce_endpoint_contactpanda-password_title', array( __CLASS__, 'password_title' ) );
 		add_filter( 'body_class', array( __CLASS__, 'body_classes' ) );
 		add_action( 'woocommerce_account_dashboard', array( __CLASS__, 'dashboard_overview' ), 5 );
+		add_action( 'woocommerce_account_content', array( __CLASS__, 'account_footer' ), 999 );
 		add_action( 'wp_loaded', array( __CLASS__, 'replace_account_callbacks' ) );
 		add_action( 'woocommerce_account_contactpanda-password_endpoint', array( __CLASS__, 'password_form' ) );
 		add_action( 'init', array( __CLASS__, 'register_password_endpoint' ) );
@@ -101,18 +104,52 @@ final class ContactPanda_My_Account {
 			$ordered['payment-methods'] = $items['payment-methods'];
 		}
 
-		// Keep endpoints contributed by extensions (for example Custom Affiliate)
-		// in their original order, immediately before logout.
+		// Keep usable endpoints contributed by extensions (for example Custom
+		// Affiliate) in their original order after the core account sections.
+		$labels = array_map( array( __CLASS__, 'menu_label_key' ), $ordered );
 		foreach ( $items as $endpoint => $label ) {
 			if ( in_array( $endpoint, $known, true ) || in_array( $endpoint, array( 'orders', 'downloads' ), true ) ) {
 				continue;
 			}
+			if ( self::hide_unavailable_endpoint( $endpoint ) ) {
+				continue;
+			}
+			$label_key = self::menu_label_key( $label );
+			if ( in_array( $label_key, $labels, true ) ) {
+				continue;
+			}
 			$ordered[ $endpoint ] = $label;
-		}
-		if ( isset( $items['customer-logout'] ) ) {
-			$ordered['customer-logout'] = $items['customer-logout'];
+			$labels[] = $label_key;
 		}
 		return $ordered;
+	}
+
+	/** Keep account tabs limited to services that are usable by this customer. */
+	private static function hide_unavailable_endpoint( $endpoint ) {
+		if ( ! in_array( $endpoint, array( 'memberships', 'members-area', 'my-membership-content' ), true ) ) {
+			return false;
+		}
+		$available = apply_filters( 'contactpanda_account_memberships_available', null, get_current_user_id() );
+		if ( is_bool( $available ) ) {
+			return ! $available;
+		}
+		if ( function_exists( 'wc_memberships_get_user_memberships' ) ) {
+			return empty( wc_memberships_get_user_memberships( get_current_user_id() ) );
+		}
+		return true;
+	}
+
+	private static function menu_label_key( $label ) {
+		$label = wp_strip_all_tags( (string) $label );
+		return function_exists( 'mb_strtolower' ) ? mb_strtolower( trim( $label ) ) : strtolower( trim( $label ) );
+	}
+
+	/** Logout is an account action, not a content section. */
+	public static function account_footer() {
+		if ( ! is_user_logged_in() || ! function_exists( 'wc_logout_url' ) ) {
+			return;
+		}
+		echo '<footer class="contactpanda-account-footer"><a href="' . esc_url( wc_logout_url() ) . '">' . esc_html__( 'Log out', 'contactpanda' ) . '</a></footer>';
 	}
 
 	public static function profile_title() {

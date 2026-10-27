@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.53\n"
+"Project-Id-Version: ContactPanda 0.8.55\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7853,4 +7853,7 @@ msgid "The FluentCRM import preview is ready. No source or ContactPanda data has
 msgstr ""
 
 msgid "FluentCRM import completed: %1$d new contacts, %2$d updated contacts, %3$d skipped."
+msgstr ""
+
+msgid "Log out"
 msgstr ""
