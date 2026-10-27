@@ -1,6 +1,23 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.56\n"
+
+
+msgid "A/B test and campaign tracking"
+msgstr ""
+
+msgid "Alternative subject (variant B)"
+msgstr ""
+
+msgid "Leave empty to disable the A/B test"
+msgstr ""
+
+msgid "Share receiving variant B (%)"
+msgstr ""
+
+msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
+msgstr ""
+
+"Project-Id-Version: ContactPanda 0.8.57\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"

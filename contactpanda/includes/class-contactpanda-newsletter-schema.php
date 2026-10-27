@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
  * disconnecting a licence never changes CRM, WooCommerce, or source data.
  */
 final class ContactPanda_Newsletter_Schema {
-	const VERSION = '1.2.0';
+	const VERSION = '1.3.0';
 	const VERSION_OPTION = 'contactpanda_newsletter_db_version';
 
 	public static function table_names() {
@@ -184,6 +184,12 @@ final class ContactPanda_Newsletter_Schema {
 			campaign_group_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			language varchar(12) NOT NULL DEFAULT 'de_DE',
 			subject varchar(255) NOT NULL DEFAULT '',
+			subject_b varchar(255) NOT NULL DEFAULT '',
+			ab_test_percent tinyint unsigned NOT NULL DEFAULT 0,
+			utm_source varchar(190) NOT NULL DEFAULT '',
+			utm_medium varchar(190) NOT NULL DEFAULT '',
+			utm_campaign varchar(190) NOT NULL DEFAULT '',
+			utm_content varchar(190) NOT NULL DEFAULT '',
 			from_name varchar(190) NOT NULL DEFAULT '',
 			from_email varchar(190) NOT NULL DEFAULT '',
 			reply_to varchar(190) NOT NULL DEFAULT '',
@@ -219,6 +225,7 @@ final class ContactPanda_Newsletter_Schema {
 			email varchar(190) NOT NULL,
 			first_name varchar(190) NOT NULL DEFAULT '',
 			last_name varchar(190) NOT NULL DEFAULT '',
+			subject_variant char(1) NOT NULL DEFAULT 'a',
 			status varchar(30) NOT NULL DEFAULT 'queued',
 			reason varchar(80) NOT NULL DEFAULT '',
 			attempts tinyint unsigned NOT NULL DEFAULT 0,
@@ -276,8 +283,8 @@ final class ContactPanda_Newsletter_Schema {
 			'templates'       => array( 'content_json', 'content_html', 'status' ),
 			'segments'        => array( 'entity_type', 'relation_mode', 'rules_json' ),
 			'campaign_groups' => array( 'name', 'description' ),
-			'campaigns'       => array( 'segment_id', 'manual_contact_ids', 'audience_mode', 'audience_source', 'recipient_search', 'ignore_marketing_consent', 'from_email', 'status' ),
-			'recipients'      => array( 'campaign_id', 'email', 'status' ),
+			'campaigns'       => array( 'segment_id', 'manual_contact_ids', 'audience_mode', 'audience_source', 'recipient_search', 'ignore_marketing_consent', 'from_email', 'status', 'subject_b', 'ab_test_percent', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content' ),
+			'recipients'      => array( 'campaign_id', 'email', 'status', 'subject_variant' ),
 			'suppressions'    => array( 'email_hash', 'reason' ),
 		);
 		foreach ( $required as $key => $columns ) {
