@@ -41,6 +41,7 @@ final class ContactPanda_Plugin {
 		add_action( 'admin_post_contactpanda_contact_company', array( __CLASS__, 'handle_contact_company' ) );
 		add_filter( 'contactpanda_misc_settings_sections', array( __CLASS__, 'misc_settings_sections' ) );
 		add_action( 'contactpanda_render_misc_settings_section_tags', array( __CLASS__, 'render_tags_settings' ) );
+		add_action( 'panda_seasons_contact_registered', array( __CLASS__, 'handle_extension_contact_registered' ), 10, 3 );
 	}
 
 	/**
@@ -1927,12 +1928,30 @@ final class ContactPanda_Plugin {
 		$communication_cards = apply_filters( 'contactpanda_dashboard_communication_cards', $communication_cards );
 
 		echo '<div class="wrap contactpanda-wrap contactpanda-dashboard"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CRM</p><h1>' . esc_html__( 'Dashboard', 'contactpanda' ) . '</h1><p>' . esc_html__( 'The most important ContactPanda figures at a glance.', 'contactpanda' ) . '</p></div></div>';
+		self::render_dashboard_product_visual();
 		self::render_dashboard_section( __( 'People and companies', 'contactpanda' ), $contact_cards );
 		if ( $communication_cards ) self::render_dashboard_section( __( 'Newsletter and automations', 'contactpanda' ), $communication_cards );
 		self::render_dashboard_last_mailing( $last_mailing );
 		self::render_dashboard_news();
 		self::render_dashboard_upgrades();
 		echo '</div>';
+	}
+
+	/**
+	 * Render the product visual belonging to the highest active ContactPanda
+	 * family package. Extensions can replace the local Basic asset without
+	 * making the dashboard dependent on a remote image.
+	 */
+	private static function render_dashboard_product_visual() {
+		$visual = apply_filters(
+			'contactpanda_dashboard_product_visual',
+			array(
+				'src' => CONTACTPANDA_URL . 'assets/images/contactpanda-basic-dashboard-simple.png',
+				'alt' => __( 'ContactPanda Basic product overview', 'contactpanda' ),
+			)
+		);
+		if ( ! is_array( $visual ) || empty( $visual['src'] ) ) return;
+		echo '<section class="contactpanda-card contactpanda-dashboard-product-visual"><img src="' . esc_url( $visual['src'] ) . '" alt="' . esc_attr( $visual['alt'] ?? '' ) . '"></section>';
 	}
 
 	private static function dashboard_people_count() {
@@ -3116,6 +3135,80 @@ final class ContactPanda_Plugin {
 	/** Public, read-only user-managed tags for separately loadable modules. */
 	public static function extension_tags() {
 		return self::all_tags();
+	}
+
+	/** Assign a user-managed tag by name in the active data source. */
+	public static function extension_assign_tag_by_name( $contact, $tag_name, $source = 'extension' ) {
+		$contact_id = self::extension_resolve_contact_id( $contact );
+		$tag_name   = trim( sanitize_text_field( $tag_name ) );
+		$source     = sanitize_key( $source ) ?: 'extension';
+		if ( ! $contact_id ) return new WP_Error( 'contactpanda_extension_contact_missing', __( 'The extension subscription could not be synchronized.', 'contactpanda' ) );
+		if ( '' === $tag_name ) return new WP_Error( 'contactpanda_extension_tag_missing', __( 'The extension did not provide a valid tag.', 'contactpanda' ) );
+
+		$tag_id = 0;
+		foreach ( self::all_tags() as $tag ) {
+			if ( 0 === strcasecmp( self::value( $tag, array( 'name', 'tag_name', 'get_name' ) ), $tag_name ) ) {
+				$tag_id = absint( self::value( $tag, array( 'id', 'tag_id', 'ID', 'get_id' ) ) );
+				break;
+			}
+		}
+		if ( ! $tag_id ) $tag_id = ContactPanda_Store::standalone() ? ContactPanda_Store::create_tag( $tag_name ) : self::groundhogg_create_tag( $tag_name );
+		if ( ! $tag_id ) return new WP_Error( 'contactpanda_extension_tag_create', __( 'The extension tag could not be created.', 'contactpanda' ) );
+		$assigned = ContactPanda_Store::standalone() ? ContactPanda_Store::assign_tag( $contact_id, $tag_id, true, $source ) : self::groundhogg_assign_tag( $contact_id, $tag_id, true );
+		if ( ! $assigned ) return new WP_Error( 'contactpanda_extension_tag_assign', __( 'The extension tag could not be assigned.', 'contactpanda' ) );
+		return array( 'contact_id' => $contact_id, 'tag_id' => $tag_id, 'tag_name' => $tag_name, 'assigned' => true );
+	}
+
+	/** Store extension-specific consent without changing general marketing. */
+	public static function extension_record_purpose_consent( $contact, $purpose, $status = 'pending', $source = 'extension', $proof = '', $occurred_at = '' ) {
+		$contact_id = self::extension_resolve_contact_id( $contact );
+		$purpose    = sanitize_key( $purpose );
+		$status     = sanitize_key( $status );
+		$source     = sanitize_key( $source ) ?: 'extension';
+		if ( ! $contact_id || '' === $purpose || ! in_array( $status, array( 'pending', 'granted', 'revoked' ), true ) ) return new WP_Error( 'contactpanda_extension_consent_invalid', __( 'The extension consent could not be synchronized.', 'contactpanda' ) );
+		$occurred_at = preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', (string) $occurred_at ) ? $occurred_at : current_time( 'mysql' );
+		$proof       = sanitize_textarea_field( $proof );
+		if ( ContactPanda_Store::standalone() ) {
+			$saved = ContactPanda_Store::record_purpose_consent( $contact_id, $purpose, $status, $source, $occurred_at, $proof );
+		} else {
+			$meta_key = 'contactpanda_purpose_' . substr( hash( 'sha256', $purpose ), 0, 20 );
+			$saved = false !== self::execute_ability( 'groundhogg/update-contact', array( 'id' => $contact_id, 'meta' => array( $meta_key . '_key' => $purpose, $meta_key . '_status' => $status, $meta_key . '_source' => $source, $meta_key . '_at' => $occurred_at, $meta_key . '_proof' => $proof ) ) );
+			if ( $saved ) self::execute_ability( 'groundhogg/add-contact-note', array( 'contact_id' => $contact_id, 'summary' => sprintf( 'Consent status for %1$s: %2$s', $purpose, $status ), 'content' => $proof ) );
+		}
+		if ( ! $saved ) return new WP_Error( 'contactpanda_extension_consent_save', __( 'The extension consent could not be synchronized.', 'contactpanda' ) );
+		return array( 'contact_id' => $contact_id, 'purpose' => $purpose, 'status' => $status, 'source' => $source, 'occurred_at' => $occurred_at );
+	}
+
+	/** Synchronize a product-specific subscription, its tag and consent state. */
+	public static function extension_sync_subscription( $contact, $context, $status = 'pending', $proof = '' ) {
+		$context   = is_array( $context ) ? $context : array();
+		$source    = sanitize_key( $context['source'] ?? 'extension' ) ?: 'extension';
+		$source_id = sanitize_key( (string) ( $context['source_id'] ?? '' ) );
+		$purpose   = sanitize_key( $context['purpose'] ?? ( $source . ( $source_id ? '_' . $source_id : '' ) ) );
+		$tag_result = null;
+		if ( ! empty( $context['tag'] ) ) {
+			$tag_result = self::extension_assign_tag_by_name( $contact, $context['tag'], $source );
+			if ( is_wp_error( $tag_result ) ) return $tag_result;
+		}
+		$consent_result = self::extension_record_purpose_consent( $contact, $purpose, $status, $source, $proof, $context['occurred_at'] ?? '' );
+		if ( is_wp_error( $consent_result ) ) return $consent_result;
+		return array( 'contact_id' => $consent_result['contact_id'], 'purpose' => $purpose, 'status' => $consent_result['status'], 'tag' => $tag_result );
+	}
+
+	/** Backward-compatible receiver for the existing Panda Seasons action. */
+	public static function handle_extension_contact_registered( $contact_id, $context = array(), $subscription = array() ) {
+		$contact = absint( $contact_id );
+		if ( ! $contact && is_array( $subscription ) && ! empty( $subscription['email'] ) ) $contact = sanitize_email( $subscription['email'] );
+		$status = is_array( $subscription ) && 'active' === ( $subscription['status'] ?? '' ) ? 'granted' : 'pending';
+		$result = self::extension_sync_subscription( $contact, $context, $status, '' );
+		if ( is_wp_error( $result ) ) do_action( 'contactpanda_extension_sync_error', $result, $contact, $context, $subscription );
+		return $result;
+	}
+
+	private static function extension_resolve_contact_id( $contact ) {
+		if ( is_numeric( $contact ) ) return absint( $contact );
+		$record = self::extension_contact_by_email( sanitize_email( $contact ) );
+		return $record ? absint( self::value( $record, array( 'id', 'ID', 'get_id' ) ) ) : 0;
 	}
 
 	public static function extension_contact( $id ) {

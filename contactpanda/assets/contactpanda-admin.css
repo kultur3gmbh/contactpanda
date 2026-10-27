@@ -9,6 +9,7 @@
 @media(max-width:780px){.contactpanda-address-grid,.contactpanda-consent-details{grid-template-columns:1fr}.contactpanda-table{display:block;overflow-x:auto}}
 
 .contactpanda-dashboard-upgrades{overflow:hidden;background:linear-gradient(135deg,#f7f8ff 0,#fff 58%)}
+.contactpanda-dashboard-product-visual{display:flex;align-items:center;justify-content:center;overflow:hidden;padding:18px;background:#f8fafc}.contactpanda-dashboard-product-visual img{display:block;width:min(100%,780px);height:auto;max-height:420px;object-fit:contain}
 .contactpanda-dashboard-upgrade-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:16px}
 .contactpanda-dashboard-upgrade-heading h2{margin:2px 0 0}
 .contactpanda-dashboard-upgrade-heading>p{max-width:620px;margin:0;color:#637286}

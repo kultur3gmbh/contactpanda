@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.47\n"
+"Project-Id-Version: ContactPanda 0.8.48\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7675,6 +7675,9 @@ msgstr "Derzeit sind keine ContactPanda-Neuigkeiten verfügbar."
 msgid "View all ContactPanda news"
 msgstr "Alle ContactPanda-Neuigkeiten ansehen"
 
+msgid "ContactPanda Basic product overview"
+msgstr "ContactPanda Basic Produktübersicht"
+
 msgid ""
 "Hello {first_name},\n"
 "\n"
@@ -7689,3 +7692,18 @@ msgstr ""
 "{confirmation_link}\n"
 "\n"
 "Der Link ist 24 Stunden gültig."
+
+msgid "The extension subscription could not be synchronized."
+msgstr "Das Erweiterungsabonnement konnte nicht synchronisiert werden."
+
+msgid "The extension did not provide a valid tag."
+msgstr "Die Erweiterung hat keinen gültigen Tag übergeben."
+
+msgid "The extension tag could not be created."
+msgstr "Der Erweiterungs-Tag konnte nicht erstellt werden."
+
+msgid "The extension tag could not be assigned."
+msgstr "Der Erweiterungs-Tag konnte nicht zugewiesen werden."
+
+msgid "The extension consent could not be synchronized."
+msgstr "Die Einwilligung der Erweiterung konnte nicht synchronisiert werden."

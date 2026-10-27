@@ -937,6 +937,29 @@ final class ContactPanda_Store {
 		return $result;
 	}
 
+	/** Record a product-specific consent without altering general marketing. */
+	public static function record_purpose_consent( $contact_id, $purpose, $status, $source, $occurred_at, $proof = '' ) {
+		global $wpdb;
+		$tables = ContactPanda_Schema::table_names();
+		$contact_id = absint( $contact_id );
+		$purpose = sanitize_key( $purpose );
+		$status = sanitize_key( $status );
+		$source = sanitize_key( $source ) ?: 'extension';
+		if ( ! $contact_id || ! $purpose || ! in_array( $status, array( 'pending', 'granted', 'revoked' ), true ) ) return false;
+		$occurred_at = preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', (string) $occurred_at ) ? $occurred_at : current_time( 'mysql' );
+		$proof = sanitize_textarea_field( $proof );
+		$inserted = $wpdb->insert( $tables['consents'], array( 'contact_id' => $contact_id, 'purpose' => $purpose, 'status' => $status, 'legal_basis' => 'consent', 'source' => $source, 'proof_text' => $proof, 'actor_user_id' => get_current_user_id(), 'occurred_at' => $occurred_at, 'created_at' => current_time( 'mysql' ) ) );
+		if ( ! $inserted ) return false;
+		$meta_key = 'purpose_' . substr( hash( 'sha256', $purpose ), 0, 20 );
+		self::set_contact_meta( $contact_id, $meta_key . '_key', $purpose );
+		self::set_contact_meta( $contact_id, $meta_key . '_status', $status );
+		self::set_contact_meta( $contact_id, $meta_key . '_source', $source );
+		self::set_contact_meta( $contact_id, $meta_key . '_at', $occurred_at );
+		self::set_contact_meta( $contact_id, $meta_key . '_proof', $proof );
+		self::add_activity( $contact_id, 0, 'consent', sprintf( 'Consent status for %1$s: %2$s', $purpose, $status ), $proof, $occurred_at );
+		return true;
+	}
+
 	public static function add_activity( $contact_id, $company_id, $type, $title, $content, $occurred_at = '' ) {
 		global $wpdb;
 		$table = ContactPanda_Schema::table_names()['activities'];
