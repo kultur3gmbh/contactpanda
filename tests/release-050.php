@@ -15,7 +15,7 @@ foreach ( array( 'contactpanda-data-transfer', 'Import / Export', 'contactpanda_
 	}
 }
 
-foreach ( array( 'transfer_section=migration', 'render_migration_settings', 'contactpanda_render_migration_tools' ) as $contract ) {
+foreach ( array( 'contactpanda-migration', 'render_migration', 'render_migration_settings', 'contactpanda_render_migration_tools' ) as $contract ) {
 	if ( false === strpos( $registration . $data_tools, $contract ) ) {
 		fwrite( STDERR, "Missing migration-tab contract {$contract}.\n" );
 		exit( 1 );

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ContactPanda 0.8.52\n"
+"Project-Id-Version: ContactPanda 0.8.53\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7812,3 +7812,6 @@ msgstr "Basic, Plus, Pro und Business verwenden eine gemeinsame Familienversion.
 
 msgid "Protected update metadata is published consistently for every family component."
 msgstr "Geschützte Update-Metadaten werden einheitlich für jede Familienkomponente veröffentlicht."
+
+msgid "Move data from supported systems into ContactPanda with previews and without changing the source records."
+msgstr "Übernehmen Sie Daten aus unterstützten Systemen mit Vorschau in ContactPanda, ohne die Quelldaten zu verändern."

@@ -9,6 +9,14 @@ $shared_ui  = file_get_contents( $root . '/contactpanda/assets/contactpanda-admi
 $styles     = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin.css' );
 $menu_styles = file_get_contents( $root . '/contactpanda/assets/contactpanda-admin-menu.css' );
 $bootstrap  = file_get_contents( $root . '/contactpanda/contactpanda.php' );
+$registration = file_get_contents( $root . '/contactpanda/includes/class-contactpanda-registration.php' );
+
+foreach ( array( 'Button preview', 'contactpanda-theme-button-preview is-contactpanda', 'contactpanda-theme-button-preview is-theme', 'Detected theme colors' ) as $contract ) {
+	if ( false === strpos( $registration, $contract ) ) {
+		fwrite( STDERR, "Missing theme and button preview contract {$contract}.\n" );
+		exit( 1 );
+	}
+}
 
 foreach ( array( 'Drop a CSV file here', 'Drop a vCard file here', 'contactpanda-file-drop-actions' ) as $contract ) {
 	if ( false === strpos( $data_tools, $contract ) ) {
@@ -50,9 +58,11 @@ foreach ( array( 'contactpanda-table-scroll', 'contactpanda-people-table', 'cont
 	}
 }
 
-if ( false === strpos( $plugin, "'contactpanda_page_contactpanda-data-transfer'" ) ) {
-	fwrite( STDERR, "The Import / Export page does not load the ContactPanda administrator assets.\n" );
-	exit( 1 );
+foreach ( array( "'contactpanda_page_contactpanda-data-transfer'", "'contactpanda_page_contactpanda-migration'" ) as $screen ) {
+	if ( false === strpos( $plugin, $screen ) ) {
+		fwrite( STDERR, "The Import / Export or Migration page does not load the ContactPanda administrator assets.\n" );
+		exit( 1 );
+	}
 }
 
 foreach ( array( 'contactpanda-company-relation-modal', 'Assign another company', 'Assign company', 'Remove this company assignment?' ) as $contract ) {
@@ -115,7 +125,7 @@ foreach ( array( 'contactpanda-admin-ui', 'wp_enqueue_media', 'CONTACTPANDA_ADMI
 	}
 }
 
-foreach ( array( 'contactpanda-admin-menu', 'contactpanda-newsletters', 'contactpanda-campaigns', 'contactpanda-flows', 'contactpanda-data-transfer', 'contactpanda-settings', 'contactpanda-trash' ) as $contract ) {
+foreach ( array( 'contactpanda-admin-menu', 'contactpanda-newsletters', 'contactpanda-campaigns', 'contactpanda-flows', 'contactpanda-data-transfer', 'contactpanda-migration', 'contactpanda-settings', 'contactpanda-trash' ) as $contract ) {
 	if ( false === strpos( $plugin, $contract ) ) {
 		fwrite( STDERR, "Missing ContactPanda menu order contract {$contract}.\n" );
 		exit( 1 );
@@ -123,7 +133,7 @@ foreach ( array( 'contactpanda-admin-menu', 'contactpanda-newsletters', 'contact
 }
 
 $menu_positions = array();
-foreach ( array( 'contactpanda', 'contactpanda-people', 'contactpanda-firmen', 'contactpanda-newsletters', 'contactpanda-campaigns', 'contactpanda-flows', 'contactpanda-data-transfer', 'contactpanda-settings', 'contactpanda-trash' ) as $slug ) {
+foreach ( array( 'contactpanda', 'contactpanda-people', 'contactpanda-firmen', 'contactpanda-newsletters', 'contactpanda-campaigns', 'contactpanda-flows', 'contactpanda-data-transfer', 'contactpanda-migration', 'contactpanda-settings', 'contactpanda-trash' ) as $slug ) {
 	if ( ! preg_match( "/'" . preg_quote( $slug, '/' ) . "'\\s*=>\\s*(\\d+)/", $plugin, $match ) ) {
 		fwrite( STDERR, "Missing ordered ContactPanda submenu entry {$slug}.\n" );
 		exit( 1 );

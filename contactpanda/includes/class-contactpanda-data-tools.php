@@ -45,8 +45,10 @@ final class ContactPanda_Data_Tools {
 		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
 		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
 		$section = isset( $_GET['other_section'] ) ? sanitize_key( wp_unslash( $_GET['other_section'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
-		if ( 'contactpanda-settings' !== $page || ( 'migration' !== $tab && 'migration' !== $section ) ) return;
-		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration' ) );
+		$legacy_transfer = 'contactpanda-data-transfer' === $page && 'migration' === sanitize_key( wp_unslash( $_GET['transfer_section'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
+		$legacy_settings = 'contactpanda-settings' === $page && ( 'migration' === $tab || 'migration' === $section );
+		if ( ! $legacy_transfer && ! $legacy_settings ) return;
+		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-migration' ) );
 		exit;
 	}
 
@@ -59,6 +61,14 @@ final class ContactPanda_Data_Tools {
 			'contactpanda-data-transfer',
 			array( __CLASS__, 'render_data_transfer' )
 		);
+		add_submenu_page(
+			'contactpanda',
+			__( 'Migration', 'contactpanda' ),
+			__( 'Migration', 'contactpanda' ),
+			'manage_options',
+			'contactpanda-migration',
+			array( __CLASS__, 'render_migration' )
+		);
 	}
 
 	public static function render_data_transfer() {
@@ -66,14 +76,10 @@ final class ContactPanda_Data_Tools {
 			wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		}
 		$section = isset( $_GET['transfer_section'] ) ? sanitize_key( wp_unslash( $_GET['transfer_section'] ) ) : 'import'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
-		if ( ! in_array( $section, array( 'import', 'export', 'migration' ), true ) ) $section = 'import';
+		if ( ! in_array( $section, array( 'import', 'export' ), true ) ) $section = 'import';
 		echo '<div class="wrap contactpanda-wrap"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CONTACTPANDA</p><h1>' . esc_html__( 'Import and export', 'contactpanda' ) . '</h1><p>' . esc_html__( 'Move data with previews, filters, and a traceable history.', 'contactpanda' ) . '</p></div></div>';
-		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><a class="nav-tab ' . ( 'import' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=import' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'export' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=export' ) ) . '">' . esc_html__( 'Export', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'migration' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=migration' ) ) . '">' . esc_html__( 'Migration', 'contactpanda' ) . '</a></nav>';
+		echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs"><a class="nav-tab ' . ( 'import' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=import' ) ) . '">' . esc_html__( 'Import', 'contactpanda' ) . '</a><a class="nav-tab ' . ( 'export' === $section ? 'nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-data-transfer&transfer_section=export' ) ) . '">' . esc_html__( 'Export', 'contactpanda' ) . '</a></nav>';
 		if ( 'export' === $section ) self::render_export();
-		elseif ( 'migration' === $section ) {
-			ContactPanda_Registration::render_migration_settings();
-			self::render_groundhogg_flow_migration();
-		}
 		else {
 			$entity = isset( $_GET['entity'] ) ? sanitize_key( wp_unslash( $_GET['entity'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only import filter.
 			if ( in_array( $entity, array( 'contacts', 'companies' ), true ) ) {
@@ -82,6 +88,17 @@ final class ContactPanda_Data_Tools {
 				self::render_import_history( $entity );
 			} else self::render_migration_tools();
 		}
+		echo '</div>';
+	}
+
+	/** Render migrations separately from ordinary file import and export. */
+	public static function render_migration() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
+		}
+		echo '<div class="wrap contactpanda-wrap"><div class="contactpanda-heading"><div><p class="contactpanda-eyebrow">CONTACTPANDA</p><h1>' . esc_html__( 'Migration', 'contactpanda' ) . '</h1><p>' . esc_html__( 'Move data from supported systems into ContactPanda with previews and without changing the source records.', 'contactpanda' ) . '</p></div></div>';
+		ContactPanda_Registration::render_migration_settings();
+		self::render_groundhogg_flow_migration();
 		echo '</div>';
 	}
 

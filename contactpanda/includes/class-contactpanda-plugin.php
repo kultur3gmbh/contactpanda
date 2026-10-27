@@ -172,6 +172,7 @@ final class ContactPanda_Plugin {
 			'contactpanda-tags'          => 70,
 			'contactpanda-segments'      => 71,
 			'contactpanda-data-transfer' => 100,
+			'contactpanda-migration'     => 105,
 			'contactpanda-settings'      => 110,
 			'contactpanda-trash'         => 120,
 		);
@@ -307,7 +308,7 @@ final class ContactPanda_Plugin {
 			wp_localize_script( 'contactpanda-trash', 'CONTACTPANDA_TRASH', array( 'purge' => __( 'Permanently delete “%s”? This ContactPanda record cannot be restored afterwards.', 'contactpanda' ), 'restore' => __( 'Restore “%s”?', 'contactpanda' ), 'trash' => __( 'Move “%s” to Trash?', 'contactpanda' ) ) );
 			return;
 		}
-		if ( ! in_array( $hook, array( 'toplevel_page_contactpanda', 'contactpanda_page_contactpanda-people', 'contactpanda_page_contactpanda-firmen', 'contactpanda_page_contactpanda-tags', 'contactpanda_page_contactpanda-settings', 'contactpanda_page_contactpanda-data-transfer' ), true ) ) {
+		if ( ! in_array( $hook, array( 'toplevel_page_contactpanda', 'contactpanda_page_contactpanda-people', 'contactpanda_page_contactpanda-firmen', 'contactpanda_page_contactpanda-tags', 'contactpanda_page_contactpanda-settings', 'contactpanda_page_contactpanda-data-transfer', 'contactpanda_page_contactpanda-migration' ), true ) ) {
 			return;
 		}
 		wp_enqueue_style( 'contactpanda', CONTACTPANDA_URL . 'assets/contactpanda-admin.css', array(), CONTACTPANDA_ASSET_VERSION );
