@@ -636,7 +636,7 @@ final class ContactPanda_Basic_Newsletters {
 			$usage = self::template_usage( absint( $row['id'] ) );
 			$status_labels = array( 'draft' => __( 'Draft', 'contactpanda' ), 'published' => __( 'Published', 'contactpanda' ), 'archived' => __( 'Archived', 'contactpanda' ) );
 			$status = $imported ? __( 'Imported archive', 'contactpanda' ) : ( self::template_sent_as_newsletter( absint( $row['id'] ) ) ? __( 'Sent', 'contactpanda' ) : ( self::template_planned_as_newsletter( absint( $row['id'] ) ) ? __( 'Planned', 'contactpanda' ) : ( $status_labels[ $row['status'] ] ?? $row['status'] ) ) );
-			echo '</div></td><td>' . esc_html( $row['subject'] ?: '—' ) . '</td><td>' . esc_html( count( $usage['campaigns'] ) ) . ( $usage['campaigns'] ? '<br><small>' . esc_html( implode( ', ', array_slice( $usage['campaigns'], 0, 3 ) ) ) . '</small>' : '' ) . '</td><td>' . esc_html( count( $usage['flows'] ) ) . ( $usage['flows'] ? '<br><small>' . esc_html( implode( ', ', array_slice( $usage['flows'], 0, 3 ) ) ) . '</small>' : '' ) . '</td><td>' . esc_html( $status ) . '</td><td>' . esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $row['updated_at'] ) ) . '</td></tr>';
+			echo '</div></td><td>' . esc_html( $row['subject'] ?: '—' ) . '</td><td>' . esc_html( count( $usage['campaigns'] ) ) . '</td><td>' . esc_html( count( $usage['flows'] ) ) . '</td><td>' . esc_html( $status ) . '</td><td>' . esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $row['updated_at'] ) ) . '</td></tr>';
 		}
 		echo '</tbody></table>';
 		if ( $total > $per_page ) {

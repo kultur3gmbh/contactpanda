@@ -148,12 +148,14 @@
 		}
 		function renderStatus(row, item) {
 			row.dataset.contactpandaCampaignStatus = item.status;
-			var summary = row.querySelector('.contactpanda-recipient-summary');
+			var sent = row.querySelector('[data-contactpanda-mailing-sent]');
+			var failed = row.querySelector('[data-contactpanda-mailing-failed]');
 			var delivered = row.querySelector('[data-contactpanda-mailing-delivered]');
 			var opened = row.querySelector('[data-contactpanda-mailing-opened]');
 			var clicked = row.querySelector('[data-contactpanda-mailing-clicked]');
 			var progress = row.querySelector('.contactpanda-mailing-progress');
-			if (summary) summary.textContent = item.recipientSummary;
+			if (sent) sent.textContent = item.sentText;
+			if (failed) failed.textContent = item.failedText;
 			if (delivered) delivered.textContent = item.delivered;
 			if (opened) opened.textContent = item.opened;
 			if (clicked) clicked.textContent = item.clicked;

@@ -17,7 +17,7 @@ msgstr "Anteil für Variante B (%)"
 msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
 msgstr "Platzhalter wie {campaign_name}, {campaign_id} und {subject_variant} werden für jeden Versand einzeln aufgelöst."
 
-"Project-Id-Version: ContactPanda 0.8.63\n"
+"Project-Id-Version: ContactPanda 0.8.64\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -8025,3 +8025,21 @@ msgstr "Es sind noch keine veröffentlichten Newsletter verfügbar."
 
 msgid "Read newsletter"
 msgstr "Newsletter lesen"
+
+msgid "%d sent"
+msgstr "%d gesendet"
+
+msgid "%d failed"
+msgstr "%d fehlgeschlagen"
+
+msgid "People, companies and tags are analyzed and migrated independently from email templates, forms and automations. Groundhogg remains unchanged."
+msgstr "Personen, Firmen und Tags werden getrennt von E-Mail-Vorlagen, Formularen und Automatisierungen analysiert und migriert. Groundhogg bleibt unverändert."
+
+msgid "%1$d people, %2$d companies and %3$d tags found. ContactPanda currently contains %4$d people, %5$d companies and %6$d tags. No data was changed."
+msgstr "%1$d Personen, %2$d Firmen und %3$d Tags gefunden. ContactPanda enthält derzeit %4$d Personen, %5$d Firmen und %6$d Tags. Es wurden keine Daten geändert."
+
+msgid "Analyze people, companies and tags"
+msgstr "Personen, Firmen und Tags analysieren"
+
+msgid "Import and update people, companies and tags"
+msgstr "Personen, Firmen und Tags importieren und aktualisieren"

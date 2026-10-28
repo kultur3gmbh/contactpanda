@@ -1074,7 +1074,32 @@ final class ContactPanda_Store {
 		return $contact_id;
 	}
 
-	public static function migrate_groundhogg() {
+	public static function groundhogg_migration_preview() {
+		if ( ! self::ready() || ( ! function_exists( 'wp_get_ability' ) && ! class_exists( '\\Groundhogg\\Contact' ) ) ) return new WP_Error( 'contactpanda_migration_unavailable', __( 'The migration prerequisites are not available.', 'contactpanda' ) );
+		$counts = self::counts();
+		$company_count = 0;
+		$offset = 0;
+		$seen = array();
+		do {
+			$result = self::ability( 'groundhogg-companies/list-companies', array( 'limit' => 100, 'offset' => $offset ) );
+			$rows = is_array( $result ) && isset( $result['companies'] ) ? (array) $result['companies'] : array();
+			$fingerprint = md5( wp_json_encode( array_map( static function ( $company ) { return self::value( $company, array( 'id', 'ID' ) ); }, $rows ) ) );
+			if ( $rows && isset( $seen[ $fingerprint ] ) ) break;
+			$seen[ $fingerprint ] = true;
+			$company_count += count( $rows );
+			$offset += count( $rows );
+		} while ( 100 === count( $rows ) && $offset < 1000000 );
+		return array(
+			'contacts'           => count( self::groundhogg_contacts_for_migration() ),
+			'companies'          => $company_count,
+			'tags'               => count( self::groundhogg_tags() ),
+			'existing_contacts'  => absint( $counts['contacts'] ?? 0 ),
+			'existing_companies' => absint( $counts['companies'] ?? 0 ),
+			'existing_tags'      => absint( $counts['tags'] ?? 0 ),
+		);
+	}
+
+	public static function migrate_groundhogg( $include_extensions = true ) {
 		global $wpdb;
 		if ( ! self::ready() || ( ! function_exists( 'wp_get_ability' ) && ! class_exists( '\\Groundhogg\\Contact' ) ) ) return new WP_Error( 'contactpanda_migration_unavailable', __( 'The migration prerequisites are not available.', 'contactpanda' ) );
 		$report = array( 'contacts' => 0, 'source_contacts' => 0, 'companies' => 0, 'tags' => 0, 'source_tags' => 0, 'custom_fields' => 0, 'assignments' => 0, 'source_assignments' => 0, 'missing_tags' => array(), 'skipped_tags' => array(), 'skipped' => 0, 'errors' => 0 );
@@ -1224,7 +1249,7 @@ final class ContactPanda_Store {
 			do_action( 'contactpanda_groundhogg_migration_progress', array( 'stage' => __( 'Importing companies…', 'contactpanda' ), 'processed' => $company_offset, 'total' => 0, 'percent' => min( 96, 82 + (int) floor( $company_offset / 100 ) ) ) );
 		} while ( $company_rows && $company_offset < 1000000 );
 		$report['completed_at'] = current_time( 'mysql' );
-		$report = (array) apply_filters( 'contactpanda_groundhogg_migration_report', $report );
+		if ( $include_extensions ) $report = (array) apply_filters( 'contactpanda_groundhogg_migration_report', $report );
 		update_option( 'contactpanda_last_migration_report', $report, false );
 		do_action( 'contactpanda_groundhogg_migration_progress', array( 'stage' => __( 'Migration completed.', 'contactpanda' ), 'processed' => $report['contacts'] + $report['companies'] + $report['tags'], 'total' => $report['contacts'] + $report['companies'] + $report['tags'], 'percent' => 100 ) );
 		return $report;

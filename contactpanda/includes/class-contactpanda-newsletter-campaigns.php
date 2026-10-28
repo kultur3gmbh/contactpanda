@@ -163,9 +163,7 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 			if ( ! $imported && 'completed' === $campaign['status'] ) $actions .= '<span class="button contactpanda-mailing-state contactpanda-mailing-completed">' . esc_html__( 'Completed', 'contactpanda' ) . '</span>';
 			if ( ! $imported && 'cancelled' === $campaign['status'] ) $actions .= '<span class="button contactpanda-mailing-state contactpanda-mailing-cancelled">' . esc_html__( 'Cancelled', 'contactpanda' ) . '</span>';
 			if ( ! $imported && ! in_array( $campaign['status'], array( 'completed', 'cancelled' ), true ) ) $actions .= self::action_link( $campaign['id'], 'cancel', __( 'Cancel', 'contactpanda' ), 'button contactpanda-cancel-mailing' );
-			$recipient_summary = $imported
-				? sprintf( __( '%1$d sent · %2$d opened · %3$d clicked · %4$d unsubscribed', 'contactpanda' ), $campaign['sent_count'], $campaign['opened_count'], $campaign['clicked_count'], $campaign['unsubscribed_count'] )
-				: sprintf( __( '%1$d sent · %2$d queued · %3$d skipped · %4$d failed', 'contactpanda' ), $campaign['sent_count'], $campaign['queued_count'], $campaign['skipped_count'], $campaign['failed_count'] );
+			$recipient_summary = '<span data-contactpanda-mailing-sent>' . esc_html( sprintf( __( '%d sent', 'contactpanda' ), absint( $campaign['sent_count'] ) ) ) . '</span><span data-contactpanda-mailing-failed>' . esc_html( sprintf( __( '%d failed', 'contactpanda' ), absint( $campaign['failed_count'] ) ) ) . '</span>';
 			if ( ! empty( $campaign['scheduled_at'] ) ) {
 				$delivery_time = sprintf( __( '%1$s at %2$s', 'contactpanda' ), mysql2date( get_option( 'date_format' ), $campaign['scheduled_at'] ), mysql2date( get_option( 'time_format' ), $campaign['scheduled_at'] ) );
 			} elseif ( ! empty( $campaign['started_at'] ) ) {
@@ -174,6 +172,9 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 				$delivery_time = __( 'Draft', 'contactpanda' );
 			} else {
 				$delivery_time = self::status_label( $campaign['status'] );
+			}
+			if ( ! empty( $campaign['completed_at'] ) ) {
+				$delivery_time .= '<small><strong>' . esc_html__( 'Completed', 'contactpanda' ) . ':</strong> ' . esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $campaign['completed_at'] ) ) . '</small>';
 			}
 			$eligible = max( 0, absint( $campaign['total_recipients'] ) - absint( $campaign['skipped_count'] ) );
 			$delivered = absint( $campaign['sent_count'] );
@@ -185,7 +186,7 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 			$audience_label = 'manual' === ( $campaign['audience_source'] ?? 'contacts' ) ? __( 'Selected people', 'contactpanda' ) : ( 'registered_customers' === ( $campaign['audience_source'] ?? 'contacts' ) ? __( 'Registered customers', 'contactpanda' ) : ( 'all_contacts' === ( $campaign['audience_source'] ?? 'contacts' ) ? __( 'All contacts', 'contactpanda' ) : ( $campaign['segment_name'] ?: __( 'Contacts from the saved search', 'contactpanda' ) ) ) );
 			$campaign_group_badge = $campaign['campaign_group_name'] ? '<small class="contactpanda-mailing-campaign">' . esc_html( $campaign['campaign_group_name'] ) . '</small>' : '';
 			$selected_summary = sprintf( __( '%d selected', 'contactpanda' ), absint( $campaign['total_recipients'] ) );
-			echo '<tr class="contactpanda-mailing-main-row" data-contactpanda-campaign-id="' . esc_attr( absint( $campaign['id'] ) ) . '" data-contactpanda-campaign-status="' . esc_attr( $campaign['status'] ) . '"><td><strong>' . esc_html( $campaign['name'] ) . '</strong>' . $campaign_group_badge . '<span class="contactpanda-mailing-row-actions">' . wp_kses_post( $links ) . '</span></td><td>' . esc_html( $campaign['subject'] ?: '—' ) . '</td><td><span>' . esc_html( $audience_label ) . '</span><small class="contactpanda-recipient-selected">' . esc_html( $selected_summary ) . '</small><small class="contactpanda-recipient-summary">' . esc_html( $recipient_summary ) . '</small>' . $progress_bar . '</td><td><span class="contactpanda-delivery-time">' . esc_html( $delivery_time ) . '</span></td><td class="contactpanda-mailing-statistics"><span><strong>' . esc_html__( 'Delivered', 'contactpanda' ) . ':</strong> <span data-contactpanda-mailing-delivered>' . esc_html( $delivered . ' · ' . $rate( $delivered, $eligible ) ) . '</span></span><span><strong>' . esc_html__( 'Opened', 'contactpanda' ) . ':</strong> <span data-contactpanda-mailing-opened>' . esc_html( absint( $campaign['opened_count'] ) . ' · ' . $rate( absint( $campaign['opened_count'] ), $delivered ) ) . '</span></span><span><strong>' . esc_html__( 'Clicked', 'contactpanda' ) . ':</strong> <span data-contactpanda-mailing-clicked>' . esc_html( absint( $campaign['clicked_count'] ) . ' · ' . $rate( absint( $campaign['clicked_count'] ), $delivered ) ) . '</span></span></td><td class="contactpanda-mailing-actions">' . $actions . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '<tr class="contactpanda-mailing-main-row" data-contactpanda-campaign-id="' . esc_attr( absint( $campaign['id'] ) ) . '" data-contactpanda-campaign-status="' . esc_attr( $campaign['status'] ) . '"><td><strong>' . esc_html( $campaign['name'] ) . '</strong>' . $campaign_group_badge . '<span class="contactpanda-mailing-row-actions">' . wp_kses_post( $links ) . '</span></td><td>' . esc_html( $campaign['subject'] ?: '—' ) . '</td><td><small class="contactpanda-recipient-summary">' . wp_kses_post( $recipient_summary ) . '</small></td><td><span class="contactpanda-delivery-time">' . wp_kses_post( $delivery_time ) . '</span></td><td class="contactpanda-mailing-statistics"><span><strong>' . esc_html__( 'Delivered', 'contactpanda' ) . ':</strong> <span data-contactpanda-mailing-delivered>' . esc_html( $delivered . ' · ' . $rate( $delivered, $eligible ) ) . '</span></span><span><strong>' . esc_html__( 'Opened', 'contactpanda' ) . ':</strong> <span data-contactpanda-mailing-opened>' . esc_html( absint( $campaign['opened_count'] ) . ' · ' . $rate( absint( $campaign['opened_count'] ), $delivered ) ) . '</span></span><span><strong>' . esc_html__( 'Clicked', 'contactpanda' ) . ':</strong> <span data-contactpanda-mailing-clicked>' . esc_html( absint( $campaign['clicked_count'] ) . ' · ' . $rate( absint( $campaign['clicked_count'] ), $delivered ) ) . '</span></span></td><td class="contactpanda-mailing-actions">' . $actions . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 		if ( ! $campaigns ) { echo '<tr><td colspan="6">' . esc_html__( 'No campaign has been created yet.', 'contactpanda' ) . '</td></tr>'; }
 		echo '</tbody></table></section>';
@@ -501,7 +502,10 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 			$statuses[ $id ] = array(
 				'status'            => sanitize_key( $campaign['status'] ),
 				'terminal'          => in_array( $campaign['status'], array( 'completed', 'cancelled' ), true ),
-				'recipientSummary'  => sprintf( __( '%1$d sent · %2$d queued · %3$d skipped · %4$d failed', 'contactpanda' ), $campaign['sent_count'], $campaign['queued_count'], $campaign['skipped_count'], $campaign['failed_count'] ),
+				'sent'              => absint( $campaign['sent_count'] ),
+				'failed'            => absint( $campaign['failed_count'] ),
+				'sentText'          => sprintf( __( '%d sent', 'contactpanda' ), absint( $campaign['sent_count'] ) ),
+				'failedText'        => sprintf( __( '%d failed', 'contactpanda' ), absint( $campaign['failed_count'] ) ),
 				'delivered'         => $delivered . ' · ' . $rate( $delivered, $eligible ),
 				'opened'            => absint( $campaign['opened_count'] ) . ' · ' . $rate( absint( $campaign['opened_count'] ), $delivered ),
 				'clicked'           => absint( $campaign['clicked_count'] ) . ' · ' . $rate( absint( $campaign['clicked_count'] ), $delivered ),

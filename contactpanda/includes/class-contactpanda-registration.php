@@ -1093,6 +1093,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 	private static function render_database_tools( $schema, $show_groundhogg = true, $show_reset = true ) {
 		$counts = ContactPanda_Store::counts();
 		$report = (array) get_option( 'contactpanda_last_migration_report', array() );
+		$preview = get_transient( 'contactpanda_groundhogg_contacts_preview_' . get_current_user_id() );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'ContactPanda database', 'contactpanda' ) . '</h2>';
 		if ( ! ContactPanda_Store::ready() ) {
 			echo '<p>' . esc_html__( 'The ContactPanda database tables do not exist yet or require an update. Creating or updating them does not change Groundhogg or any connected plugin.', 'contactpanda' ) . '</p>';
@@ -1101,7 +1102,12 @@ The link is valid for 24 hours.', 'contactpanda' ),
 			echo '<div class="contactpanda-database-counts"><span><strong>' . esc_html( $counts['contacts'] ) . '</strong>' . esc_html__( 'Contacts', 'contactpanda' ) . '</span><span><strong>' . esc_html( $counts['companies'] ) . '</strong>' . esc_html__( 'Companies', 'contactpanda' ) . '</span><span><strong>' . esc_html( $counts['tags'] ) . '</strong>' . esc_html__( 'Tags', 'contactpanda' ) . '</span><span><strong>' . esc_html( $counts['activities'] ) . '</strong>' . esc_html__( 'Activities', 'contactpanda' ) . '</span></div>';
 			echo '<div class="contactpanda-database-actions">';
 			if ( $show_groundhogg && self::groundhogg_active() ) {
-				self::admin_action_form( 'contactpanda_migrate_groundhogg', __( 'Migrate data from Groundhogg', 'contactpanda' ), 'button-primary', __( 'Groundhogg remains read only. Contacts, companies, tags, and—with ContactPanda Plus—mail templates and completed broadcasts are imported without duplicates.', 'contactpanda' ) );
+				echo '<p>' . esc_html__( 'People, companies and tags are analyzed and migrated independently from email templates, forms and automations. Groundhogg remains unchanged.', 'contactpanda' ) . '</p>';
+				if ( $preview ) {
+					echo '<div class="contactpanda-migration-report"><h3>' . esc_html__( 'Analysis', 'contactpanda' ) . '</h3><p>' . esc_html( sprintf( __( '%1$d people, %2$d companies and %3$d tags found. ContactPanda currently contains %4$d people, %5$d companies and %6$d tags. No data was changed.', 'contactpanda' ), absint( $preview['contacts'] ?? 0 ), absint( $preview['companies'] ?? 0 ), absint( $preview['tags'] ?? 0 ), absint( $preview['existing_contacts'] ?? 0 ), absint( $preview['existing_companies'] ?? 0 ), absint( $preview['existing_tags'] ?? 0 ) ) ) . '</p></div>';
+				}
+				self::groundhogg_contacts_migration_form( 'preview', __( 'Analyze people, companies and tags', 'contactpanda' ), 'button-secondary' );
+				if ( $preview ) self::groundhogg_contacts_migration_form( 'run', __( 'Import and update people, companies and tags', 'contactpanda' ), 'button-primary contactpanda-groundhogg-migration-form' );
 				echo '<div class="contactpanda-migration-progress" hidden aria-live="polite"><strong>' . esc_html__( 'Preparing migration…', 'contactpanda' ) . '</strong><progress value="0" max="100"></progress><span>0%</span><small></small></div>';
 			}
 			if ( $show_reset ) self::admin_action_form( 'contactpanda_reset_standalone', __( 'Reset ContactPanda data', 'contactpanda' ), 'button-secondary contactpanda-reset-test-data', __( 'Deletes ContactPanda CRM records and imported Groundhogg newsletter archives. ContactPanda-created newsletter drafts, Groundhogg, WordPress, WooCommerce, invoices, and events remain untouched.', 'contactpanda' ), true );
@@ -1140,6 +1146,12 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		echo '</section>';
 	}
 
+	private static function groundhogg_contacts_migration_form( $mode, $label, $class ) {
+		echo '<form class="contactpanda-inline-action-form' . ( 'run' === $mode ? ' contactpanda-groundhogg-migration-form' : '' ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_migrate_groundhogg"><input type="hidden" name="migration_source" value="groundhogg"><input type="hidden" name="migration_mode" value="' . esc_attr( $mode ) . '">';
+		wp_nonce_field( 'contactpanda_migrate_groundhogg' );
+		echo '<button type="submit" class="button ' . esc_attr( $class ) . '">' . esc_html( $label ) . '</button></form>';
+	}
+
 	private static function admin_action_form( $action, $label, $class = '', $description = '', $danger = false ) {
 		echo '<form class="contactpanda-inline-action-form' . ( $danger ? ' contactpanda-reset-form' : '' ) . ( 'contactpanda_migrate_groundhogg' === $action ? ' contactpanda-groundhogg-migration-form' : '' ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="' . esc_attr( $action ) . '">';
 		if ( 'contactpanda_migrate_groundhogg' === $action ) echo '<input type="hidden" name="migration_source" value="groundhogg">';
@@ -1163,6 +1175,13 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	public static function handle_migrate_groundhogg() {
 		self::guard_database_action( 'contactpanda_migrate_groundhogg' );
+		if ( 'run' !== sanitize_key( wp_unslash( $_POST['migration_mode'] ?? 'preview' ) ) ) {
+			$preview = ContactPanda_Store::groundhogg_migration_preview();
+			if ( is_wp_error( $preview ) ) self::database_redirect( 'error', $preview->get_error_message() );
+			set_transient( 'contactpanda_groundhogg_contacts_preview_' . get_current_user_id(), $preview, HOUR_IN_SECONDS );
+			wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-migration&migration_source=groundhogg&migration_area=contacts' ) );
+			exit;
+		}
 		$result = self::run_groundhogg_migration();
 		if ( is_wp_error( $result ) ) self::database_redirect( 'error', $result->get_error_message() );
 		self::database_redirect( 'success', __( 'The Groundhogg migration was completed and ContactPanda is now the leading data source. Groundhogg remains active and unchanged. You may switch the data source back later, but ContactPanda changes are not migrated back to Groundhogg.', 'contactpanda' ) );
@@ -1194,7 +1213,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 
 	private static function run_groundhogg_migration() {
 		delete_transient( 'contactpanda_groundhogg_migration_' . get_current_user_id() );
-		$result = ContactPanda_Store::migrate_groundhogg();
+		$result = ContactPanda_Store::migrate_groundhogg( false );
 		if ( is_wp_error( $result ) ) return $result;
 		$settings = self::general_settings();
 		$settings['data_source'] = 'standalone';

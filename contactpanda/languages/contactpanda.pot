@@ -17,7 +17,7 @@ msgstr ""
 msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
 msgstr ""
 
-"Project-Id-Version: ContactPanda 0.8.63\n"
+"Project-Id-Version: ContactPanda 0.8.64\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7997,4 +7997,22 @@ msgid "No published newsletters are available yet."
 msgstr ""
 
 msgid "Read newsletter"
+msgstr ""
+
+msgid "%d sent"
+msgstr ""
+
+msgid "%d failed"
+msgstr ""
+
+msgid "People, companies and tags are analyzed and migrated independently from email templates, forms and automations. Groundhogg remains unchanged."
+msgstr ""
+
+msgid "%1$d people, %2$d companies and %3$d tags found. ContactPanda currently contains %4$d people, %5$d companies and %6$d tags. No data was changed."
+msgstr ""
+
+msgid "Analyze people, companies and tags"
+msgstr ""
+
+msgid "Import and update people, companies and tags"
 msgstr ""
