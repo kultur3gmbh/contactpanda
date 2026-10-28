@@ -2,12 +2,18 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.59
+Stable tag: 0.8.60
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free, reduced newsletter workflow, a WooCommerce customer overview, optional Groundhogg compatibility, and stable extension APIs for the ContactPanda product family.
 
 == Changelog ==
+
+= 0.8.60 =
+
+* Adds normalized contact channels and external identities without rewriting WordPress, WooCommerce, or source-system records.
+* Makes duplicate merging traceable through a recoverable merge history and preserves all linked identities.
+* Consolidates shared company details in Basic and removes the obsolete duplicate editor from Pro.
 
 = 0.8.59 =
 * Rebuilds the coordinated family packages from committed sources and verifies their internal versions before publication.

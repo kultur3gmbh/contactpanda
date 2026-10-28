@@ -17,7 +17,7 @@ msgstr "Anteil für Variante B (%)"
 msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
 msgstr "Platzhalter wie {campaign_name}, {campaign_id} und {subject_variant} werden für jeden Versand einzeln aufgelöst."
 
-"Project-Id-Version: ContactPanda 0.8.59\n"
+"Project-Id-Version: ContactPanda 0.8.60\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7957,3 +7957,6 @@ msgstr "Vorhandene WooCommerce-Shopdaten werden nur als erste Vorschläge verwen
 
 msgid "Save company details"
 msgstr "Firmendaten speichern"
+
+msgid "Same external account"
+msgstr "Dasselbe externe Konto"

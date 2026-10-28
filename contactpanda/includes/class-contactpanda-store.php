@@ -53,6 +53,10 @@ final class ContactPanda_Store {
 	}
 
 	public static function contact_by_email( $email, $include_deleted = false ) {
+		if ( class_exists( 'ContactPanda_Identity_Store' ) && self::ready() ) {
+			$contact_id = ContactPanda_Identity_Store::contact_id_by_channel( 'email', $email, $include_deleted );
+			if ( $contact_id ) return self::contact( $contact_id, $include_deleted );
+		}
 		global $wpdb;
 		$table = ContactPanda_Schema::table_names()['contacts'];
 		$state = $include_deleted ? '' : ' AND deleted_at IS NULL';
@@ -60,8 +64,12 @@ final class ContactPanda_Store {
 		return $row ? self::hydrate_contact( $row ) : false;
 	}
 
-	/** Resolve the one active standalone contact explicitly linked to a WordPress user. */
+	/** Resolve the active standalone contact explicitly linked to a WordPress user. */
 	public static function contact_by_user_id( $user_id, $include_deleted = false ) {
+		if ( class_exists( 'ContactPanda_Identity_Store' ) && self::ready() ) {
+			$contact_id = ContactPanda_Identity_Store::contact_id_by_identity( 'wordpress', 'user', $user_id, $include_deleted );
+			if ( $contact_id ) return self::contact( $contact_id, $include_deleted );
+		}
 		global $wpdb;
 		$table = ContactPanda_Schema::table_names()['contacts'];
 		$state = $include_deleted ? '' : ' AND deleted_at IS NULL';
@@ -84,6 +92,14 @@ final class ContactPanda_Store {
 		$meta_rows = (array) $wpdb->get_results( "SELECT contact_id, meta_key, meta_value FROM `{$tables['contactmeta']}` WHERE meta_key IN ('primary_phone','billing_phone','phone','postcode','billing_postcode','contactpanda_contact_channels')", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		$meta = array();
 		foreach ( $meta_rows as $item ) $meta[ absint( $item['contact_id'] ) ][ $item['meta_key'] ] = maybe_unserialize( $item['meta_value'] );
+		$normalized_channels = array();
+		foreach ( (array) $wpdb->get_results( "SELECT contact_id,channel_type,channel_value FROM `{$tables['contact_channels']}` WHERE status='active'", ARRAY_A ) as $channel ) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+			$normalized_channels[ absint( $channel['contact_id'] ) ][] = $channel;
+		}
+		$external_identities = array();
+		foreach ( (array) $wpdb->get_results( "SELECT contact_id,provider,identity_type,external_id FROM `{$tables['external_identities']}` WHERE status='active'", ARRAY_A ) as $identity ) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+			$external_identities[ absint( $identity['contact_id'] ) ][] = $identity;
+		}
 		$seen = array(); $pairs = array();
 		foreach ( $rows as $row ) {
 			$id = absint( $row['id'] );
@@ -95,10 +111,18 @@ final class ContactPanda_Store {
 				if ( 'phone' === ( $channel['type'] ?? '' ) ) $phones[] = preg_replace( '/\D+/', '', (string) ( $channel['value'] ?? '' ) );
 				if ( 'email' === ( $channel['type'] ?? '' ) ) $emails[] = strtolower( sanitize_email( $channel['value'] ?? '' ) );
 			}
+			foreach ( $normalized_channels[ $id ] ?? array() as $channel ) {
+				if ( 'phone' === $channel['channel_type'] ) $phones[] = preg_replace( '/\D+/', '', (string) $channel['channel_value'] );
+				if ( 'email' === $channel['channel_type'] ) $emails[] = strtolower( sanitize_email( $channel['channel_value'] ) );
+			}
 			$postcode = preg_replace( '/\s+/', '', strtolower( (string) ( $meta[ $id ]['postcode'] ?? $meta[ $id ]['billing_postcode'] ?? '' ) ) );
 			$name = trim( strtolower( remove_accents( (string) $row['first_name'] . '|' . (string) $row['last_name'] ) ) );
 			$keys = array();
 			if ( ! empty( $row['wp_user_id'] ) ) $keys['wordpress'] = 'u:' . absint( $row['wp_user_id'] );
+			foreach ( $external_identities[ $id ] ?? array() as $identity ) {
+				$identity_key = sanitize_key( $identity['provider'] ) . ':' . sanitize_key( $identity['identity_type'] ) . ':' . sanitize_text_field( $identity['external_id'] );
+				$keys[ __( 'Same external account', 'contactpanda' ) . ':' . $identity_key ] = 'x:' . $identity_key;
+			}
 			foreach ( array_unique( array_filter( $phones ) ) as $phone ) if ( strlen( $phone ) >= 7 ) $keys[ __( 'Phone number', 'contactpanda' ) . ':' . $phone ] = 'p:' . $phone;
 			foreach ( array_unique( array_filter( $emails ) ) as $email ) $keys[ __( 'Email address', 'contactpanda' ) . ':' . $email ] = 'e:' . $email;
 			if ( '|' !== $name && $postcode ) $keys[ __( 'Name and postal code', 'contactpanda' ) ] = 'n:' . $name . '|' . $postcode;
@@ -111,13 +135,13 @@ final class ContactPanda_Store {
 						'right_first_name' => $row['first_name'], 'right_last_name' => $row['last_name'],
 						'reason' => 'wordpress' === $reason ? __( 'Same WordPress account', 'contactpanda' ) : preg_replace( '/:.+$/', '', $reason ),
 					);
-					if ( count( $pairs ) >= absint( $limit ) ) return array_values( $pairs );
+					if ( count( $pairs ) >= absint( $limit ) ) return apply_filters( 'contactpanda_duplicate_candidates', array_values( $pairs ), $rows, $meta );
 				} else {
 					$seen[ $key ] = $row;
 				}
 			}
 		}
-		return array_values( $pairs );
+		return apply_filters( 'contactpanda_duplicate_candidates', array_values( $pairs ), $rows, $meta );
 	}
 
 	/**
@@ -217,6 +241,7 @@ final class ContactPanda_Store {
 		foreach ( $meta as $key => $value ) {
 			self::set_contact_meta( $id, $key, $value );
 		}
+		if ( class_exists( 'ContactPanda_Identity_Store' ) && self::ready() ) ContactPanda_Identity_Store::sync_contact( $id );
 		return true;
 	}
 
@@ -569,6 +594,8 @@ final class ContactPanda_Store {
 		$by_id = array();
 		foreach ( $rows as $row ) $by_id[ absint( $row['id'] ) ] = $row;
 		$donors = array_values( array_diff( $ids, array( $primary_id ) ) );
+		$snapshot = array( 'records' => $rows, 'metadata' => array() );
+		foreach ( $ids as $snapshot_id ) $snapshot['metadata'][ $snapshot_id ] = 'contacts' === $entity ? self::contact_meta( $snapshot_id ) : self::company_meta( $snapshot_id );
 		$now = current_time( 'mysql' );
 		try {
 			if ( 'contacts' === $entity ) {
@@ -689,6 +716,10 @@ final class ContactPanda_Store {
 				self::ensure_primary_company( $primary_id );
 				self::set_contact_meta( $primary_id, 'merged_contact_ids', $ids );
 				self::set_contact_meta( $primary_id, 'merged_email_aliases', array_values( array_unique( array_filter( $aliases ) ) ) );
+				if ( class_exists( 'ContactPanda_Identity_Store' ) ) {
+					ContactPanda_Identity_Store::merge_contacts( $primary_id, $donors );
+					ContactPanda_Identity_Store::sync_contact( $primary_id );
+				}
 				$wpdb->query( $wpdb->prepare( "UPDATE `{$table}` SET deleted_at=%s, updated_at=%s WHERE id IN (" . implode( ',', array_fill( 0, count( $donors ), '%d' ) ) . ')', array_merge( array( $now, $now ), $donors ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table and numeric placeholders.
 				self::add_activity( $primary_id, 0, 'merge', __( 'Contact records merged', 'contactpanda' ), sprintf( __( 'Source record IDs moved to Trash: %s', 'contactpanda' ), implode( ', ', $donors ) ) );
 			} else {
@@ -724,6 +755,7 @@ final class ContactPanda_Store {
 				$wpdb->query( $wpdb->prepare( "UPDATE `{$table}` SET deleted_at=%s, updated_at=%s WHERE id IN (" . implode( ',', array_fill( 0, count( $donors ), '%d' ) ) . ')', array_merge( array( $now, $now ), $donors ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				self::add_activity( 0, $primary_id, 'merge', __( 'Company records merged', 'contactpanda' ), sprintf( __( 'Source record IDs moved to Trash: %s', 'contactpanda' ), implode( ', ', $donors ) ) );
 			}
+			if ( class_exists( 'ContactPanda_Identity_Store' ) && ! ContactPanda_Identity_Store::record_merge( $entity, $primary_id, $donors, $snapshot ) ) throw new Exception( 'merge_history' );
 			if ( false === $wpdb->query( 'COMMIT' ) ) throw new Exception( 'commit' );
 		} catch ( Throwable $error ) {
 			$wpdb->query( 'ROLLBACK' );
@@ -1011,9 +1043,12 @@ final class ContactPanda_Store {
 			return false;
 		}
 		$contact = self::contact( $contact_id );
-		if ( ! $contact || ( ! empty( $contact['user_id'] ) && absint( $contact['user_id'] ) !== $user_id ) ) {
-			return false;
+		if ( ! $contact ) return false;
+		if ( class_exists( 'ContactPanda_Identity_Store' ) ) {
+			$linked = ContactPanda_Identity_Store::add_identity( $contact_id, 'wordpress', 'user', $user_id, array( 'is_primary' => empty( $contact['user_id'] ), 'source' => 'wordpress' ) );
+			if ( is_wp_error( $linked ) || ! $linked ) return false;
 		}
+		if ( ! empty( $contact['user_id'] ) ) return true;
 		return false !== $wpdb->update( $table, array( 'wp_user_id' => $user_id, 'updated_at' => current_time( 'mysql' ) ), array( 'id' => $contact_id ) );
 	}
 

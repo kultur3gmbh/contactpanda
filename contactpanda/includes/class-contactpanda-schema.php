@@ -3,7 +3,7 @@
 defined( 'ABSPATH' ) || exit;
 
 final class ContactPanda_Schema {
-	const VERSION = '2.2.0';
+	const VERSION = '2.3.0';
 	const VERSION_OPTION = 'contactpanda_db_version';
 
 	/**
@@ -35,6 +35,9 @@ final class ContactPanda_Schema {
 			'salutations'      => $prefix . 'salutations',
 			'import_runs'      => $prefix . 'import_runs',
 			'import_items'     => $prefix . 'import_items',
+			'contact_channels' => $prefix . 'contact_channels',
+			'external_identities' => $prefix . 'external_identities',
+			'merge_history'    => $prefix . 'merge_history',
 		);
 	}
 
@@ -271,6 +274,59 @@ final class ContactPanda_Schema {
 			KEY entity_record (entity_type,record_id)
 		) $charset;";
 
+		$sql[] = "CREATE TABLE {$tables['contact_channels']} (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			contact_id bigint(20) unsigned NOT NULL,
+			channel_type varchar(30) NOT NULL,
+			label varchar(60) NOT NULL DEFAULT '',
+			channel_value varchar(255) NOT NULL,
+			normalized_value varchar(255) NOT NULL,
+			is_primary tinyint(1) unsigned NOT NULL DEFAULT 0,
+			status varchar(30) NOT NULL DEFAULT 'active',
+			consent_status varchar(30) NOT NULL DEFAULT '',
+			verified_at datetime DEFAULT NULL,
+			source varchar(60) NOT NULL DEFAULT 'contactpanda',
+			created_at datetime NOT NULL,
+			updated_at datetime NOT NULL,
+			PRIMARY KEY  (id),
+			UNIQUE KEY contact_channel (contact_id,channel_type,normalized_value(160)),
+			KEY channel_lookup (channel_type,normalized_value(160)),
+			KEY contact_primary (contact_id,channel_type,is_primary)
+		) $charset;";
+
+		$sql[] = "CREATE TABLE {$tables['external_identities']} (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			contact_id bigint(20) unsigned NOT NULL,
+			provider varchar(60) NOT NULL,
+			identity_type varchar(60) NOT NULL,
+			external_id varchar(190) NOT NULL,
+			is_primary tinyint(1) unsigned NOT NULL DEFAULT 0,
+			status varchar(30) NOT NULL DEFAULT 'active',
+			metadata_json longtext NULL,
+			source varchar(60) NOT NULL DEFAULT 'contactpanda',
+			created_at datetime NOT NULL,
+			updated_at datetime NOT NULL,
+			PRIMARY KEY  (id),
+			UNIQUE KEY provider_identity (provider,identity_type,external_id),
+			KEY contact_provider (contact_id,provider,identity_type),
+			KEY contact_status (contact_id,status)
+		) $charset;";
+
+		$sql[] = "CREATE TABLE {$tables['merge_history']} (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			entity_type varchar(30) NOT NULL,
+			primary_id bigint(20) unsigned NOT NULL,
+			source_ids_json longtext NULL,
+			snapshot_json longtext NULL,
+			action varchar(30) NOT NULL DEFAULT 'merge',
+			actor_user_id bigint(20) unsigned DEFAULT NULL,
+			created_at datetime NOT NULL,
+			reverted_at datetime DEFAULT NULL,
+			PRIMARY KEY  (id),
+			KEY entity_primary (entity_type,primary_id),
+			KEY created_at (created_at)
+		) $charset;";
+
 		foreach ( $sql as $statement ) {
 			dbDelta( $statement );
 		}
@@ -290,6 +346,7 @@ final class ContactPanda_Schema {
 		if ( ! self::required_columns_exist() ) {
 			return new WP_Error( 'contactpanda_schema_columns_incomplete', __( 'ContactPanda could not create all required database fields.', 'contactpanda' ) );
 		}
+		self::backfill_identity_indexes();
 		update_option( self::VERSION_OPTION, self::VERSION, false );
 		return true;
 	}
@@ -334,6 +391,9 @@ final class ContactPanda_Schema {
 			'salutations' => array( 'first_name_normalized', 'language', 'salutation', 'source' ),
 			'import_runs' => array( 'uuid', 'source', 'entity_type', 'status', 'started_at' ),
 			'import_items' => array( 'import_run_id', 'entity_type', 'record_id', 'action' ),
+			'contact_channels' => array( 'contact_id', 'channel_type', 'channel_value', 'normalized_value', 'is_primary', 'status' ),
+			'external_identities' => array( 'contact_id', 'provider', 'identity_type', 'external_id', 'status' ),
+			'merge_history' => array( 'entity_type', 'primary_id', 'source_ids_json', 'snapshot_json', 'action' ),
 		);
 		foreach ( $required as $table_key => $columns ) {
 			foreach ( $columns as $column ) {
@@ -350,5 +410,45 @@ final class ContactPanda_Schema {
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare( "SHOW COLUMNS FROM `{$table}` LIKE %s", $column ) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- exact internally generated table name.
 		);
+	}
+
+	/**
+	 * Build the new lookup indexes from the compatibility columns once.
+	 *
+	 * This is additive only: source records, consent history and the established
+	 * primary email/user columns remain untouched.
+	 */
+	private static function backfill_identity_indexes() {
+		global $wpdb;
+		$tables = self::table_names();
+		$now = current_time( 'mysql' );
+		$wpdb->query(
+			"INSERT IGNORE INTO `{$tables['contact_channels']}`
+			(contact_id,channel_type,label,channel_value,normalized_value,is_primary,status,source,created_at,updated_at)
+			SELECT id,'email','primary',email,email_normalized,1,'active',source,created_at,updated_at
+			FROM `{$tables['contacts']}` WHERE email_normalized IS NOT NULL AND email_normalized<>''"
+		); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internally generated table names.
+		$wpdb->query(
+			$wpdb->prepare(
+				"INSERT IGNORE INTO `{$tables['external_identities']}`
+				(contact_id,provider,identity_type,external_id,is_primary,status,source,created_at,updated_at)
+				SELECT id,'wordpress','user',CAST(wp_user_id AS CHAR),1,'active','schema_backfill',%s,%s
+				FROM `{$tables['contacts']}` WHERE wp_user_id IS NOT NULL AND wp_user_id>0",
+				$now,
+				$now
+			)
+		); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internally generated table names.
+		$meta_rows = (array) $wpdb->get_results( "SELECT contact_id,meta_key,meta_value FROM `{$tables['contactmeta']}` WHERE meta_key IN ('primary_phone','groundhogg_contact_id')", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internally generated table name.
+		foreach ( $meta_rows as $meta_row ) {
+			$value = trim( (string) maybe_unserialize( $meta_row['meta_value'] ) );
+			if ( '' === $value ) continue;
+			if ( 'primary_phone' === $meta_row['meta_key'] ) {
+				$normalized = preg_replace( '/\D+/', '', $value );
+				if ( '' === $normalized ) continue;
+				$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['contact_channels']}` (contact_id,channel_type,label,channel_value,normalized_value,is_primary,status,source,created_at,updated_at) VALUES (%d,'phone','primary',%s,%s,1,'active','schema_backfill',%s,%s)", absint( $meta_row['contact_id'] ), $value, $normalized, $now, $now ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internally generated table name.
+			} else {
+				$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO `{$tables['external_identities']}` (contact_id,provider,identity_type,external_id,is_primary,status,source,created_at,updated_at) VALUES (%d,'groundhogg','contact',%s,0,'active','schema_backfill',%s,%s)", absint( $meta_row['contact_id'] ), sanitize_text_field( $value ), $now, $now ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internally generated table name.
+			}
+		}
 	}
 }
