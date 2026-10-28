@@ -17,7 +17,7 @@ msgstr "Anteil für Variante B (%)"
 msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
 msgstr "Platzhalter wie {campaign_name}, {campaign_id} und {subject_variant} werden für jeden Versand einzeln aufgelöst."
 
-"Project-Id-Version: ContactPanda 0.8.62\n"
+"Project-Id-Version: ContactPanda 0.8.63\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7980,3 +7980,48 @@ msgstr "Geöffnet am"
 
 msgid "Clicked at"
 msgstr "Angeklickt am"
+
+msgid "Create an editable ContactPanda email draft. The confirm argument must be true."
+msgstr "Einen bearbeitbaren ContactPanda-E-Mail-Entwurf erstellen. Die Bestätigung muss aktiviert sein."
+
+msgid "Company, address and logo details are maintained once under Company details. This page contains only email-specific defaults."
+msgstr "Firmen-, Adress- und Logodaten werden einmalig unter Firmendaten gepflegt. Diese Seite enthält nur E-Mail-spezifische Vorgaben."
+
+msgid "Search templates"
+msgstr "Vorlagen suchen"
+
+msgid "All statuses"
+msgstr "Alle Status"
+
+msgid "Planned"
+msgstr "Geplant"
+
+msgid "All dates"
+msgstr "Alle Zeiträume"
+
+msgid "Created this month"
+msgstr "Diesen Monat erstellt"
+
+msgid "Created last month"
+msgstr "Letzten Monat erstellt"
+
+msgid "Created this year"
+msgstr "Dieses Jahr erstellt"
+
+msgid "Sent newsletter template"
+msgstr "Versendete Newsletter-Vorlage"
+
+msgid "This template has already been sent as a newsletter and is permanently read only. Create an editable copy for further changes."
+msgstr "Diese Vorlage wurde bereits als Newsletter versendet und ist dauerhaft schreibgeschützt. Erstellen Sie für weitere Änderungen eine bearbeitbare Kopie."
+
+msgid "Create editable copy"
+msgstr "Bearbeitbare Kopie erstellen"
+
+msgid "Panda – Newsletter Archive"
+msgstr "Panda – Newsletter-Archiv"
+
+msgid "No published newsletters are available yet."
+msgstr "Es sind noch keine veröffentlichten Newsletter verfügbar."
+
+msgid "Read newsletter"
+msgstr "Newsletter lesen"

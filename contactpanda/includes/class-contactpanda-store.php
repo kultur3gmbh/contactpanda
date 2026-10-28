@@ -1075,6 +1075,7 @@ final class ContactPanda_Store {
 	}
 
 	public static function migrate_groundhogg() {
+		global $wpdb;
 		if ( ! self::ready() || ( ! function_exists( 'wp_get_ability' ) && ! class_exists( '\\Groundhogg\\Contact' ) ) ) return new WP_Error( 'contactpanda_migration_unavailable', __( 'The migration prerequisites are not available.', 'contactpanda' ) );
 		$report = array( 'contacts' => 0, 'source_contacts' => 0, 'companies' => 0, 'tags' => 0, 'source_tags' => 0, 'custom_fields' => 0, 'assignments' => 0, 'source_assignments' => 0, 'missing_tags' => array(), 'skipped_tags' => array(), 'skipped' => 0, 'errors' => 0 );
 		$source_map = array();
@@ -1125,14 +1126,22 @@ final class ContactPanda_Store {
 				$contact = self::contact_by_source_id( $source_id );
 				if ( ! $contact && $email ) $contact = self::contact_by_email( $email, true );
 				if ( $contact && ! empty( $contact['deleted_at'] ) ) { $report['skipped']++; continue; }
+				$preserve_source_timestamps = ! $contact || 'groundhogg' === ( $contact['source'] ?? '' ) || $source_id === absint( $contact['groundhogg_contact_id'] ?? 0 );
 				$optin = self::optin_value( $row );
 				$source_meta = self::groundhogg_source_meta( $row );
 				$imported_meta = self::groundhogg_importable_meta( $source_meta, $custom_field_map );
-				$canonical_meta = array( 'email_confirmed' => in_array( $optin, array( 2, 4, 5, 'confirmed', 'weekly', 'monthly' ), true ) ? 1 : 0, 'address_1' => self::meta_value( $row, 'street_address_1' ) ?: self::meta_value( $row, 'address_1' ), 'address_2' => self::meta_value( $row, 'street_address_2' ) ?: self::meta_value( $row, 'address_2' ), 'postcode' => self::meta_value( $row, 'postal_zip' ) ?: self::meta_value( $row, 'postcode' ), 'city' => self::meta_value( $row, 'city' ), 'state' => self::meta_value( $row, 'region' ) ?: self::meta_value( $row, 'state' ), 'country' => self::meta_value( $row, 'country' ) );
+				$source_created = self::source_datetime( self::value( $row, array( 'date_created', 'created_at', 'created' ) ) );
+				$source_updated = self::source_datetime( self::value( $row, array( 'date_updated', 'updated_at', 'modified', 'date_modified' ) ) );
+				$existing_meta = $contact ? self::contact_meta( (int) $contact['id'] ) : array();
+				$canonical_meta = array( 'email_confirmed' => in_array( $optin, array( 2, 4, 5, 'confirmed', 'weekly', 'monthly' ), true ) ? 1 : 0, 'address_1' => self::meta_value( $row, 'street_address_1' ) ?: self::meta_value( $row, 'address_1' ), 'address_2' => self::meta_value( $row, 'street_address_2' ) ?: self::meta_value( $row, 'address_2' ), 'postcode' => self::meta_value( $row, 'postal_zip' ) ?: self::meta_value( $row, 'postcode' ), 'city' => self::meta_value( $row, 'city' ), 'state' => self::meta_value( $row, 'region' ) ?: self::meta_value( $row, 'state' ), 'country' => self::meta_value( $row, 'country' ), 'source_created_at' => $source_created, 'source_updated_at' => $source_updated, 'imported_at' => $existing_meta['imported_at'] ?? current_time( 'mysql' ) );
 				$data = array( 'email' => $email, 'first_name' => self::value( $row, array( 'first_name' ) ), 'last_name' => self::value( $row, array( 'last_name' ) ), 'user_id' => absint( self::value( $row, array( 'user_id' ) ) ), 'source' => 'groundhogg', 'groundhogg_contact_id' => $source_id, 'optin_status' => $optin, 'primary_phone' => self::meta_value( $row, 'primary_phone' ), 'titel_vorangestellt' => self::meta_value( $row, 'titel_vorangestellt' ), 'titel_nachgestellt' => self::meta_value( $row, 'titel_nachgestellt' ), 'berufsbezeichnung' => self::meta_value( $row, 'berufsbezeichnung' ), 'meta' => array_merge( $imported_meta, $canonical_meta ) );
 				$contact_id = $contact ? (int) $contact['id'] : self::create_contact( $data );
 				if ( is_wp_error( $contact_id ) || ! $contact_id ) { $report['errors']++; continue; }
 				self::update_contact( $contact_id, $data );
+				$historical = array();
+				if ( $preserve_source_timestamps && $source_created ) $historical['created_at'] = $source_created;
+				if ( $preserve_source_timestamps && $source_updated ) $historical['updated_at'] = $source_updated;
+				if ( $historical ) $wpdb->update( ContactPanda_Schema::table_names()['contacts'], $historical, array( 'id' => $contact_id ) );
 				$source_map[ $source_id ] = $contact_id;
 				$report['contacts']++;
 				$contact_tags = isset( $row['tags'] ) ? (array) $row['tags'] : array();
@@ -1568,6 +1577,7 @@ final class ContactPanda_Store {
 
 	private static function ability( $name, $input ) { try { $ability = wp_get_ability( $name ); if ( ! $ability ) return false; $result = $ability->execute( $input ); return is_wp_error( $result ) ? false : $result; } catch ( Throwable $e ) { return false; } }
 	private static function value( $source, $keys, $default = '' ) { foreach ( $keys as $key ) { if ( is_array( $source ) && isset( $source[ $key ] ) && is_scalar( $source[ $key ] ) && '' !== (string) $source[ $key ] ) return (string) $source[ $key ]; if ( is_object( $source ) && method_exists( $source, $key ) ) { $value = $source->{$key}(); if ( is_scalar( $value ) && '' !== (string) $value ) return (string) $value; } $getter = 'get_' . $key; if ( is_object( $source ) && method_exists( $source, $getter ) ) { $value = $source->{$getter}(); if ( is_scalar( $value ) && '' !== (string) $value ) return (string) $value; } if ( is_object( $source ) && isset( $source->{$key} ) && is_scalar( $source->{$key} ) ) return (string) $source->{$key}; } return $default; }
+	private static function source_datetime( $value ) { if ( ! is_scalar( $value ) || '' === trim( (string) $value ) ) return ''; $timestamp = is_numeric( $value ) ? (int) $value : strtotime( (string) $value ); return $timestamp > 0 ? wp_date( 'Y-m-d H:i:s', $timestamp, wp_timezone() ) : ''; }
 	private static function meta_value( $source, $key ) { if ( is_array( $source ) && isset( $source['meta'][ $key ] ) ) return is_scalar( $source['meta'][ $key ] ) ? (string) $source['meta'][ $key ] : ''; if ( is_object( $source ) && method_exists( $source, 'get_meta' ) ) { try { $value = $source->get_meta( $key ); return is_scalar( $value ) ? (string) $value : ''; } catch ( Throwable $error ) { return ''; } } return ''; }
 	private static function optin_value( $source ) { $value = is_array( $source ) && isset( $source['optin_status'] ) ? $source['optin_status'] : self::value( $source, array( 'optin_status' ), 'unconfirmed' ); if ( is_array( $value ) && isset( $value['value'] ) ) return is_numeric( $value['value'] ) ? (int) $value['value'] : sanitize_key( $value['value'] ); if ( is_scalar( $value ) ) return is_numeric( $value ) ? (int) $value : sanitize_key( $value ); return 'unconfirmed'; }
 }

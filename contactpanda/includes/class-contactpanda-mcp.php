@@ -99,6 +99,7 @@ final class ContactPanda_MCP {
 			array( 'name' => 'contactpanda_companies_search', 'description' => __( 'Search companies in the active ContactPanda data source.', 'contactpanda' ), 'inputSchema' => array( 'type' => 'object', 'properties' => array( 'search' => array( 'type' => 'string' ), 'limit' => array( 'type' => 'integer', 'minimum' => 1, 'maximum' => 200 ) ) ) ),
 			array( 'name' => 'contactpanda_tags_list', 'description' => __( 'List ContactPanda tags.', 'contactpanda' ), 'inputSchema' => array( 'type' => 'object', 'properties' => (object) array() ) ),
 			array( 'name' => 'contactpanda_email_templates_list', 'description' => __( 'List ContactPanda email drafts and templates.', 'contactpanda' ), 'inputSchema' => array( 'type' => 'object', 'properties' => (object) array() ) ),
+			array( 'name' => 'contactpanda_email_template_create_draft', 'description' => __( 'Create an editable ContactPanda email draft. The confirm argument must be true.', 'contactpanda' ), 'inputSchema' => array( 'type' => 'object', 'required' => array( 'name', 'subject', 'confirm' ), 'properties' => array( 'name' => array( 'type' => 'string' ), 'subject' => array( 'type' => 'string' ), 'preview_text' => array( 'type' => 'string' ), 'content' => array( 'type' => 'string' ), 'confirm' => array( 'type' => 'boolean' ) ) ) ),
 			array( 'name' => 'contactpanda_newsletter_audience_preview', 'description' => __( 'Count eligible and excluded newsletter recipients without returning personal data.', 'contactpanda' ), 'inputSchema' => array( 'type' => 'object', 'properties' => array( 'segment_id' => array( 'type' => 'integer', 'minimum' => 0 ) ) ) ),
 			array( 'name' => 'contactpanda_email_test_send', 'description' => __( 'Send one explicit newsletter test email. The confirm argument must be true.', 'contactpanda' ), 'inputSchema' => array( 'type' => 'object', 'required' => array( 'template_id', 'recipient', 'confirm' ), 'properties' => array( 'template_id' => array( 'type' => 'integer' ), 'recipient' => array( 'type' => 'string' ), 'confirm' => array( 'type' => 'boolean' ) ) ) ),
 		);
@@ -111,6 +112,7 @@ final class ContactPanda_MCP {
 		if ( 'contactpanda_companies_search' === $name ) return self::companies( $arguments );
 		if ( 'contactpanda_tags_list' === $name ) return self::tags();
 		if ( 'contactpanda_email_templates_list' === $name ) return self::templates();
+		if ( 'contactpanda_email_template_create_draft' === $name ) return self::create_template_draft( $arguments );
 		if ( 'contactpanda_newsletter_audience_preview' === $name ) return self::audience( absint( $arguments['segment_id'] ?? 0 ) );
 		if ( 'contactpanda_email_test_send' === $name ) return self::test_send( $arguments );
 		return null;
@@ -167,6 +169,37 @@ final class ContactPanda_MCP {
 		$rows = array();
 		foreach ( (array) ContactPanda_Basic_Newsletters::templates() as $template ) $rows[] = array( 'id' => absint( $template['id'] ?? 0 ), 'name' => sanitize_text_field( $template['name'] ?? '' ), 'subject' => sanitize_text_field( $template['subject'] ?? '' ), 'status' => sanitize_key( $template['status'] ?? '' ), 'updated_at' => sanitize_text_field( $template['updated_at'] ?? '' ) );
 		return array( 'templates' => $rows );
+	}
+
+	private static function create_template_draft( $args ) {
+		if ( empty( $args['confirm'] ) ) return new WP_Error( 'confirmation_required', __( 'Set confirm to true to create the email draft.', 'contactpanda' ) );
+		$name = sanitize_text_field( $args['name'] ?? '' );
+		$subject = sanitize_text_field( $args['subject'] ?? '' );
+		if ( '' === $name || '' === $subject ) return new WP_Error( 'template_fields_required', __( 'Template name and subject are required.', 'contactpanda' ) );
+		global $wpdb;
+		$installed = ContactPanda_Newsletter_Schema::install_newsletters();
+		if ( is_wp_error( $installed ) ) return $installed;
+		$settings = ContactPanda_Basic_Newsletters::settings();
+		$content = wp_kses_post( $args['content'] ?? '' );
+		$blocks = array();
+		if ( '' !== trim( wp_strip_all_tags( $content ) ) ) $blocks[] = array( 'type' => 'text', 'content' => $content );
+		$now = current_time( 'mysql' );
+		$inserted = $wpdb->insert(
+			ContactPanda_Newsletter_Schema::newsletter_table_names()['templates'],
+			array(
+				'name' => $name, 'subject' => $subject, 'preview_text' => sanitize_text_field( $args['preview_text'] ?? '' ),
+				'from_name' => sanitize_text_field( $settings['from_name'] ?? '' ), 'reply_to' => sanitize_email( $settings['reply_to'] ?? '' ),
+				'status' => 'draft', 'content_json' => wp_json_encode( $blocks ), 'content_html' => $content,
+				'email_background' => sanitize_text_field( $settings['background_color'] ?? '#f4f5f7' ), 'accent_color' => sanitize_text_field( $settings['base_color'] ?? '#3858e9' ),
+				'content_background' => sanitize_text_field( $settings['body_color'] ?? '#ffffff' ), 'text_color' => sanitize_text_field( $settings['text_color'] ?? '#172033' ),
+				'font_family' => sanitize_text_field( $settings['font_family'] ?? 'Arial, sans-serif' ), 'content_width' => absint( $settings['container_width'] ?? 640 ),
+				'created_at' => $now, 'updated_at' => $now,
+			),
+			array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s' )
+		);
+		if ( false === $inserted ) return new WP_Error( 'template_create_failed', __( 'The email draft could not be created.', 'contactpanda' ) );
+		$id = absint( $wpdb->insert_id );
+		return array( 'template_id' => $id, 'status' => 'draft', 'edit_url' => admin_url( 'admin.php?page=contactpanda-newsletters&action=edit&template_id=' . $id ) );
 	}
 
 	private static function audience( $segment_id ) {
