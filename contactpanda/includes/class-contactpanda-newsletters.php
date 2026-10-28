@@ -701,7 +701,9 @@ final class ContactPanda_Basic_Newsletters {
 			'{full_name}'        => __( 'Full name', 'contactpanda' ),
 			'{company}'          => __( 'Company', 'contactpanda' ),
 			'{address}'          => __( 'Address', 'contactpanda' ),
+			'{email}'            => __( 'Email address', 'contactpanda' ),
 			'{unsubscribe_link}' => __( 'Unsubscribe link', 'contactpanda' ),
+			'{unsubscribe_url}'  => __( 'Unsubscribe URL', 'contactpanda' ),
 		);
 		echo '<div class="contactpanda-newsletter-placeholders"><strong>' . esc_html__( 'Available placeholders', 'contactpanda' ) . '</strong><div class="contactpanda-newsletter-placeholder-list">';
 		foreach ( $placeholder_labels as $placeholder => $placeholder_label ) {
@@ -1289,10 +1291,37 @@ final class ContactPanda_Basic_Newsletters {
 		$salutation_key = sanitize_key( $meta['anrede'] ?? 'neutral' );
 		$salutation = array( 'mr' => __( 'Dear Mr', 'contactpanda' ), 'ms' => __( 'Dear Ms', 'contactpanda' ), 'family' => __( 'Dear family', 'contactpanda' ), 'neutral' => __( 'Hello', 'contactpanda' ) )[ $salutation_key ] ?? __( 'Hello', 'contactpanda' );
 		$event_data = is_array( $context['event_data'] ?? null ) ? $context['event_data'] : array();
-		$values = array( 'first_name' => $first, 'last_name' => $last, 'title_prefix' => $prefix, 'title_suffix' => $suffix, 'full_name' => $full_name, 'company' => $company, 'address' => $address, 'salutation' => $salutation );
+		$values = array( 'first_name' => $first, 'last_name' => $last, 'title_prefix' => $prefix, 'title_suffix' => $suffix, 'full_name' => $full_name, 'company' => $company, 'address' => $address, 'salutation' => $salutation, 'email' => sanitize_email( $recipient['email'] ?? '' ), 'unsubscribe_url' => esc_url_raw( $unsubscribe_url ) );
 		foreach ( array( 'order_number', 'order_date', 'order_total', 'product_name', 'product_quantity', 'product_price', 'product_url', 'event_name', 'event_date', 'event_time', 'event_location', 'event_url', 'registration_status' ) as $key ) $values[ $key ] = sanitize_text_field( $event_data[ $key ] ?? '' );
 		foreach ( $values as $key => $value ) $text = str_replace( '{' . $key . '}', $html ? esc_html( $value ) : $value, $text );
 		$text = preg_replace_callback( '/\{([a-z_]+)\|([^{}]*)\}/', static function ( $match ) use ( $values, $html ) { if ( ! array_key_exists( $match[1], $values ) ) return $match[0]; $value = $values[ $match[1] ] ?: $match[2]; return $html ? esc_html( $value ) : $value; }, $text );
+		$text = preg_replace_callback(
+			'/\{(?:custom:|meta\.)?([a-zA-Z0-9_-]+)\}/',
+			static function ( $match ) use ( $meta, $html ) {
+				$key = sanitize_key( $match[1] );
+				if ( ! $key ) return $match[0];
+				$aliases = array(
+					'phone' => array( 'primary_phone', 'billing_phone' ),
+					'mobile_phone' => array( 'primary_phone', 'billing_phone' ),
+					'line1' => array( 'address_1', 'street_address_1' ),
+					'line2' => array( 'address_2', 'street_address_2' ),
+					'zip' => array( 'postcode', 'postal_zip' ),
+					'country_code' => array( 'country' ),
+				);
+				$candidates = array_merge( array( $key, 'contactpanda_custom_' . $key ), $aliases[ $key ] ?? array() );
+				$found = false;
+				$value = '';
+				foreach ( $candidates as $candidate ) {
+					if ( ! array_key_exists( $candidate, $meta ) || is_object( $meta[ $candidate ] ) ) continue;
+					$value = is_array( $meta[ $candidate ] ) ? implode( ', ', array_map( 'sanitize_text_field', $meta[ $candidate ] ) ) : sanitize_text_field( (string) $meta[ $candidate ] );
+					$found = true;
+					break;
+				}
+				if ( ! $found ) return $match[0];
+				return $html ? esc_html( $value ) : $value;
+			},
+			$text
+		);
 		$unsubscribe = $unsubscribe_url ? '<a href="' . esc_url( $unsubscribe_url ) . '" style="color:#6676c5">' . esc_html__( 'Unsubscribe from newsletter', 'contactpanda' ) . '</a>' : '<a href="#" style="color:#6676c5">' . esc_html__( 'Unsubscribe from newsletter', 'contactpanda' ) . '</a>';
 		return str_replace( '{unsubscribe_link}', $html ? $unsubscribe : '', $text );
 	}

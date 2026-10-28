@@ -1076,9 +1076,11 @@ final class ContactPanda_Store {
 
 	public static function migrate_groundhogg() {
 		if ( ! self::ready() || ( ! function_exists( 'wp_get_ability' ) && ! class_exists( '\\Groundhogg\\Contact' ) ) ) return new WP_Error( 'contactpanda_migration_unavailable', __( 'The migration prerequisites are not available.', 'contactpanda' ) );
-		$report = array( 'contacts' => 0, 'source_contacts' => 0, 'companies' => 0, 'tags' => 0, 'source_tags' => 0, 'assignments' => 0, 'source_assignments' => 0, 'missing_tags' => array(), 'skipped_tags' => array(), 'skipped' => 0, 'errors' => 0 );
+		$report = array( 'contacts' => 0, 'source_contacts' => 0, 'companies' => 0, 'tags' => 0, 'source_tags' => 0, 'custom_fields' => 0, 'assignments' => 0, 'source_assignments' => 0, 'missing_tags' => array(), 'skipped_tags' => array(), 'skipped' => 0, 'errors' => 0 );
 		$source_map = array();
 		$source_tag_map = array();
+		$custom_field_map = self::import_groundhogg_custom_field_definitions();
+		$report['custom_fields'] = count( $custom_field_map );
 		$source_tags = self::groundhogg_tags();
 		$source_tag_total = count( $source_tags );
 		$report['source_tags'] = $source_tag_total;
@@ -1124,7 +1126,10 @@ final class ContactPanda_Store {
 				if ( ! $contact && $email ) $contact = self::contact_by_email( $email, true );
 				if ( $contact && ! empty( $contact['deleted_at'] ) ) { $report['skipped']++; continue; }
 				$optin = self::optin_value( $row );
-				$data = array( 'email' => $email, 'first_name' => self::value( $row, array( 'first_name' ) ), 'last_name' => self::value( $row, array( 'last_name' ) ), 'user_id' => absint( self::value( $row, array( 'user_id' ) ) ), 'source' => 'groundhogg', 'groundhogg_contact_id' => $source_id, 'optin_status' => $optin, 'primary_phone' => self::meta_value( $row, 'primary_phone' ), 'titel_vorangestellt' => self::meta_value( $row, 'titel_vorangestellt' ), 'titel_nachgestellt' => self::meta_value( $row, 'titel_nachgestellt' ), 'berufsbezeichnung' => self::meta_value( $row, 'berufsbezeichnung' ), 'meta' => array( 'email_confirmed' => in_array( $optin, array( 2, 4, 5, 'confirmed', 'weekly', 'monthly' ), true ) ? 1 : 0, 'address_1' => self::meta_value( $row, 'street_address_1' ) ?: self::meta_value( $row, 'address_1' ), 'address_2' => self::meta_value( $row, 'street_address_2' ) ?: self::meta_value( $row, 'address_2' ), 'postcode' => self::meta_value( $row, 'postal_zip' ) ?: self::meta_value( $row, 'postcode' ), 'city' => self::meta_value( $row, 'city' ), 'state' => self::meta_value( $row, 'region' ) ?: self::meta_value( $row, 'state' ), 'country' => self::meta_value( $row, 'country' ) ) );
+				$source_meta = self::groundhogg_source_meta( $row );
+				$imported_meta = self::groundhogg_importable_meta( $source_meta, $custom_field_map );
+				$canonical_meta = array( 'email_confirmed' => in_array( $optin, array( 2, 4, 5, 'confirmed', 'weekly', 'monthly' ), true ) ? 1 : 0, 'address_1' => self::meta_value( $row, 'street_address_1' ) ?: self::meta_value( $row, 'address_1' ), 'address_2' => self::meta_value( $row, 'street_address_2' ) ?: self::meta_value( $row, 'address_2' ), 'postcode' => self::meta_value( $row, 'postal_zip' ) ?: self::meta_value( $row, 'postcode' ), 'city' => self::meta_value( $row, 'city' ), 'state' => self::meta_value( $row, 'region' ) ?: self::meta_value( $row, 'state' ), 'country' => self::meta_value( $row, 'country' ) );
+				$data = array( 'email' => $email, 'first_name' => self::value( $row, array( 'first_name' ) ), 'last_name' => self::value( $row, array( 'last_name' ) ), 'user_id' => absint( self::value( $row, array( 'user_id' ) ) ), 'source' => 'groundhogg', 'groundhogg_contact_id' => $source_id, 'optin_status' => $optin, 'primary_phone' => self::meta_value( $row, 'primary_phone' ), 'titel_vorangestellt' => self::meta_value( $row, 'titel_vorangestellt' ), 'titel_nachgestellt' => self::meta_value( $row, 'titel_nachgestellt' ), 'berufsbezeichnung' => self::meta_value( $row, 'berufsbezeichnung' ), 'meta' => array_merge( $imported_meta, $canonical_meta ) );
 				$contact_id = $contact ? (int) $contact['id'] : self::create_contact( $data );
 				if ( is_wp_error( $contact_id ) || ! $contact_id ) { $report['errors']++; continue; }
 				self::update_contact( $contact_id, $data );
@@ -1475,6 +1480,92 @@ final class ContactPanda_Store {
 		} while ( $rows && $offset < 1000000 );
 		return array_values( $contacts );
 	}
+
+	/** Import Groundhogg's field schema without changing the source installation. */
+	private static function import_groundhogg_custom_field_definitions() {
+		$result = self::ability( 'groundhogg/list-custom-fields', array() );
+		$fields = is_array( $result ) && isset( $result['fields'] ) ? (array) $result['fields'] : array();
+		if ( ! $fields && class_exists( '\\Groundhogg\\Properties' ) ) {
+			try {
+				$fields = (array) \Groundhogg\Properties::instance()->get_fields();
+			} catch ( Throwable $error ) {
+				$fields = array();
+			}
+		}
+		$definitions = (array) get_option( 'contactpanda_custom_fields', array() );
+		$known = array();
+		foreach ( $definitions as $definition ) {
+			if ( is_array( $definition ) && ! empty( $definition['key'] ) && 'contacts' === ( $definition['entity'] ?? '' ) ) {
+				$known[ sanitize_key( $definition['key'] ) ] = true;
+			}
+		}
+		$type_map = array(
+			'area' => 'textarea', 'textarea' => 'textarea', 'number' => 'number', 'date' => 'date',
+			'dropdown' => 'select', 'select' => 'select', 'radio' => 'select', 'checkbox' => 'checkbox',
+			'url' => 'url', 'website' => 'url',
+		);
+		$map = array();
+		foreach ( $fields as $field ) {
+			$key = sanitize_key( self::value( $field, array( 'name', 'key' ) ) );
+			if ( ! $key || 0 === strpos( $key, '_' ) ) continue;
+			$map[ $key ] = 'contactpanda_custom_' . $key;
+			if ( isset( $known[ $key ] ) ) continue;
+			$label = sanitize_text_field( self::value( $field, array( 'label', 'name' ), $key ) );
+			$source_type = sanitize_key( self::value( $field, array( 'type' ), 'text' ) );
+			$type = $type_map[ $source_type ] ?? 'text';
+			$options = is_array( $field ) && isset( $field['options'] ) ? array_values( array_filter( array_map( 'sanitize_text_field', (array) $field['options'] ) ) ) : array();
+			if ( 'select' === $type && ! $options ) $type = 'text';
+			$definitions[] = array(
+				'id' => 'groundhogg-' . substr( md5( $key ), 0, 20 ),
+				'key' => $key,
+				'label' => $label ?: $key,
+				'entity' => 'contacts',
+				'type' => $type,
+				'required' => 0,
+				'sort' => is_array( $field ) && isset( $field['order'] ) ? (int) $field['order'] : 10,
+				'options' => $options,
+			);
+			$known[ $key ] = true;
+		}
+		update_option( 'contactpanda_custom_fields', array_values( $definitions ), false );
+		return $map;
+	}
+
+	/** Read all expanded Groundhogg metadata, including arbitrary integration fields. */
+	private static function groundhogg_source_meta( $source ) {
+		if ( is_array( $source ) && isset( $source['meta'] ) && is_array( $source['meta'] ) ) return $source['meta'];
+		if ( is_object( $source ) && method_exists( $source, 'get_all_meta' ) ) {
+			try {
+				$meta = $source->get_all_meta();
+				return is_array( $meta ) ? $meta : array();
+			} catch ( Throwable $error ) {
+				return array();
+			}
+		}
+		return array();
+	}
+
+	/** Preserve public source metadata and mirror declared fields to ContactPanda custom-field keys. */
+	private static function groundhogg_importable_meta( $source_meta, $custom_field_map ) {
+		$meta = array();
+		foreach ( (array) $source_meta as $source_key => $value ) {
+			$key = sanitize_key( $source_key );
+			if ( ! $key || 0 === strpos( $key, '_' ) || is_object( $value ) ) continue;
+			if ( is_array( $value ) ) {
+				$value = array_values( array_filter( array_map( static function ( $item ) { return is_scalar( $item ) ? sanitize_text_field( (string) $item ) : ''; }, $value ), 'strlen' ) );
+			} elseif ( is_scalar( $value ) || null === $value ) {
+				$value = sanitize_textarea_field( (string) $value );
+			} else {
+				continue;
+			}
+			$meta[ $key ] = $value;
+			if ( isset( $custom_field_map[ $key ] ) ) {
+				$meta[ $custom_field_map[ $key ] ] = is_array( $value ) ? implode( ', ', $value ) : $value;
+			}
+		}
+		return $meta;
+	}
+
 	private static function ability( $name, $input ) { try { $ability = wp_get_ability( $name ); if ( ! $ability ) return false; $result = $ability->execute( $input ); return is_wp_error( $result ) ? false : $result; } catch ( Throwable $e ) { return false; } }
 	private static function value( $source, $keys, $default = '' ) { foreach ( $keys as $key ) { if ( is_array( $source ) && isset( $source[ $key ] ) && is_scalar( $source[ $key ] ) && '' !== (string) $source[ $key ] ) return (string) $source[ $key ]; if ( is_object( $source ) && method_exists( $source, $key ) ) { $value = $source->{$key}(); if ( is_scalar( $value ) && '' !== (string) $value ) return (string) $value; } $getter = 'get_' . $key; if ( is_object( $source ) && method_exists( $source, $getter ) ) { $value = $source->{$getter}(); if ( is_scalar( $value ) && '' !== (string) $value ) return (string) $value; } if ( is_object( $source ) && isset( $source->{$key} ) && is_scalar( $source->{$key} ) ) return (string) $source->{$key}; } return $default; }
 	private static function meta_value( $source, $key ) { if ( is_array( $source ) && isset( $source['meta'][ $key ] ) ) return is_scalar( $source['meta'][ $key ] ) ? (string) $source['meta'][ $key ] : ''; if ( is_object( $source ) && method_exists( $source, 'get_meta' ) ) { try { $value = $source->get_meta( $key ); return is_scalar( $value ) ? (string) $value : ''; } catch ( Throwable $error ) { return ''; } } return ''; }

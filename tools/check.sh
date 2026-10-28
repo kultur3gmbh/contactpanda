@@ -31,6 +31,7 @@ if command -v php >/dev/null 2>&1; then
 	php tests/release-078.php || status=1
 	php tests/person-detail-extensions.php || status=1
 	php tests/newsletter-form.php || status=1
+	php tests/newsletter-personalization.php || status=1
 	php tests/customer-portal.php || status=1
 	php tests/migration-sources.php || status=1
 	php tests/identity-store.php || status=1

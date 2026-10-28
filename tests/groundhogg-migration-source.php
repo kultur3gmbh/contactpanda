@@ -58,5 +58,10 @@ namespace {
 	verify( false !== strpos( $admin_script, "fetch(CONTACTPANDA_CONFIG.ajaxUrl" ), 'Groundhogg migration uses the WordPress AJAX endpoint' );
 	verify( false === strpos( $admin_script, 'fetch(migrationForm.action' ), 'Migration no longer follows an unchecked admin-post response URL' );
 
+	$store_source = file_get_contents( __DIR__ . '/../contactpanda/includes/class-contactpanda-store.php' );
+	foreach ( array( "groundhogg/list-custom-fields", 'import_groundhogg_custom_field_definitions', 'groundhogg_source_meta', 'groundhogg_importable_meta', "'custom_fields'" ) as $contract ) {
+		verify( false !== strpos( $store_source, $contract ), 'Groundhogg custom-field migration contract is present: ' . $contract );
+	}
+
 	echo "Groundhogg migration source tests passed.\n";
 }
