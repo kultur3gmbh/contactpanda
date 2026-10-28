@@ -8016,3 +8016,21 @@ msgstr ""
 
 msgid "Import and update people, companies and tags"
 msgstr ""
+
+msgid "%d total"
+msgstr ""
+
+msgid "Edit template"
+msgstr ""
+
+msgid "View template"
+msgstr ""
+
+msgid "Delete template"
+msgstr ""
+
+msgid "This template is used and cannot be deleted."
+msgstr ""
+
+msgid "Email template preview"
+msgstr ""

@@ -37,6 +37,21 @@ final class ContactPanda_Custom_Fields {
 		if ( ! ContactPanda_Store::standalone() ) {
 			return array();
 		}
+		return self::integration_definitions( $entity );
+	}
+
+	/**
+	 * Return stored definitions to trusted integrations in either data-source mode.
+	 *
+	 * The regular Basic settings UI deliberately hides ContactPanda-owned custom
+	 * fields while Groundhogg is the leading source. Migrated ContactPanda forms
+	 * still need their stable mappings so that editing or submitting a form does
+	 * not discard source fields.
+	 *
+	 * @param string $entity Optional entity filter.
+	 * @return array
+	 */
+	public static function integration_definitions( $entity = '' ) {
 		$definitions = array_values( array_filter( (array) get_option( self::OPTION, array() ), array( __CLASS__, 'valid_definition' ) ) );
 		usort( $definitions, static function ( $left, $right ) {
 			$sort = (int) $left['sort'] <=> (int) $right['sort'];
@@ -47,6 +62,46 @@ final class ContactPanda_Custom_Fields {
 			$definitions = array_values( array_filter( $definitions, static function ( $definition ) use ( $entity ) { return $entity === $definition['entity']; } ) );
 		}
 		return $definitions;
+	}
+
+	/**
+	 * Ensure that a stable custom-field definition exists for an imported field.
+	 *
+	 * Importers use this instead of silently dropping source fields that have no
+	 * ContactPanda core equivalent. Existing definitions are never overwritten.
+	 *
+	 * @param string $key     Stable source key.
+	 * @param string $label   Human-readable label.
+	 * @param string $type    ContactPanda field type.
+	 * @param string $entity  contacts or companies.
+	 * @param array  $options Selection options, when applicable.
+	 * @return array|false
+	 */
+	public static function ensure_definition( $key, $label = '', $type = 'text', $entity = 'contacts', $options = array() ) {
+		$key = sanitize_key( $key );
+		$entity = self::normalize_entity( $entity );
+		if ( ! $key ) return false;
+		$definitions = self::integration_definitions();
+		foreach ( $definitions as $definition ) {
+			if ( $key === $definition['key'] && $entity === $definition['entity'] ) return $definition;
+		}
+		$type = sanitize_key( $type );
+		if ( ! isset( self::type_labels()[ $type ] ) ) $type = 'text';
+		$options = array_values( array_unique( array_filter( array_map( 'sanitize_text_field', (array) $options ) ) ) );
+		if ( 'select' === $type && ! $options ) $type = 'text';
+		$definition = array(
+			'id'       => 'imported-' . substr( md5( $entity . ':' . $key ), 0, 20 ),
+			'key'      => $key,
+			'label'    => sanitize_text_field( $label ) ?: $key,
+			'entity'   => $entity,
+			'type'     => $type,
+			'required' => 0,
+			'sort'     => 10 + count( $definitions ),
+			'options'  => $options,
+		);
+		$definitions[] = $definition;
+		update_option( self::OPTION, $definitions, false );
+		return $definition;
 	}
 
 	public static function meta_key( $key ) {

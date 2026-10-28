@@ -8043,3 +8043,21 @@ msgstr "Personen, Firmen und Tags analysieren"
 
 msgid "Import and update people, companies and tags"
 msgstr "Personen, Firmen und Tags importieren und aktualisieren"
+
+msgid "%d total"
+msgstr "%d gesamt"
+
+msgid "Edit template"
+msgstr "Vorlage bearbeiten"
+
+msgid "View template"
+msgstr "Vorlage ansehen"
+
+msgid "Delete template"
+msgstr "Vorlage löschen"
+
+msgid "This template is used and cannot be deleted."
+msgstr "Diese Vorlage wird verwendet und kann nicht gelöscht werden."
+
+msgid "Email template preview"
+msgstr "Vorschau der E-Mail-Vorlage"

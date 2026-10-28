@@ -267,17 +267,28 @@ final class ContactPanda_Data_Tools {
 
 	private static function normalize_groundhogg_step( $step ) {
 		$type = sanitize_key( self::groundhogg_value( $step, array( 'step_type', 'type', 'get_step_type', 'get_type' ) ) );
-		$data = self::groundhogg_value( $step, array( 'data', 'meta', 'get_data', 'get_meta' ) );
-		if ( is_string( $data ) ) { $decoded = json_decode( $data, true ); if ( is_array( $decoded ) ) $data = $decoded; }
-		if ( ! is_array( $data ) ) $data = array();
+		$id = absint( self::groundhogg_value( $step, array( 'ID', 'id', 'get_id' ) ) );
+		$meta_source = $step;
+		if ( $id && class_exists( '\\Groundhogg\\Step' ) && ! $step instanceof \Groundhogg\Step ) {
+			try { $meta_source = new \Groundhogg\Step( $id ); } catch ( Throwable $error ) { $meta_source = $step; }
+		}
+		$data = array();
+		foreach ( array( array( $step, 'data' ), array( $step, 'get_data' ), array( $step, 'meta' ), array( $meta_source, 'get_meta' ) ) as $source ) {
+			$value = self::groundhogg_value( $source[0], array( $source[1] ) );
+			if ( is_string( $value ) ) {
+				$decoded = json_decode( $value, true );
+				if ( is_array( $decoded ) ) $value = $decoded;
+			}
+			if ( is_array( $value ) ) $data = array_replace_recursive( $data, $value );
+		}
 		$class = is_object( $step ) ? get_class( $step ) : '';
 		$label = sanitize_text_field( self::groundhogg_value( $step, array( 'title', 'name', 'get_title', 'get_name' ) ) );
 		if ( ! $type ) $type = sanitize_key( basename( str_replace( '\\', '/', $class ) ) );
-		return array( 'type' => $type ?: 'unknown', 'label' => $label ?: ucwords( str_replace( array( '-', '_' ), ' ', $type ?: 'unknown' ) ), 'data' => $data );
+		return array( 'source_step_id' => $id, 'type' => $type ?: 'unknown', 'label' => $label ?: ucwords( str_replace( array( '-', '_' ), ' ', $type ?: 'unknown' ) ), 'data' => $data );
 	}
 
 	private static function assess_groundhogg_flow( $flow ) {
-		$direct = array( 'wait', 'delay', 'timer', 'apply_tag', 'add_tag', 'remove_tag', 'remove_tag_action', 'send_email', 'email', 'edit_meta', 'update_contact' );
+		$direct = array( 'wait', 'delay', 'timer', 'delay_timer', 'apply_tag', 'add_tag', 'remove_tag', 'remove_tag_action', 'send_email', 'email', 'edit_meta', 'update_contact', 'email_confirmed', 'confirmed_email', 'optin_status_changed', 'create_user', 'create_wp_user', 'admin_notification', 'notify_admin', 'change_role', 'add_role', 'set_user_role', 'link_click', 'link_clicked', 'email_link_clicked', 'role_changed', 'user_role_changed' );
 		$review = array( 'benchmark', 'tag_applied', 'form_filled', 'web_form', 'webhook', 'condition', 'logic', 'date_timer', 'field_changed' );
 		$result = array( 'status' => 'supported', 'counts' => array( 'supported' => 0, 'review' => 0, 'unsupported' => 0 ), 'steps' => array() );
 		foreach ( (array) $flow['steps'] as $step ) {
