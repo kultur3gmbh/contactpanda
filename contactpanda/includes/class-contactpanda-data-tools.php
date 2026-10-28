@@ -110,9 +110,19 @@ final class ContactPanda_Data_Tools {
 			echo '<a class="nav-tab ' . ( $key === $source ? 'nav-tab-active' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( $definition['label'] ) . '</a>';
 		}
 		echo '</nav>';
+		$groundhogg_area = 'contacts';
+		if ( 'groundhogg' === $source ) {
+			$groundhogg_area = sanitize_key( wp_unslash( $_GET['migration_area'] ?? 'contacts' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
+			$areas = array( 'contacts' => __( 'People & companies', 'contactpanda' ), 'emails' => __( 'Email templates & mailings', 'contactpanda' ), 'forms' => __( 'Forms', 'contactpanda' ), 'flows' => __( 'Automations', 'contactpanda' ) );
+			if ( ! isset( $areas[ $groundhogg_area ] ) ) $groundhogg_area = 'contacts';
+			echo '<nav class="nav-tab-wrapper contactpanda-settings-subtabs contactpanda-migration-area-tabs" aria-label="' . esc_attr__( 'Groundhogg migration areas', 'contactpanda' ) . '">';
+			foreach ( $areas as $key => $label ) echo '<a class="nav-tab ' . ( $key === $groundhogg_area ? 'nav-tab-active' : '' ) . '" href="' . esc_url( add_query_arg( array( 'migration_source' => 'groundhogg', 'migration_area' => $key ), admin_url( 'admin.php?page=contactpanda-migration' ) ) ) . '">' . esc_html( $label ) . '</a>';
+			echo '</nav>';
+		}
 		if ( ! $sources && 'overview' === $source ) echo '<div class="notice notice-info inline"><p>' . esc_html__( 'No supported source system is currently installed. A matching migration tab appears automatically when a supported plugin is detected.', 'contactpanda' ) . '</p></div>';
-		ContactPanda_Registration::render_migration_settings( $source );
-		if ( 'groundhogg' === $source ) self::render_groundhogg_flow_migration();
+		if ( 'groundhogg' !== $source || 'contacts' === $groundhogg_area ) ContactPanda_Registration::render_migration_settings( $source );
+		if ( 'groundhogg' === $source && 'flows' === $groundhogg_area ) self::render_groundhogg_flow_migration();
+		if ( 'groundhogg' === $source ) do_action( 'contactpanda_render_groundhogg_migration_area_' . $groundhogg_area );
 		echo '</div>';
 	}
 

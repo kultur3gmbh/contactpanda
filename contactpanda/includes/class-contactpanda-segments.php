@@ -234,6 +234,11 @@ final class ContactPanda_Basic_Segments {
 
 	private static function matches_inline( $contact, $rule, $context = array() ) {
 		$field = $rule['field']; $operator = $rule['operator']; $expected = (string) $rule['value'];
+		if ( in_array( $field, array( 'has_orders', 'has_events' ), true ) ) {
+			$count = self::inline_numeric_value( $contact, 'has_orders' === $field ? 'order_count' : 'event_count', $context );
+			$actual = $count > 0 ? 'yes' : 'no';
+			return 'is_not' === $operator ? $actual !== $expected : $actual === $expected;
+		}
 		if ( in_array( $field, array( 'order_number', 'invoice_number' ), true ) ) {
 			$orders = self::context_orders( $contact, $context );
 			foreach ( $orders as $order ) {
@@ -442,6 +447,7 @@ final class ContactPanda_Basic_Segments {
 		$type_options = self::type_options();
 		if ( function_exists( 'wc_get_orders' ) ) {
 			$groups[] = array( 'label' => __( 'WooCommerce', 'contactpanda' ), 'fields' => array(
+				self::field_definition( 'has_orders', __( 'Has placed an order', 'contactpanda' ), 'select', $select, $yes_no ),
 				self::field_definition( 'product', __( 'Product', 'contactpanda' ), 'select', array( 'purchased', 'not_purchased' ), $type_options['product_purchased'] ?? array() ),
 				self::field_definition( 'product_category', __( 'Product category', 'contactpanda' ), 'select', array( 'purchased' ), $type_options['product_category'] ?? array() ),
 				self::field_definition( 'order_count', __( 'Number of orders', 'contactpanda' ), 'number', $number ),
@@ -453,6 +459,7 @@ final class ContactPanda_Basic_Segments {
 		}
 		if ( post_type_exists( 'tribe_events' ) ) {
 			$groups[] = array( 'label' => __( 'Events', 'contactpanda' ), 'fields' => array(
+				self::field_definition( 'has_events', __( 'Has an event registration', 'contactpanda' ), 'select', $select, $yes_no ),
 				self::field_definition( 'event', __( 'Event', 'contactpanda' ), 'select', array( 'is' ), $type_options['event_booked'] ?? array() ),
 				self::field_definition( 'event_category', __( 'Event category', 'contactpanda' ), 'select', array( 'is' ), $type_options['event_category'] ?? array() ),
 				self::field_definition( 'event_count', __( 'Number of events', 'contactpanda' ), 'number', $number ),

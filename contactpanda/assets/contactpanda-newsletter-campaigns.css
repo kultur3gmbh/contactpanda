@@ -2,3 +2,19 @@
 .contactpanda-mailing-details-page {
 	max-height: none;
 }
+
+.contactpanda-mailing-report {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: 12px;
+	margin: 18px 0;
+}
+
+.contactpanda-mailing-report .contactpanda-card {
+	margin: 0;
+}
+
+.contactpanda-mailing-report .contactpanda-card p {
+	margin: 8px 0 2px;
+	font-size: 28px;
+}

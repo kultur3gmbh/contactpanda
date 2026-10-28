@@ -17,7 +17,7 @@ msgstr "Anteil für Variante B (%)"
 msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
 msgstr "Platzhalter wie {campaign_name}, {campaign_id} und {subject_variant} werden für jeden Versand einzeln aufgelöst."
 
-"Project-Id-Version: ContactPanda 0.8.61\n"
+"Project-Id-Version: ContactPanda 0.8.62\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7966,3 +7966,17 @@ msgstr "E-Mail-Adresse"
 
 msgid "Unsubscribe URL"
 msgstr "Abmelde-URL"
+msgid "Has placed an order"
+msgstr "Hat eine Bestellung aufgegeben"
+
+msgid "Has an event registration"
+msgstr "Hat eine Veranstaltungsanmeldung"
+
+msgid "Sent at"
+msgstr "Versendet am"
+
+msgid "Opened at"
+msgstr "Geöffnet am"
+
+msgid "Clicked at"
+msgstr "Angeklickt am"

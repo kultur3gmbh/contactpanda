@@ -17,7 +17,7 @@ msgstr ""
 msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
 msgstr ""
 
-"Project-Id-Version: ContactPanda 0.8.61\n"
+"Project-Id-Version: ContactPanda 0.8.62\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -7938,4 +7938,18 @@ msgid "Email address"
 msgstr ""
 
 msgid "Unsubscribe URL"
+msgstr ""
+msgid "Has placed an order"
+msgstr ""
+
+msgid "Has an event registration"
+msgstr ""
+
+msgid "Sent at"
+msgstr ""
+
+msgid "Opened at"
+msgstr ""
+
+msgid "Clicked at"
 msgstr ""

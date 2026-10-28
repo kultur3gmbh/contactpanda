@@ -204,18 +204,30 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 			return;
 		}
 		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `{$t['recipients']}` WHERE campaign_id=%d ORDER BY status ASC,email ASC LIMIT 500", $campaign_id ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$sent = count( array_filter( $rows, static function ( $row ) { return ! empty( $row['sent_at'] ); } ) );
+		$opened = count( array_filter( $rows, static function ( $row ) { return ! empty( $row['opened_at'] ); } ) );
+		$clicked = count( array_filter( $rows, static function ( $row ) { return ! empty( $row['clicked_at'] ); } ) );
+		$failed = count( array_filter( $rows, static function ( $row ) { return 'failed' === ( $row['status'] ?? '' ); } ) );
+		$skipped = count( array_filter( $rows, static function ( $row ) { return 'skipped' === ( $row['status'] ?? '' ); } ) );
+		$rate = static function ( $value, $base ) { return $base ? round( 100 * $value / $base, 1 ) : 0; };
+		echo '<div class="contactpanda-mailing-report">';
+		foreach ( array( __( 'Sent', 'contactpanda' ) => array( $sent, 100 ), __( 'Opened', 'contactpanda' ) => array( $opened, $rate( $opened, $sent ) ), __( 'Clicked', 'contactpanda' ) => array( $clicked, $rate( $clicked, $sent ) ), __( 'Failed', 'contactpanda' ) => array( $failed, $rate( $failed, max( 1, count( $rows ) ) ) ), __( 'Skipped', 'contactpanda' ) => array( $skipped, $rate( $skipped, max( 1, count( $rows ) ) ) ) ) as $label => $metric ) {
+			echo '<div class="contactpanda-card"><strong>' . esc_html( $label ) . '</strong><p>' . esc_html( number_format_i18n( $metric[0] ) ) . '</p><small>' . esc_html( number_format_i18n( $metric[1], 1 ) ) . '%</small></div>';
+		}
+		echo '</div>';
 		$reasons = array( 'consent_missing' => __( 'Consent missing', 'contactpanda' ), 'protected_optout' => __( 'Unsubscribed, blocked or undeliverable', 'contactpanda' ), 'suppressed' => __( 'Globally suppressed', 'contactpanda' ), 'invalid_email' => __( 'Invalid email address', 'contactpanda' ), 'contact_missing' => __( 'Contact no longer exists', 'contactpanda' ), 'customer_missing' => __( 'Customer account no longer exists', 'contactpanda' ), 'wp_mail_failed' => __( 'Mail delivery failed', 'contactpanda' ) );
 		if ( ! empty( $campaign['ignore_marketing_consent'] ) ) {
 			$user = get_userdata( absint( $campaign['consent_override_user_id'] ) );
 			$reason = self::override_reason_label( $campaign['consent_override_reason'] );
 			echo '<div class="notice notice-warning inline"><p><strong>' . esc_html__( 'Marketing consent override', 'contactpanda' ) . ':</strong> ' . esc_html( sprintf( __( '%1$s enabled this exception on %2$s. Reason: %3$s. %4$d recipients without documented consent were included.', 'contactpanda' ), $user ? $user->display_name : __( 'Administrator', 'contactpanda' ), mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $campaign['consent_override_at'] ), $reason, absint( $campaign['consent_override_count'] ) ) ) . '</p></div>';
 		}
-		echo '<h3>' . esc_html__( 'Recipient check', 'contactpanda' ) . '</h3><p>' . esc_html__( 'Skipped contacts are never sent automatically. If actual consent exists, document the manual override in the person’s Marketing & Consent section and prepare a new campaign.', 'contactpanda' ) . '</p><table class="widefat striped"><thead><tr><th>' . esc_html__( 'Recipient', 'contactpanda' ) . '</th><th>' . esc_html__( 'Status', 'contactpanda' ) . '</th><th>' . esc_html__( 'Reason', 'contactpanda' ) . '</th></tr></thead><tbody>';
+		echo '<h3>' . esc_html__( 'Recipient check', 'contactpanda' ) . '</h3><p>' . esc_html__( 'Skipped contacts are never sent automatically. If actual consent exists, document the manual override in the person’s Marketing & Consent section and prepare a new campaign.', 'contactpanda' ) . '</p><table class="widefat striped"><thead><tr><th>' . esc_html__( 'Recipient', 'contactpanda' ) . '</th><th>' . esc_html__( 'Status', 'contactpanda' ) . '</th><th>' . esc_html__( 'Sent at', 'contactpanda' ) . '</th><th>' . esc_html__( 'Opened at', 'contactpanda' ) . '</th><th>' . esc_html__( 'Clicked at', 'contactpanda' ) . '</th><th>' . esc_html__( 'Reason', 'contactpanda' ) . '</th></tr></thead><tbody>';
 		foreach ( $rows as $row ) {
 			$name = trim( $row['first_name'] . ' ' . $row['last_name'] ); $person_url = admin_url( 'admin.php?page=contactpanda-people&person=' . absint( $row['contact_id'] ) );
-			echo '<tr><td><a href="' . esc_url( $person_url ) . '">' . esc_html( $name ?: $row['email'] ) . '</a><br><small>' . esc_html( $row['email'] ) . '</small></td><td>' . esc_html( ucfirst( $row['status'] ) ) . '</td><td>' . esc_html( $reasons[ $row['reason'] ] ?? $row['reason'] ) . '</td></tr>';
+			$format_time = static function ( $value ) { return $value ? mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $value ) : '—'; };
+			echo '<tr><td><a href="' . esc_url( $person_url ) . '">' . esc_html( $name ?: $row['email'] ) . '</a><br><small>' . esc_html( $row['email'] ) . '</small></td><td>' . esc_html( ucfirst( $row['status'] ) ) . '</td><td>' . esc_html( $format_time( $row['sent_at'] ?? '' ) ) . '</td><td>' . esc_html( $format_time( $row['opened_at'] ?? '' ) ) . '</td><td>' . esc_html( $format_time( $row['clicked_at'] ?? '' ) ) . '</td><td>' . esc_html( $reasons[ $row['reason'] ] ?? $row['reason'] ) . '</td></tr>';
 		}
-		if ( ! $rows ) { echo '<tr><td colspan="3">' . esc_html__( 'No recipients have been prepared yet.', 'contactpanda' ) . '</td></tr>'; }
+		if ( ! $rows ) { echo '<tr><td colspan="6">' . esc_html__( 'No recipients have been prepared yet.', 'contactpanda' ) . '</td></tr>'; }
 		echo '</tbody></table></section>';
 	}
 
