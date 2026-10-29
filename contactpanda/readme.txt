@@ -2,12 +2,17 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.72
+Stable tag: 0.8.73
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free, reduced newsletter workflow, a WooCommerce customer overview, optional Groundhogg compatibility, and stable extension APIs for the ContactPanda product family.
 
 == Changelog ==
+
+= 0.8.73 =
+* Adds the shared product and plan license center for individual keys and MasterKeys.
+* Shows installed versions, update and support terms, and licensed website usage without storing raw keys.
+* Disconnects invalidated activation tokens after a server-side key rotation while preserving the existing product policy.
 
 = 0.8.72 =
 * Coordinates the ContactPanda family dependency and release contract for the Pro document-template handoff to PandaWoo Pro.

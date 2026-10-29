@@ -122,11 +122,22 @@ final class ContactPanda_License {
 		$license['license_label']    = sanitize_text_field( $license['license_label'] );
 		$license['license_type']     = sanitize_key( $license['license_type'] );
 		$license['entitlements']     = array_values( array_unique( array_filter( array_map( array( __CLASS__, 'normalize_entitlement' ), (array) $license['entitlements'] ) ) ) );
-		$license['limits']           = is_array( $license['limits'] ) ? array_map( 'sanitize_text_field', $license['limits'] ) : array();
+		$license['limits']           = is_array( $license['limits'] ) ? self::sanitize_limits( $license['limits'] ) : array();
 		$license['updates_until']    = self::date_value( $license['updates_until'] );
 		$license['support_until']    = self::date_value( $license['support_until'] );
 		$license['status']           = sanitize_key( $license['status'] );
 		return $license;
+	}
+
+	/** Preserve provider-defined per-product limits without accepting objects or markup. */
+	private static function sanitize_limits( $limits ) {
+		$clean = array();
+		foreach ( (array) $limits as $key => $value ) {
+			$key = sanitize_key( $key );
+			if ( '' === $key ) continue;
+			$clean[ $key ] = is_array( $value ) ? self::sanitize_limits( $value ) : sanitize_text_field( (string) $value );
+		}
+		return $clean;
 	}
 
 	private static function normalize_entitlement( $item ) {
@@ -184,6 +195,61 @@ final class ContactPanda_License {
 
 	public static function advanced_newsletter_entitled() {
 		return self::entitled( 'advanced_newsletter' );
+	}
+
+	/** Products shown on the shared license page. Extensions append their entry. */
+	public static function products() {
+		$products = array(
+			'contactpanda-basic' => array(
+				'label'       => __( 'ContactPanda Basic', 'contactpanda' ),
+				'entitlement' => '',
+				'version'     => defined( 'CONTACTPANDA_VERSION' ) ? CONTACTPANDA_VERSION : '',
+				'free'        => true,
+				'modules'     => array(),
+			),
+		);
+		$products = (array) apply_filters( 'contactpanda_license_products', $products );
+		$clean = array();
+		foreach ( $products as $id => $product ) {
+			$id = sanitize_key( $id );
+			if ( '' === $id || ! is_array( $product ) || empty( $product['label'] ) ) continue;
+			$clean[ $id ] = array(
+				'label'       => sanitize_text_field( $product['label'] ),
+				'entitlement' => sanitize_key( $product['entitlement'] ?? $id ),
+				'version'     => sanitize_text_field( $product['version'] ?? '' ),
+				'free'        => ! empty( $product['free'] ),
+				'modules'     => array_values( array_unique( array_filter( array_map( array( __CLASS__, 'normalize_entitlement' ), (array) ( $product['modules'] ?? array() ) ) ) ) ),
+			);
+		}
+		return $clean;
+	}
+
+	private static function product_license_summary( $product, $state ) {
+		$matches = array();
+		foreach ( $state['licenses'] as $license ) {
+			if ( empty( $product['free'] ) && self::update_entitlement_matches( $license['entitlements'], $product['entitlement'] ) ) {
+				$matches[] = $license;
+			}
+		}
+		$updates = '';
+		$support = '';
+		$site_used = '';
+		$site_limit = '';
+		$status = ! empty( $product['free'] ) ? 'free' : 'unlicensed';
+		foreach ( $matches as $license ) {
+			if ( 'blocked' === $license['status'] ) {
+				$status = 'blocked';
+				continue;
+			}
+			if ( 'disconnected' !== $license['status'] ) $status = 'expired' === $license['status'] ? 'expired' : 'valid';
+			if ( $license['updates_until'] && ( ! $updates || $license['updates_until'] > $updates ) ) $updates = $license['updates_until'];
+			if ( $license['support_until'] && ( ! $support || $license['support_until'] > $support ) ) $support = $license['support_until'];
+			$limits = $license['limits'];
+			$product_limits = isset( $limits['products'][ $product['entitlement'] ] ) && is_array( $limits['products'][ $product['entitlement'] ] ) ? $limits['products'][ $product['entitlement'] ] : $limits;
+			foreach ( array( 'sites_used', 'site_usage', 'activations_used', 'active_sites' ) as $key ) if ( isset( $product_limits[ $key ] ) && '' !== (string) $product_limits[ $key ] ) { $site_used = (string) $product_limits[ $key ]; break; }
+			foreach ( array( 'site_limit', 'max_sites', 'activations', 'activation_limit' ) as $key ) if ( isset( $product_limits[ $key ] ) && '' !== (string) $product_limits[ $key ] ) { $site_limit = (string) $product_limits[ $key ]; break; }
+		}
+		return compact( 'status', 'updates', 'support', 'site_used', 'site_limit' );
 	}
 
 	/**
@@ -303,7 +369,7 @@ final class ContactPanda_License {
 
 		$catalog = apply_filters( 'contactpanda_license_modules', array( 'advanced_newsletter' => __( 'Advanced newsletter', 'contactpanda' ) ) );
 		echo '<section class="contactpanda-card contactpanda-settings-card"><h2>' . esc_html__( 'ContactPanda licenses', 'contactpanda' ) . '</h2>';
-		echo '<p>' . esc_html__( 'ContactPanda remains free and updateable without a license, including the simple newsletter. Additional licenses unlock advanced newsletter functions, the visual form editor, automations, integrations, migration tools, or the complete Plus package. A normal expiry ends updates and support, but granted modules remain usable.', 'contactpanda' ) . '</p>';
+		echo '<p>' . esc_html__( 'Activate separate product keys or one MasterKey for several products and plans. The license server decides which signed product permissions a MasterKey grants. The entered key is never stored after activation.', 'contactpanda' ) . '</p>';
 		echo '<div class="contactpanda-license-status"><p><strong>' . esc_html__( 'ContactPanda license', 'contactpanda' ) . ':</strong> ' . esc_html__( 'Free license active', 'contactpanda' ) . '</p></div>';
 		if ( $offline['failed'] && ! $offline['overdue'] ) {
 			echo '<p class="description">' . esc_html__( 'The license service is temporarily unavailable. Cached permissions remain active and ContactPanda will retry automatically.', 'contactpanda' ) . '</p>';
@@ -337,6 +403,20 @@ final class ContactPanda_License {
 			}
 		}
 
+		echo '<h3>' . esc_html__( 'Products and plans', 'contactpanda' ) . '</h3><div class="contactpanda-license-products">';
+		foreach ( self::products() as $product ) {
+			$summary = self::product_license_summary( $product, $state );
+			$status_labels = array( 'free' => __( 'Free product active', 'contactpanda' ), 'valid' => __( 'License active', 'contactpanda' ), 'expired' => __( 'Updates and support expired', 'contactpanda' ), 'blocked' => __( 'License blocked', 'contactpanda' ), 'unlicensed' => __( 'No license activated', 'contactpanda' ) );
+			echo '<section class="contactpanda-license-product"><div><h4>' . esc_html( $product['label'] ) . '</h4>';
+			if ( $product['version'] ) echo '<p class="description">' . esc_html( sprintf( __( 'Installed version: %s', 'contactpanda' ), $product['version'] ) ) . '</p>';
+			echo '</div><p><span class="contactpanda-status-badge ' . ( in_array( $summary['status'], array( 'free', 'valid' ), true ) ? 'is-positive' : '' ) . '">' . esc_html( $status_labels[ $summary['status'] ] ) . '</span></p><dl>';
+			echo '<div><dt>' . esc_html__( 'Updates', 'contactpanda' ) . '</dt><dd>' . esc_html( $summary['updates'] ? mysql2date( get_option( 'date_format' ), $summary['updates'] . ' 00:00:00' ) : ( $product['free'] ? __( 'Included', 'contactpanda' ) : __( 'Not available', 'contactpanda' ) ) ) . '</dd></div>';
+			echo '<div><dt>' . esc_html__( 'Support', 'contactpanda' ) . '</dt><dd>' . esc_html( $summary['support'] ? mysql2date( get_option( 'date_format' ), $summary['support'] . ' 00:00:00' ) : __( 'Not specified', 'contactpanda' ) ) . '</dd></div>';
+			$usage = $summary['site_limit'] ? sprintf( '%1$s / %2$s', $summary['site_used'] ?: '0', $summary['site_limit'] ) : ( $summary['site_used'] ?: __( 'Not specified', 'contactpanda' ) );
+			echo '<div><dt>' . esc_html__( 'Website usage', 'contactpanda' ) . '</dt><dd>' . esc_html( $usage ) . '</dd></div></dl></section>';
+		}
+		echo '</div>';
+
 		echo '<h3>' . esc_html__( 'Module status', 'contactpanda' ) . '</h3><div class="contactpanda-license-groups">';
 		$groups = array(
 			'plus'     => array( 'label' => __( 'ContactPanda Plus Complete', 'contactpanda' ), 'modules' => array( 'advanced_newsletter', 'forms_editor', 'automations', 'advanced_integrations', 'form_migration' ) ),
@@ -355,7 +435,7 @@ final class ContactPanda_License {
 		}
 		echo '</div>';
 
-		echo '<h3>' . esc_html__( 'Add or renew a license', 'contactpanda' ) . '</h3><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-settings-grid"><input type="hidden" name="action" value="contactpanda_activate_license">';
+		echo '<h3>' . esc_html__( 'Add or renew a license', 'contactpanda' ) . '</h3><p class="description">' . esc_html__( 'Enter either an individual product key or a MasterKey. Additional keys can be activated one after another.', 'contactpanda' ) . '</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-settings-grid"><input type="hidden" name="action" value="contactpanda_activate_license">';
 		wp_nonce_field( 'contactpanda_activate_license' );
 		echo '<label><span>' . esc_html__( 'License key', 'contactpanda' ) . '</span><input type="password" name="license_key" autocomplete="off" required value="" placeholder="CP-…"></label><p><button class="button button-primary">' . esc_html__( 'Activate or renew license', 'contactpanda' ) . '</button></p></form>';
 		if ( array_filter( wp_list_pluck( $state['licenses'], 'activation_token' ) ) ) {
@@ -368,7 +448,7 @@ final class ContactPanda_License {
 
 	private static function type_label( $type ) {
 		$labels = array(
-			'master'   => __( 'Master license', 'contactpanda' ),
+			'master'   => __( 'MasterKey', 'contactpanda' ),
 			'customer' => __( 'Customer license', 'contactpanda' ),
 			'partner'  => __( 'Partner license', 'contactpanda' ),
 		);
@@ -567,7 +647,12 @@ final class ContactPanda_License {
 				continue;
 			}
 			$had_success = true;
-			if ( ! empty( $data['valid'] ) || 'blocked' === ( $data['status'] ?? '' ) ) {
+			if ( empty( $data['valid'] ) ) {
+				// A rotated or revoked key invalidates every former activation token.
+				$state['licenses'][ $id ]['activation_token'] = '';
+				$state['licenses'][ $id ]['status'] = 'disconnected';
+				$state['licenses'][ $id ]['last_checked_at'] = current_time( 'mysql', true );
+			} elseif ( ! empty( $data['valid'] ) || 'blocked' === ( $data['status'] ?? '' ) ) {
 				$state['licenses'][ $id ] = self::license_from_response( $data, $license );
 			}
 		}

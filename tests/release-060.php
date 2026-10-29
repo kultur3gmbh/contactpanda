@@ -17,11 +17,16 @@ foreach ( array( 'ContactPanda_License::newsletter_entitled', 'ContactPanda_Lice
 	}
 }
 
-foreach ( array( "'licenses'", "'legacy_grants'", 'updates_allowed_for', 'contactpanda_license_daily_check', 'activation_token', 'signature_algorithm', 'canonical_json', 'Previously granted modules remain available', 'OFFLINE_GRACE_DAYS', "'advanced_newsletter'", "'forms_editor'", "'automations'", "'advanced_integrations'", "'form_migration'" ) as $contract ) {
+foreach ( array( "'licenses'", "'legacy_grants'", 'updates_allowed_for', 'contactpanda_license_daily_check', 'activation_token', 'signature_algorithm', 'canonical_json', 'Previously granted modules remain available', 'OFFLINE_GRACE_DAYS', "'advanced_newsletter'", "'forms_editor'", "'automations'", "'advanced_integrations'", "'form_migration'", 'contactpanda_license_products', 'Products and plans', 'Website usage', 'MasterKey', 'sanitize_limits' ) as $contract ) {
 	if ( false === strpos( $license, $contract ) ) {
 		fwrite( STDERR, "Missing durable license contract {$contract}.\n" );
 		exit( 1 );
 	}
+}
+
+if ( false !== strpos( $license, "'license_key' =>" ) || false !== strpos( $license, '[\'license_key\'] =' ) ) {
+	fwrite( STDERR, "A raw license key must never be persisted after activation.\n" );
+	exit( 1 );
 }
 
 foreach ( array( 'product_update', "'updates/check'", 'ContactPanda_Licensed_Updater', 'upgrader_pre_download', 'hash_file' ) as $contract ) {

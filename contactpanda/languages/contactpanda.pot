@@ -8316,3 +8316,71 @@ msgstr ""
 #: contactpanda/includes/class-contactpanda-newsletters.php
 msgid "Add image"
 msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "ContactPanda Basic"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Activate separate product keys or one MasterKey for several products and plans. The license server decides which signed product permissions a MasterKey grants. The entered key is never stored after activation."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Products and plans"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Free product active"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "License active"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Updates and support expired"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "License blocked"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "No license activated"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Installed version: %s"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Updates"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Included"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Not available"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Support"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Not specified"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Website usage"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "Enter either an individual product key or a MasterKey. Additional keys can be activated one after another."
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-license.php
+msgid "MasterKey"
+msgstr ""
