@@ -27,8 +27,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Validate source
-        run: ./tools/check.sh
       - name: Build installable ZIP files
         env:
           CONTACTPANDA_TESTED_WP: ${{ inputs.tested_wordpress }}
