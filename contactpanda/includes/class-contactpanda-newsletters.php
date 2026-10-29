@@ -1384,7 +1384,8 @@ final class ContactPanda_Basic_Newsletters {
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			return array();
 		}
-		$count = min( 6, max( 1, absint( $block['count'] ?? 2 ) ) );
+		$manual_ids = array_values( array_unique( array_filter( array_map( 'absint', (array) ( $block['product_ids'] ?? array() ) ) ) ) );
+		$count = min( 6, max( 'manual' === ( $block['source'] ?? '' ) ? count( $manual_ids ) : 1, absint( $block['count'] ?? 2 ) ) );
 		$source = isset( $block['source'] ) ? $block['source'] : 'latest';
 		$args = array( 'limit' => $count, 'status' => 'publish', 'orderby' => 'date', 'order' => 'DESC', 'return' => 'objects' );
 		if ( 'category' === $source && ! empty( $block['category_id'] ) ) {
@@ -1397,7 +1398,8 @@ final class ContactPanda_Basic_Newsletters {
 		} elseif ( 'sale' === $source ) {
 			$args['include'] = array_slice( wc_get_product_ids_on_sale(), 0, $count );
 		} elseif ( 'manual' === $source ) {
-			$args['include'] = array_slice( (array) ( $block['product_ids'] ?? array() ), 0, $count );
+			$args['include'] = array_slice( $manual_ids, 0, 6 );
+			$args['limit'] = count( $args['include'] );
 			$args['orderby'] = 'include';
 		} elseif ( 'producer' === $source && ! empty( $block['producer_taxonomy'] ) && ! empty( $block['producer_term_id'] ) && taxonomy_exists( $block['producer_taxonomy'] ) ) {
 			$ids = get_posts(
@@ -1430,7 +1432,7 @@ final class ContactPanda_Basic_Newsletters {
 		foreach ( array_chunk( $products, $columns ) as $row ) {
 			$html .= '<tr>';
 			foreach ( $row as $product ) {
-				$image = wp_get_attachment_image_url( $product->get_image_id(), 'woocommerce_thumbnail' ) ?: wc_placeholder_img_src( 'woocommerce_thumbnail' );
+				$image = wp_get_attachment_image_url( $product->get_image_id(), 'large' ) ?: wc_placeholder_img_src( 'woocommerce_single' );
 				$details = array();
 				if ( ! empty( $block['show_categories'] ) ) { $names = wp_get_post_terms( $product->get_id(), 'product_cat', array( 'fields' => 'names' ) ); if ( ! is_wp_error( $names ) && $names ) $details[] = implode( ', ', $names ); }
 				if ( ! empty( $block['show_brands'] ) ) foreach ( array( 'product_brand', 'pwb-brand', 'yith_product_brand', 'pa_hersteller', 'pa_produzent' ) as $taxonomy ) { if ( taxonomy_exists( $taxonomy ) ) { $names = wp_get_post_terms( $product->get_id(), $taxonomy, array( 'fields' => 'names' ) ); if ( ! is_wp_error( $names ) && $names ) { $details[] = implode( ', ', $names ); break; } } }
