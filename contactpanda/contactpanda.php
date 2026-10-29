@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda
  * Description: Free contact and company management for WordPress with newsletters, WooCommerce, migrations, and optional Groundhogg compatibility.
- * Version: 0.8.68
+ * Version: 0.8.69
  * Update URI: https://github.com/kultur3gmbh/contactpanda
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.8.68' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.8.68-20261029-1' );
+define( 'CONTACTPANDA_VERSION', '0.8.69' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.8.69-20261029-1' );
 define( 'CONTACTPANDA_EXTENSION_API_VERSION', '1.0' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
@@ -237,6 +237,13 @@ function contactpanda_newsletter_admin_assets( $hook ) {
 	}
 	if ( in_array( $hook, array( 'contactpanda_page_contactpanda-campaigns', 'contactpanda_page_contactpanda-settings' ), true ) ) {
 		wp_enqueue_style( 'contactpanda', CONTACTPANDA_URL . 'assets/contactpanda-admin.css', array(), CONTACTPANDA_ASSET_VERSION );
+	}
+	if ( 'contactpanda_page_contactpanda-settings' === $hook ) {
+		wp_enqueue_script( 'contactpanda-system-emails', CONTACTPANDA_URL . 'assets/contactpanda-system-emails.js', array( 'contactpanda-admin-ui' ), CONTACTPANDA_ASSET_VERSION, true );
+		wp_localize_script( 'contactpanda-system-emails', 'CONTACTPANDA_SYSTEM_EMAILS', array( 'i18n' => array(
+			'header' => __( 'Header', 'contactpanda' ), 'footer' => __( 'Footer', 'contactpanda' ), 'image' => __( 'Image', 'contactpanda' ), 'text' => __( 'Text', 'contactpanda' ), 'separator' => __( 'Separator', 'contactpanda' ),
+			'addElement' => __( 'Add element', 'contactpanda' ), 'remove' => __( 'Remove', 'contactpanda' ), 'moveUp' => __( 'Move up', 'contactpanda' ), 'moveDown' => __( 'Move down', 'contactpanda' ), 'content' => __( 'Content', 'contactpanda' ),
+		) ) );
 	}
 	if ( 'contactpanda_page_contactpanda-campaigns' === $hook ) {
 		wp_enqueue_style( 'contactpanda-newsletter-campaigns', CONTACTPANDA_URL . 'assets/contactpanda-newsletter-campaigns.css', array( 'contactpanda' ), CONTACTPANDA_ASSET_VERSION );

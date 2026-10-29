@@ -8268,3 +8268,51 @@ msgstr ""
 
 msgid "Successful"
 msgstr ""
+
+#: contactpanda/includes/class-contactpanda-system-emails.php
+msgid "Company logo"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-system-emails.php
+msgid "Logo position"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-system-emails.php
+msgid "Centered"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-system-emails.php
+msgid "Header background"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-system-emails.php
+msgid "Footer background"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-system-emails.php
+msgid "Footer text color"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-system-emails.php
+msgid "Apply this frame to compatible WordPress system emails"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-system-emails.php
+msgid "Complete HTML emails, including already designed WooCommerce emails, are not framed a second time."
+msgstr ""
+
+#: contactpanda/contactpanda.php
+msgid "Header"
+msgstr ""
+
+#: contactpanda/contactpanda.php
+msgid "Separator"
+msgstr ""
+
+#: contactpanda/contactpanda.php
+msgid "Add element"
+msgstr ""
+
+#: contactpanda/includes/class-contactpanda-newsletters.php
+msgid "Add image"
+msgstr ""
