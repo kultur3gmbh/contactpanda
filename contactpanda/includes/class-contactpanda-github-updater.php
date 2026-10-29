@@ -66,7 +66,9 @@ final class ContactPanda_GitHub_Updater {
 			$code = wp_remote_retrieve_response_code( $response );
 			if ( in_array( $code, array( 301, 302, 303, 307, 308 ), true ) ) {
 				$next = wp_remote_retrieve_header( $response, 'location' ); $parts = is_string( $next ) ? wp_parse_url( $next ) : false;
-				if ( ! $parts || 'https' !== ( $parts['scheme'] ?? '' ) || ! in_array( $parts['host'] ?? '', array( 'release-assets.githubusercontent.com', 'objects.githubusercontent.com', 'github-releases.githubusercontent.com' ), true ) || isset( $parts['user'] ) || isset( $parts['pass'] ) || isset( $parts['fragment'] ) ) return $this->error( 'release' );
+				$same_release = $parts && 'github.com' === ( $parts['host'] ?? '' ) && 0 === strpos( $next, $prefix );
+				$asset_host = $parts && in_array( $parts['host'] ?? '', array( 'release-assets.githubusercontent.com', 'objects.githubusercontent.com', 'github-releases.githubusercontent.com' ), true );
+				if ( ! $parts || 'https' !== ( $parts['scheme'] ?? '' ) || ( ! $same_release && ! $asset_host ) || isset( $parts['user'] ) || isset( $parts['pass'] ) || isset( $parts['fragment'] ) || ( isset( $parts['port'] ) && 443 !== $parts['port'] ) ) return $this->error( 'release' );
 				$url = $next; continue;
 			}
 			if ( 404 === $code ) return $this->error( 'release' );
