@@ -8061,3 +8061,210 @@ msgstr ""
 
 msgid "Imported templates are read-only. Create an editable copy to change the content."
 msgstr ""
+
+msgid "You are not allowed to manage these settings."
+msgstr ""
+
+msgid "Telephone"
+msgstr ""
+
+msgid "Logo"
+msgstr ""
+
+msgid "Hello {first_name},\n\nplease confirm your email address by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+msgstr ""
+
+msgid "Hello {first_name},\n\nplease confirm your newsletter subscription by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+msgstr ""
+
+msgid "The Newsletter Plugin"
+msgstr ""
+
+msgid "The Newsletter Plugin migration is not available."
+msgstr ""
+
+msgid "Analysis"
+msgstr ""
+
+msgid "A new business registration was submitted.\n\nPerson: %1$s\nCompany: %2$s\nEmail: %3$s\nRequested role: %4$s\n\nReview: %5$s"
+msgstr ""
+
+msgid "Not opened"
+msgstr ""
+
+msgid "Failed"
+msgstr ""
+
+msgid "Skipped"
+msgstr ""
+
+msgid "Search recipients"
+msgstr ""
+
+msgid "Showing %1$d–%2$d of %3$d recipients."
+msgstr ""
+
+msgid "Hello {first_name},\\n\\nplease confirm your newsletter subscription by opening this link:\\n{confirmation_link}"
+msgstr ""
+
+msgid "Sender details"
+msgstr ""
+
+msgid "Email footer"
+msgstr ""
+
+msgid "Optional email-specific footer text"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "Autom."
+msgstr ""
+
+msgid "Templates already sent as a newsletter are permanently read only. Create an editable copy instead."
+msgstr ""
+
+msgid "Number of newsletters"
+msgstr ""
+
+msgid "Select records and explicitly confirm permanent deletion."
+msgstr ""
+
+msgid "I explicitly confirm the selected action."
+msgstr ""
+
+msgid "Required only for permanent deletion."
+msgstr ""
+
+msgid "This list view is not supported."
+msgstr ""
+
+msgid "Imported"
+msgstr ""
+
+msgid "Please enter a name and a valid email address."
+msgstr ""
+
+msgid "People & companies"
+msgstr ""
+
+msgid "Email templates & mailings"
+msgstr ""
+
+msgid "Forms"
+msgstr ""
+
+msgid "Automations"
+msgstr ""
+
+msgid "Groundhogg migration areas"
+msgstr ""
+
+msgid "ContactPanda Pro"
+msgstr ""
+
+msgid "ContactPanda Business"
+msgstr ""
+
+msgid "This external account is already linked to another person."
+msgstr ""
+
+msgid "System emails"
+msgstr ""
+
+msgid "System email template saved."
+msgstr ""
+
+msgid "Template for system emails"
+msgstr ""
+
+msgid "This shared frame is used for transactional ContactPanda messages such as confirmations, account messages, form notifications, support replies, project notices, and automation administration messages. Newsletters keep their own design."
+msgstr ""
+
+msgid "Email background"
+msgstr ""
+
+msgid "Button and link color"
+msgstr ""
+
+msgid "Theme or system font"
+msgstr ""
+
+msgid "Header text"
+msgstr ""
+
+msgid "Signature"
+msgstr ""
+
+msgid "Additional footer text"
+msgstr ""
+
+msgid "Show company and legal details in the footer"
+msgstr ""
+
+msgid "Your message subject"
+msgstr ""
+
+msgid "Hello!"
+msgstr ""
+
+msgid "The actual system message is inserted here automatically."
+msgstr ""
+
+msgid "Save system email template"
+msgstr ""
+
+msgid "Send test email"
+msgstr ""
+
+msgid "ContactPanda system email test"
+msgstr ""
+
+msgid "The template is ready."
+msgstr ""
+
+msgid "This is how future transactional ContactPanda emails will look."
+msgstr ""
+
+msgid "Hello %1$s,\\n\\nconfirm your new email address using this link:\\n%2$s\\n\\nThe link is valid for 24 hours."
+msgstr ""
+
+msgid "The requested action could not be completed."
+msgstr ""
+
+msgid "The person does not exist."
+msgstr ""
+
+msgid "Set confirm to true to create the person."
+msgstr ""
+
+msgid "Set confirm to true to create the email draft."
+msgstr ""
+
+msgid "The email draft could not be created."
+msgstr ""
+
+msgid "The saved search does not exist."
+msgstr ""
+
+msgid "Set confirm to true to send the test email."
+msgstr ""
+
+msgid "Enter a valid test recipient."
+msgstr ""
+
+msgid "The email template does not exist."
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Tool"
+msgstr ""
+
+msgid "Successful"
+msgstr ""

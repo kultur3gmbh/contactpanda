@@ -8088,3 +8088,210 @@ msgstr "Vorlagen, die verwendet werden oder wurden, können nicht gelöscht werd
 
 msgid "Imported templates are read-only. Create an editable copy to change the content."
 msgstr "Importierte Vorlagen sind schreibgeschützt. Erstellen Sie eine bearbeitbare Kopie, um den Inhalt zu ändern."
+
+msgid "You are not allowed to manage these settings."
+msgstr "Sie dürfen diese Einstellungen nicht verwalten."
+
+msgid "Telephone"
+msgstr "Telefon"
+
+msgid "Logo"
+msgstr "Logo"
+
+msgid "Hello {first_name},\n\nplease confirm your email address by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+msgstr "Hello {first_name},\n\nplease confirm your email address by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+
+msgid "Hello {first_name},\n\nplease confirm your newsletter subscription by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+msgstr "Hello {first_name},\n\nplease confirm your newsletter subscription by opening this link:\n{confirmation_link}\n\nThe link is valid for 24 hours."
+
+msgid "The Newsletter Plugin"
+msgstr "The Newsletter Plugin"
+
+msgid "The Newsletter Plugin migration is not available."
+msgstr "The Newsletter Plugin migration is not available."
+
+msgid "Analysis"
+msgstr "Analysis"
+
+msgid "A new business registration was submitted.\n\nPerson: %1$s\nCompany: %2$s\nEmail: %3$s\nRequested role: %4$s\n\nReview: %5$s"
+msgstr "A new business registration was submitted.\n\nPerson: %1$s\nCompany: %2$s\nEmail: %3$s\nRequested role: %4$s\n\nReview: %5$s"
+
+msgid "Not opened"
+msgstr "Nicht geöffnet"
+
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+msgid "Skipped"
+msgstr "Übersprungen"
+
+msgid "Search recipients"
+msgstr "Empfänger suchen"
+
+msgid "Showing %1$d–%2$d of %3$d recipients."
+msgstr "Showing %1$d–%2$d of %3$d recipients."
+
+msgid "Hello {first_name},\\n\\nplease confirm your newsletter subscription by opening this link:\\n{confirmation_link}"
+msgstr "Hello {first_name},\\n\\nplease confirm your newsletter subscription by opening this link:\\n{confirmation_link}"
+
+msgid "Sender details"
+msgstr "Absenderdaten"
+
+msgid "Email footer"
+msgstr "E-Mail-Fußzeile"
+
+msgid "Optional email-specific footer text"
+msgstr "Optionaler E-Mail-spezifischer Fußzeilentext"
+
+msgid "Created"
+msgstr "Erstellt"
+
+msgid "Filter"
+msgstr "Filtern"
+
+msgid "Autom."
+msgstr "Autom."
+
+msgid "Templates already sent as a newsletter are permanently read only. Create an editable copy instead."
+msgstr "Templates already sent as a newsletter are permanently read only. Create an editable copy instead."
+
+msgid "Number of newsletters"
+msgstr "Anzahl Newsletter"
+
+msgid "Select records and explicitly confirm permanent deletion."
+msgstr "Datensätze auswählen und das endgültige Löschen ausdrücklich bestätigen."
+
+msgid "I explicitly confirm the selected action."
+msgstr "Ich bestätige die gewählte Aktion ausdrücklich."
+
+msgid "Required only for permanent deletion."
+msgstr "Nur für das endgültige Löschen erforderlich."
+
+msgid "This list view is not supported."
+msgstr "Diese Listenansicht wird nicht unterstützt."
+
+msgid "Imported"
+msgstr "Importiert"
+
+msgid "Please enter a name and a valid email address."
+msgstr "Please enter a name and a valid email address."
+
+msgid "People & companies"
+msgstr "Personen & Firmen"
+
+msgid "Email templates & mailings"
+msgstr "E-Mail-Vorlagen & Aussendungen"
+
+msgid "Forms"
+msgstr "Formulare"
+
+msgid "Automations"
+msgstr "Automatisierungen"
+
+msgid "Groundhogg migration areas"
+msgstr "Groundhogg-Migrationsbereiche"
+
+msgid "ContactPanda Pro"
+msgstr "ContactPanda Pro"
+
+msgid "ContactPanda Business"
+msgstr "ContactPanda Business"
+
+msgid "This external account is already linked to another person."
+msgstr "This external account is already linked to another person."
+
+msgid "System emails"
+msgstr "System-E-Mails"
+
+msgid "System email template saved."
+msgstr "Vorlage für System-E-Mails gespeichert."
+
+msgid "Template for system emails"
+msgstr "Vorlage für System-E-Mails"
+
+msgid "This shared frame is used for transactional ContactPanda messages such as confirmations, account messages, form notifications, support replies, project notices, and automation administration messages. Newsletters keep their own design."
+msgstr "Dieser gemeinsame Rahmen wird für transaktionale ContactPanda-Nachrichten wie Bestätigungen, Kontonachrichten, Formularmeldungen, Support-Antworten, Projekthinweise und Administrationsmeldungen aus Automatisierungen verwendet. Newsletter behalten ihre eigene Gestaltung."
+
+msgid "Email background"
+msgstr "E-Mail-Hintergrund"
+
+msgid "Button and link color"
+msgstr "Button- und Linkfarbe"
+
+msgid "Theme or system font"
+msgstr "Theme- oder Systemschrift"
+
+msgid "Header text"
+msgstr "Kopfzeile"
+
+msgid "Signature"
+msgstr "Signatur"
+
+msgid "Additional footer text"
+msgstr "Zusätzlicher Fußzeilentext"
+
+msgid "Show company and legal details in the footer"
+msgstr "Firmen- und Pflichtangaben in der Fußzeile anzeigen"
+
+msgid "Your message subject"
+msgstr "Betreff Ihrer Nachricht"
+
+msgid "Hello!"
+msgstr "Hallo!"
+
+msgid "The actual system message is inserted here automatically."
+msgstr "Die eigentliche Systemnachricht wird hier automatisch eingefügt."
+
+msgid "Save system email template"
+msgstr "Vorlage für System-E-Mails speichern"
+
+msgid "Send test email"
+msgstr "Test-E-Mail senden"
+
+msgid "ContactPanda system email test"
+msgstr "ContactPanda-Test der System-E-Mail"
+
+msgid "The template is ready."
+msgstr "Die Vorlage ist bereit."
+
+msgid "This is how future transactional ContactPanda emails will look."
+msgstr "So werden zukünftige transaktionale ContactPanda-E-Mails aussehen."
+
+msgid "Hello %1$s,\\n\\nconfirm your new email address using this link:\\n%2$s\\n\\nThe link is valid for 24 hours."
+msgstr "Hello %1$s,\\n\\nconfirm your new email address using this link:\\n%2$s\\n\\nThe link is valid for 24 hours."
+
+msgid "The requested action could not be completed."
+msgstr "The requested action could not be completed."
+
+msgid "The person does not exist."
+msgstr "The person does not exist."
+
+msgid "Set confirm to true to create the person."
+msgstr "Set confirm to true to create the person."
+
+msgid "Set confirm to true to create the email draft."
+msgstr "Set confirm to true to create the email draft."
+
+msgid "The email draft could not be created."
+msgstr "The email draft could not be created."
+
+msgid "The saved search does not exist."
+msgstr "The saved search does not exist."
+
+msgid "Set confirm to true to send the test email."
+msgstr "Set confirm to true to send the test email."
+
+msgid "Enter a valid test recipient."
+msgstr "Enter a valid test recipient."
+
+msgid "The email template does not exist."
+msgstr "The email template does not exist."
+
+msgid "Time"
+msgstr "Zeit"
+
+msgid "Tool"
+msgstr "Werkzeug"
+
+msgid "Successful"
+msgstr "Erfolgreich"

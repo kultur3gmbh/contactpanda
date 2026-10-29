@@ -45,7 +45,7 @@ $engine = getenv( 'CONTACTPANDA_BASIC_UPDATER_FILE' ) ?: __DIR__ . '/../contactp
 require $engine;
 $plus = in_array( '--plus', $argv, true );
 $slug = $plus ? 'contactpanda-plus' : 'contactpanda';
-$config = array( 'slug' => $slug, 'name' => $slug, 'repo' => $slug, 'zip_prefix' => $plus ? $slug : 'contactpanda-basic', 'plugin' => $slug . '/' . $slug . '.php', 'version' => '0.14.0', 'enabled' => 'CONTACTPANDA_UPDATER_TEST_ENABLED', 'basic' => $plus );
+$config = array( 'slug' => $slug, 'name' => $slug, 'repo' => $slug, 'zip_prefix' => $plus ? $slug : 'contactpanda-basic', 'plugin' => $slug . '/' . $slug . '.php', 'version' => '0.14.0', 'enabled' => 'CONTACTPANDA_UPDATER_TEST_ENABLED', 'basic' => $plus, 'public_direct' => false );
 if ( $plus ) $config['token'] = 'CONTACTPANDA_UPDATER_TEST_TOKEN';
 $api = 'https://api.github.com/repos/kultur3gmbh/' . $slug;
 $package = 'fixture bytes, not a published release archive';
@@ -67,6 +67,15 @@ $updater->release(); verify( 2 === count( $GLOBALS['requests'] ), 'Successful ch
 verify( $api . '/releases/latest' === $GLOBALS['requests'][0][0], 'No main branch access' );
 if ( $plus ) verify( isset( $GLOBALS['requests'][0][1]['headers']['Authorization'] ), 'Private API request authenticated' );
 else verify( ! isset( $GLOBALS['requests'][0][1]['headers']['Authorization'] ), 'Public API request anonymous' );
+if ( ! $plus ) {
+	$direct = $config; $direct['public_direct'] = true;
+	$updater = fixture( $direct ); $GLOBALS['queue'] = array( response( $manifest ) );
+	$direct_meta = $updater->release();
+	verify( ! is_wp_error( $direct_meta ) && '0.15.0' === $direct_meta['version'], 'Direct public release manifest' );
+	verify( 'https://github.com/kultur3gmbh/contactpanda/releases/latest/download/contactpanda-update.json' === $GLOBALS['requests'][0][0], 'Direct public manifest bypasses GitHub API quota' );
+	verify( 'https://github.com/kultur3gmbh/contactpanda/releases/download/v0.15.0/contactpanda-basic-0.15.0.zip' === $direct_meta['package_url'], 'Direct public package URL' );
+	$updater = fixture( $config ); $GLOBALS['queue'] = array( response( $release ), response( $manifest ) ); $meta = $updater->release();
+}
 $offer = $updater->updates( (object) array( 'checked' => array( $config['plugin'] => '0.14.0' ) ) );
 verify( isset( $offer->response[ $config['plugin'] ] ), 'WordPress update response' );
 verify( ! $updater->automatic( true, $offer->response[ $config['plugin'] ] ), 'Automatic updates default off even when upstream enables all plugins' );

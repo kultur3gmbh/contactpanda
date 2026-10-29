@@ -2,12 +2,17 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.67
+Stable tag: 0.8.68
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free, reduced newsletter workflow, a WooCommerce customer overview, optional Groundhogg compatibility, and stable extension APIs for the ContactPanda product family.
 
 == Changelog ==
+
+= 0.8.68 =
+* Adds a centrally configurable visual frame for transactional system emails, shared by the ContactPanda family.
+* Makes the public Basic updater independent of anonymous GitHub API limits while retaining integrity verification.
+* Routes confirmations, registration notices and account messages through the shared system-email template.
 
 = 0.8.67 =
 * Adds complete, filterable and paginated newsletter recipient reports without the previous 500-recipient display limit.

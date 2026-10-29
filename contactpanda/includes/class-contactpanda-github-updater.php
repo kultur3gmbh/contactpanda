@@ -49,7 +49,41 @@ final class ContactPanda_GitHub_Updater {
 
 	private function api() { return 'https://api.github.com/repos/kultur3gmbh/' . $this->config['repo']; }
 	private function asset_url( $id ) { return $this->api() . '/releases/assets/' . absint( $id ); }
+	private function public_manifest_url() { return 'https://github.com/kultur3gmbh/' . $this->config['repo'] . '/releases/latest/download/' . $this->config['slug'] . '-update.json'; }
+	private function public_package_url( $version ) { return 'https://github.com/kultur3gmbh/' . $this->config['repo'] . '/releases/download/v' . rawurlencode( $version ) . '/' . rawurlencode( $this->config['zip_prefix'] . '-' . $version . '.zip' ); }
+	private function package_url( $release ) { return ! empty( $release['package_url'] ) ? $release['package_url'] : $this->asset_url( $release['asset_id'] ); }
 	private function version( $value ) { return is_string( $value ) && 1 === preg_match( '/^\d+\.\d+(?:\.\d+)?$/D', $value ); }
+
+	/** Anonymous public-release download that never depends on GitHub API quota or credentials. */
+	private function public_request( $url, $filename = '' ) {
+		$prefix = 'https://github.com/kultur3gmbh/' . $this->config['repo'] . '/releases/';
+		if ( 0 !== strpos( $url, $prefix ) ) return $this->error( 'release' );
+		for ( $redirect = 0; $redirect < 5; $redirect++ ) {
+			$args = array( 'timeout' => $filename ? 120 : 20, 'redirection' => 0, 'sslverify' => true, 'headers' => array( 'Accept' => 'application/octet-stream' ), 'limit_response_size' => $filename ? 100 * 1024 * 1024 : 256 * 1024 );
+			if ( $filename ) { $args['stream'] = true; $args['filename'] = $filename; }
+			$response = wp_safe_remote_get( $url, $args );
+			if ( is_wp_error( $response ) ) return $this->error( 'network' );
+			$code = wp_remote_retrieve_response_code( $response );
+			if ( in_array( $code, array( 301, 302, 303, 307, 308 ), true ) ) {
+				$next = wp_remote_retrieve_header( $response, 'location' ); $parts = is_string( $next ) ? wp_parse_url( $next ) : false;
+				if ( ! $parts || 'https' !== ( $parts['scheme'] ?? '' ) || ! in_array( $parts['host'] ?? '', array( 'release-assets.githubusercontent.com', 'objects.githubusercontent.com', 'github-releases.githubusercontent.com' ), true ) || isset( $parts['user'] ) || isset( $parts['pass'] ) || isset( $parts['fragment'] ) ) return $this->error( 'release' );
+				$url = $next; continue;
+			}
+			if ( 404 === $code ) return $this->error( 'release' );
+			if ( 429 === $code || $code >= 500 ) return $this->error( 'network' );
+			if ( 200 !== $code ) return $this->error( 'access' );
+			return $response;
+		}
+		return $this->error( 'network' );
+	}
+
+	private function public_release() {
+		$response = $this->public_request( $this->public_manifest_url() );
+		if ( is_wp_error( $response ) ) return $response;
+		$data = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $data ) || ! $this->version( $data['version'] ?? null ) || $this->config['slug'] !== ( $data['slug'] ?? '' ) || ! $this->version( $data['requires'] ?? null ) || ! $this->version( $data['requires_php'] ?? null ) || ! $this->version( $data['tested'] ?? null ) || ! is_string( $data['sha256'] ?? null ) || ! preg_match( '/^[a-f0-9]{64}$/D', $data['sha256'] ) ) return $this->error( 'release' );
+		return array( 'version' => $data['version'], 'requires' => $data['requires'], 'requires_php' => $data['requires_php'], 'tested' => $data['tested'], 'requires_basic' => '', 'sha256' => $data['sha256'], 'asset_id' => 0, 'size' => 0, 'package_url' => $this->public_package_url( $data['version'] ) );
+	}
 
 	/** All authenticated requests are constructed locally and have redirects disabled. */
 	private function request( $url, $binary = false, $filename = '' ) {
@@ -99,6 +133,14 @@ final class ContactPanda_GitHub_Updater {
 				if ( isset( $cached['error'] ) ) return $this->error( str_replace( 'contactpanda_update_', '', $cached['error'] ) );
 				return $cached;
 			}
+		}
+		// Basic is public: use the signed release manifest directly and avoid
+		// anonymous GitHub API rate limits or unrelated wp-config.php tokens.
+		if ( empty( $this->config['token'] ) && false !== ( $this->config['public_direct'] ?? true ) ) {
+			$result = $this->public_release();
+			if ( is_wp_error( $result ) ) return $this->fail( $result );
+			set_site_transient( $this->cache, $result, 30 * MINUTE_IN_SECONDS );
+			return $result;
 		}
 		$response = $this->request( $this->api() . '/releases/latest' );
 		if ( is_wp_error( $response ) ) return $this->fail( $response );
@@ -156,7 +198,7 @@ final class ContactPanda_GitHub_Updater {
 			}
 			if ( isset( $transient->response[ $plugin ] ) ) {
 				$release = get_site_transient( $this->cache );
-				$transient->response[ $plugin ]->package = $this->compatible( $release ) ? $this->asset_url( $release['asset_id'] ) : '';
+				$transient->response[ $plugin ]->package = $this->compatible( $release ) ? $this->package_url( $release ) : '';
 			}
 		}
 		return $transient;
@@ -170,7 +212,7 @@ final class ContactPanda_GitHub_Updater {
 		unset( $transient->response[ $plugin ], $transient->no_update[ $plugin ] );
 		$release = $this->release();
 		if ( is_wp_error( $release ) ) return $transient;
-		$item = (object) array( 'id' => 'https://github.com/kultur3gmbh/' . $this->config['repo'], 'slug' => $this->config['slug'], 'plugin' => $plugin, 'new_version' => $release['version'], 'url' => 'https://github.com/kultur3gmbh/' . $this->config['repo'] . '/releases', 'package' => $this->compatible( $release ) ? $this->asset_url( $release['asset_id'] ) : '', 'requires' => $release['requires'], 'requires_php' => $release['requires_php'], 'tested' => $release['tested'], 'contactpanda_github' => true );
+		$item = (object) array( 'id' => 'https://github.com/kultur3gmbh/' . $this->config['repo'], 'slug' => $this->config['slug'], 'plugin' => $plugin, 'new_version' => $release['version'], 'url' => 'https://github.com/kultur3gmbh/' . $this->config['repo'] . '/releases', 'package' => $this->compatible( $release ) ? $this->package_url( $release ) : '', 'requires' => $release['requires'], 'requires_php' => $release['requires_php'], 'tested' => $release['tested'], 'contactpanda_github' => true );
 		$installed = $transient->checked[ $plugin ] ?? $this->config['version'];
 		$key = version_compare( $release['version'], $installed, '>' ) ? 'response' : 'no_update';
 		if ( ! isset( $transient->{$key} ) || ! is_array( $transient->{$key} ) ) $transient->{$key} = array();
@@ -187,12 +229,13 @@ final class ContactPanda_GitHub_Updater {
 		if ( 'plugin_information' !== $action || ( $args->slug ?? '' ) !== $this->config['slug'] || ! $this->enabled() ) return $result;
 		$release = $this->release();
 		if ( is_wp_error( $release ) ) return $release;
-		return (object) array( 'name' => $this->config['name'], 'slug' => $this->config['slug'], 'version' => $release['version'], 'author' => 'Kultur3 GmbH', 'requires' => $release['requires'], 'requires_php' => $release['requires_php'], 'tested' => $release['tested'], 'download_link' => $this->compatible( $release ) ? $this->asset_url( $release['asset_id'] ) : '', 'sections' => array( 'description' => esc_html( $this->compatible( $release ) ? __( 'Published GitHub release for the ContactPanda test phase. Automatic updates require administrator opt-in in the WordPress Plugins screen.', 'contactpanda' ) : $this->error( 'compatibility' )->get_error_message() ) ) );
+		return (object) array( 'name' => $this->config['name'], 'slug' => $this->config['slug'], 'version' => $release['version'], 'author' => 'Kultur3 GmbH', 'requires' => $release['requires'], 'requires_php' => $release['requires_php'], 'tested' => $release['tested'], 'download_link' => $this->compatible( $release ) ? $this->package_url( $release ) : '', 'sections' => array( 'description' => esc_html( $this->compatible( $release ) ? __( 'Published GitHub release for the ContactPanda test phase. Automatic updates require administrator opt-in in the WordPress Plugins screen.', 'contactpanda' ) : $this->error( 'compatibility' )->get_error_message() ) ) );
 	}
 
 	public function download( $reply, $package, $upgrader, $extra ) {
 		$target = ( $extra['plugin'] ?? '' ) === $this->config['plugin'];
-		$own = is_string( $package ) && 0 === strpos( $package, $this->api() . '/releases/assets/' );
+		$public_prefix = 'https://github.com/kultur3gmbh/' . $this->config['repo'] . '/releases/download/';
+		$own = is_string( $package ) && ( 0 === strpos( $package, $this->api() . '/releases/assets/' ) || 0 === strpos( $package, $public_prefix ) );
 		if ( ! $target && ! $own ) return $reply;
 		if ( $own && ! empty( $extra['plugin'] ) && ! $target ) return $this->error( 'release' );
 		if ( ! $this->enabled() ) return $own ? $this->error( 'disabled' ) : $reply;
@@ -203,11 +246,11 @@ final class ContactPanda_GitHub_Updater {
 		$release = $this->release( true ); // Revalidate even cached offers and withdrawn releases before installation.
 		if ( is_wp_error( $release ) ) return $release;
 		if ( ! $this->compatible( $release ) ) return $this->error( 'compatibility' );
-		if ( $this->asset_url( $release['asset_id'] ) !== $package || ! version_compare( $release['version'], $this->config['version'], '>' ) ) return $this->error( 'release' );
+		if ( $this->package_url( $release ) !== $package || ! version_compare( $release['version'], $this->config['version'], '>' ) ) return $this->error( 'release' );
 		$file = wp_tempnam( $this->config['slug'] . '.zip' );
 		if ( ! $file ) return $this->error( 'archive' );
-		$response = $this->request( $package, true, $file );
-		if ( is_wp_error( $response ) || ! is_file( $file ) || filesize( $file ) !== $release['size'] || ! hash_equals( $release['sha256'], hash_file( 'sha256', $file ) ) ) {
+		$response = ! empty( $release['package_url'] ) ? $this->public_request( $package, $file ) : $this->request( $package, true, $file );
+		if ( is_wp_error( $response ) || ! is_file( $file ) || ( ! empty( $release['size'] ) && filesize( $file ) !== $release['size'] ) || ! hash_equals( $release['sha256'], hash_file( 'sha256', $file ) ) ) {
 			wp_delete_file( $file ); return is_wp_error( $response ) ? $response : $this->error( 'archive' );
 		}
 		$this->install_release = $release;

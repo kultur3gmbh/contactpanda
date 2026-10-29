@@ -1606,7 +1606,8 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		$subject = strtr( $settings['newsletter_subject'], $replacements );
 		$message = strtr( wpautop( $settings['newsletter_message'] ), $replacements );
 		if ( false === strpos( $settings['newsletter_message'], '{confirmation_link}' ) ) $message .= '<p>' . $replacements['{confirmation_link}'] . '</p>';
-		if ( ! wp_mail( $payload['email'], $subject, $message, array( 'Content-Type: text/html; charset=UTF-8' ) ) ) {
+		$sent = class_exists( 'ContactPanda_System_Emails' ) ? ContactPanda_System_Emails::send( $payload['email'], $subject, $message ) : wp_mail( $payload['email'], $subject, $message, array( 'Content-Type: text/html; charset=UTF-8' ) );
+		if ( ! $sent ) {
 			delete_transient( 'contactpanda_newsletter_verify_' . $verification_key );
 			return new WP_Error( 'contactpanda_optin_mail', __( 'The confirmation email could not be sent. Please try again later.', 'contactpanda' ) );
 		}
@@ -2236,7 +2237,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		if ( false === strpos( $settings['confirmation_message'], '{confirmation_link}' ) ) {
 			$message .= '<p><a href="' . esc_url( $link ) . '">' . esc_html__( 'Confirm email address', 'contactpanda' ) . '</a></p>';
 		}
-		return wp_mail( $user->user_email, $subject, $message, array( 'Content-Type: text/html; charset=UTF-8' ) );
+		return class_exists( 'ContactPanda_System_Emails' ) ? ContactPanda_System_Emails::send( $user->user_email, $subject, $message ) : wp_mail( $user->user_email, $subject, $message, array( 'Content-Type: text/html; charset=UTF-8' ) );
 	}
 
 	public static function handle_verification() {
@@ -2381,12 +2382,12 @@ The link is valid for 24 hours.', 'contactpanda' ),
 			update_user_meta( $user_id, 'contactpanda_business_status', 'approved' );
 			update_user_meta( $user_id, 'contactpanda_approved_at', current_time( 'mysql', true ) );
 			update_user_meta( $user_id, 'contactpanda_approved_by', get_current_user_id() );
-			wp_mail( $user->user_email, __( 'Your business account has been approved', 'contactpanda' ), __( 'Your business account and requested customer role have been approved. You can now sign in.', 'contactpanda' ) );
+			class_exists( 'ContactPanda_System_Emails' ) ? ContactPanda_System_Emails::send( $user->user_email, __( 'Your business account has been approved', 'contactpanda' ), wpautop( __( 'Your business account and requested customer role have been approved. You can now sign in.', 'contactpanda' ) ) ) : wp_mail( $user->user_email, __( 'Your business account has been approved', 'contactpanda' ), __( 'Your business account and requested customer role have been approved. You can now sign in.', 'contactpanda' ) );
 		} else {
 			update_user_meta( $user_id, 'contactpanda_business_status', 'rejected' );
 			update_user_meta( $user_id, 'contactpanda_rejected_at', current_time( 'mysql', true ) );
 			update_user_meta( $user_id, 'contactpanda_rejected_by', get_current_user_id() );
-			wp_mail( $user->user_email, __( 'Update about your business registration', 'contactpanda' ), __( 'Your business registration could not be approved. Please contact us if you have questions.', 'contactpanda' ) );
+			class_exists( 'ContactPanda_System_Emails' ) ? ContactPanda_System_Emails::send( $user->user_email, __( 'Update about your business registration', 'contactpanda' ), wpautop( __( 'Your business registration could not be approved. Please contact us if you have questions.', 'contactpanda' ) ) ) : wp_mail( $user->user_email, __( 'Update about your business registration', 'contactpanda' ), __( 'Your business registration could not be approved. Please contact us if you have questions.', 'contactpanda' ) );
 		}
 		if ( ContactPanda_Store::standalone() ) {
 			$contact = ContactPanda_Store::contact_by_email( $user->user_email );
@@ -2430,7 +2431,7 @@ Email: %3$s
 Requested role: %4$s
 
 Review: %5$s', 'contactpanda' ), $user->display_name, get_user_meta( $user_id, 'billing_company', true ), $user->user_email, $role_label, admin_url( 'admin.php?page=contactpanda-settings' ) );
-		wp_mail( $settings['admin_email'], $subject, $message );
+		class_exists( 'ContactPanda_System_Emails' ) ? ContactPanda_System_Emails::send( $settings['admin_email'], $subject, wpautop( esc_html( $message ) ) ) : wp_mail( $settings['admin_email'], $subject, $message );
 	}
 
 	private static function rate_limit_ok( $scope = 'registration', $limit = 5 ) {
