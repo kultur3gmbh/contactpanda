@@ -8034,3 +8034,30 @@ msgstr ""
 
 msgid "Email template preview"
 msgstr ""
+
+msgid "Already imported"
+msgstr ""
+
+msgid "Update the existing draft from Groundhogg again. Local draft changes will be replaced."
+msgstr ""
+
+msgid "Update again"
+msgstr ""
+
+msgid "Create draft"
+msgstr ""
+
+msgid "Confirm that the existing automation draft may be updated."
+msgstr ""
+
+msgid "Open graphical report"
+msgstr ""
+
+msgid "Graphical mailing result"
+msgstr ""
+
+msgid "Templates that are or were used cannot be deleted."
+msgstr ""
+
+msgid "Imported templates are read-only. Create an editable copy to change the content."
+msgstr ""

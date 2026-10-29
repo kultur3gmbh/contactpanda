@@ -8061,3 +8061,30 @@ msgstr "Diese Vorlage wird verwendet und kann nicht gelöscht werden."
 
 msgid "Email template preview"
 msgstr "Vorschau der E-Mail-Vorlage"
+
+msgid "Already imported"
+msgstr "Bereits importiert"
+
+msgid "Update the existing draft from Groundhogg again. Local draft changes will be replaced."
+msgstr "Den bestehenden Entwurf erneut aus Groundhogg aktualisieren. Lokale Änderungen am Entwurf werden ersetzt."
+
+msgid "Update again"
+msgstr "Erneut aktualisieren"
+
+msgid "Create draft"
+msgstr "Entwurf erstellen"
+
+msgid "Confirm that the existing automation draft may be updated."
+msgstr "Bestätigen Sie, dass der bestehende Automatisierungsentwurf aktualisiert werden darf."
+
+msgid "Open graphical report"
+msgstr "Grafische Auswertung öffnen"
+
+msgid "Graphical mailing result"
+msgstr "Grafisches Aussendungsergebnis"
+
+msgid "Templates that are or were used cannot be deleted."
+msgstr "Vorlagen, die verwendet werden oder wurden, können nicht gelöscht werden."
+
+msgid "Imported templates are read-only. Create an editable copy to change the content."
+msgstr "Importierte Vorlagen sind schreibgeschützt. Erstellen Sie eine bearbeitbare Kopie, um den Inhalt zu ändern."

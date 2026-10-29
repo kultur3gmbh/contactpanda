@@ -2,12 +2,17 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.65
+Stable tag: 0.8.66
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free, reduced newsletter workflow, a WooCommerce customer overview, optional Groundhogg compatibility, and stable extension APIs for the ContactPanda product family.
 
 == Changelog ==
+
+= 0.8.66 =
+* Adds safe repeatable Groundhogg automation updates and recognizes WooCommerce new-order triggers.
+* Improves email-template actions, completed-mailing reports, and the newsletter list presentation.
+* Refines the trash workflow with compact filters and explicit confirmation only for permanent deletion.
 
 = 0.8.65 =
 * Recognizes Groundhogg delay, confirmation, WordPress-user, role, notification, and link-click steps from their stored metadata.

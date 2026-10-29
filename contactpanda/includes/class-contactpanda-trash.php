@@ -93,7 +93,7 @@ final class ContactPanda_Trash {
 			$operation = sanitize_key( wp_unslash( $_POST['direct_operation'] ?? '' ) );
 			$_POST['confirmed'] = '1';
 		}
-		if ( ! self::valid_entity( $entity ) || ! in_array( $operation, array( 'trash', 'restore', 'purge' ), true ) || ! $ids || count( $ids ) > 50 || '1' !== ( $_POST['confirmed'] ?? '' ) ) wp_die( esc_html__( 'Select records and explicitly confirm the selected action.', 'contactpanda' ), '', array( 'response' => 400 ) );
+		if ( ! self::valid_entity( $entity ) || ! in_array( $operation, array( 'trash', 'restore', 'purge' ), true ) || ! $ids || count( $ids ) > 50 || ( 'purge' === $operation && '1' !== ( $_POST['confirmed'] ?? '' ) ) ) wp_die( esc_html__( 'Select records and explicitly confirm permanent deletion.', 'contactpanda' ), '', array( 'response' => 400 ) );
 		$changed = 0;
 		foreach ( $ids as $id ) if ( self::change( $entity, $id, $operation, true ) ) $changed++;
 		$redirect = self::url( $entity, 0, 'trash' !== $operation );
@@ -116,18 +116,17 @@ final class ContactPanda_Trash {
 		$search = isset( $_GET['s'] ) && is_string( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 		echo '<p>' . esc_html__( 'Only ContactPanda records are affected. WordPress users, orders, invoices, events, Groundhogg records and external source data are never deleted.', 'contactpanda' ) . '</p>';
 		if ( isset( $_GET['changed'], $_GET['failed'] ) ) echo '<div class="notice notice-info"><p>' . esc_html( sprintf( __( 'Changed: %1$d. Failed or no longer in the required state: %2$d.', 'contactpanda' ), absint( $_GET['changed'] ), absint( $_GET['failed'] ) ) ) . '</p></div>';
-		echo '<p>';
-		foreach ( array( 'contacts' => __( 'People', 'contactpanda' ), 'companies' => __( 'Companies', 'contactpanda' ) ) as $key => $label ) echo '<a class="button" href="' . esc_url( self::url( $key, 0, $trashed ) ) . '">' . esc_html( $label ) . '</a> ';
-		echo '</p><p class="description">' . esc_html__( 'Move records to Trash from the People or Companies list. This page only restores or permanently deletes records that are already in Trash.', 'contactpanda' ) . '</p>';
-		echo '<form method="get"><input type="hidden" name="page" value="contactpanda-trash"><input type="hidden" name="entity" value="' . esc_attr( $entity ) . '"><input type="hidden" name="trashed" value="' . ( $trashed ? '1' : '0' ) . '"><label>' . esc_html__( 'Search', 'contactpanda' ) . ' <input type="search" name="s" value="' . esc_attr( $search ) . '"></label> <button class="button">' . esc_html__( 'Search', 'contactpanda' ) . '</button></form>';
+		echo '<p class="description">' . esc_html__( 'Move records to Trash from the People or Companies list. This page only restores or permanently deletes records that are already in Trash.', 'contactpanda' ) . '</p>';
 		$result = self::records( $entity, $trashed, $page, $search, $id );
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_record_action"><input type="hidden" name="entity" value="' . esc_attr( $entity ) . '">';
 		wp_nonce_field( 'contactpanda_record_action' );
-		echo '<p><label>' . esc_html__( 'Bulk actions', 'contactpanda' ) . ' <select name="operation">';
+		echo '<div class="contactpanda-trash-toolbar"><span class="contactpanda-trash-filters">';
+		foreach ( array( 'contacts' => __( 'People', 'contactpanda' ), 'companies' => __( 'Companies', 'contactpanda' ) ) as $key => $label ) echo '<a class="button' . ( $entity === $key ? ' is-active' : '' ) . '" href="' . esc_url( self::url( $key, 0, $trashed ) ) . '">' . esc_html( $label ) . '</a>';
+		echo '</span><label><span class="screen-reader-text">' . esc_html__( 'Bulk actions', 'contactpanda' ) . '</span><select name="operation">';
 		$operations = array( 'restore' => __( 'Restore', 'contactpanda' ), 'purge' => __( 'Delete permanently', 'contactpanda' ) );
 		$selected_operation = isset( $_GET['operation'] ) && is_string( $_GET['operation'] ) ? sanitize_key( wp_unslash( $_GET['operation'] ) ) : key( $operations );
 		foreach ( $operations as $key => $label ) echo '<option value="' . esc_attr( $key ) . '"' . ( $selected_operation === $key ? ' selected' : '' ) . '>' . esc_html( $label ) . '</option>';
-		echo '</select></label></p><p><label><input type="checkbox" name="confirmed" value="1" required> ' . esc_html__( 'I explicitly confirm the selected action for the checked records. Permanent deletion cannot be undone.', 'contactpanda' ) . '</label></p><p><button class="button">' . esc_html__( 'Apply', 'contactpanda' ) . '</button></p>';
+		echo '</select></label><button class="button" data-trash-apply>' . esc_html__( 'Apply', 'contactpanda' ) . '</button><span class="contactpanda-trash-search"><input type="search" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Search', 'contactpanda' ) . '" data-trash-search><button type="button" class="button" data-trash-search-submit>' . esc_html__( 'Search', 'contactpanda' ) . '</button></span></div><p class="contactpanda-trash-confirm"><label><input type="checkbox" name="confirmed" value="1" data-trash-confirm> ' . esc_html__( 'I explicitly confirm the selected action.', 'contactpanda' ) . '</label><span class="description"> ' . esc_html__( 'Required only for permanent deletion.', 'contactpanda' ) . '</span></p>';
 		echo '<table class="widefat striped"><thead><tr><th>' . '<label><input type="checkbox" class="contactpanda-trash-select-all"><span class="screen-reader-text">' . esc_html__( 'Select all records on this page', 'contactpanda' ) . '</span></label></th><th>' . esc_html__( 'Name', 'contactpanda' ) . '</th><th>' . esc_html__( 'Deleted at', 'contactpanda' ) . '</th><th>' . esc_html__( 'Actions', 'contactpanda' ) . '</th></tr></thead><tbody>';
 		foreach ( $result['rows'] as $row ) {
 			$name = 'contacts' === $entity ? trim( $row['first_name'] . ' ' . $row['last_name'] ) . ' (' . $row['email'] . ')' : $row['name'];

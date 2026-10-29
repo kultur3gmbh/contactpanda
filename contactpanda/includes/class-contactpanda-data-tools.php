@@ -204,6 +204,8 @@ final class ContactPanda_Data_Tools {
 		echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Flow', 'contactpanda' ) . '</th><th>' . esc_html__( 'Steps', 'contactpanda' ) . '</th><th>' . esc_html__( 'Compatibility', 'contactpanda' ) . '</th><th>' . esc_html__( 'Assessment', 'contactpanda' ) . '</th><th>' . esc_html__( 'Actions', 'contactpanda' ) . '</th></tr></thead><tbody>';
 		foreach ( $flows as $flow ) {
 			$assessment = self::assess_groundhogg_flow( $flow );
+			$flow_map = (array) get_option( 'contactpanda_plus_groundhogg_flow_map', array() );
+			$already_imported = ! empty( $flow_map[ $flow['source_id'] ] );
 			$labels = array( 'supported' => __( 'Directly supported', 'contactpanda' ), 'review' => __( 'Review required', 'contactpanda' ), 'unsupported' => __( 'Not yet supported', 'contactpanda' ) );
 			$summary = array();
 			foreach ( $assessment['counts'] as $key => $count ) if ( $count ) $summary[] = sprintf( '%1$d × %2$s', $count, $labels[ $key ] );
@@ -213,7 +215,13 @@ final class ContactPanda_Data_Tools {
 			if ( has_filter( 'contactpanda_import_groundhogg_flow_draft' ) ) {
 				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_import_groundhogg_flow_draft"><input type="hidden" name="source_id" value="' . esc_attr( $flow['source_id'] ) . '">';
 				wp_nonce_field( 'contactpanda_import_groundhogg_flow_draft_' . $flow['source_id'] );
-				echo '<button class="button">' . esc_html__( 'Create or update draft', 'contactpanda' ) . '</button></form>';
+				if ( $already_imported ) {
+					echo '<span class="contactpanda-migration-status is-supported">' . esc_html__( 'Already imported', 'contactpanda' ) . '</span><br>';
+					echo '<label class="description"><input type="checkbox" name="confirm_update" value="1" required> ' . esc_html__( 'Update the existing draft from Groundhogg again. Local draft changes will be replaced.', 'contactpanda' ) . '</label><br>';
+					echo '<button class="button">' . esc_html__( 'Update again', 'contactpanda' ) . '</button></form>';
+				} else {
+					echo '<button class="button">' . esc_html__( 'Create draft', 'contactpanda' ) . '</button></form>';
+				}
 			} else {
 				echo '<span class="description">' . esc_html__( 'ContactPanda Plus is required to create an automation draft.', 'contactpanda' ) . '</span>';
 			}
@@ -232,6 +240,8 @@ final class ContactPanda_Data_Tools {
 		if ( ! current_user_can( 'manage_options' ) ) wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		$source_id = sanitize_text_field( wp_unslash( $_POST['source_id'] ?? '' ) );
 		check_admin_referer( 'contactpanda_import_groundhogg_flow_draft_' . $source_id );
+		$flow_map = (array) get_option( 'contactpanda_plus_groundhogg_flow_map', array() );
+		if ( ! empty( $flow_map[ $source_id ] ) && '1' !== ( $_POST['confirm_update'] ?? '' ) ) wp_die( esc_html__( 'Confirm that the existing automation draft may be updated.', 'contactpanda' ), '', array( 'response' => 400 ) );
 		$flow = false;
 		foreach ( self::groundhogg_flows() as $candidate ) if ( hash_equals( (string) $candidate['source_id'], $source_id ) ) { $flow = $candidate; break; }
 		$result = $flow ? apply_filters( 'contactpanda_import_groundhogg_flow_draft', new WP_Error( 'contactpanda_plus_required', __( 'ContactPanda Plus is required to import automation drafts.', 'contactpanda' ) ), $flow, self::assess_groundhogg_flow( $flow ) ) : new WP_Error( 'contactpanda_groundhogg_flow_missing', __( 'The Groundhogg flow could not be read again.', 'contactpanda' ) );
@@ -288,7 +298,7 @@ final class ContactPanda_Data_Tools {
 	}
 
 	private static function assess_groundhogg_flow( $flow ) {
-		$direct = array( 'wait', 'delay', 'timer', 'delay_timer', 'apply_tag', 'add_tag', 'remove_tag', 'remove_tag_action', 'send_email', 'email', 'edit_meta', 'update_contact', 'email_confirmed', 'confirmed_email', 'optin_status_changed', 'create_user', 'create_wp_user', 'admin_notification', 'notify_admin', 'change_role', 'add_role', 'set_user_role', 'link_click', 'link_clicked', 'email_link_clicked', 'role_changed', 'user_role_changed' );
+		$direct = array( 'wait', 'delay', 'timer', 'delay_timer', 'apply_tag', 'add_tag', 'remove_tag', 'remove_tag_action', 'send_email', 'email', 'edit_meta', 'update_contact', 'email_confirmed', 'confirmed_email', 'optin_status_changed', 'create_user', 'create_wp_user', 'admin_notification', 'notify_admin', 'change_role', 'add_role', 'set_user_role', 'link_click', 'link_clicked', 'email_link_clicked', 'role_changed', 'user_role_changed', 'wc_new_order', 'woocommerce_new_order', 'new_order' );
 		$review = array( 'benchmark', 'tag_applied', 'form_filled', 'web_form', 'webhook', 'condition', 'logic', 'date_timer', 'field_changed' );
 		$result = array( 'status' => 'supported', 'counts' => array( 'supported' => 0, 'review' => 0, 'unsupported' => 0 ), 'steps' => array() );
 		foreach ( (array) $flow['steps'] as $step ) {

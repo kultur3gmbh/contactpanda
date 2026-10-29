@@ -1,7 +1,24 @@
 // The lifecycle form also supports individual selection without JavaScript.
 document.addEventListener('change', function (event) {
-	if (!event.target.matches('.contactpanda-trash-select-all')) return;
-	event.target.closest('form').querySelectorAll('input[name="ids[]"]').forEach(function (checkbox) { checkbox.checked = event.target.checked; });
+	if (event.target.matches('.contactpanda-trash-select-all')) event.target.closest('form').querySelectorAll('input[name="ids[]"]').forEach(function (checkbox) { checkbox.checked = event.target.checked; });
+	if (event.target.matches('[name="operation"], [data-trash-confirm]')) updateBulkState(event.target.closest('form'));
+});
+
+function updateBulkState(form) {
+	if (!form) return;
+	var purge = form.querySelector('[name="operation"]') && form.querySelector('[name="operation"]').value === 'purge';
+	var confirm = form.querySelector('[data-trash-confirm]'), apply = form.querySelector('[data-trash-apply]');
+	if (confirm) confirm.required = purge;
+	if (apply) apply.disabled = purge && (!confirm || !confirm.checked);
+}
+
+document.querySelectorAll('form').forEach(updateBulkState);
+
+document.addEventListener('click', function (event) {
+	var search = event.target.closest('[data-trash-search-submit]');
+	if (!search) return;
+	var form = search.closest('form'), input = form.querySelector('[data-trash-search]'), url = new URL(window.location.href);
+	url.searchParams.set('s', input ? input.value : ''); url.searchParams.delete('paged'); window.location.href = url.toString();
 });
 
 document.addEventListener('click', function (event) {
@@ -10,9 +27,9 @@ document.addEventListener('click', function (event) {
 	var operation = button.dataset.operation;
 	var name = button.dataset.recordName || '';
 	var templates = window.CONTACTPANDA_TRASH || {};
-	var template = operation === 'purge' ? templates.purge : (operation === 'restore' ? templates.restore : templates.trash);
+	var template = operation === 'purge' ? templates.purge : templates.trash;
 	var message = (template || 'Confirm this action for “%s”?').replace('%s', name);
-	if (!window.confirm(message)) return;
+	if (operation !== 'restore' && !window.confirm(message)) return;
 	var form = button.closest('form');
 	if (button.dataset.entity && button.dataset.nonce) {
 		form = document.createElement('form');

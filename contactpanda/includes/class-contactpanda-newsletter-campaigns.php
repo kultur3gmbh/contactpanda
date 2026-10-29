@@ -163,6 +163,7 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 			if ( ! $imported && 'completed' === $campaign['status'] ) $actions .= '<span class="button contactpanda-mailing-state contactpanda-mailing-completed">' . esc_html__( 'Completed', 'contactpanda' ) . '</span>';
 			if ( ! $imported && 'cancelled' === $campaign['status'] ) $actions .= '<span class="button contactpanda-mailing-state contactpanda-mailing-cancelled">' . esc_html__( 'Cancelled', 'contactpanda' ) . '</span>';
 			if ( ! $imported && ! in_array( $campaign['status'], array( 'completed', 'cancelled' ), true ) ) $actions .= self::action_link( $campaign['id'], 'cancel', __( 'Cancel', 'contactpanda' ), 'button contactpanda-cancel-mailing' );
+			if ( in_array( $campaign['status'], array( 'completed', 'imported' ), true ) ) $actions .= '<a class="button contactpanda-mailing-report-link" href="' . esc_url( $detail_url ) . '" aria-label="' . esc_attr__( 'Open graphical report', 'contactpanda' ) . '" title="' . esc_attr__( 'Open graphical report', 'contactpanda' ) . '"><span class="dashicons dashicons-chart-pie" aria-hidden="true"></span></a>';
 			$recipient_summary = '<span data-contactpanda-mailing-total>' . esc_html( sprintf( __( '%d total', 'contactpanda' ), absint( $campaign['total_recipients'] ) ) ) . '</span><span data-contactpanda-mailing-sent>' . esc_html( sprintf( __( '%d sent', 'contactpanda' ), absint( $campaign['sent_count'] ) ) ) . '</span><span data-contactpanda-mailing-failed>' . esc_html( sprintf( __( '%d failed', 'contactpanda' ), absint( $campaign['failed_count'] ) ) ) . '</span>';
 			if ( ! empty( $campaign['scheduled_at'] ) ) {
 				$delivery_time = sprintf( __( '%1$s at %2$s', 'contactpanda' ), mysql2date( get_option( 'date_format' ), $campaign['scheduled_at'] ), mysql2date( get_option( 'time_format' ), $campaign['scheduled_at'] ) );
@@ -201,6 +202,11 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 		if ( $campaign && 'imported' === $campaign['status'] ) {
 			echo '<h3>' . esc_html__( 'Imported Groundhogg broadcast', 'contactpanda' ) . '</h3><div class="notice notice-info inline"><p>' . esc_html__( 'This completed broadcast is a protected archive. It cannot be started, changed, or sent again.', 'contactpanda' ) . '</p></div>';
 			echo '<p><strong>' . esc_html__( 'Groundhogg ID', 'contactpanda' ) . ':</strong> ' . esc_html( $campaign['external_id'] ) . ' &nbsp; <strong>' . esc_html__( 'Sent', 'contactpanda' ) . ':</strong> ' . esc_html( $campaign['sent_count'] ) . ' &nbsp; <strong>' . esc_html__( 'Opened', 'contactpanda' ) . ':</strong> ' . esc_html( $campaign['opened_count'] ) . ' &nbsp; <strong>' . esc_html__( 'Clicked', 'contactpanda' ) . ':</strong> ' . esc_html( $campaign['clicked_count'] ) . ' &nbsp; <strong>' . esc_html__( 'Unsubscribed', 'contactpanda' ) . ':</strong> ' . esc_html( $campaign['unsubscribed_count'] ) . '</p>';
+			$archive_metrics = array( __( 'Recipients', 'contactpanda' ) => absint( $campaign['total_recipients'] ), __( 'Sent', 'contactpanda' ) => absint( $campaign['sent_count'] ), __( 'Opened', 'contactpanda' ) => absint( $campaign['opened_count'] ), __( 'Clicked', 'contactpanda' ) => absint( $campaign['clicked_count'] ), __( 'Unsubscribed', 'contactpanda' ) => absint( $campaign['unsubscribed_count'] ) );
+			$archive_max = max( array_merge( array( 1 ), array_values( $archive_metrics ) ) );
+			echo '<div class="contactpanda-mailing-chart" role="img" aria-label="' . esc_attr__( 'Graphical mailing result', 'contactpanda' ) . '">';
+			foreach ( $archive_metrics as $label => $value ) echo '<div><span>' . esc_html( $label ) . '</span><i><b style="width:' . esc_attr( round( 100 * $value / $archive_max, 1 ) ) . '%"></b></i><strong>' . esc_html( number_format_i18n( $value ) ) . '</strong></div>';
+			echo '</div>';
 			echo '<div class="contactpanda-newsletter-preview-stage"><iframe sandbox="allow-popups allow-popups-to-escape-sandbox" style="width:100%;min-height:680px;border:1px solid #dcdcde;background:#fff" title="' . esc_attr__( 'Imported broadcast preview', 'contactpanda' ) . '" srcdoc="' . esc_attr( $campaign['archived_html'] ) . '"></iframe></div></section>';
 			return;
 		}
@@ -215,6 +221,11 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 		foreach ( array( __( 'Sent', 'contactpanda' ) => array( $sent, 100 ), __( 'Opened', 'contactpanda' ) => array( $opened, $rate( $opened, $sent ) ), __( 'Clicked', 'contactpanda' ) => array( $clicked, $rate( $clicked, $sent ) ), __( 'Failed', 'contactpanda' ) => array( $failed, $rate( $failed, max( 1, count( $rows ) ) ) ), __( 'Skipped', 'contactpanda' ) => array( $skipped, $rate( $skipped, max( 1, count( $rows ) ) ) ) ) as $label => $metric ) {
 			echo '<div class="contactpanda-card"><strong>' . esc_html( $label ) . '</strong><p>' . esc_html( number_format_i18n( $metric[0] ) ) . '</p><small>' . esc_html( number_format_i18n( $metric[1], 1 ) ) . '%</small></div>';
 		}
+		echo '</div>';
+		$chart_metrics = array( __( 'Sent', 'contactpanda' ) => $sent, __( 'Opened', 'contactpanda' ) => $opened, __( 'Clicked', 'contactpanda' ) => $clicked, __( 'Failed', 'contactpanda' ) => $failed, __( 'Skipped', 'contactpanda' ) => $skipped );
+		$chart_max = max( 1, $sent, $opened, $clicked, $failed, $skipped );
+		echo '<div class="contactpanda-mailing-chart" role="img" aria-label="' . esc_attr__( 'Graphical mailing result', 'contactpanda' ) . '">';
+		foreach ( $chart_metrics as $label => $value ) echo '<div><span>' . esc_html( $label ) . '</span><i><b style="width:' . esc_attr( round( 100 * $value / $chart_max, 1 ) ) . '%"></b></i><strong>' . esc_html( number_format_i18n( $value ) ) . '</strong></div>';
 		echo '</div>';
 		$reasons = array( 'consent_missing' => __( 'Consent missing', 'contactpanda' ), 'protected_optout' => __( 'Unsubscribed, blocked or undeliverable', 'contactpanda' ), 'suppressed' => __( 'Globally suppressed', 'contactpanda' ), 'invalid_email' => __( 'Invalid email address', 'contactpanda' ), 'contact_missing' => __( 'Contact no longer exists', 'contactpanda' ), 'customer_missing' => __( 'Customer account no longer exists', 'contactpanda' ), 'wp_mail_failed' => __( 'Mail delivery failed', 'contactpanda' ) );
 		if ( ! empty( $campaign['ignore_marketing_consent'] ) ) {
