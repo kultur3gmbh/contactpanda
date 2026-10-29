@@ -70,16 +70,16 @@ else verify( ! isset( $GLOBALS['requests'][0][1]['headers']['Authorization'] ), 
 if ( ! $plus ) {
 	$direct = $config; $direct['public_direct'] = true;
 	$updater = fixture( $direct ); $GLOBALS['queue'] = array(
-		response( '', 302, array( 'location' => 'https://github.com/kultur3gmbh/contactpanda/releases/download/v0.15.0/contactpanda-update.json' ) ),
+		response( '', 302, array( 'location' => 'https://github.com/kultur3gmbh/contactpanda-basic/releases/download/v0.15.0/contactpanda-update.json' ) ),
 		response( '', 302, array( 'location' => 'https://release-assets.githubusercontent.com/manifest' ) ),
 		response( $manifest ),
 	);
 	$direct_meta = $updater->release();
 	verify( ! is_wp_error( $direct_meta ) && '0.15.0' === $direct_meta['version'], 'Direct public release manifest' );
-	verify( 'https://github.com/kultur3gmbh/contactpanda/releases/latest/download/contactpanda-update.json' === $GLOBALS['requests'][0][0], 'Direct public manifest bypasses GitHub API quota' );
-	verify( 'https://github.com/kultur3gmbh/contactpanda/releases/download/v0.15.0/contactpanda-update.json' === $GLOBALS['requests'][1][0], 'Direct public manifest accepts GitHub version redirect' );
+	verify( 'https://github.com/kultur3gmbh/contactpanda-basic/releases/latest/download/contactpanda-update.json' === $GLOBALS['requests'][0][0], 'Direct public manifest bypasses GitHub API quota' );
+	verify( 'https://github.com/kultur3gmbh/contactpanda-basic/releases/download/v0.15.0/contactpanda-update.json' === $GLOBALS['requests'][1][0], 'Direct public manifest accepts GitHub version redirect' );
 	verify( 'https://release-assets.githubusercontent.com/manifest' === $GLOBALS['requests'][2][0], 'Direct public manifest accepts the final GitHub asset redirect' );
-	verify( 'https://github.com/kultur3gmbh/contactpanda/releases/download/v0.15.0/contactpanda-basic-0.15.0.zip' === $direct_meta['package_url'], 'Direct public package URL' );
+	verify( 'https://github.com/kultur3gmbh/contactpanda-basic/releases/download/v0.15.0/contactpanda-basic-0.15.0.zip' === $direct_meta['package_url'], 'Direct public package URL' );
 	$updater = fixture( $config ); $GLOBALS['queue'] = array( response( $release ), response( $manifest ) ); $meta = $updater->release();
 }
 $offer = $updater->updates( (object) array( 'checked' => array( $config['plugin'] => '0.14.0' ) ) );

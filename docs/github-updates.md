@@ -1,6 +1,6 @@
 # GitHub updates during the test phase
 
-Basic uses `kultur3gmbh/contactpanda` (public, no token). Plus uses `kultur3gmbh/contactpanda-plus` (private). Only the latest **published, non-draft, non-prerelease GitHub Release** is considered. Branches, GitHub source archives and `main` are never installed. GitHub's `/releases/latest` determines the release; do not republish an older version as latest.
+Basic uses `kultur3gmbh/contactpanda-basic` (public, no token). Plus uses `kultur3gmbh/contactpanda-plus` (private). Only the latest **published, non-draft, non-prerelease GitHub Release** is considered. Branches, GitHub source archives and `main` are never installed. GitHub's `/releases/latest` determines the release; do not republish an older version as latest.
 
 ## Bootstrap and per-site configuration
 

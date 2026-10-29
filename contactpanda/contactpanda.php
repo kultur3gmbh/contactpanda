@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: ContactPanda
+ * Plugin Name: ContactPanda Basic
  * Description: Free contact and company management for WordPress with newsletters, WooCommerce, migrations, and optional Groundhogg compatibility.
- * Version: 0.8.70
- * Update URI: https://github.com/kultur3gmbh/contactpanda
+ * Version: 0.8.71
+ * Update URI: https://github.com/kultur3gmbh/contactpanda-basic
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
  * Domain Path: /languages
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.8.70' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.8.70-20261029-1' );
+define( 'CONTACTPANDA_VERSION', '0.8.71' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.8.71-20261029-1' );
 define( 'CONTACTPANDA_EXTENSION_API_VERSION', '1.0' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
@@ -77,8 +77,8 @@ add_action(
 		new ContactPanda_GitHub_Updater(
 			array(
 				'slug'       => 'contactpanda',
-				'name'       => 'ContactPanda',
-				'repo'       => 'contactpanda',
+				'name'       => 'ContactPanda Basic',
+				'repo'       => 'contactpanda-basic',
 				'zip_prefix' => 'contactpanda-basic',
 				'plugin'     => plugin_basename( CONTACTPANDA_FILE ),
 				'version'    => CONTACTPANDA_VERSION,

@@ -1,13 +1,16 @@
-=== ContactPanda ===
+=== ContactPanda Basic ===
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.70
+Stable tag: 0.8.71
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free, reduced newsletter workflow, a WooCommerce customer overview, optional Groundhogg compatibility, and stable extension APIs for the ContactPanda product family.
 
 == Changelog ==
+
+= 0.8.71 =
+* Standardizes the public repository and visible product name as ContactPanda Basic while preserving the existing plugin folder, data, and extension contracts.
 
 = 0.8.70 =
 * Repairs public GitHub update discovery by accepting GitHub's trusted version redirect before the release asset download.
