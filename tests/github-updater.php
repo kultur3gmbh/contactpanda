@@ -63,7 +63,8 @@ list( $release, $manifest ) = release_fixture( $config, $package );
 $updater = fixture( $config ); $GLOBALS['queue'] = array( response( $release ), response( $manifest ) );
 $meta = $updater->release(); verify( ! is_wp_error( $meta ) && '0.15.0' === $meta['version'], 'Published release detection' );
 verify( ! isset( $meta['token'], $meta['Authorization'] ), 'No credentials in metadata' );
-$updater->release(); verify( 2 === count( $GLOBALS['requests'] ), 'Successful check cached' );
+verify( ! isset( $GLOBALS['cache'][ $slug . '_github_release' ] ), 'Release metadata is not persisted across WordPress requests' );
+$updater->release(); verify( 2 === count( $GLOBALS['requests'] ), 'Successful check reused during the current request' );
 verify( $api . '/releases/latest' === $GLOBALS['requests'][0][0], 'No main branch access' );
 if ( $plus ) verify( isset( $GLOBALS['requests'][0][1]['headers']['Authorization'] ), 'Private API request authenticated' );
 else verify( ! isset( $GLOBALS['requests'][0][1]['headers']['Authorization'] ), 'Public API request anonymous' );
@@ -109,7 +110,7 @@ if ( $plus ) {
 foreach ( array( 401, 403, 404, 429, 500, 'network' ) as $status ) {
 	$updater = fixture( $config ); $GLOBALS['queue'] = array( 'network' === $status ? new WP_Error( 'http', 'UNSAFE RAW RESPONSE' ) : response( '', $status ) );
 	$error = $updater->release(); verify( is_wp_error( $error ) && false === strpos( $error->get_error_message(), 'UNSAFE' ), 'Sanitize access/network failures' );
-	$updater->release(); verify( 1 === count( $GLOBALS['requests'] ), 'Error backoff cache' );
+	$updater->release(); verify( 1 === count( $GLOBALS['requests'] ), 'Error reused during the current request' );
 }
 foreach ( array( 'draft', 'prerelease', 'tag', 'asset', 'checksum', 'basic' ) as $case ) {
 	$updater = fixture( $config ); $r = $release; $m = $manifest;

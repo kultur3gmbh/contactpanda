@@ -7,6 +7,7 @@ final class ContactPanda_GitHub_Updater {
 	private $config;
 	private $cache;
 	private $install_release;
+	private $release = null;
 
 	public function __construct( array $config ) {
 		$this->config = $config;
@@ -120,29 +121,26 @@ final class ContactPanda_GitHub_Updater {
 
 	private function fail( $error ) {
 		// A release can become available immediately after a failed check. Keeping
-		// negative responses made freshly published packages invisible until the
-		// transient expired, so failures are deliberately never cached.
+		// negative responses in a persistent transient made freshly published
+		// packages invisible. Reuse the result only during this PHP request.
 		delete_site_transient( $this->cache );
+		$this->release = $error;
 		return $error;
 	}
 
 	public function release( $force = false ) {
 		if ( ! $this->enabled() ) return $this->error( 'disabled' );
 		if ( ! empty( $this->config['token'] ) && ( ! defined( $this->config['token'] ) || ! is_string( constant( $this->config['token'] ) ) || '' === trim( constant( $this->config['token'] ) ) ) ) return $this->error( 'token' );
-		if ( ! $force ) {
-			$cached = get_site_transient( $this->cache );
-			if ( is_array( $cached ) ) {
-				if ( isset( $cached['error'] ) ) return $this->error( str_replace( 'contactpanda_update_', '', $cached['error'] ) );
-				return $cached;
-			}
-		}
+		if ( $force ) $this->release = null;
+		if ( null !== $this->release ) return $this->release;
 		// Basic is public: use the signed release manifest directly and avoid
 		// anonymous GitHub API rate limits or unrelated wp-config.php tokens.
 		if ( empty( $this->config['token'] ) && false !== ( $this->config['public_direct'] ?? true ) ) {
 			$result = $this->public_release();
 			if ( is_wp_error( $result ) ) return $this->fail( $result );
-			set_site_transient( $this->cache, $result, 30 * MINUTE_IN_SECONDS );
-			return $result;
+			$this->release = $result;
+			delete_site_transient( $this->cache );
+			return $this->release;
 		}
 		$response = $this->request( $this->api() . '/releases/latest' );
 		if ( is_wp_error( $response ) ) return $this->fail( $response );
@@ -165,8 +163,9 @@ final class ContactPanda_GitHub_Updater {
 		if ( ! is_array( $data ) || $version !== ( $data['version'] ?? '' ) || $this->config['slug'] !== ( $data['slug'] ?? '' ) || ! $this->version( $data['requires'] ?? null ) || ! $this->version( $data['requires_php'] ?? null ) || ! $this->version( $data['tested'] ?? null ) || ! is_string( $data['sha256'] ?? null ) || ! preg_match( '/^[a-f0-9]{64}$/D', $data['sha256'] ) || ( ! empty( $this->config['basic'] ) && ! $this->version( $data['requires_basic'] ?? null ) ) || ( isset( $zip['digest'] ) && 'sha256:' . $data['sha256'] !== $zip['digest'] ) ) return $this->fail( $this->error( 'release' ) );
 		// Only this allowlist reaches options, plugin information, or the update transient.
 		$result = array( 'version' => $version, 'requires' => $data['requires'], 'requires_php' => $data['requires_php'], 'tested' => $data['tested'], 'requires_basic' => empty( $this->config['basic'] ) ? '' : $data['requires_basic'], 'sha256' => $data['sha256'], 'asset_id' => absint( $zip['id'] ), 'size' => absint( $zip['size'] ) );
-		set_site_transient( $this->cache, $result, 30 * MINUTE_IN_SECONDS );
-		return $result;
+		$this->release = $result;
+		delete_site_transient( $this->cache );
+		return $this->release;
 	}
 
 	private function basic_version() {
@@ -199,8 +198,13 @@ final class ContactPanda_GitHub_Updater {
 				if ( isset( $transient->{$key}[ $plugin ] ) && empty( $transient->{$key}[ $plugin ]->contactpanda_github ) ) unset( $transient->{$key}[ $plugin ] );
 			}
 			if ( isset( $transient->response[ $plugin ] ) ) {
-				$release = get_site_transient( $this->cache );
-				$transient->response[ $plugin ]->package = $this->compatible( $release ) ? $this->package_url( $release ) : '';
+				$item = $transient->response[ $plugin ];
+				$release = array(
+					'requires'       => $item->requires ?? '',
+					'requires_php'   => $item->requires_php ?? '',
+					'requires_basic' => $item->requires_basic ?? '',
+				);
+				if ( ! $this->compatible( $release ) ) $transient->response[ $plugin ]->package = '';
 			}
 		}
 		return $transient;
@@ -214,7 +218,7 @@ final class ContactPanda_GitHub_Updater {
 		unset( $transient->response[ $plugin ], $transient->no_update[ $plugin ] );
 		$release = $this->release();
 		if ( is_wp_error( $release ) ) return $transient;
-		$item = (object) array( 'id' => 'https://github.com/kultur3gmbh/' . $this->config['repo'], 'slug' => $this->config['slug'], 'plugin' => $plugin, 'new_version' => $release['version'], 'url' => 'https://github.com/kultur3gmbh/' . $this->config['repo'] . '/releases', 'package' => $this->compatible( $release ) ? $this->package_url( $release ) : '', 'requires' => $release['requires'], 'requires_php' => $release['requires_php'], 'tested' => $release['tested'], 'contactpanda_github' => true );
+		$item = (object) array( 'id' => 'https://github.com/kultur3gmbh/' . $this->config['repo'], 'slug' => $this->config['slug'], 'plugin' => $plugin, 'new_version' => $release['version'], 'url' => 'https://github.com/kultur3gmbh/' . $this->config['repo'] . '/releases', 'package' => $this->compatible( $release ) ? $this->package_url( $release ) : '', 'requires' => $release['requires'], 'requires_php' => $release['requires_php'], 'requires_basic' => $release['requires_basic'] ?? '', 'tested' => $release['tested'], 'contactpanda_github' => true );
 		$installed = $transient->checked[ $plugin ] ?? $this->config['version'];
 		$key = version_compare( $release['version'], $installed, '>' ) ? 'response' : 'no_update';
 		if ( ! isset( $transient->{$key} ) || ! is_array( $transient->{$key} ) ) $transient->{$key} = array();
@@ -304,6 +308,7 @@ final class ContactPanda_GitHub_Updater {
 		if ( in_array( $this->config['plugin'], (array) ( $extra['plugins'] ?? array( $extra['plugin'] ?? '' ) ), true ) ) {
 			delete_site_transient( $this->cache );
 			delete_site_transient( 'update_plugins' );
+			$this->release = null;
 			set_site_transient( 'contactpanda_update_refresh_required', 1, HOUR_IN_SECONDS );
 		}
 	}
@@ -314,6 +319,7 @@ final class ContactPanda_GitHub_Updater {
 		delete_site_transient( 'contactpanda_update_refresh_required' );
 		delete_site_transient( $this->cache );
 		delete_site_transient( 'update_plugins' );
+		$this->release = null;
 		do_action( 'contactpanda_clear_family_update_caches' );
 		if ( function_exists( 'wp_clean_plugins_cache' ) ) wp_clean_plugins_cache( true );
 		if ( function_exists( 'wp_update_plugins' ) ) wp_update_plugins();
@@ -326,5 +332,6 @@ final class ContactPanda_GitHub_Updater {
 		}
 		delete_site_transient( $this->cache );
 		delete_site_transient( 'update_plugins' );
+		$this->release = null;
 	}
 }
