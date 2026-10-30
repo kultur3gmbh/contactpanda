@@ -950,5 +950,5 @@ final class ContactPanda_Basic_Segments {
 		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-settings&tab=misc&misc_section=saved_searches' ) ); exit;
 	}
 
-	private static function capability() { return class_exists( 'WooCommerce' ) ? 'manage_woocommerce' : 'manage_options'; }
+	private static function capability() { return class_exists( 'ContactPanda_Capabilities' ) ? ContactPanda_Capabilities::for_area( 'marketing' ) : ( class_exists( 'WooCommerce' ) ? 'manage_woocommerce' : 'manage_options' ); }
 }

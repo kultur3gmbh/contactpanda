@@ -231,7 +231,7 @@ final class ContactPanda_Plugin {
 	}
 
 	private static function access_capability() {
-		return class_exists( 'WooCommerce' ) ? 'manage_woocommerce' : 'manage_options';
+		return class_exists( 'ContactPanda_Capabilities' ) ? ContactPanda_Capabilities::for_area( 'view' ) : ( class_exists( 'WooCommerce' ) ? 'manage_woocommerce' : 'manage_options' );
 	}
 
 	/**

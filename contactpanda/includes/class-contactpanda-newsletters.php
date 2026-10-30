@@ -35,7 +35,7 @@ final class ContactPanda_Basic_Newsletters {
 	}
 
 	private static function capability() {
-		return class_exists( 'WooCommerce' ) ? 'manage_woocommerce' : 'manage_options';
+		return class_exists( 'ContactPanda_Capabilities' ) ? ContactPanda_Capabilities::for_area( 'marketing' ) : ( class_exists( 'WooCommerce' ) ? 'manage_woocommerce' : 'manage_options' );
 	}
 
 	public static function register_settings() {

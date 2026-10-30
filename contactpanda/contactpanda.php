@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ContactPanda Basic
  * Description: Free contact and company management for WordPress with newsletters, WooCommerce, migrations, and optional Groundhogg compatibility.
- * Version: 0.8.78
+ * Version: 0.8.79
  * Update URI: https://github.com/kultur3gmbh/contactpanda-basic
  * Author: Kultur3 GmbH
  * Text Domain: contactpanda
@@ -13,8 +13,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'CONTACTPANDA_VERSION', '0.8.78' );
-define( 'CONTACTPANDA_ASSET_VERSION', '0.8.78-20261030-1' );
+define( 'CONTACTPANDA_VERSION', '0.8.79' );
+define( 'CONTACTPANDA_ASSET_VERSION', '0.8.79-20261030-1' );
 define( 'CONTACTPANDA_EXTENSION_API_VERSION', '1.0' );
 define( 'CONTACTPANDA_FILE', __FILE__ );
 define( 'CONTACTPANDA_PATH', plugin_dir_path( __FILE__ ) );
@@ -52,6 +52,7 @@ require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-modules.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-license.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-company-profile.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-system-emails.php';
+require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-capabilities.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-schema.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-identity-store.php';
 require_once CONTACTPANDA_PATH . 'includes/class-contactpanda-newsletter-schema.php';
@@ -127,6 +128,7 @@ add_action( 'plugins_loaded', array( 'ContactPanda_Plugin', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_License', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Company_Profile', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_System_Emails', 'boot' ), 31 );
+add_action( 'plugins_loaded', array( 'ContactPanda_Capabilities', 'boot' ), 29 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Trash', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Data_Tools', 'boot' ), 30 );
 add_action( 'plugins_loaded', array( 'ContactPanda_Custom_Fields', 'boot' ), 30 );

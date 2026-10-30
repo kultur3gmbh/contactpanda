@@ -15,7 +15,7 @@ foreach ( array( 'class-contactpanda-identity.php', 'class-contactpanda-customer
 	}
 }
 
-foreach ( array( 'contactpanda_customer_portal_tabs', 'contactpanda_portal_profile_saved', 'contactpanda_portal_subscription_changed', 'contactpanda/customer-portal', 'contactpanda_customer_portal' ) as $contract ) {
+foreach ( array( 'contactpanda_customer_portal_tabs', 'contactpanda_portal_profile_saved', 'contactpanda_portal_subscription_changed', 'contactpanda_portal_preferences_saved', 'contactpanda_portal_save_preferences', 'contactpanda_preference_channels', 'contactpanda_preference_topics', 'contactpanda_preference_languages', 'contactpanda/customer-portal', 'contactpanda_customer_portal' ) as $contract ) {
 	if ( false === strpos( $portal, $contract ) ) {
 		fwrite( STDERR, "Missing customer portal extension contract {$contract}.\n" );
 		exit( 1 );

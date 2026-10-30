@@ -8420,3 +8420,70 @@ msgstr "Geben Sie entweder einen einzelnen Produktschlüssel oder einen MasterKe
 #: contactpanda/includes/class-contactpanda-license.php
 msgid "MasterKey"
 msgstr "MasterKey"
+
+
+msgid "Channels"
+msgstr "Kanäle"
+
+msgid "Correspondence language"
+msgstr "Korrespondenzsprache"
+
+msgid "Email address %1$s finally unsubscribed through communication preferences at %2$s."
+msgstr "E-Mail-Adresse %1$s wurde am %2$s über die Kommunikationseinstellungen endgültig abgemeldet."
+
+msgid "General newsletter"
+msgstr "Allgemeiner Newsletter"
+
+msgid "Offers and product news"
+msgstr "Angebote und Produktneuigkeiten"
+
+msgid "Save communication preferences"
+msgstr "Kommunikationseinstellungen speichern"
+
+msgid "Selecting email here does not grant marketing consent. A new newsletter subscription always requires a separate double opt-in confirmation."
+msgstr "Die Auswahl von E-Mail erteilt hier keine Marketing-Einwilligung. Eine neue Newsletter-Anmeldung erfordert immer eine gesonderte Double-Opt-in-Bestätigung."
+
+msgid "The communication preferences could not be saved."
+msgstr "Die Kommunikationseinstellungen konnten nicht gespeichert werden."
+
+msgid "Topics"
+msgstr "Themen"
+
+msgid "Your communication preferences have been saved."
+msgstr "Ihre Kommunikationseinstellungen wurden gespeichert."
+
+msgid "Edit people and companies"
+msgstr "Personen und Firmen bearbeiten"
+
+msgid "Manage ContactPanda settings and migrations"
+msgstr "ContactPanda-Einstellungen und Migrationen verwalten"
+
+msgid "Manage newsletters, forms and automations"
+msgstr "Newsletter, Formulare und Automatisierungen verwalten"
+
+msgid "Manage projects and tasks"
+msgstr "Projekte und Aufgaben verwalten"
+
+msgid "Manage support requests"
+msgstr "Support-Anfragen verwalten"
+
+msgid "Role"
+msgstr "Rolle"
+
+msgid "Save role permissions"
+msgstr "Rollenrechte speichern"
+
+msgid "Users & roles"
+msgstr "Benutzer & Rollen"
+
+msgid "Users and roles"
+msgstr "Benutzer und Rollen"
+
+msgid "View analytics"
+msgstr "Auswertungen anzeigen"
+
+msgid "View people and companies"
+msgstr "Personen und Firmen anzeigen"
+
+msgid "Choose which WordPress roles may see or change each ContactPanda area. Administrators always retain every permission."
+msgstr "Legen Sie fest, welche WordPress-Rollen die einzelnen ContactPanda-Bereiche sehen oder ändern dürfen. Administratoren behalten immer alle Rechte."

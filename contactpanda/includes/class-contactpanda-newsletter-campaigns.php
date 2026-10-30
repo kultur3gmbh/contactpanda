@@ -687,5 +687,5 @@ final class ContactPanda_Basic_Newsletter_Campaigns {
 	private static function mysql_datetime( $value ) { $value = sanitize_text_field( wp_unslash( $value ) ); if ( ! $value ) { return null; } try { $date = new DateTimeImmutable( $value, wp_timezone() ); return $date->format( 'Y-m-d H:i:s' ); } catch ( Exception $e ) { return null; } }
 	private static function guard( $nonce ) { if ( ! current_user_can( self::capability() ) ) { wp_die( esc_html__( 'You do not have permission.', 'contactpanda' ) ); } check_admin_referer( $nonce ); }
 	private static function guard_ajax() { if ( ! current_user_can( self::capability() ) ) wp_send_json_error( array( 'message' => __( 'You do not have permission.', 'contactpanda' ) ), 403 ); check_ajax_referer( 'contactpanda_newsletter_editor', 'nonce' ); }
-	private static function capability() { return class_exists( 'WooCommerce' ) ? 'manage_woocommerce' : 'manage_options'; }
+	private static function capability() { return class_exists( 'ContactPanda_Capabilities' ) ? ContactPanda_Capabilities::for_area( 'marketing' ) : ( class_exists( 'WooCommerce' ) ? 'manage_woocommerce' : 'manage_options' ); }
 }

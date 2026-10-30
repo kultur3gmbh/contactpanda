@@ -8393,3 +8393,70 @@ msgstr ""
 #: contactpanda/includes/class-contactpanda-license.php
 msgid "MasterKey"
 msgstr ""
+
+
+msgid "Channels"
+msgstr ""
+
+msgid "Correspondence language"
+msgstr ""
+
+msgid "Email address %1$s finally unsubscribed through communication preferences at %2$s."
+msgstr ""
+
+msgid "General newsletter"
+msgstr ""
+
+msgid "Offers and product news"
+msgstr ""
+
+msgid "Save communication preferences"
+msgstr ""
+
+msgid "Selecting email here does not grant marketing consent. A new newsletter subscription always requires a separate double opt-in confirmation."
+msgstr ""
+
+msgid "The communication preferences could not be saved."
+msgstr ""
+
+msgid "Topics"
+msgstr ""
+
+msgid "Your communication preferences have been saved."
+msgstr ""
+
+msgid "Edit people and companies"
+msgstr ""
+
+msgid "Manage ContactPanda settings and migrations"
+msgstr ""
+
+msgid "Manage newsletters, forms and automations"
+msgstr ""
+
+msgid "Manage projects and tasks"
+msgstr ""
+
+msgid "Manage support requests"
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "Save role permissions"
+msgstr ""
+
+msgid "Users & roles"
+msgstr ""
+
+msgid "Users and roles"
+msgstr ""
+
+msgid "View analytics"
+msgstr ""
+
+msgid "View people and companies"
+msgstr ""
+
+msgid "Choose which WordPress roles may see or change each ContactPanda area. Administrators always retain every permission."
+msgstr ""
