@@ -1,6 +1,15 @@
 msgid ""
 msgstr ""
 
+msgid "ContactPanda now has a clear Basic, Plus, Business, and future Members structure."
+msgstr ""
+
+msgid "The former Pro CRM and Support Desk now belong to ContactPanda Business."
+msgstr ""
+
+msgid "Protected update metadata is published consistently for every paid family component."
+msgstr ""
+
 
 msgid "A/B test and campaign tracking"
 msgstr ""

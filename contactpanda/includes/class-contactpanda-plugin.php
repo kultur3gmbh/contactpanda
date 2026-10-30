@@ -256,7 +256,7 @@ final class ContactPanda_Plugin {
 		}
 
 		$family_slugs = array();
-		foreach ( array( 'contactpanda-pro', 'contactpanda-business' ) as $family_slug ) {
+		foreach ( array( 'contactpanda-business' ) as $family_slug ) {
 			$family_key = array_search( $family_slug, $menu_order, true );
 			if ( false === $family_key ) continue;
 			$family_slugs[] = $family_slug;
@@ -1951,9 +1951,9 @@ final class ContactPanda_Plugin {
 
 	/** Explain user-relevant changes and provide a prepared feedback path. */
 	private static function render_dashboard_release_news() {
-		echo '<section class="contactpanda-dashboard-release-grid"><article class="contactpanda-card contactpanda-dashboard-release"><p class="contactpanda-eyebrow">' . esc_html__( 'New in this version', 'contactpanda' ) . '</p><h2>' . esc_html( CONTACTPANDA_VERSION ) . '</h2><ul><li>' . esc_html__( 'Appearance settings now preview both ContactPanda and active-theme buttons before saving.', 'contactpanda' ) . '</li><li>' . esc_html__( 'Basic, Plus, Pro, and Business use one coordinated family version.', 'contactpanda' ) . '</li><li>' . esc_html__( 'Protected update metadata is published consistently for every family component.', 'contactpanda' ) . '</li></ul></article>';
-		$feedback_url = add_query_arg( array( 'page' => 'contactpanda-pro-support', 'new' => 1, 'source' => 'contactpanda-dashboard', 'subject' => __( 'Feedback from ContactPanda dashboard', 'contactpanda' ) ), admin_url( 'admin.php' ) );
-		if ( ! defined( 'CONTACTPANDA_PRO_VERSION' ) ) $feedback_url = apply_filters( 'contactpanda_feedback_url', 'https://mycontactpanda.com/' );
+		echo '<section class="contactpanda-dashboard-release-grid"><article class="contactpanda-card contactpanda-dashboard-release"><p class="contactpanda-eyebrow">' . esc_html__( 'New in this version', 'contactpanda' ) . '</p><h2>' . esc_html( CONTACTPANDA_VERSION ) . '</h2><ul><li>' . esc_html__( 'ContactPanda now has a clear Basic, Plus, Business, and future Members structure.', 'contactpanda' ) . '</li><li>' . esc_html__( 'The former Pro CRM and Support Desk now belong to ContactPanda Business.', 'contactpanda' ) . '</li><li>' . esc_html__( 'Protected update metadata is published consistently for every paid family component.', 'contactpanda' ) . '</li></ul></article>';
+		$feedback_url = add_query_arg( array( 'page' => 'contactpanda-business-support', 'new' => 1, 'source' => 'contactpanda-dashboard', 'subject' => __( 'Feedback from ContactPanda dashboard', 'contactpanda' ) ), admin_url( 'admin.php' ) );
+		if ( ! defined( 'CONTACTPANDA_BUSINESS_VERSION' ) ) $feedback_url = apply_filters( 'contactpanda_feedback_url', 'https://mycontactpanda.com/' );
 		echo '<article class="contactpanda-card contactpanda-dashboard-feedback"><span class="dashicons dashicons-format-chat" aria-hidden="true"></span><div><h2>' . esc_html__( 'Have you noticed something?', 'contactpanda' ) . '</h2><p>' . esc_html__( 'Send feedback without having to collect technical details yourself. When Support Desk is available, the current page and version are prepared automatically.', 'contactpanda' ) . '</p><a class="button" href="' . esc_url( $feedback_url ) . '">' . esc_html__( 'Send feedback', 'contactpanda' ) . '</a></div></article></section>';
 	}
 
