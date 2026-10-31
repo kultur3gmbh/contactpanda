@@ -49,8 +49,8 @@ final class ContactPanda_Events {
 	}
 
 	public static function tec_available() {
-		$calendar = class_exists( 'Tribe__Events__Main' ) || defined( 'TRIBE_EVENTS_FILE' );
-		$tickets  = function_exists( 'tribe_attendees' ) && ( class_exists( 'Tribe__Tickets__Main' ) || defined( 'EVENT_TICKETS_VERSION' ) || class_exists( 'TEC\\Tickets\\Main' ) );
+		$calendar = class_exists( 'Tribe__Events__Main' ) || defined( 'TRIBE_EVENTS_FILE' ) || ( function_exists( 'post_type_exists' ) && post_type_exists( 'tribe_events' ) );
+		$tickets  = class_exists( 'Tribe__Tickets__Main' ) || defined( 'EVENT_TICKETS_VERSION' ) || defined( 'TRIBE_TICKETS_VERSION' ) || defined( 'TRIBE_TICKETS_FILE' ) || class_exists( 'TEC\\Tickets\\Main' );
 		return $calendar && $tickets;
 	}
 
@@ -183,7 +183,7 @@ final class ContactPanda_Events {
 	private static function tec_contact_event_map( $map, $contacts ) {
 		$identity = self::contact_identity_maps( $contacts );
 		$attendees = self::tec_attendees( array_keys( $identity['users'] ), array_keys( $identity['emails'] ) );
-		$repository = tribe_attendees();
+		$repository = self::tec_repository();
 		foreach ( $attendees as $attendee ) {
 			$attendee_id = self::tec_attendee_id( $attendee );
 			$event_id = self::tec_event_id( $attendee_id, $repository );
@@ -207,7 +207,7 @@ final class ContactPanda_Events {
 	private static function tec_contact_events( $contact ) {
 		$identity = self::contact_identity_maps( array( $contact ) );
 		$attendees = self::tec_attendees( array_keys( $identity['users'] ), array_keys( $identity['emails'] ) );
-		$repository = tribe_attendees();
+		$repository = self::tec_repository();
 		$found = array();
 		foreach ( $attendees as $attendee ) {
 			$attendee_id = self::tec_attendee_id( $attendee );
@@ -405,6 +405,9 @@ final class ContactPanda_Events {
 			$queries[] = array( 'holder_email', $chunk );
 		}
 		foreach ( $queries as $query ) {
+			if ( ! function_exists( 'tribe_attendees' ) ) {
+				break;
+			}
 			try {
 				$repository = tribe_attendees();
 				$repository->per_page( 1000 );
@@ -427,6 +430,27 @@ final class ContactPanda_Events {
 			foreach ( (array) $ids as $id ) $attendees[ absint( $id ) ] = absint( $id );
 		}
 		return array_values( $attendees );
+	}
+
+	/**
+	 * Return the optional Event Tickets attendee repository when available.
+	 *
+	 * Recent Event Tickets releases do not expose tribe_attendees() during
+	 * every admin request. The metadata fallback below remains fully usable in
+	 * that case, so callers receive a harmless empty object instead of failing.
+	 */
+	private static function tec_repository() {
+		if ( function_exists( 'tribe_attendees' ) ) {
+			try {
+				$repository = tribe_attendees();
+				if ( is_object( $repository ) ) {
+					return $repository;
+				}
+			} catch ( Throwable $error ) {
+				// Continue with the read-only post-meta compatibility adapter.
+			}
+		}
+		return new stdClass();
 	}
 
 	private static function contact_identity_maps( $contacts ) {

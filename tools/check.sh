@@ -23,6 +23,7 @@ if command -v php >/dev/null 2>&1; then
 	php tests/license-update-entitlements.php || status=1
 	php tests/vcard-import.php || status=1
 	php tests/events.php || status=1
+	php tests/events-current-api.php || status=1
 	php tests/events-unavailable.php || status=1
 	php tests/flow-hooks.php || status=1
 	php tests/release-050.php || status=1

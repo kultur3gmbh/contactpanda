@@ -8460,3 +8460,9 @@ msgstr ""
 
 msgid "Choose which WordPress roles may see or change each ContactPanda area. Administrators always retain every permission."
 msgstr ""
+
+msgid "%1$d subscribers, %2$d reusable email sources, and %3$d historical mailings were found. No data has been changed yet."
+msgstr ""
+
+msgid "%1$d new, %2$d updated, %3$d templates, %4$d mailings, %5$d skipped, %6$d errors. Completed: %7$s"
+msgstr ""
