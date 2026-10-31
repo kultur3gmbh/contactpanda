@@ -8100,7 +8100,6 @@ msgstr "Importierte Vorlagen sind schreibgeschützt. Erstellen Sie eine bearbeit
 
 msgid "You are not allowed to manage these settings."
 msgstr "Sie dürfen diese Einstellungen nicht verwalten."
-
 msgid "Telephone"
 msgstr "Telefon"
 
@@ -8493,3 +8492,55 @@ msgstr "%1$d Abonnenten, %2$d wiederverwendbare E-Mail-Quellen und %3$d historis
 
 msgid "%1$d new, %2$d updated, %3$d templates, %4$d mailings, %5$d skipped, %6$d errors. Completed: %7$s"
 msgstr "%1$d neu, %2$d aktualisiert, %3$d Vorlagen, %4$d Aussendungen, %5$d übersprungen, %6$d Fehler. Abgeschlossen: %7$s"
+
+
+msgid "WordPress users are matched by email address, linked to their ContactPanda person, and missing profile values can be completed without changing WordPress."
+msgstr "WordPress-Benutzer werden anhand der E-Mail-Adresse zugeordnet, mit ihrer ContactPanda-Person verknüpft und fehlende Profilwerte können ergänzt werden, ohne WordPress zu verändern."
+
+msgid "WordPress user matching is available when the ContactPanda database is the leading data source."
+msgstr "Der WordPress-Benutzerabgleich ist verfügbar, wenn die ContactPanda-Datenbank die führende Datenquelle ist."
+
+msgid "Match WordPress users"
+msgstr "WordPress-Benutzer abgleichen"
+
+msgid "All WordPress users with a valid email address are matched to ContactPanda people. Existing values are preserved; only missing names, addresses, and telephone numbers are completed. Ambiguous links are skipped and reported."
+msgstr "Alle WordPress-Benutzer mit gültiger E-Mail-Adresse werden ContactPanda-Personen zugeordnet. Bestehende Werte bleiben erhalten; nur fehlende Namen, Adressen und Telefonnummern werden ergänzt. Mehrdeutige Verknüpfungen werden übersprungen und gemeldet."
+
+msgid "%1$d users found: %2$d new people, %3$d existing people to link, and %4$d already linked. No data has been changed yet."
+msgstr "%1$d Benutzer gefunden: %2$d neue Personen, %3$d bestehende Personen zum Verknüpfen und %4$d bereits verknüpft. Es wurden noch keine Daten geändert."
+
+msgid "%1$d new, %2$d updated, %3$d linked, %4$d skipped, %5$d conflicts, %6$d errors. Completed: %7$s"
+msgstr "%1$d neu, %2$d aktualisiert, %3$d verknüpft, %4$d übersprungen, %5$d Konflikte, %6$d Fehler. Abgeschlossen: %7$s"
+
+msgid "Preview matching"
+msgstr "Abgleich vorprüfen"
+
+msgid "Import, complete, and link now"
+msgstr "Jetzt importieren, ergänzen und verknüpfen"
+
+msgid "WordPress user matching requires the ContactPanda database as leading source."
+msgstr "Der WordPress-Benutzerabgleich benötigt die ContactPanda-Datenbank als führende Quelle."
+
+msgid "The WordPress user preview is ready."
+msgstr "Die Vorschau des WordPress-Benutzerabgleichs ist bereit."
+
+msgid "WordPress user matching completed at %1$s: %2$d new, %3$d updated, %4$d already linked, %5$d conflicts."
+msgstr "WordPress-Benutzerabgleich abgeschlossen am %1$s: %2$d neu, %3$d aktualisiert, %4$d bereits verknüpft, %5$d Konflikte."
+
+msgid "Adopt missing data from WooCommerce"
+msgstr "Fehlende Daten aus WooCommerce übernehmen"
+
+msgid "Only empty ContactPanda fields are completed. WooCommerce settings are never changed."
+msgstr "Nur leere ContactPanda-Felder werden ergänzt. WooCommerce-Einstellungen werden nicht verändert."
+
+msgid "Missing company details were adopted from WooCommerce."
+msgstr "Fehlende Firmendaten wurden aus WooCommerce übernommen."
+
+msgid "WooCommerce import completed at %1$s: %2$d new contacts, %3$d updated contacts, %4$d new companies, %5$d skipped."
+msgstr "WooCommerce-Import abgeschlossen am %1$s: %2$d neue Kontakte, %3$d aktualisierte Kontakte, %4$d neue Firmen, %5$d übersprungen."
+
+msgid "%1$d editable content blocks were created; %2$d source fragments required an HTML fallback."
+msgstr "%1$d bearbeitbare Inhaltsblöcke wurden erstellt; %2$d Quellfragmente benötigten einen HTML-Rückfall."
+
+msgid "You are not allowed to manage these settings."
+msgstr "Sie dürfen diese Einstellungen nicht verwalten."

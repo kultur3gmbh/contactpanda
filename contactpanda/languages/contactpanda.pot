@@ -8461,6 +8461,59 @@ msgstr ""
 msgid "Choose which WordPress roles may see or change each ContactPanda area. Administrators always retain every permission."
 msgstr ""
 
+
+msgid "WordPress users are matched by email address, linked to their ContactPanda person, and missing profile values can be completed without changing WordPress."
+msgstr ""
+
+msgid "WordPress user matching is available when the ContactPanda database is the leading data source."
+msgstr ""
+
+msgid "Match WordPress users"
+msgstr ""
+
+msgid "All WordPress users with a valid email address are matched to ContactPanda people. Existing values are preserved; only missing names, addresses, and telephone numbers are completed. Ambiguous links are skipped and reported."
+msgstr ""
+
+msgid "%1$d users found: %2$d new people, %3$d existing people to link, and %4$d already linked. No data has been changed yet."
+msgstr ""
+
+msgid "%1$d new, %2$d updated, %3$d linked, %4$d skipped, %5$d conflicts, %6$d errors. Completed: %7$s"
+msgstr ""
+
+msgid "Preview matching"
+msgstr ""
+
+msgid "Import, complete, and link now"
+msgstr ""
+
+msgid "WordPress user matching requires the ContactPanda database as leading source."
+msgstr ""
+
+msgid "The WordPress user preview is ready."
+msgstr ""
+
+msgid "WordPress user matching completed at %1$s: %2$d new, %3$d updated, %4$d already linked, %5$d conflicts."
+msgstr ""
+
+msgid "Adopt missing data from WooCommerce"
+msgstr ""
+
+msgid "Only empty ContactPanda fields are completed. WooCommerce settings are never changed."
+msgstr ""
+
+msgid "Missing company details were adopted from WooCommerce."
+msgstr ""
+
+msgid "WooCommerce import completed at %1$s: %2$d new contacts, %3$d updated contacts, %4$d new companies, %5$d skipped."
+msgstr ""
+
+msgid "%1$d editable content blocks were created; %2$d source fragments required an HTML fallback."
+msgstr ""
+
+msgid "You are not allowed to manage these settings."
+msgstr ""
+
+
 msgid "%1$d subscribers, %2$d reusable email sources, and %3$d historical mailings were found. No data has been changed yet."
 msgstr ""
 

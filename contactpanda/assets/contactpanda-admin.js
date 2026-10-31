@@ -1285,6 +1285,15 @@
 	});
 
 	document.addEventListener('submit', function (event) {
+		if (event.target.matches('.contactpanda-migration-progress-form')) {
+			var form = event.target, button = form.querySelector('button[type="submit"]');
+			if (form.dataset.running === '1') { event.preventDefault(); return; }
+			form.dataset.running = '1';
+			if (button) { button.disabled = true; button.dataset.originalLabel = button.textContent; button.textContent = tr('migrationRunning', 'Migration running…'); }
+			var status = document.createElement('span'); status.className = 'contactpanda-inline-migration-progress'; status.setAttribute('role', 'status'); status.innerHTML = '<span class="spinner is-active" aria-hidden="true"></span><span>' + tr('migrationProgressHint', 'Source data is being read, matched, and saved. Please keep this page open.') + '</span>';
+			form.appendChild(status);
+			return;
+		}
 		if (event.target.matches('.contactpanda-groundhogg-migration-form')) {
 			event.preventDefault();
 			var migrationForm = event.target;

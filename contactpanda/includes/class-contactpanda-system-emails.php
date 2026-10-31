@@ -92,7 +92,9 @@ final class ContactPanda_System_Emails {
 	}
 
 	private static function color( $name, $label, $settings ) {
-		echo '<label class="contactpanda-settings-color-field"><span>' . esc_html( $label ) . '</span><input type="color" data-contactpanda-color-value="' . esc_attr( $settings[ $name ] ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $settings[ $name ] ) . '"></label>';
+		$value = self::sanitize_color( $settings[ $name ] ?? '', '#ffffff' );
+		$native = sanitize_hex_color( $value ) ?: '#ffffff';
+		echo '<label class="contactpanda-settings-color-field"><span>' . esc_html( $label ) . '</span><input type="color" data-contactpanda-color-value="' . esc_attr( $value ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $native ) . '"></label>';
 	}
 
 	public static function save() {
@@ -112,12 +114,21 @@ final class ContactPanda_System_Emails {
 			'footer_blocks'    => self::sanitize_blocks( wp_unslash( $_POST['footer_blocks'] ?? '[]' ) ),
 		);
 		foreach ( array( 'background_color', 'content_color', 'text_color', 'accent_color', 'header_color', 'footer_color', 'footer_text_color' ) as $key ) {
-			$value = sanitize_hex_color( wp_unslash( $_POST[ $key ] ?? '' ) );
-			$settings[ $key ] = $value ?: $defaults[ $key ];
+			$settings[ $key ] = self::sanitize_color( wp_unslash( $_POST[ $key ] ?? '' ), $defaults[ $key ] );
 		}
 		update_option( self::OPTION, $settings, false );
 		wp_safe_redirect( admin_url( 'admin.php?page=contactpanda-settings&tab=general&general_section=system_emails&system_email_saved=1' ) );
 		exit;
+	}
+
+	private static function sanitize_color( $value, $fallback ) {
+		$value = trim( sanitize_text_field( (string) $value ) );
+		$hex = sanitize_hex_color( $value );
+		if ( $hex ) return $hex;
+		if ( preg_match( '/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*(0|1|0?\.\d+))?\s*\)$/i', $value, $match ) ) {
+			return sprintf( 'rgba(%d,%d,%d,%s)', min( 255, absint( $match[1] ) ), min( 255, absint( $match[2] ) ), min( 255, absint( $match[3] ) ), isset( $match[4] ) ? (string) max( 0, min( 1, (float) $match[4] ) ) : '1' );
+		}
+		return $fallback;
 	}
 
 	public static function send_test() {
@@ -181,6 +192,6 @@ final class ContactPanda_System_Emails {
 		$content = preg_replace( '/class=(["\'])contactpanda-email-button\1/', 'style="' . esc_attr( $button_css ) . '"', (string) $content );
 		$header = self::render_blocks( $s['header_blocks'], $logo, $s['logo_position'] );
 		$footer = self::render_blocks( $s['footer_blocks'], $logo, $s['logo_position'] );
-		return '<!doctype html><html><body data-contactpanda-system-email="1" style="margin:0;padding:0;background:' . esc_attr( $s['background_color'] ) . ';color:' . esc_attr( $s['text_color'] ) . ';font-family:' . esc_attr( $s['font_family'] ) . '"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center" style="padding:28px 14px"><table role="presentation" width="640" style="max-width:640px;width:100%;background:' . esc_attr( $s['content_color'] ) . ';border-radius:8px;overflow:hidden" cellspacing="0" cellpadding="0"><tr><td style="padding:24px 28px;background:' . esc_attr( $s['header_color'] ) . '">' . $header . '</td></tr><tr><td style="padding:28px"><div style="font-size:16px;line-height:1.6">' . wp_kses_post( $content ) . '</div></td></tr><tr><td style="border-top:1px solid #e2e5e8;padding:20px 28px;font-size:12px;line-height:1.5;background:' . esc_attr( $s['footer_color'] ) . ';color:' . esc_attr( $s['footer_text_color'] ) . '">' . $footer . ( $legal ? nl2br( esc_html( $legal ) ) : '' ) . '</td></tr></table><div style="font-size:12px;color:#646970;margin-top:12px">' . esc_html( $subject ) . '</div></td></tr></table></body></html>';
+		return '<!doctype html><html><body data-contactpanda-system-email="1" style="margin:0;padding:0;background:' . esc_attr( $s['background_color'] ) . ';color:' . esc_attr( $s['text_color'] ) . ';font-family:' . esc_attr( $s['font_family'] ) . '"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center" style="padding:28px 14px"><table role="presentation" width="640" style="max-width:640px;width:100%;background:' . esc_attr( $s['content_color'] ) . ';border-radius:8px;overflow:hidden" cellspacing="0" cellpadding="0"><tr><td style="padding:24px 28px;background:' . esc_attr( $s['header_color'] ) . '">' . $header . '</td></tr><tr><td style="padding:28px"><div style="font-size:16px;line-height:1.6">' . wp_kses_post( $content ) . '</div></td></tr><tr><td align="center" style="text-align:center;border-top:1px solid #e2e5e8;padding:20px 28px;font-size:12px;line-height:1.5;background:' . esc_attr( $s['footer_color'] ) . ';color:' . esc_attr( $s['footer_text_color'] ) . '">' . $footer . ( $legal ? nl2br( esc_html( $legal ) ) : '' ) . '</td></tr></table><div style="font-size:12px;color:#646970;margin-top:12px">' . esc_html( $subject ) . '</div></td></tr></table></body></html>';
 	}
 }
