@@ -156,7 +156,19 @@ final class ContactPanda_Licensed_Updater {
 		if ( ! function_exists( 'download_url' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
-		$file = download_url( esc_url_raw( $data['package'] ), 300 );
+
+		/*
+		 * On the license-server installation the protected package is already on
+		 * disk. Panda License may return a verified temporary copy so WordPress does
+		 * not try to download from itself while maintenance mode is active.
+		 */
+		$file = apply_filters( 'contactpanda_update_local_package', '', $data, $this->config );
+		if ( ! is_wp_error( $file ) && ! is_string( $file ) ) {
+			$file = '';
+		}
+		if ( '' === $file ) {
+			$file = download_url( esc_url_raw( $data['package'] ), 300 );
+		}
 		if ( is_wp_error( $file ) ) {
 			return new WP_Error( 'contactpanda_update_download', __( 'The secure ContactPanda update package could not be downloaded. Please try again.', 'contactpanda' ) );
 		}

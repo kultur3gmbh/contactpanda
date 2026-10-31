@@ -3,7 +3,9 @@
 	var config = window.CONTACTPANDA_NEWSLETTER || {i18n: {}};
 	var i18n = config.i18n || {};
 	var productFilters = config.productFilters || {categories: [], producers: [], products: []};
-	var eventFilters = config.eventFilters || [];
+	var eventConfig = config.eventFilters || {events: [], categories: []};
+	var eventFilters = Array.isArray(eventConfig) ? eventConfig : (eventConfig.events || []);
+	var eventCategories = Array.isArray(eventConfig.categories) ? eventConfig.categories : [];
 	var postFilters = config.postFilters || {types: []};
 	var productPreviewCache = {};
 	var productPreviewTimers = {};
@@ -95,7 +97,7 @@
 		if (block.type === 'heading') { block.level = ['h1', 'h2', 'h3', 'h4'].indexOf(block.level) >= 0 ? block.level : 'h2'; block.text_color = block.text_color || ''; }
 		if (block.type === 'button') { block.button_color = block.button_color || ''; block.border_color = block.border_color || ''; block.text_color = block.text_color || ''; block.full_width = !!block.full_width; block.uppercase = !!block.uppercase; }
 		if (block.type === 'products') { block.source = block.source || 'latest'; block.count = Math.max(1, Math.min(6, Number(block.count) || 2)); block.columns = Math.max(1, Math.min(3, Number(block.columns) || 2)); block.product_ids = Array.isArray(block.product_ids) ? block.product_ids : []; block.show_price = block.show_price !== false; block.show_categories = !!block.show_categories; block.show_brands = !!block.show_brands; }
-		if (block.type === 'events') { block.event_ids = Array.isArray(block.event_ids) ? block.event_ids : []; block.count = Math.max(1, Math.min(6, Number(block.count) || 2)); block.columns = Math.max(1, Math.min(3, Number(block.columns) || 2)); }
+		if (block.type === 'events') { block.event_ids = Array.isArray(block.event_ids) ? block.event_ids : []; var legacyEventSource = block.source || ''; block.source = ['manual','upcoming','current','past','all'].indexOf(legacyEventSource) >= 0 ? legacyEventSource : (block.event_ids.length ? 'manual' : 'upcoming'); block.category_id = Number(block.category_id || 0); block.featured_only = !!block.featured_only || legacyEventSource === 'featured'; block.event_order = block.event_order === 'desc' ? 'desc' : 'asc'; block.count = Math.max(1, Math.min(6, Number(block.count) || 2)); block.columns = Math.max(1, Math.min(3, Number(block.columns) || 2)); block.show_image = block.show_image !== false; block.image_format = block.image_format === 'original' ? 'original' : 'fixed'; block.image_fit = block.image_fit === 'contain' ? 'contain' : 'cover'; }
 		if (block.type === 'posts') {
 			block.post_type = block.post_type || ((postFilters.types || [])[0] || {id: 'post'}).id; var normalizedPostType = selectedPostType(block); block.post_taxonomy = block.post_taxonomy || normalizedPostType.taxonomy || ''; block.source = block.source || 'latest'; block.count = Math.max(1, Math.min(6, Number(block.count) || 2)); block.columns = Math.max(1, Math.min(3, Number(block.columns) || 2)); block.post_ids = Array.isArray(block.post_ids) ? block.post_ids : [];
 			block.show_image = block.show_image !== false; block.show_title = block.show_title !== false; block.show_excerpt = block.show_excerpt !== false;
@@ -119,7 +121,7 @@
 		if (type === 'button') { block.label = i18n.buttonLabel; block.url = ''; block.button_color = ''; block.border_color = ''; block.text_color = ''; block.full_width = false; block.uppercase = false; }
 		if (type === 'spacer') block.height = 24;
 		if (type === 'products') { block.source = 'latest'; block.count = 2; block.columns = 2; block.image_ratio = '1:1'; block.category_id = 0; block.producer_taxonomy = ''; block.producer_term_id = 0; block.product_ids = []; block.show_price = true; block.show_categories = false; block.show_brands = false; }
-		if (type === 'events') { block.event_ids = []; block.count = 2; block.columns = 2; block.image_ratio = '1:1'; }
+		if (type === 'events') { block.source = 'upcoming'; block.event_ids = []; block.category_id = 0; block.featured_only = false; block.event_order = 'asc'; block.count = 2; block.columns = 2; block.show_image = true; block.image_format = 'fixed'; block.image_fit = 'cover'; block.image_ratio = '1:1'; }
 		if (type === 'posts') { var firstPostType = (postFilters.types || [])[0] || {id: 'post', taxonomy: ''}; block.post_type = firstPostType.id; block.post_taxonomy = firstPostType.taxonomy || ''; block.source = 'latest'; block.count = 2; block.columns = 2; block.image_ratio = '1:1'; block.category_id = 0; block.post_ids = []; block.show_image = true; block.show_title = true; block.show_excerpt = true; }
 		return block;
 	}
@@ -176,6 +178,18 @@
 			return '<div>' + (block.show_image && post.image ? '<img src="' + escapeHtml(post.image) + '" alt="" style="aspect-ratio:' + imageRatio(block.image_ratio) + ';object-fit:cover">' : '') + (block.show_title ? '<strong>' + escapeHtml(post.name) + '</strong>' : '') + (block.show_excerpt ? '<p>' + escapeHtml(post.excerpt) + '</p>' : '') + '</div>';
 		}).join('') + '</div>';
 	}
+	function selectedEvents(block) {
+		var now = new Date(); var events = eventFilters.slice();
+		if (block.source === 'manual') events = events.filter(function (event) { return (block.event_ids || []).map(String).indexOf(String(event.id)) >= 0; });
+		else if (block.source === 'current') events = events.filter(function (event) { return eventDate(event.start) <= now && eventDate(event.end || event.start) >= now; });
+		else if (block.source === 'past') events = events.filter(function (event) { return eventDate(event.end || event.start) < now; });
+		else if (block.source === 'upcoming') events = events.filter(function (event) { return eventDate(event.start) >= now; });
+		if (block.source !== 'manual' && block.category_id) events = events.filter(function (event) { return (event.term_ids || []).map(String).indexOf(String(block.category_id)) >= 0; });
+		if (block.source !== 'manual' && block.featured_only) events = events.filter(function (event) { return !!event.featured; });
+		events.sort(function (a, b) { var difference = eventDate(a.start) - eventDate(b.start); return block.event_order === 'asc' ? difference : -difference; });
+		return events.slice(0, Number(block.count || 2));
+	}
+	function eventDate(value) { return new Date(String(value || '').replace(' ', 'T')); }
 	function loadProductPreview(block) {
 		if (!config.woocommerce || block.type !== 'products') return;
 		window.clearTimeout(productPreviewTimers[block.id]);
@@ -201,7 +215,7 @@
 		if (block.type === 'divider') return '<hr>';
 		if (block.type === 'spacer') return '<div class="contactpanda-canvas-spacer" style="height:' + Number(block.height || 24) + 'px"><span>' + Number(block.height || 24) + ' px</span></div>';
 		if (block.type === 'products') return productPreview(block);
-		if (block.type === 'events') return '<div class="contactpanda-event-block-preview" style="grid-template-columns:repeat(' + Number(block.columns || 2) + ',minmax(0,1fr))">' + (block.event_ids || []).slice(0, Number(block.count || 2)).map(function (id) { var item = eventFilters.find(function (event) { return String(event.id) === String(id); }); return item ? '<div>' + (item.image ? '<img src="' + escapeHtml(item.image) + '" alt="" style="aspect-ratio:' + imageRatio(block.image_ratio) + ';object-fit:cover">' : '') + '<strong>' + escapeHtml(item.name) + '</strong></div>' : ''; }).join('') + '</div>';
+		if (block.type === 'events') return '<div class="contactpanda-event-block-preview" style="grid-template-columns:repeat(' + Number(block.columns || 2) + ',minmax(0,1fr))">' + selectedEvents(block).map(function (item) { var imageStyle = block.image_format === 'original' ? 'height:auto' : 'aspect-ratio:' + imageRatio(block.image_ratio) + ';object-fit:' + block.image_fit; return '<div>' + (block.show_image && item.image ? '<img src="' + escapeHtml(item.image) + '" alt="" style="' + imageStyle + '">' : '') + '<strong>' + escapeHtml(item.name) + '</strong></div>'; }).join('') + '</div>';
 		if (block.type === 'posts') return postPreview(block);
 		return '';
 	}
@@ -472,9 +486,16 @@
 			}
 			if (block.source === 'manual') inspector.appendChild(productSelect(i18n.manualProducts, block.product_ids, productFilters.products.map(function (item) { return [item.id, item.name]; }), function (values) { block.product_ids = values.slice(0, block.count); updateProductBlock(block); renderInspector(); }, true));
 		} else if (block.type === 'events') {
-			inspector.appendChild(productSelect(i18n.selectEvents, block.event_ids, eventFilters.map(function (item) { return [item.id, item.name]; }), function (values) { block.event_ids = values.slice(0, 6); sync(); renderCanvas(); }, true));
+			inspector.appendChild(productSelect(i18n.eventSource, block.source, [['upcoming',i18n.upcomingEvents],['current',i18n.currentEvents],['past',i18n.pastEvents],['all',i18n.allEvents],['manual',i18n.manual]], function (value) { block.source = value; sync(); render(); }));
+			if (block.source === 'manual') inspector.appendChild(productSelect(i18n.selectEvents, block.event_ids, eventFilters.map(function (item) { return [item.id, item.name]; }), function (values) { block.event_ids = values.slice(0, 6); sync(); renderCanvas(); }, true));
+			if (block.source !== 'manual') { inspector.appendChild(productSelect(i18n.eventCategory, block.category_id, [['0',i18n.all]].concat(eventCategories.map(function (item) { return [item.id,item.name]; })), function (value) { block.category_id = Number(value); sync(); renderCanvas(); })); inspector.appendChild(productSelect(i18n.onlyFeatured, block.featured_only ? '1' : '0', [['0',i18n.no],['1',i18n.yes]], function (value) { block.featured_only = value === '1'; sync(); renderCanvas(); })); }
 			inspector.appendChild(pairedFields(productSelect(i18n.eventCount, block.count, [[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']], function (value) { block.count = Number(value); sync(); renderCanvas(); }), productSelect(i18n.columns, block.columns, [[1,'1'],[2,'2'],[3,'3']], function (value) { block.columns = Number(value); sync(); renderCanvas(); })));
-			inspector.appendChild(productSelect(i18n.imageRatio, block.image_ratio, [['1:1',i18n.ratioSquare],['4:5',i18n.ratioPortrait],['4:3',i18n.ratioLandscape]], function (value) { block.image_ratio = value; sync(); renderCanvas(); }));
+			inspector.appendChild(productSelect(i18n.eventOrder, block.event_order, [['asc',i18n.eventOldest],['desc',i18n.eventNewest]], function (value) { block.event_order = value; sync(); renderCanvas(); }));
+			inspector.appendChild(productSelect(i18n.showEventImage, block.show_image ? '1' : '0', [['1',i18n.yes],['0',i18n.no]], function (value) { block.show_image = value === '1'; sync(); renderInspector(); renderCanvas(); }));
+			if (block.show_image) {
+				inspector.appendChild(productSelect(i18n.imageFormat, block.image_format, [['fixed',i18n.fixedFormat],['original',i18n.originalFormat]], function (value) { block.image_format = value; sync(); renderInspector(); renderCanvas(); }));
+				if (block.image_format === 'fixed') { inspector.appendChild(productSelect(i18n.imageRatio, block.image_ratio, [['1:1',i18n.ratioSquare],['4:5',i18n.ratioPortrait],['4:3',i18n.ratioLandscape]], function (value) { block.image_ratio = value; sync(); renderCanvas(); })); inspector.appendChild(productSelect(i18n.eventImageMode, block.image_fit, [['cover',i18n.cover],['contain',i18n.contain]], function (value) { block.image_fit = value; sync(); renderCanvas(); })); }
+			}
 		} else if (block.type === 'posts') {
 			var postType = selectedPostType(block);
 			inspector.appendChild(productSelect(i18n.contentType, block.post_type, (postFilters.types || []).map(function (type) { return [type.id, type.name]; }), function (value) { block.post_type = value; var selectedType = selectedPostType(block); block.post_taxonomy = selectedType.taxonomy || ''; block.category_id = 0; block.post_ids = []; if (block.source === 'category' && !(selectedType.categories || []).length) block.source = 'latest'; sync(); render(); }));

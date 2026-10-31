@@ -492,6 +492,21 @@ final class ContactPanda_License {
 
 	private static function request( $action, $payload ) {
 		$body = array_merge( self::telemetry(), $payload );
+
+		/*
+		 * A WordPress installation that also hosts Panda License must not make an
+		 * HTTPS request back to itself while its own updater has enabled maintenance
+		 * mode. The license server can provide the same signed response in-process.
+		 * Other installations leave this filter untouched and keep using HTTPS.
+		 */
+		$local = apply_filters( 'contactpanda_license_local_response', null, $action, $body );
+		if ( is_wp_error( $local ) ) {
+			return $local;
+		}
+		if ( is_array( $local ) ) {
+			return self::verified_data( $local );
+		}
+
 		$response = wp_safe_remote_post(
 			self::endpoint( $action ),
 			array(

@@ -26,7 +26,7 @@ msgstr ""
 msgid "Placeholders such as {campaign_name}, {campaign_id} and {subject_variant} are resolved separately for every delivery."
 msgstr ""
 
-"Project-Id-Version: ContactPanda 0.8.64\n"
+"Project-Id-Version: ContactPanda 0.8.84\n"
 "Report-Msgid-Bugs-To: https://kultur3.com/\n"
 "POT-Creation-Date: 2026-10-23 14:30+0200\n"
 "PO-Revision-Date: 2026-10-23 14:30+0200\n"
@@ -8518,4 +8518,76 @@ msgid "%1$d subscribers, %2$d reusable email sources, and %3$d historical mailin
 msgstr ""
 
 msgid "%1$d new, %2$d updated, %3$d templates, %4$d mailings, %5$d skipped, %6$d errors. Completed: %7$s"
+msgstr ""
+
+msgid "Event selection"
+msgstr ""
+
+msgid "Upcoming events"
+msgstr ""
+
+msgid "Current events"
+msgstr ""
+
+msgid "Past events"
+msgstr ""
+
+msgid "Featured events"
+msgstr ""
+
+msgid "Event category"
+msgstr ""
+
+msgid "Sorting"
+msgstr ""
+
+msgid "Newest first"
+msgstr ""
+
+msgid "Oldest first"
+msgstr ""
+
+msgid "Image display"
+msgstr ""
+
+msgid "Cover"
+msgstr ""
+
+msgid "Contain"
+msgstr ""
+
+msgid "Show image"
+msgstr ""
+
+msgid "My templates"
+msgstr ""
+
+msgid "Template gallery"
+msgstr ""
+
+msgid "Preview"
+msgstr ""
+
+msgid "Use template"
+msgstr ""
+
+msgid "Duplicate template"
+msgstr ""
+
+msgid "Add to template gallery"
+msgstr ""
+
+msgid "The template was added to the template gallery."
+msgstr ""
+
+msgid "No matching events were found."
+msgstr ""
+
+msgid "All events"
+msgstr ""
+
+msgid "Only featured events"
+msgstr ""
+
+msgid "All"
 msgstr ""

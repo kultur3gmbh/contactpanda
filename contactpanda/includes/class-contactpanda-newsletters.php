@@ -417,6 +417,22 @@ final class ContactPanda_Basic_Newsletters {
 					'headingLevel'   => __( 'Heading level', 'contactpanda' ),
 					'columns'        => __( 'Columns', 'contactpanda' ),
 					'selectEvents'   => __( 'Select events', 'contactpanda' ),
+					'eventSource'    => __( 'Event selection', 'contactpanda' ),
+					'upcomingEvents' => __( 'Upcoming events', 'contactpanda' ),
+					'currentEvents'  => __( 'Current events', 'contactpanda' ),
+					'pastEvents'     => __( 'Past events', 'contactpanda' ),
+					'allEvents'      => __( 'All events', 'contactpanda' ),
+					'featuredEvents' => __( 'Featured events', 'contactpanda' ),
+					'onlyFeatured'   => __( 'Only featured events', 'contactpanda' ),
+					'eventCategory'  => __( 'Event category', 'contactpanda' ),
+					'all'            => __( 'All', 'contactpanda' ),
+					'eventOrder'     => __( 'Sorting', 'contactpanda' ),
+					'eventNewest'    => __( 'Newest first', 'contactpanda' ),
+					'eventOldest'    => __( 'Oldest first', 'contactpanda' ),
+					'eventImageMode' => __( 'Image display', 'contactpanda' ),
+					'cover'          => __( 'Cover', 'contactpanda' ),
+					'contain'        => __( 'Contain', 'contactpanda' ),
+					'showEventImage' => __( 'Show image', 'contactpanda' ),
 					'postsBlock'      => __( 'Posts', 'contactpanda' ),
 					'postSource'      => __( 'Post selection', 'contactpanda' ),
 					'latestPosts'     => __( 'Latest posts', 'contactpanda' ),
@@ -478,9 +494,25 @@ final class ContactPanda_Basic_Newsletters {
 	}
 
 	private static function event_filters() {
-		if ( ! apply_filters( 'contactpanda_events_available', false ) ) return array();
-		$posts = get_posts( array( 'post_type' => 'tribe_events', 'post_status' => 'publish', 'posts_per_page' => 200, 'orderby' => 'event_date', 'order' => 'DESC' ) );
-		return array_map( static function ( $post ) { return array( 'id' => (int) $post->ID, 'name' => get_the_title( $post ), 'image' => get_the_post_thumbnail_url( $post, 'medium' ) ?: '' ); }, $posts );
+		if ( ! apply_filters( 'contactpanda_events_available', false ) ) return array( 'events' => array(), 'categories' => array() );
+		$posts = get_posts( array( 'post_type' => 'tribe_events', 'post_status' => 'publish', 'posts_per_page' => 200, 'meta_key' => '_EventStartDate', 'orderby' => 'meta_value', 'order' => 'DESC' ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- bounded editor lookup.
+		$events = array_map( static function ( $post ) {
+			$term_ids = wp_get_post_terms( $post->ID, 'tribe_events_cat', array( 'fields' => 'ids' ) );
+			$start = (string) get_post_meta( $post->ID, '_EventStartDate', true );
+			$end = (string) get_post_meta( $post->ID, '_EventEndDate', true );
+			return array(
+				'id' => (int) $post->ID, 'name' => get_the_title( $post ),
+				'image' => get_the_post_thumbnail_url( $post, 'large' ) ?: '',
+				'start' => $start, 'end' => $end,
+				'featured' => '1' === (string) get_post_meta( $post->ID, '_tribe_featured', true ),
+				'term_ids' => is_wp_error( $term_ids ) ? array() : array_map( 'intval', $term_ids ),
+			);
+		}, $posts );
+		$terms = get_terms( array( 'taxonomy' => 'tribe_events_cat', 'hide_empty' => true, 'number' => 200 ) );
+		return array(
+			'events' => $events,
+			'categories' => is_wp_error( $terms ) ? array() : array_map( static function ( $term ) { return array( 'id' => (int) $term->term_id, 'name' => $term->name ); }, $terms ),
+		);
 	}
 
 	private static function post_filters() {
@@ -590,12 +622,13 @@ final class ContactPanda_Basic_Newsletters {
 		$table = ContactPanda_Newsletter_Schema::newsletter_table_names()['templates'];
 		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
 		$status_filter = isset( $_GET['template_status'] ) ? sanitize_key( wp_unslash( $_GET['template_status'] ) ) : 'all'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
+		$list_view = isset( $_GET['template_view'] ) && 'gallery' === sanitize_key( wp_unslash( $_GET['template_view'] ) ) ? 'gallery' : 'mine'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
 		$date_filter = isset( $_GET['template_date'] ) ? sanitize_key( wp_unslash( $_GET['template_date'] ) ) : 'all'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
 		$orderby = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'updated_at'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
 		$order = isset( $_GET['order'] ) && 'asc' === strtolower( sanitize_text_field( wp_unslash( $_GET['order'] ) ) ) ? 'ASC' : 'DESC'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only filter.
 		$page = max( 1, isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination.
 		$per_page = 20;
-		$where = "WHERE status <> 'deleted'";
+		$where = "WHERE status " . ( 'gallery' === $list_view ? "= 'template'" : "NOT IN ('deleted','template')" );
 		$params = array();
 		if ( '' !== $search ) {
 			$where .= ' AND (name LIKE %s OR subject LIKE %s)';
@@ -622,16 +655,21 @@ final class ContactPanda_Basic_Newsletters {
 		if ( is_array( $notice ) ) {
 			echo '<div class="notice notice-' . ( ! empty( $notice['success'] ) ? 'success' : 'error' ) . ' is-dismissible"><p>' . esc_html( $notice['message'] ) . '</p></div>';
 		}
-		echo '<section class="contactpanda-card"><form method="get" class="contactpanda-newsletter-search"><input type="hidden" name="page" value="contactpanda-newsletters"><label class="screen-reader-text" for="contactpanda-template-search">' . esc_html__( 'Search templates', 'contactpanda' ) . '</label><input id="contactpanda-template-search" type="search" name="s" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Search templates', 'contactpanda' ) . '"><select name="template_status"><option value="all">' . esc_html__( 'All statuses', 'contactpanda' ) . '</option>';
+		echo '<nav class="nav-tab-wrapper contactpanda-template-tabs"><a class="nav-tab' . ( 'mine' === $list_view ? ' nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-newsletters' ) ) . '">' . esc_html__( 'My templates', 'contactpanda' ) . '</a><a class="nav-tab' . ( 'gallery' === $list_view ? ' nav-tab-active' : '' ) . '" href="' . esc_url( admin_url( 'admin.php?page=contactpanda-newsletters&template_view=gallery' ) ) . '">' . esc_html__( 'Template gallery', 'contactpanda' ) . '</a></nav>';
+		echo '<section class="contactpanda-card"><form method="get" class="contactpanda-newsletter-search"><input type="hidden" name="page" value="contactpanda-newsletters"><input type="hidden" name="template_view" value="' . esc_attr( $list_view ) . '"><label class="screen-reader-text" for="contactpanda-template-search">' . esc_html__( 'Search templates', 'contactpanda' ) . '</label><input id="contactpanda-template-search" type="search" name="s" value="' . esc_attr( $search ) . '" placeholder="' . esc_attr__( 'Search templates', 'contactpanda' ) . '">';
+		if ( 'mine' === $list_view ) echo '<select name="template_status"><option value="all">' . esc_html__( 'All statuses', 'contactpanda' ) . '</option>';
+		if ( 'mine' === $list_view ) {
 		foreach ( array( 'draft' => __( 'Draft', 'contactpanda' ), 'planned' => __( 'Planned', 'contactpanda' ), 'published' => __( 'Published', 'contactpanda' ), 'sent' => __( 'Sent', 'contactpanda' ), 'archived' => __( 'Archived', 'contactpanda' ) ) as $value => $label ) echo '<option value="' . esc_attr( $value ) . '"' . selected( $status_filter, $value, false ) . '>' . esc_html( $label ) . '</option>';
-		echo '</select><select name="template_date"><option value="all">' . esc_html__( 'All dates', 'contactpanda' ) . '</option>';
+		echo '</select>'; }
+		echo '<select name="template_date"><option value="all">' . esc_html__( 'All dates', 'contactpanda' ) . '</option>';
 		foreach ( array( 'this_month' => __( 'Created this month', 'contactpanda' ), 'last_month' => __( 'Created last month', 'contactpanda' ), 'this_year' => __( 'Created this year', 'contactpanda' ) ) as $value => $label ) echo '<option value="' . esc_attr( $value ) . '"' . selected( $date_filter, $value, false ) . '>' . esc_html( $label ) . '</option>';
-		echo '</select><select name="orderby"><option value="updated_at"' . selected( $orderby, 'updated_at', false ) . '>' . esc_html__( 'Last modified', 'contactpanda' ) . '</option><option value="created_at"' . selected( $orderby, 'created_at', false ) . '>' . esc_html__( 'Created', 'contactpanda' ) . '</option><option value="name"' . selected( $orderby, 'name', false ) . '>' . esc_html__( 'Name', 'contactpanda' ) . '</option></select><button class="button">' . esc_html__( 'Filter', 'contactpanda' ) . '</button></form>';
+		echo '</select><select name="orderby"><option value="updated_at"' . selected( $orderby, 'updated_at', false ) . '>' . esc_html__( 'Last modified', 'contactpanda' ) . '</option><option value="created_at"' . selected( $orderby, 'created_at', false ) . '>' . esc_html__( 'Created', 'contactpanda' ) . '</option><option value="name"' . selected( $orderby, 'name', false ) . '>' . esc_html__( 'Name', 'contactpanda' ) . '</option></select><button class="button"><span class="dashicons dashicons-search" aria-hidden="true"></span> ' . esc_html__( 'Search', 'contactpanda' ) . '</button></form>';
 		if ( ! $rows ) {
 			echo '<div class="contactpanda-empty"><span class="dashicons dashicons-email-alt"></span><h3>' . esc_html__( 'No templates found', 'contactpanda' ) . '</h3><p>' . esc_html__( 'Create the first email template or change the search.', 'contactpanda' ) . '</p></div></section></div>';
 			return;
 		}
-		echo '<table class="widefat striped contactpanda-table contactpanda-template-table"><thead><tr><th>' . esc_html__( 'Name', 'contactpanda' ) . '</th><th>' . esc_html__( 'Subject', 'contactpanda' ) . '</th><th>' . esc_html__( 'Newsletter', 'contactpanda' ) . '</th><th>' . esc_html__( 'Autom.', 'contactpanda' ) . '</th><th>' . esc_html__( 'Status', 'contactpanda' ) . '</th><th>' . esc_html__( 'Last modified', 'contactpanda' ) . '</th><th>' . esc_html__( 'Actions', 'contactpanda' ) . '</th></tr></thead><tbody>';
+		if ( 'gallery' === $list_view ) echo '<div class="contactpanda-template-gallery">';
+		else echo '<table class="widefat striped contactpanda-table contactpanda-template-table"><thead><tr><th>' . esc_html__( 'Name', 'contactpanda' ) . '</th><th>' . esc_html__( 'Subject', 'contactpanda' ) . '</th><th>' . esc_html__( 'Newsletter', 'contactpanda' ) . '</th><th>' . esc_html__( 'Autom.', 'contactpanda' ) . '</th><th>' . esc_html__( 'Status', 'contactpanda' ) . '</th><th>' . esc_html__( 'Last modified', 'contactpanda' ) . '</th><th>' . esc_html__( 'Actions', 'contactpanda' ) . '</th></tr></thead><tbody>';
 		foreach ( $rows as $row ) {
 			$edit_url = admin_url( 'admin.php?page=contactpanda-newsletters&action=edit&template_id=' . absint( $row['id'] ) );
 			$view_url = admin_url( 'admin.php?page=contactpanda-newsletters&action=view&template_id=' . absint( $row['id'] ) );
@@ -640,17 +678,25 @@ final class ContactPanda_Basic_Newsletters {
 			$deletable = ! $imported && ! $usage['campaigns'] && ! $usage['flows'];
 			$status_labels = array( 'draft' => __( 'Draft', 'contactpanda' ), 'published' => __( 'Published', 'contactpanda' ), 'archived' => __( 'Archived', 'contactpanda' ) );
 			$status = $imported ? __( 'Imported archive', 'contactpanda' ) : ( self::template_sent_as_newsletter( absint( $row['id'] ) ) ? __( 'Sent', 'contactpanda' ) : ( self::template_planned_as_newsletter( absint( $row['id'] ) ) ? __( 'Planned', 'contactpanda' ) : ( $status_labels[ $row['status'] ] ?? $row['status'] ) ) );
+			if ( 'gallery' === $list_view ) {
+				echo '<article class="contactpanda-template-gallery-card"><iframe sandbox="" tabindex="-1" title="' . esc_attr( $row['name'] ) . '" srcdoc="' . esc_attr( $row['content_html'] ) . '"></iframe><div><h3>' . esc_html( $row['name'] ) . '</h3><p>' . esc_html( $row['subject'] ?: '—' ) . '</p><a class="button" href="' . esc_url( $view_url ) . '">' . esc_html__( 'Preview', 'contactpanda' ) . '</a> ';
+				self::row_action_form( $row['id'], 'use_template', __( 'Use template', 'contactpanda' ) );
+				echo '</div></article>';
+				continue;
+			}
 			echo '<tr><td><strong><a href="' . esc_url( $imported ? $view_url : $edit_url ) . '">' . esc_html( $row['name'] ) . '</a></strong></td><td>' . esc_html( $row['subject'] ?: '—' ) . '</td><td>' . esc_html( count( $usage['campaigns'] ) ) . '</td><td>' . esc_html( count( $usage['flows'] ) ) . '</td><td>' . esc_html( $status ) . '</td><td>' . esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $row['updated_at'] ) ) . '</td><td class="contactpanda-template-actions">';
 			if ( ! $imported ) echo '<a class="contactpanda-list-action" href="' . esc_url( $edit_url ) . '" aria-label="' . esc_attr__( 'Edit template', 'contactpanda' ) . '" title="' . esc_attr__( 'Edit template', 'contactpanda' ) . '"><span class="dashicons dashicons-edit" aria-hidden="true"></span></a>';
 			else echo '<span class="contactpanda-list-action is-disabled" aria-label="' . esc_attr__( 'Imported templates are read-only. Create an editable copy to change the content.', 'contactpanda' ) . '" title="' . esc_attr__( 'Imported templates are read-only. Create an editable copy to change the content.', 'contactpanda' ) . '"><span class="dashicons dashicons-edit" aria-hidden="true"></span></span>';
 			echo '<a class="contactpanda-list-action" href="' . esc_url( $view_url ) . '" aria-label="' . esc_attr__( 'View template', 'contactpanda' ) . '" title="' . esc_attr__( 'View template', 'contactpanda' ) . '"><span class="dashicons dashicons-visibility" aria-hidden="true"></span></a>';
+			self::row_action_form( $row['id'], 'duplicate', __( 'Duplicate template', 'contactpanda' ), 'contactpanda-list-action-form is-duplicate' );
+			self::row_action_form( $row['id'], 'make_template', __( 'Add to template gallery', 'contactpanda' ), 'contactpanda-list-action-form is-template' );
 			if ( $deletable ) self::row_action_form( $row['id'], 'archive', __( 'Delete template', 'contactpanda' ), 'contactpanda-archive-template contactpanda-list-action-form' );
 			else echo '<span class="contactpanda-list-action is-disabled" aria-label="' . esc_attr__( 'Templates that are or were used cannot be deleted.', 'contactpanda' ) . '" title="' . esc_attr__( 'Templates that are or were used cannot be deleted.', 'contactpanda' ) . '"><span class="dashicons dashicons-trash" aria-hidden="true"></span></span>';
 			echo '</td></tr>';
 		}
-		echo '</tbody></table>';
+		echo ( 'gallery' === $list_view ? '</div>' : '</tbody></table>' );
 		if ( $total > $per_page ) {
-			$base = add_query_arg( array( 'page' => 'contactpanda-newsletters', 's' => $search, 'paged' => '%#%' ), admin_url( 'admin.php' ) );
+			$base = add_query_arg( array( 'page' => 'contactpanda-newsletters', 'template_view' => $list_view, 's' => $search, 'paged' => '%#%' ), admin_url( 'admin.php' ) );
 			echo '<div class="tablenav"><div class="tablenav-pages">' . wp_kses_post( paginate_links( array( 'base' => $base, 'format' => '', 'current' => $page, 'total' => (int) ceil( $total / $per_page ) ) ) ) . '</div></div>';
 		}
 		echo '</section></div>';
@@ -685,7 +731,9 @@ final class ContactPanda_Basic_Newsletters {
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="contactpanda-inline-row-action ' . esc_attr( $class ) . '"><input type="hidden" name="action" value="contactpanda_template_action"><input type="hidden" name="operation" value="' . esc_attr( $operation ) . '"><input type="hidden" name="template_id" value="' . esc_attr( $id ) . '">';
 		wp_nonce_field( self::NONCE_ACTION );
 		$is_icon = false !== strpos( $class, 'contactpanda-list-action-form' );
-		echo '<button type="submit" class="' . ( $is_icon ? 'contactpanda-list-action button-link-delete' : 'button-link' ) . '" aria-label="' . esc_attr( $label ) . '" title="' . esc_attr( $label ) . '">' . ( $is_icon ? '<span class="dashicons dashicons-trash" aria-hidden="true"></span>' : esc_html( $label ) ) . '</button></form>';
+		$icons = array( 'archive' => 'trash', 'duplicate' => 'admin-page', 'make_template' => 'star-filled' );
+		$icon = $icons[ $operation ] ?? 'admin-generic';
+		echo '<button type="submit" class="' . ( $is_icon ? 'contactpanda-list-action' . ( 'archive' === $operation ? ' button-link-delete' : '' ) : 'button-link' ) . '" aria-label="' . esc_attr( $label ) . '" title="' . esc_attr( $label ) . '">' . ( $is_icon ? '<span class="dashicons dashicons-' . esc_attr( $icon ) . '" aria-hidden="true"></span>' : esc_html( $label ) ) . '</button></form>';
 	}
 
 	private static function render_template_preview() {
@@ -903,10 +951,14 @@ final class ContactPanda_Basic_Newsletters {
 			$usage = self::template_usage( $id );
 			if ( $usage['campaigns'] || $usage['flows'] ) { $message = __( 'This template is still used by a newsletter or automation and cannot be archived.', 'contactpanda' ); }
 			else { $success = false !== $wpdb->update( $table, array( 'status' => 'archived', 'updated_at' => current_time( 'mysql' ) ), array( 'id' => $id ) ); $message = $success ? __( 'The template was archived.', 'contactpanda' ) : $message; }
-		} elseif ( $template && 'duplicate' === $operation ) {
+		} elseif ( $template && in_array( $operation, array( 'duplicate', 'make_template', 'use_template' ), true ) ) {
 			unset( $template['id'] );
-			$template['name'] = sprintf( __( '%s (copy)', 'contactpanda' ), $template['name'] );
-			$template['status'] = 'draft';
+			if ( 'make_template' === $operation ) {
+				$template['status'] = 'template';
+			} else {
+				$template['name'] = sprintf( __( '%s (copy)', 'contactpanda' ), $template['name'] );
+				$template['status'] = 'draft';
+			}
 			$template['external_source'] = '';
 			$template['external_id'] = 0;
 			$template['imported_readonly'] = 0;
@@ -915,10 +967,10 @@ final class ContactPanda_Basic_Newsletters {
 			$template['updated_at'] = current_time( 'mysql' );
 			$success = false !== $wpdb->insert( $table, $template );
 			if ( $success ) $id = (int) $wpdb->insert_id;
-			$message = $success ? __( 'The template was duplicated.', 'contactpanda' ) : $message;
+			$message = $success ? ( 'make_template' === $operation ? __( 'The template was added to the template gallery.', 'contactpanda' ) : __( 'The template was duplicated.', 'contactpanda' ) ) : $message;
 		}
 		set_transient( 'contactpanda_newsletter_notice_' . get_current_user_id(), array( 'success' => $success, 'message' => $message ), MINUTE_IN_SECONDS );
-		wp_safe_redirect( $success && 'duplicate' === $operation ? admin_url( 'admin.php?page=contactpanda-newsletters&action=edit&template_id=' . $id ) : admin_url( 'admin.php?page=contactpanda-newsletters' ) );
+		wp_safe_redirect( $success && in_array( $operation, array( 'duplicate', 'use_template' ), true ) ? admin_url( 'admin.php?page=contactpanda-newsletters&action=edit&template_id=' . $id ) : admin_url( 'admin.php?page=contactpanda-newsletters' . ( 'make_template' === $operation ? '&template_view=gallery' : '' ) ) );
 		exit;
 	}
 
@@ -1102,8 +1154,16 @@ final class ContactPanda_Basic_Newsletters {
 			} elseif ( 'events' === $type ) {
 				$ids = isset( $block['event_ids'] ) && is_array( $block['event_ids'] ) ? array_map( 'absint', $block['event_ids'] ) : array();
 				$clean['event_ids'] = array_slice( array_values( array_filter( array_unique( $ids ) ) ), 0, 6 );
+				$legacy_source = isset( $block['source'] ) ? sanitize_key( $block['source'] ) : '';
+				$clean['source'] = in_array( $legacy_source, array( 'manual', 'upcoming', 'current', 'past', 'all' ), true ) ? $legacy_source : ( $clean['event_ids'] ? 'manual' : 'upcoming' );
+				$clean['category_id'] = absint( $block['category_id'] ?? 0 );
+				$clean['featured_only'] = ! empty( $block['featured_only'] ) || 'featured' === $legacy_source;
+				$clean['event_order'] = isset( $block['event_order'] ) && 'desc' === $block['event_order'] ? 'desc' : 'asc';
 				$clean['count'] = min( 6, max( 1, absint( $block['count'] ?? 2 ) ) );
 				$clean['columns'] = min( 3, max( 1, absint( $block['columns'] ?? 2 ) ) );
+				$clean['show_image'] = ! isset( $block['show_image'] ) || ! empty( $block['show_image'] );
+				$clean['image_format'] = isset( $block['image_format'] ) && 'original' === $block['image_format'] ? 'original' : 'fixed';
+				$clean['image_fit'] = isset( $block['image_fit'] ) && 'contain' === $block['image_fit'] ? 'contain' : 'cover';
 				$clean['image_ratio'] = isset( $block['image_ratio'] ) && in_array( $block['image_ratio'], array( '1:1', '4:5', '4:3' ), true ) ? $block['image_ratio'] : '1:1';
 			} elseif ( 'posts' === $type ) {
 				$post_type = isset( $block['post_type'] ) ? sanitize_key( $block['post_type'] ) : 'post';
@@ -1467,16 +1527,33 @@ final class ContactPanda_Basic_Newsletters {
 		$count = min( 6, max( 1, absint( $block['count'] ?? 2 ) ) );
 		$columns = min( 3, max( 1, absint( $block['columns'] ?? 2 ) ) );
 		$image_ratio = str_replace( ':', '/', isset( $block['image_ratio'] ) && in_array( $block['image_ratio'], array( '1:1', '4:5', '4:3' ), true ) ? $block['image_ratio'] : '1:1' );
-		$ids = array_slice( array_filter( array_map( 'absint', (array) ( $block['event_ids'] ?? array() ) ) ), 0, $count );
-		if ( ! $ids ) return '<p style="color:#7b8794">' . esc_html__( 'No events selected.', 'contactpanda' ) . '</p>';
+		$source = isset( $block['source'] ) ? sanitize_key( $block['source'] ) : ( ! empty( $block['event_ids'] ) ? 'manual' : 'upcoming' );
+		if ( 'featured' === $source || 'category' === $source ) $source = 'all'; // Compatibility with blocks saved before combined filters were introduced.
+		$ids = array();
+		if ( 'manual' === $source ) {
+			$ids = array_slice( array_filter( array_map( 'absint', (array) ( $block['event_ids'] ?? array() ) ) ), 0, $count );
+		} else {
+			$now = current_time( 'mysql' );
+			$args = array( 'post_type' => 'tribe_events', 'post_status' => 'publish', 'posts_per_page' => $count, 'fields' => 'ids', 'meta_key' => '_EventStartDate', 'orderby' => 'meta_value', 'order' => 'desc' === ( $block['event_order'] ?? '' ) ? 'DESC' : 'ASC' ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- bounded dynamic newsletter query.
+			$meta_query = array( 'relation' => 'AND' );
+			if ( 'upcoming' === $source ) $meta_query[] = array( 'key' => '_EventStartDate', 'value' => $now, 'compare' => '>=', 'type' => 'DATETIME' );
+			elseif ( 'past' === $source ) $meta_query[] = array( 'key' => '_EventEndDate', 'value' => $now, 'compare' => '<', 'type' => 'DATETIME' );
+			elseif ( 'current' === $source ) { $meta_query[] = array( 'key' => '_EventStartDate', 'value' => $now, 'compare' => '<=', 'type' => 'DATETIME' ); $meta_query[] = array( 'key' => '_EventEndDate', 'value' => $now, 'compare' => '>=', 'type' => 'DATETIME' ); }
+			if ( ! empty( $block['featured_only'] ) ) $meta_query[] = array( 'key' => '_tribe_featured', 'value' => '1' );
+			if ( count( $meta_query ) > 1 ) $args['meta_query'] = $meta_query; // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- bounded dynamic newsletter query.
+			if ( ! empty( $block['category_id'] ) ) $args['tax_query'] = array( array( 'taxonomy' => 'tribe_events_cat', 'field' => 'term_id', 'terms' => absint( $block['category_id'] ) ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- bounded dynamic newsletter query.
+			$ids = get_posts( $args );
+		}
+		if ( ! $ids ) return '<p style="color:#7b8794">' . esc_html__( 'No matching events were found.', 'contactpanda' ) . '</p>';
 		$html = '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 22px">';
 		foreach ( array_chunk( $ids, $columns ) as $row ) {
 			$html .= '<tr>';
 			foreach ( $row as $event_id ) {
 				if ( 'publish' !== get_post_status( $event_id ) ) continue;
 				$date = function_exists( 'tribe_get_start_date' ) ? tribe_get_start_date( $event_id, false, get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) ) : get_the_date( '', $event_id );
-				$image = get_the_post_thumbnail_url( $event_id, 'medium' );
-				$html .= '<td class="contactpanda-event-cell" width="' . floor( 100 / $columns ) . '%" valign="top" style="padding:10px">' . ( $image ? '<img src="' . esc_url( $image ) . '" alt="" style="display:block;width:100%;aspect-ratio:' . esc_attr( $image_ratio ) . ';object-fit:cover;margin-bottom:10px">' : '' ) . '<strong style="font:700 17px/1.35 ' . esc_attr( $settings['font_family'] ) . '"><a href="' . esc_url( get_permalink( $event_id ) ) . '" style="color:' . esc_attr( $settings['text_color'] ) . '">' . esc_html( get_the_title( $event_id ) ) . '</a></strong><br><span style="font:14px/1.5 ' . esc_attr( $settings['font_family'] ) . '">' . esc_html( $date ) . '</span></td>';
+				$image = get_the_post_thumbnail_url( $event_id, 'large' );
+				$image_style = 'original' === ( $block['image_format'] ?? '' ) ? 'height:auto' : 'aspect-ratio:' . esc_attr( $image_ratio ) . ';object-fit:' . ( 'contain' === ( $block['image_fit'] ?? '' ) ? 'contain' : 'cover' );
+				$html .= '<td class="contactpanda-event-cell" width="' . floor( 100 / $columns ) . '%" valign="top" style="padding:10px">' . ( ! empty( $block['show_image'] ) && $image ? '<img src="' . esc_url( $image ) . '" alt="" style="display:block;width:100%;' . $image_style . ';margin-bottom:10px">' : '' ) . '<strong style="font:700 17px/1.35 ' . esc_attr( $settings['font_family'] ) . '"><a href="' . esc_url( get_permalink( $event_id ) ) . '" style="color:' . esc_attr( $settings['text_color'] ) . '">' . esc_html( get_the_title( $event_id ) ) . '</a></strong><br><span style="font:14px/1.5 ' . esc_attr( $settings['font_family'] ) . '">' . esc_html( $date ) . '</span></td>';
 			}
 			$html .= '</tr>';
 		}

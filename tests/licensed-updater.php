@@ -6,7 +6,9 @@ class WP_Error { private $code; private $message; public function __construct( $
 function is_wp_error( $value ) { return $value instanceof WP_Error; }
 function __( $value, $domain = '' ) { return $value; }
 function wp_parse_args( $args, $defaults ) { return array_merge( $defaults, $args ); }
-function add_filter() {} function add_action( $hook, $callback ) { $GLOBALS['actions'][ $hook ][] = $callback; }
+function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) { $GLOBALS['filters'][ $hook ][] = array( $callback, $accepted_args ); }
+function apply_filters( $hook, $value, ...$args ) { foreach ( $GLOBALS['filters'][ $hook ] ?? array() as $filter ) { $value = call_user_func_array( $filter[0], array_slice( array_merge( array( $value ), $args ), 0, $filter[1] ) ); } return $value; }
+function add_action( $hook, $callback ) { $GLOBALS['actions'][ $hook ][] = $callback; }
 function do_action( $hook ) { foreach ( $GLOBALS['actions'][ $hook ] ?? array() as $callback ) call_user_func( $callback ); }
 function current_user_can() { return true; }
 function sanitize_text_field( $value ) { return (string) $value; }
@@ -22,7 +24,7 @@ function verify( $condition, $message ) { if ( ! $condition ) throw new RuntimeE
 class ContactPanda_License { public static function product_update( $product, $entitlement, $version, $channel ) { $GLOBALS['metadata_calls'][] = $product; return array_shift( $GLOBALS['metadata_queue'] ); } }
 require __DIR__ . '/../contactpanda/includes/class-contactpanda-licensed-updater.php';
 function updater( $product, $plugin ) { return new ContactPanda_Licensed_Updater( array( 'product' => $product, 'entitlement' => $product, 'plugin' => $plugin, 'slug' => $product, 'name' => $product, 'version' => '1.0.0' ) ); }
-$GLOBALS['cache'] = array(); $GLOBALS['deleted'] = array(); $GLOBALS['downloads'] = array(); $GLOBALS['metadata_calls'] = array(); $GLOBALS['actions'] = array();
+$GLOBALS['cache'] = array(); $GLOBALS['deleted'] = array(); $GLOBALS['downloads'] = array(); $GLOBALS['metadata_calls'] = array(); $GLOBALS['actions'] = array(); $GLOBALS['filters'] = array();
 $GLOBALS['bytes'] = 'verified release bytes';
 $stale = array( 'available' => true, 'version' => '1.1.0', 'package' => 'https://example.test/expired', 'sha256' => hash( 'sha256', $GLOBALS['bytes'] ) );
 $fresh = $stale; $fresh['package'] = 'https://example.test/fresh';
@@ -34,6 +36,12 @@ $plus->updates( (object) array( 'checked' => array( 'contactpanda-plus/contactpa
 $file = $plus->verify_download( false, $stale['package'], null, array( 'plugin' => 'contactpanda-plus/contactpanda-plus.php' ) );
 verify( is_string( $file ) && 'https://example.test/fresh' === $GLOBALS['downloads'][0], 'Expired URL replaced immediately before download' ); wp_delete_file( $file );
 verify( false === $pro->verify_download( false, $stale['package'], null, array( 'plugin' => 'contactpanda-plus/contactpanda-plus.php' ) ), 'Parallel updater does not intercept another plugin' );
+$local_file = tempnam( sys_get_temp_dir(), 'cplu-local-' ); file_put_contents( $local_file, $GLOBALS['bytes'] );
+add_filter( 'contactpanda_update_local_package', static function ( $file, $data, $config ) use ( $local_file ) { return 'plus' === $config['product'] && is_file( $local_file ) ? $local_file : $file; }, 10, 3 );
+$downloads_before = count( $GLOBALS['downloads'] ); $GLOBALS['metadata_queue'] = array( $fresh );
+verify( $local_file === $plus->verify_download( false, $fresh['package'], null, array( 'plugin' => 'contactpanda-plus/contactpanda-plus.php' ) ), 'Verified local package bypasses loopback download' );
+verify( $downloads_before === count( $GLOBALS['downloads'] ), 'Local package path does not make an HTTP download' );
+wp_delete_file( $local_file );
 $GLOBALS['bytes'] = 'tampered'; $GLOBALS['metadata_queue'] = array( $fresh );
 verify( 'contactpanda_update_checksum' === $plus->verify_download( false, $fresh['package'], null, array( 'plugins' => array( 'contactpanda-plus/contactpanda-plus.php', 'contactpanda-pro/contactpanda-pro.php' ) ) )->get_error_code(), 'Checksum mismatch rejected in bulk update' );
 $plus->clear_update_cache( null, array( 'type' => 'plugin', 'plugin' => 'contactpanda-plus/contactpanda-plus.php' ) );
