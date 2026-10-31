@@ -673,7 +673,7 @@ final class ContactPanda_Basic_Newsletters {
 
 	private static function template_sent_as_newsletter( $template_id ) {
 		global $wpdb; $table = ContactPanda_Newsletter_Schema::newsletter_table_names()['campaigns'];
-		return (bool) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE template_id=%d AND (sent_count>0 OR status IN ('sent','completed')) LIMIT 1", absint( $template_id ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		return (bool) $wpdb->get_var( $wpdb->prepare( "SELECT id FROM `{$table}` WHERE template_id=%d AND external_source='' AND (sent_count>0 OR status IN ('sent','completed')) LIMIT 1", absint( $template_id ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name. Imported campaign archives must not lock their separate editable migration template.
 	}
 
 	private static function template_planned_as_newsletter( $template_id ) {

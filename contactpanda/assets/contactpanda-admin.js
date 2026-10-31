@@ -1285,13 +1285,47 @@
 	});
 
 	document.addEventListener('submit', function (event) {
-		if (event.target.matches('.contactpanda-migration-progress-form')) {
+		if (event.target.matches('.contactpanda-migration-progress-form:not(.contactpanda-live-migration-form):not(.contactpanda-groundhogg-migration-form)')) {
 			var form = event.target, button = form.querySelector('button[type="submit"]');
 			if (form.dataset.running === '1') { event.preventDefault(); return; }
 			form.dataset.running = '1';
 			if (button) { button.disabled = true; button.dataset.originalLabel = button.textContent; button.textContent = tr('migrationRunning', 'Migration running…'); }
 			var status = document.createElement('span'); status.className = 'contactpanda-inline-migration-progress'; status.setAttribute('role', 'status'); status.innerHTML = '<span class="spinner is-active" aria-hidden="true"></span><span>' + tr('migrationProgressHint', 'Source data is being read, matched, and saved. Please keep this page open.') + '</span>';
 			form.appendChild(status);
+			return;
+		}
+		if (event.target.matches('.contactpanda-live-migration-form')) {
+			event.preventDefault();
+			var liveForm = event.target;
+			if (liveForm.dataset.running === '1') return;
+			liveForm.dataset.running = '1';
+			var liveButton = liveForm.querySelector('button[type="submit"]');
+			var liveProgress = liveForm.closest('.contactpanda-card').querySelector('.contactpanda-migration-progress');
+			if (liveButton) liveButton.disabled = true;
+			if (liveProgress) liveProgress.hidden = false;
+			var pollLiveMigration = function () {
+				var progressData = new URLSearchParams(); progressData.set('action', 'contactpanda_migration_progress'); progressData.set('nonce', CONTACTPANDA_CONFIG.nonce);
+				fetch(CONTACTPANDA_CONFIG.ajaxUrl, requestOptions(progressData)).then(parseResponse).then(function (result) {
+					if (!result.success || !liveProgress) return;
+					var value = Math.max(0, Math.min(100, parseInt(result.data.percent || 0, 10)));
+					liveProgress.querySelector('strong').textContent = result.data.stage || tr('migrationPreparing', 'Preparing migration…');
+					liveProgress.querySelector('progress').value = value;
+					liveProgress.querySelector('span').textContent = value + '%';
+					liveProgress.querySelector('small').textContent = result.data.total ? String(result.data.processed) + ' / ' + String(result.data.total) : String(result.data.processed || '');
+				}).catch(function () {});
+			};
+			pollLiveMigration();
+			var liveTimer = window.setInterval(pollLiveMigration, 1000);
+			var liveData = new FormData(liveForm);
+			fetch(CONTACTPANDA_CONFIG.ajaxUrl, {method: 'POST', body: liveData, credentials: 'same-origin'}).then(parseResponse).then(function (result) {
+				window.clearInterval(liveTimer);
+				if (!result.success || !result.data || !result.data.redirect) throw new Error(result.data && result.data.message ? result.data.message : tr('invalidServerResponse', 'The server returned an invalid response.'));
+				window.location.href = result.data.redirect;
+			}).catch(function (error) {
+				window.clearInterval(liveTimer); liveForm.dataset.running = '0';
+				if (liveButton) liveButton.disabled = false;
+				if (liveProgress) { liveProgress.querySelector('strong').textContent = error.message; liveProgress.querySelector('small').textContent = ''; }
+			});
 			return;
 		}
 		if (event.target.matches('.contactpanda-groundhogg-migration-form')) {

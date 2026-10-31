@@ -48,6 +48,7 @@ final class ContactPanda_Registration {
 		add_action( 'admin_post_contactpanda_import_woocommerce', array( __CLASS__, 'handle_import_woocommerce' ) );
 		add_action( 'admin_post_contactpanda_migrate_wordpress_users', array( __CLASS__, 'handle_migrate_wordpress_users' ) );
 		add_action( 'admin_post_contactpanda_migrate_newsletter_plugin', array( __CLASS__, 'handle_migrate_newsletter_plugin' ) );
+		add_action( 'wp_ajax_contactpanda_migrate_newsletter_plugin', array( __CLASS__, 'handle_migrate_newsletter_plugin' ) );
 		add_action( 'admin_post_contactpanda_migrate_fluentcrm', array( __CLASS__, 'handle_migrate_fluentcrm' ) );
 		add_action( 'admin_post_contactpanda_toggle_automatic_updates', array( __CLASS__, 'handle_automatic_updates' ) );
 		add_action( 'wp_ajax_contactpanda_migration_progress', array( __CLASS__, 'migration_progress_ajax' ) );
@@ -888,17 +889,21 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		self::newsletter_import_form( 'preview', __( 'Preview import', 'contactpanda' ), 'button-secondary' );
 		if ( $preview ) self::newsletter_import_form( 'run', __( 'Import and merge now', 'contactpanda' ), 'button-primary' );
 		echo '<p class="description">' . esc_html__( 'The original newsletter plugin data remains unchanged.', 'contactpanda' ) . '</p></div>';
+		echo '<div class="contactpanda-migration-progress" hidden aria-live="polite"><strong>' . esc_html__( 'Preparing migration…', 'contactpanda' ) . '</strong><progress value="0" max="100"></progress><span>0%</span><small></small></div>';
 		echo '</section>';
 	}
 
 	private static function newsletter_import_form( $mode, $label, $class ) {
-		echo '<form class="contactpanda-inline-action-form contactpanda-migration-progress-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_migrate_newsletter_plugin"><input type="hidden" name="mode" value="' . esc_attr( $mode ) . '"><input type="hidden" name="migration_source" value="newsletter_plugin">';
+		$live_class = 'run' === $mode ? ' contactpanda-live-migration-form' : '';
+		echo '<form class="contactpanda-inline-action-form contactpanda-migration-progress-form' . esc_attr( $live_class ) . '" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="contactpanda_migrate_newsletter_plugin"><input type="hidden" name="mode" value="' . esc_attr( $mode ) . '"><input type="hidden" name="migration_source" value="newsletter_plugin">';
 		wp_nonce_field( 'contactpanda_migrate_newsletter_plugin' );
 		echo '<button type="submit" class="button ' . esc_attr( $class ) . '">' . esc_html( $label ) . '</button></form>';
 	}
 
 	public static function handle_migrate_newsletter_plugin() {
 		self::guard_database_action( 'contactpanda_migrate_newsletter_plugin' );
+		delete_transient( 'contactpanda_groundhogg_migration_' . get_current_user_id() );
+		self::store_migration_progress( array( 'stage' => __( 'Preparing migration…', 'contactpanda' ), 'processed' => 0, 'total' => 0, 'percent' => 0 ) );
 		if ( ! apply_filters( 'contactpanda_can_migrate_newsletter_plugin', true ) ) wp_die( esc_html__( 'The Newsletter Plugin migration is not available.', 'contactpanda' ), '', array( 'response' => 403 ) );
 		$table = self::newsletter_plugin_table();
 		if ( ! $table || ! ContactPanda_Store::ready() ) {
@@ -915,9 +920,11 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		$mode = isset( $_POST['mode'] ) ? sanitize_key( wp_unslash( $_POST['mode'] ) ) : 'run';
 		$preview_only = 'preview' === $mode;
 		$report = array( 'new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0, 'subscribers' => count( $rows ), 'completed_at' => current_time( 'mysql' ) );
+		$processed = 0;
 		foreach ( $rows as $row ) {
+			++$processed;
 			$email = sanitize_email( $row['email'] ?? '' );
-			if ( ! is_email( $email ) ) { ++$report['skipped']; continue; }
+			if ( ! is_email( $email ) ) { ++$report['skipped']; self::newsletter_migration_progress( $processed, count( $rows ) ); continue; }
 			$status_code = strtoupper( sanitize_key( $row['status'] ?? '' ) );
 			$status_map = array( 'C' => 'confirmed', 'U' => 'unconfirmed', 'S' => 'unsubscribed', 'B' => 'bounced' );
 			$incoming = $status_map[ $status_code ] ?? 'unconfirmed';
@@ -930,7 +937,7 @@ The link is valid for 24 hours.', 'contactpanda' ),
 				'meta'       => array( 'newsletter_plugin_id' => absint( $row['id'] ?? 0 ), 'newsletter_plugin_status' => $status_code ),
 			);
 			if ( $contact ) {
-				if ( $preview_only ) { ++$report['updated']; continue; }
+				if ( $preview_only ) { ++$report['updated']; self::newsletter_migration_progress( $processed, count( $rows ) ); continue; }
 				$current = sanitize_key( $contact['optin_status'] ?? '' );
 				$was_confirmed = 'confirmed' === $current;
 				if ( in_array( $current, array( 'unsubscribed', 'bounced', 'spam' ), true ) && 'confirmed' === $incoming ) $incoming = $current;
@@ -941,22 +948,31 @@ The link is valid for 24 hours.', 'contactpanda' ),
 				if ( 'confirmed' === $incoming && ! $was_confirmed ) ContactPanda_Store::record_consent( $contact['id'], 'granted', 'newsletter_plugin_import', self::valid_import_date( $row['created'] ?? '' ), __( 'Imported newsletter subscription.', 'contactpanda' ) );
 				++$report['updated'];
 			} else {
-				if ( $preview_only ) { ++$report['new']; continue; }
+				if ( $preview_only ) { ++$report['new']; self::newsletter_migration_progress( $processed, count( $rows ) ); continue; }
 				$data['optin_status'] = $incoming;
 				$id = ContactPanda_Store::create_contact( $data );
 				if ( is_wp_error( $id ) || ! $id ) { ++$report['errors']; continue; }
 				if ( 'confirmed' === $incoming ) ContactPanda_Store::record_consent( $id, 'granted', 'newsletter_plugin_import', self::valid_import_date( $row['created'] ?? '' ), __( 'Imported newsletter subscription.', 'contactpanda' ) );
 				++$report['new'];
 			}
+			self::newsletter_migration_progress( $processed, count( $rows ) );
 		}
+		self::store_migration_progress( array( 'stage' => __( 'Preparing migration…', 'contactpanda' ), 'processed' => count( $rows ), 'total' => count( $rows ), 'percent' => 70 ) );
 		$report = (array) apply_filters( 'contactpanda_newsletter_plugin_migration_report', $report, $preview_only, $table );
 		if ( $preview_only ) {
 			set_transient( 'contactpanda_newsletter_plugin_preview_' . get_current_user_id(), $report, HOUR_IN_SECONDS );
 			self::database_redirect( 'success', __( 'The newsletter import preview is ready. No source or ContactPanda data has been changed.', 'contactpanda' ) );
 		}
 		delete_transient( 'contactpanda_newsletter_plugin_preview_' . get_current_user_id() );
+		$report['completed_at'] = current_time( 'mysql' );
 		update_option( 'contactpanda_last_newsletter_plugin_migration_report', $report, false );
+		self::store_migration_progress( array( 'stage' => __( 'Migration completed.', 'contactpanda' ), 'processed' => count( $rows ), 'total' => count( $rows ), 'percent' => 100 ) );
 		self::database_redirect( 'success', sprintf( __( 'Newsletter subscriber import completed: %1$d new contacts, %2$d updated contacts, %3$d skipped.', 'contactpanda' ), $report['new'], $report['updated'], $report['skipped'] ) );
+	}
+
+	private static function newsletter_migration_progress( $processed, $total ) {
+		if ( 0 !== $processed % 25 && $processed !== $total ) return;
+		self::store_migration_progress( array( 'stage' => __( 'Importing contacts…', 'contactpanda' ), 'processed' => $processed, 'total' => $total, 'percent' => $total ? min( 68, 5 + (int) floor( 63 * $processed / $total ) ) : 68 ) );
 	}
 
 	/** Preview or import FluentCRM contacts without modifying the source tables. */
@@ -1383,6 +1399,10 @@ The link is valid for 24 hours.', 'contactpanda' ),
 		$source = sanitize_key( $source ?: wp_unslash( $_POST['migration_source'] ?? '' ) );
 		$url = admin_url( 'admin.php?page=contactpanda-migration' );
 		if ( $source ) $url = add_query_arg( 'migration_source', $source, $url );
+		if ( wp_doing_ajax() ) {
+			if ( 'error' === $type ) wp_send_json_error( array( 'message' => $message ), 400 );
+			wp_send_json_success( array( 'redirect' => $url, 'message' => $message ) );
+		}
 		wp_safe_redirect( $url ); exit;
 	}
 
