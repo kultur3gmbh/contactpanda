@@ -2,12 +2,16 @@
 Developer: Kultur3 GmbH
 Requires at least: 6.4
 Requires PHP: 7.4
-Stable tag: 0.8.80
+Stable tag: 0.8.81
 License: GPLv3
 
 A user-friendly contact and company CRM for WordPress with a free, reduced newsletter workflow, a WooCommerce customer overview, optional Groundhogg compatibility, and stable extension APIs for the ContactPanda product family.
 
 == Changelog ==
+
+= 0.8.81 =
+* Normalizes current and historical product names so existing paid licenses unlock the same modules reliably.
+* Improves Event Tickets attendee discovery without modifying source event or ticket records.
 
 = 0.8.80 =
 * Detects current The Events Calendar and Event Tickets installations even when the legacy attendee repository function is unavailable.

@@ -143,11 +143,18 @@ final class ContactPanda_License {
 	private static function normalize_entitlement( $item ) {
 		$item = '*' === trim( (string) $item ) ? 'all' : sanitize_key( $item );
 		$aliases = array(
-			'newsletter' => 'advanced_newsletter',
-			'forms'      => 'forms_editor',
-			'flows'      => 'automations',
-			'integrations' => 'advanced_integrations',
-			'migration'  => 'form_migration',
+			'newsletter'           => 'advanced_newsletter',
+			'contactpanda-newsletter' => 'advanced_newsletter',
+			'forms'                => 'forms_editor',
+			'flows'                => 'automations',
+			'integrations'         => 'advanced_integrations',
+			'migration'            => 'form_migration',
+			'contactpanda-plus'     => 'plus',
+			'contactpanda-pro'      => 'pro',
+			'contactpanda-business' => 'business',
+			'contactpanda-suite'    => 'all',
+			'contactpanda-woocommerce' => 'woocommerce',
+			'contactpanda-license-server' => 'license-server',
 		);
 		return $aliases[ $item ] ?? $item;
 	}

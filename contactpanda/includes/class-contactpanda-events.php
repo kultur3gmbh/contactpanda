@@ -420,16 +420,49 @@ final class ContactPanda_Events {
 				// Optional integrations must never take down ContactPanda.
 			}
 		}
-		$clauses = array( 'relation' => 'OR' );
-		if ( $user_ids ) $clauses[] = array( 'key' => '_tribe_tickets_attendee_user_id', 'value' => array_map( 'absint', $user_ids ), 'compare' => 'IN' );
-		foreach ( array( '_tribe_rsvp_email', '_tribe_tpp_email', '_tribe_tickets_email', '_tribe_wooticket_email', '_tec_tickets_commerce_attendee_email' ) as $key ) {
-			if ( $emails ) $clauses[] = array( 'key' => $key, 'value' => array_map( 'sanitize_email', $emails ), 'compare' => 'IN' );
-		}
-		if ( count( $clauses ) > 1 ) {
-			$ids = get_posts( array( 'post_type' => 'any', 'post_status' => 'any', 'fields' => 'ids', 'posts_per_page' => 2000, 'no_found_rows' => true, 'suppress_filters' => true, 'update_post_meta_cache' => false, 'update_post_term_cache' => false, 'meta_query' => $clauses ) ); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- bounded compatibility fallback.
-			foreach ( (array) $ids as $id ) $attendees[ absint( $id ) ] = absint( $id );
+		// Event Tickets stores attendee records in private post types. A WP_Query
+		// with post_type=any excludes those post types on several current plugin
+		// versions, so use their stable attendee metadata as the compatibility
+		// index instead. This remains read-only and works with every table prefix.
+		foreach ( self::tec_attendee_meta_ids( $user_ids, $emails ) as $id ) {
+			$attendees[ $id ] = $id;
 		}
 		return array_values( $attendees );
+	}
+
+	/**
+	 * Find attendee post IDs without relying on public post-type visibility.
+	 */
+	private static function tec_attendee_meta_ids( $user_ids, $emails ) {
+		global $wpdb;
+		if ( ! isset( $wpdb->postmeta ) || ! method_exists( $wpdb, 'prepare' ) || ! method_exists( $wpdb, 'get_col' ) ) {
+			return array();
+		}
+
+		$conditions = array();
+		$values     = array();
+		$user_ids   = array_values( array_unique( array_filter( array_map( 'absint', (array) $user_ids ) ) ) );
+		$emails     = array_values( array_unique( array_filter( array_map( 'sanitize_email', (array) $emails ) ) ) );
+		if ( $user_ids ) {
+			$conditions[] = '(meta_key = %s AND meta_value IN (' . implode( ', ', array_fill( 0, count( $user_ids ), '%s' ) ) . '))';
+			$values[]     = '_tribe_tickets_attendee_user_id';
+			$values       = array_merge( $values, array_map( 'strval', $user_ids ) );
+		}
+		foreach ( array( '_tribe_rsvp_email', '_tribe_tpp_email', '_tribe_tickets_email', '_tribe_wooticket_email', '_tec_tickets_commerce_attendee_email' ) as $key ) {
+			if ( ! $emails ) {
+				break;
+			}
+			$conditions[] = '(meta_key = %s AND meta_value IN (' . implode( ', ', array_fill( 0, count( $emails ), '%s' ) ) . '))';
+			$values[]     = $key;
+			$values       = array_merge( $values, $emails );
+		}
+		if ( ! $conditions ) {
+			return array();
+		}
+
+		$sql = "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE " . implode( ' OR ', $conditions ) . ' LIMIT 2000'; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- core table property and generated placeholders only.
+		$ids = $wpdb->get_col( $wpdb->prepare( $sql, $values ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		return array_values( array_unique( array_filter( array_map( 'absint', (array) $ids ) ) ) );
 	}
 
 	/**
